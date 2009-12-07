@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:util="http://www.springframework.org/schema/util" xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.5.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-2.5.xsd">
+
+
+	<bean id="personPropertyPlaceholderConfigurer" parent="propertyPlaceholderConfigurer" 
+		p:ignore-unresolvable-placeholders="true">
+		<property name="order">
+			<util:constant static-field="org.springframework.core.Ordered.HIGHEST_PRECEDENCE" />
+		</property>
+		<property name="locations">
+			<list>
+				<value>classpath*:META-INF/spring/person/*.properties</value>
+			</list>
+		</property>
+	</bean>
+
+	<bean id="personPageDescriptor" parent="abstractVlDockingPageDescriptor" p:initial-layout="classpath:/org/bluebell/richclient/samples/layout/personLayout.xml">
+		
+		<!--
+			p:initial-layout="classpath:/es/uniovi/sies/mat/ui/layout/periodosMatriculaLayout.xml"
+		-->
+		<property name="viewDescriptors">
+			<list>
+				<value>personMasterViewDescriptor</value>
+				<value>personSearchViewDescriptor</value>
+				<value>personDetailViewDescriptor</value>
+				<value>validationViewDescriptor</value>				
+			</list>
+		</property>
+	</bean>
+
+	<bean id="personMasterViewDescriptor" parent="abstractViewDescriptor"
+		p:form-class="org.bluebell.richclient.samples.simple.form.PersonMasterForm" />
+
+	<bean id="personSearchViewDescriptor" parent="abstractViewDescriptor"
+		p:form-class="org.bluebell.richclient.samples.simple.form.PersonSearchForm">
+		<property name="autoHideBorder">
+			<util:constant
+				static-field="com.vlsolutions.swing.docking.DockingConstants.HIDE_RIGHT" />
+		</property>
+	</bean>
+
+	<bean id="personDetailViewDescriptor" parent="abstractViewDescriptor"
+		p:form-class="org.bluebell.richclient.samples.simple.form.PersonChildForm" />
+		
+	<bean id="personMessageSource" 
+		class="org.springframework.context.support.ResourceBundleMessageSource">
+		<property name="basenames">
+			<list>				
+				<value>org.bluebell.richclient.application.messages</value>
+				<value>org.springframework.richclient.application.messages</value>
+				<value>org.bluebell.richclient.samples.simple.messages</value>
+			</list>
+		</property>
+	</bean>
+</beans>
+	

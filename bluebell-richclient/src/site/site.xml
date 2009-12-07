@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<site>
+  <skin>
+    <groupId>org.apache.maven.skins</groupId>
+    <artifactId>maven-default-skin</artifactId>
+    <version>1.0</version>
+  </skin>
+
+
+  <body>
+    <links>
+      <item name="Wiki" href="http://156.35.2.40/wiki"/>
+      <item name="CruiseControl" href="http://156.35.2.40:8081"/>
+      <item name="Svn" href="http://156.35.2.40/svn/repos/gatools/trunk/sies/"/>
+      <item name="Proximity" href="http://156.35.2.40:8080/px-webapp"/>
+      <item name="Jira" href="http://156.35.2.40:8090"/>
+      <item name="EstandarCodificaciónJava" href="http://156.35.2.40:8888/estandarCodificacionJava/"/>
+      <item name="NormasDisenoAplicacionesJavaEE" href="http://156.35.2.40:8888/normasDisenoAplicacionesJavaEE/"/>
+      <item name="Mapa de procesos" href="http://segadoc.cpd.uniovi.es/mapaprocesos/"/>
+    </links>
+
+
+  <menu ref="reports"/>
+
+  </body>
+
+
+</site>

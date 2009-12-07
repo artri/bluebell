@@ -1,0 +1,133 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>org.springframework.richclient</groupId>
+		<artifactId>spring-richclient</artifactId>
+		<version>1.1.0</version>
+	</parent>
+
+	<groupId>org.bluebell</groupId>
+	<artifactId>bluebell-richclient</artifactId>
+	<packaging>jar</packaging>
+	<name>Bluebell Rich Client</name>
+	<description>
+        Desktop module
+    </description>
+
+	<dependencies>
+		<!-- 
+			Spring Richclient
+		 -->
+		<dependency>
+			<groupId>org.springframework.richclient</groupId>
+			<artifactId>spring-richclient-resources</artifactId>
+			<version>${spring-richclient-version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.richclient</groupId>
+			<artifactId>spring-richclient-core</artifactId>
+			<version>${spring-richclient-version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.richclient</groupId>
+			<artifactId>spring-richclient-jdk6</artifactId>
+			<version>${spring-richclient-version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.richclient</groupId>
+			<artifactId>spring-richclient-sandbox</artifactId>
+			<version>${spring-richclient-version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.richclient</groupId>
+			<artifactId>spring-richclient-jideoss</artifactId>
+			<version>${spring-richclient-version}</version>
+		</dependency>
+		<!-- 
+		<dependency>
+			<groupId>org.springframework.richclient</groupId>
+			<artifactId>spring-richclient-vldocking</artifactId>
+			<version>${spring-richclient-version}</version>
+		</dependency>
+		 -->
+
+		<!-- 
+			Other swing components
+ 		-->
+		<dependency>
+			<groupId>com.vlsolutions</groupId>
+			<artifactId>vldocking</artifactId>
+			<!-- TODO version vldocking -->
+			<version>2.1.4</version>
+		</dependency>
+		<!-- TODO incluir vldocking -->
+		<!--
+			<dependency> <groupId>com.vlsolutions</groupId>
+			<artifactId>vljtable</artifactId> <version>1.0</version>
+			</dependency>
+		-->
+		<dependency>
+			<groupId>com.jgoodies</groupId>
+			<artifactId>forms</artifactId>
+			<version>1.0.7</version>
+		</dependency>
+		<dependency>
+			<groupId>com.jgoodies</groupId>
+			<artifactId>looks</artifactId>
+			<version>2.2.1</version>
+		</dependency>
+		<dependency>
+			<groupId>net.java.dev.glazedlists</groupId>
+			<artifactId>glazedlists_java15</artifactId>
+			<version>1.7.0</version>
+		</dependency>
+		<!-- 
+		<dependency>
+			<groupId>org.swinglabs</groupId>
+			<artifactId>swingx</artifactId>
+			<version>0.9</version>
+		</dependency>
+		 -->
+		<dependency>
+			<groupId>net.sf.nachocalendar</groupId>
+			<artifactId>nachocalendar</artifactId>
+			<version>0.23</version>
+		</dependency>
+
+		<!-- Otras dependencias -->
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-aspects</artifactId>
+			<version>${spring-version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-aop</artifactId>
+			<version>${spring-version}</version>
+		</dependency>
+		<dependency>
+			<groupId>commons-lang</groupId>
+			<artifactId>commons-lang</artifactId>
+			<version>2.4</version>
+		</dependency>
+		<dependency>
+			<groupId>commons-io</groupId>
+			<artifactId>commons-io</artifactId>
+			<version>1.4</version>
+		</dependency>
+
+		<!-- Test -->
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-test</artifactId>
+			<version>${spring-version}</version>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
+	<properties>
+		<spring-richclient-version>1.1.1-SNAPSHOT</spring-richclient-version>
+		<spring-version>2.5.3</spring-version>
+	</properties>
+</project>

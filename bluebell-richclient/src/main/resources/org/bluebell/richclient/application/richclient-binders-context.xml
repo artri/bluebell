@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:util="http://www.springframework.org/schema/util" xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.5.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-2.5.xsd">
+
+	<!-- 
+		TODO
+	-->
+	<util:list id="bindersForPropertyNames" />
+
+	<!-- 
+		TODO
+	-->
+	<util:map id="bindersForPropertyTypes" key-type="java.lang.Class">
+		<entry key="java.util.Date" value-ref="nachoCalendarBinder" />
+	</util:map>
+	
+	<!--
+		TODO 
+	-->
+	<util:map id="bindersForControlTypes" key-type="java.lang.Class">
+		<entry key="org.springframework.richclient.components.ShuttleList" value-ref="shuttleListBinder" />
+	</util:map>
+
+
+
+	<bean id="shuttleListBinder"
+		class="org.bluebell.richclient.form.binding.swing.SilentShuttleListBinder" />
+
+	<bean id="listBinder"
+		class="org.springframework.richclient.selection.binding.ListSelectionDialogBinder" />
+
+	<bean id="euroBinder"
+		class="org.springframework.richclient.form.binding.swing.NumberBinder"
+		p:format="###,###,###,##0.00" p:nrOfDecimals="2" p:rightDecoration="€" />
+
+	<bean id="dollarBinder"
+		class="org.springframework.richclient.form.binding.swing.NumberBinder"
+		p:format="###,###,###,##0.00" p:nrOfDecimals="2" p:rightDecoration="$" />
+
+	<bean id="nachoCalendarBinder"
+		class="org.bluebell.richclient.form.binding.swing.date.BbNachoCalendarDateFieldBinder"
+		p:date-format="mm/dd/yyyy" />
+</beans>
+

@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:util="http://www.springframework.org/schema/util" xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.5.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-2.5.xsd">
+
+
+	<bean id="clearBusyIndicatorExceptionHandlerDelegate"
+		class="org.bluebell.richclient.command.support.BusyIndicatorActionCommandInterceptor$ClearBusyIndicatorExceptionHandlerDelegate" />
+	<bean id="keepAliveAfterFailureExceptionHandlerDelegate"
+		class="org.bluebell.richclient.form.AbstractBbTableMasterForm$KeepAliveAfterFailureExceptionHandlerDelegate" />
+
+	<!--
+		Configuration of ExceptionHandler, should be used in
+		ApplicationAdvisor to catch all exceptions
+	-->
+	<bean id="exceptionHandler"
+		class="org.springframework.richclient.exceptionhandling.delegation.DelegatingExceptionHandler"
+		p:exception-purger-ref="exceptionPurger">
+		<property name="delegateList">
+			<list>
+				<ref bean="clearBusyIndicatorExceptionHandlerDelegate"/>
+				<ref bean="keepAliveAfterFailureExceptionHandlerDelegate"/>
+				<!-- 
+				<bean
+					class="org.springframework.richclient.exceptionhandling.delegation.SimpleExceptionHandlerDelegate"
+					p:exception-handler-ref="warnMessagesDialogExceptionHandler">
+					<property name="throwableClassList">
+						<list />
+					</property>
+				</bean>
+				<bean
+					class="org.springframework.richclient.exceptionhandling.delegation.SimpleExceptionHandlerDelegate">
+					<property name="exceptionHandler">
+						<bean
+							class="org.springframework.richclient.exceptionhandling.MessagesDialogExceptionHandler">
+							<property name="logLevel" value="ERROR" />
+							<property name="shutdownPolicy" value="OBLIGATE" />
+						</bean>
+					</property>
+				</bean>
+					<bean
+					class="org.springframework.richclient.exceptionhandling.delegation.SimpleExceptionHandlerDelegate"
+					p:exception-handler-ref="hibernateValidatorDialogExceptionHandler"
+					p:throwableClass="org.hibernate.validator.InvalidStateException" />
+				<bean
+					class="org.springframework.richclient.exceptionhandling.delegation.SimpleExceptionHandlerDelegate"
+					p:exception-handler-ref="silentExceptionHandler" p:throwableClass="java.lang.IllegalArgumentException" />
+ 				-->
+				<!--
+					The order is important: if Throwable would be first then the others
+					will be ignored
+				-->
+				<bean
+					class="org.springframework.richclient.exceptionhandling.delegation.SimpleExceptionHandlerDelegate"
+					p:throwableClass="java.lang.Throwable"
+					p:exception-handler-ref="errorMessagesDialogExceptionHandler" />
+			</list>
+		</property>
+	</bean>
+
+	<!--
+		TODO
+	-->
+	<bean id="exceptionPurger"
+		class="org.springframework.richclient.exceptionhandling.delegation.DefaultExceptionPurger">
+		<property name="includeThrowableClassList">
+			<list>
+				<!--
+					<value type="java.lang.Class">
+					es.uniovi.exception.ApplicationException </value> <value
+					type="java.lang.Class"> es.uniovi.exception.InfrastructureException
+					</value> <value type="java.lang.Class">
+					org.hibernate.exception.SQLGrammarException </value>
+				-->
+			</list>
+		</property>
+	</bean>
+
+	<!--
+		TODO
+	-->
+
+		<bean id="errorMessagesDialogExceptionHandler"
+		class="org.bluebell.richclient.exceptionhandling.BbMessagesDialogExceptionHandler"
+		p:logLevel="ERROR" p:shutdownPolicy="NONE" />
+	<!--
+		TODO
+	-->
+	<bean id="warnMessagesDialogExceptionHandler"
+		class="org.bluebell.richclient.exceptionhandling.BbMessagesDialogExceptionHandler"
+		p:logLevel="WARN" p:shutdownPolicy="NONE" />
+
+	<!--
+		TODO
+	-->
+	<!--
+		<bean id="hibernateValidatorDialogExceptionHandler"
+		class="org.springframework.richclient.exceptionhandling.HibernateValidatorDialogExceptionHandler"
+		p:logLevel="INFO" p:shutdownPolicy="NONE" />
+	-->
+
+	<!-- 
+		TODO
+	-->
+	<bean id="silentExceptionHandler"
+		class="org.springframework.richclient.exceptionhandling.SilentExceptionHandler"
+		p:logLevel="INFO" />
+
+</beans>
+

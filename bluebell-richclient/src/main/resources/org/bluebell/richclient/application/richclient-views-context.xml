@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:util="http://www.springframework.org/schema/util" xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.5.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-2.5.xsd">
+
+	<bean id="abstractVlDockingPageDescriptor"
+		class="org.springframework.richclient.application.docking.vldocking.VLDockingPageDescriptor" />
+
+	<!--
+		TODO
+	-->
+	<bean id="abstractViewDescriptor" abstract="true"
+		class="org.bluebell.richclient.application.docking.vldocking.FormBackedVLDockingViewDescriptor"
+		p:auto-hide-enabled="true" p:close-enabled="true" p:float-enabled="true"
+		p:maximize-enabled="true">
+		<property name="autoHideBorder">
+			<util:constant
+				static-field="com.vlsolutions.swing.docking.DockingConstants.HIDE_BOTTOM" />
+		</property>
+	</bean>
+
+	<!--
+		View Descriptor para visualizar los errores de validación existentes
+		en una página.
+	-->
+	<bean id="validationViewDescriptor" parent="abstractViewDescriptor"
+		p:form-class="org.bluebell.richclient.form.BbValidationForm">
+		<property name="autoHideBorder">
+			<util:constant
+				static-field="com.vlsolutions.swing.docking.DockingConstants.HIDE_BOTTOM" />
+		</property>
+	</bean>
+
+</beans>
+

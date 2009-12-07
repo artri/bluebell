@@ -1,0 +1,3 @@
+<laf-plugin>
+	<component-plugin-class>org.bluebell.richclient.application.docking.vldocking.substance.SubstanceVLDockingPlugin</component-plugin-class>
+</laf-plugin>
