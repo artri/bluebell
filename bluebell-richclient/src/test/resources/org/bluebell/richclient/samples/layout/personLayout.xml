@@ -1,28 +1,29 @@
 <?xml version="1.0"?>
 <VLDocking version="2.1">
-<DockingDesktop>
-<DockingPanel>
-<Split orientation="0" location="0.5">
-<Split orientation="1" location="0.5006485084306096">
-<Dockable>
-<Key dockName="personMasterViewDescriptor" dockLabel="personMasterViewDescriptor"/>
-</Dockable>
-<Dockable>
-<Key dockName="personSearchViewDescriptor" dockLabel="personSearchViewDescriptor"/>
-</Dockable>
-</Split>
-<Dockable>
-<Key dockName="personDetailViewDescriptor" dockLabel="personDetailViewDescriptor"/>
-</Dockable>
-</Split>
-</DockingPanel>
-<Border zone="1">
-<Dockable>
-<Key dockName="validationViewDescriptor" dockLabel="validationViewDescriptor"/>
-<RelativePosition x="0.0" y="0.7597402334213257" w="1.0" h="0.24025973677635193" />
-</Dockable>
-</Border>
-<TabGroups>
-</TabGroups>
-</DockingDesktop>
+	<DockingDesktop>
+		<DockingPanel>
+			<Split orientation="0" location="0.5">
+				<Split orientation="1" location="0.5006485084306096">
+					<Dockable>
+						<Key dockName="personMasterViewDescriptor" dockLabel="personMasterViewDescriptor" />
+					</Dockable>
+					<Dockable>
+						<Key dockName="personSearchViewDescriptor" dockLabel="personSearchViewDescriptor" />
+					</Dockable>
+				</Split>
+				<Dockable>
+					<Key dockName="personDetailViewDescriptor" dockLabel="personDetailViewDescriptor" />
+				</Dockable>
+			</Split>
+		</DockingPanel>
+		<Border zone="1">
+			<Dockable>
+				<Key dockName="validationViewDescriptor" dockLabel="validationViewDescriptor" />
+				<RelativePosition x="0.0" y="0.7597402334213257" w="1.0"
+					h="0.24025973677635193" />
+			</Dockable>
+		</Border>
+		<TabGroups>
+		</TabGroups>
+	</DockingDesktop>
 </VLDocking>

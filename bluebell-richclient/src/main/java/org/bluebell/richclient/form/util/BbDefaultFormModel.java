@@ -190,8 +190,8 @@ public class BbDefaultFormModel extends DefaultFormModel {
      */
     private void clearBindingErrorMessages() {
 
-	final Field bindingErrorMessagesField = ReflectionUtils.findField(DefaultFormModel.class,
-		"bindingErrorMessages");
+	final Field bindingErrorMessagesField = ReflectionUtils.findField(//
+		DefaultFormModel.class, "bindingErrorMessages", Map.class);
 	ReflectionUtils.makeAccessible(bindingErrorMessagesField);
 	try {
 	    ((Map<?, ?>) bindingErrorMessagesField.get(this)).clear();

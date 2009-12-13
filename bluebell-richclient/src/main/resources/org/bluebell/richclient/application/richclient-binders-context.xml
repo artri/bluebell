@@ -15,9 +15,7 @@
 	<!-- 
 		TODO
 	-->
-	<util:map id="bindersForPropertyTypes" key-type="java.lang.Class">
-		<entry key="java.util.Date" value-ref="nachoCalendarBinder" />
-	</util:map>
+	<util:map id="bindersForPropertyTypes" key-type="java.lang.Class" />
 	
 	<!--
 		TODO 
@@ -25,8 +23,6 @@
 	<util:map id="bindersForControlTypes" key-type="java.lang.Class">
 		<entry key="org.springframework.richclient.components.ShuttleList" value-ref="shuttleListBinder" />
 	</util:map>
-
-
 
 	<bean id="shuttleListBinder"
 		class="org.bluebell.richclient.form.binding.swing.SilentShuttleListBinder" />
@@ -41,9 +37,5 @@
 	<bean id="dollarBinder"
 		class="org.springframework.richclient.form.binding.swing.NumberBinder"
 		p:format="###,###,###,##0.00" p:nrOfDecimals="2" p:rightDecoration="$" />
-
-	<bean id="nachoCalendarBinder"
-		class="org.bluebell.richclient.form.binding.swing.date.BbNachoCalendarDateFieldBinder"
-		p:date-format="mm/dd/yyyy" />
 </beans>
 

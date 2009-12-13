@@ -4,7 +4,6 @@
 package org.bluebell.richclient.samples.simple.form;
 
 import javax.swing.JComponent;
-import javax.swing.JTabbedPane;
 
 import org.bluebell.richclient.form.AbstractBbChildForm;
 import org.bluebell.richclient.form.util.BbFormModelHelper;
