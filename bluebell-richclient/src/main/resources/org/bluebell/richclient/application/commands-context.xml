@@ -31,8 +31,8 @@
 	-->
 	<bean id="windowCommandManager"
 		class="org.springframework.richclient.application.support.ApplicationWindowCommandManager">
-		<property name="sharedCommandIds">
-			<list>
+		<property name="sharedCommandIds" >
+			<util:list >
 				<value>propertiesCommand</value>
 				<value>saveCommand</value>
 				<value>cancelCommand</value>
@@ -47,7 +47,7 @@
 				<value>revertAllCommand</value>
 				<value>refreshCommand</value>
 				<value>selectAllEntitiesCommand</value>
-			</list>
+			</util:list>
 		</property>
 	</bean>
 

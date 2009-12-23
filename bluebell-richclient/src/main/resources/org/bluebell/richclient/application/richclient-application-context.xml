@@ -250,11 +250,11 @@
 		we need to have a reference to this service in the context configured
 		with a custom formatter factory.
 	-->
-	<bean id="conversionService"
+	<bean id="defaultConversionService"
 		class="org.springframework.richclient.application.DefaultConversionServiceFactoryBean" />
 	<bean
 		class="org.springframework.beans.factory.config.MethodInvokingFactoryBean"
-		p:target-object-ref="conversionService" p:target-method="addConverters">
+		p:target-object-ref="defaultConversionService" p:target-method="addConverters">
 		<property name="arguments">
 			<list>
 				<list>

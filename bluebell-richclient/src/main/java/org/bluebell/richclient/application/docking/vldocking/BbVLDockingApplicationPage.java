@@ -14,11 +14,13 @@ import javax.swing.JComponent;
 import javax.swing.UIManager;
 import javax.swing.border.Border;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.richclient.application.ApplicationWindow;
 import org.springframework.richclient.application.PageComponent;
@@ -101,6 +103,54 @@ public class BbVLDockingApplicationPage<T> extends VLDockingApplicationPage {
     }
 
     /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getId() {
+    
+        final String id = super.getId();
+    
+        return (id != null) ? id : BbVLDockingApplicationPage.PAGE_ID_IF_NULL;
+    }
+
+    /**
+     * Gets the initial layout.
+     * 
+     * @return the initial layout.
+     */
+    public Resource getInitialLayout() {
+    
+        if (this.initialLayout == null) {
+            this.initialLayout = ((VLDockingPageDescriptor) this.getPageDescriptor()).getInitialLayout();
+        }
+    
+        return this.initialLayout;
+    }
+
+    /**
+     * Gets the user layout.
+     * 
+     * @return the user layout.
+     * 
+     * @see #USER_LAYOUT_LOCATION_FMT
+     */
+    public Resource getUserLayout() {
+    
+        if ((this.userLayout == null) && (this.getInitialLayout() != null)) {
+            final String userHome = System.getProperty("user.home", "/");
+            final String applicationName = this.getApplication().getName();
+            final String filename = this.getInitialLayout().getFilename();
+    
+            final String userLayoutLocation = BbVLDockingApplicationPage.USER_LAYOUT_LOCATION_FMT.format(//
+        	    new String[] { userHome, applicationName, filename });
+    
+            this.userLayout = new FileSystemResource(userLayoutLocation);
+        }
+    
+        return this.userLayout;
+    }
+
+    /**
      * Closes this page.
      * <p>
      * This implementation tries to save the user layout into a standarized system location.
@@ -116,22 +166,16 @@ public class BbVLDockingApplicationPage<T> extends VLDockingApplicationPage {
 	    return Boolean.TRUE;
 	}
 
-	// Create layout folder and file
 	try {
-	    // final String userLayoutFolderLocation = FilenameUtils.getFullPath(this.getUserLayout().);
-	    // final File userDefinedLayoutFolder = ResourceUtils.getFile(userLayoutFolderLocation);
-	    // if (!userDefinedLayoutFolder.exists()) {
-	    // FileUtils.forceMkdir(userDefinedLayoutFolder);
-	    // }
-
-	    final File userLayoutFile = new File(this.getUserLayout().getURI().toString());
-	    if (!userLayoutFile.exists()) {
-		userLayoutFile.createNewFile();
+	    // Create file if doesn't exist
+	    final File userLayoutFile = this.getUserLayout().getFile();
+	    if (!this.getUserLayout().exists()) {
+		FileUtils.touch(userLayoutFile);
 	    }
 
+	    // Write XML
 	    final OutputStream out = new FileOutputStream(userLayoutFile);
 	    ((DockingDesktop) this.getControl()).getContext().writeXML(out);
-
 	    out.close();
 	} catch (final IOException ioe) {
 	    BbVLDockingApplicationPage.LOGGER.warn("Cannot save user defined layout", ioe);
@@ -144,54 +188,6 @@ public class BbVLDockingApplicationPage<T> extends VLDockingApplicationPage {
 	this.setInitialLayout(this.getInitialLayout());
 
 	return success;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public String getId() {
-
-	final String id = super.getId();
-
-	return (id != null) ? id : BbVLDockingApplicationPage.PAGE_ID_IF_NULL;
-    }
-
-    /**
-     * Gets the initial layout.
-     * 
-     * @return the initial layout.
-     */
-    public Resource getInitialLayout() {
-
-	if (this.initialLayout == null) {
-	    this.initialLayout = ((VLDockingPageDescriptor) this.getPageDescriptor()).getInitialLayout();
-	}
-
-	return this.initialLayout;
-    }
-
-    /**
-     * Gets the user layout.
-     * 
-     * @return the user layout.
-     * 
-     * @see #USER_LAYOUT_LOCATION_FMT
-     */
-    public Resource getUserLayout() {
-
-	if ((this.userLayout == null) && (this.getInitialLayout() != null)) {
-	    final String userHome = System.getProperty("user.home", "/");
-	    final String applicationName = this.getApplication().getName();
-	    final String filename = this.getInitialLayout().getFilename();
-
-	    final String userLayoutLocation = BbVLDockingApplicationPage.USER_LAYOUT_LOCATION_FMT.format(//
-		    new String[] { userHome, applicationName, filename });
-
-	    this.userLayout = this.getApplication().getApplicationContext().getResource(userLayoutLocation);
-	}
-
-	return this.userLayout;
     }
 
     /**
@@ -358,12 +354,12 @@ public class BbVLDockingApplicationPage<T> extends VLDockingApplicationPage {
 	} finally {
 	    this.setInitialLayout(this.getInitialLayout());
 	}
-	
-	// 
-	final Border border = UIManager.getBorder("DockingDesktop.border");
-	if (border != null) {
-	    dockingDesktop.setBorder(border);
-	}
+
+//	// 
+//	final Border border = UIManager.getBorder("DockingDesktop.border");
+//	if (border != null) {
+//	    dockingDesktop.setBorder(border);
+//	}
 
 	return dockingDesktop;
     }

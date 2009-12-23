@@ -137,17 +137,16 @@ public class SubstanceLookAndFeelConfigurer extends UIManagerConfigurer implemen
      */
     public void afterPropertiesSet() throws Exception {
 
-	// TODO, I don't remember why this method is needed
-	for (Map.Entry<String, Resource> entry : this.getImageLocations().entrySet()) {
-	    final String imageKey = entry.getKey();
-
-	    try {
-		final ImageIcon icon = new ImageIcon(entry.getValue().getURL());
-		UIManager.put(imageKey, icon);
-	    } catch (Exception e) {
-		// Nothing to do
-	    }
-	}
+	 for (Map.Entry<String, Resource> entry : this.getImageLocations().entrySet()) {
+	 final String imageKey = entry.getKey();
+	
+	 try {
+	 final ImageIcon icon = new ImageIcon(entry.getValue().getURL());
+	 UIManager.put(imageKey, icon);
+	 } catch (Exception e) {
+	 // Nothing to do
+	 }
+	 }
     }
 
     /**
