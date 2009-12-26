@@ -39,7 +39,7 @@ public class BbDockTabbedPane extends DockTabbedPane {
      */
     public BbDockTabbedPane() {
 
-	super();
+        super();
     }
 
     /**
@@ -48,17 +48,17 @@ public class BbDockTabbedPane extends DockTabbedPane {
     @Override
     public Dockable getDockableAt(int index) {
 
-	Dockable dockable = super.getDockableAt(index);
+        Dockable dockable = super.getDockableAt(index);
 
-	// TODO, (JAF), 20090305, ¿por qué hay que hacer esto?
-	if (dockable == null) {
-	    final Component component = this.getComponentAt(index);
-	    if (component instanceof Dockable) {
-		dockable = (Dockable) component;
-	    }
-	}
+        // TODO, (JAF), 20090305, ¿por qué hay que hacer esto?
+        if (dockable == null) {
+            final Component component = this.getComponentAt(index);
+            if (component instanceof Dockable) {
+                dockable = (Dockable) component;
+            }
+        }
 
-	return dockable;
+        return dockable;
     }
 
     /**
@@ -71,27 +71,27 @@ public class BbDockTabbedPane extends DockTabbedPane {
      */
     public int getIndexForDockable(Dockable dockable) {
 
-	final int rIndex = this.indexOfDockable(dockable);
-	if (rIndex != BbDockTabbedPane.NOT_FOUND) {
-	    return rIndex;
-	}
+        final int rIndex = this.indexOfDockable(dockable);
+        if (rIndex != BbDockTabbedPane.NOT_FOUND) {
+            return rIndex;
+        }
 
-	final int vIndex = this.getAllTabs().indexOf(dockable);
+        final int vIndex = this.getAllTabs().indexOf(dockable);
 
-	// Las posiciones reales
-	final int rBef = this.searchBackward(vIndex);
-	final int rAft = BbDockTabbedPane.NOT_FOUND;
-	final int rCur = BbDockTabbedPane.NOT_FOUND;
-	final int size = this.getTabCount();
-	final int rPos = this.calculatePosition(rBef, rAft, rCur, size);
+        // Las posiciones reales
+        final int rBef = this.searchBackward(vIndex);
+        final int rAft = BbDockTabbedPane.NOT_FOUND;
+        final int rCur = BbDockTabbedPane.NOT_FOUND;
+        final int size = this.getTabCount();
+        final int rPos = this.calculatePosition(rBef, rAft, rCur, size);
 
-	// Si no se ha encontrado la posición real entonces añadir al principio
-	// si es un dockable conocido y al final en caso contrario
-	if (rPos == BbDockTabbedPane.NOT_FOUND) {
-	    return (this.getAllTabs().contains(dockable)) ? 0 : size;
-	}
+        // Si no se ha encontrado la posición real entonces añadir al principio
+        // si es un dockable conocido y al final en caso contrario
+        if (rPos == BbDockTabbedPane.NOT_FOUND) {
+            return (this.getAllTabs().contains(dockable)) ? 0 : size;
+        }
 
-	return rPos;
+        return rPos;
     }
 
     /**
@@ -100,14 +100,14 @@ public class BbDockTabbedPane extends DockTabbedPane {
     @Override
     public int indexOfDockable(Dockable dockable) {
 
-	int index = super.indexOfDockable(dockable);
+        int index = super.indexOfDockable(dockable);
 
-	// TODO, (JAF), 20090305, ¿por qué hay que hacer esto?
-	if (index == BbDockTabbedPane.NOT_FOUND) {
-	    index = super.indexOfComponent(dockable.getComponent());
-	}
+        // TODO, (JAF), 20090305, ¿por qué hay que hacer esto?
+        if (index == BbDockTabbedPane.NOT_FOUND) {
+            index = super.indexOfComponent(dockable.getComponent());
+        }
 
-	return index;
+        return index;
     }
 
     /**
@@ -116,23 +116,23 @@ public class BbDockTabbedPane extends DockTabbedPane {
     @Override
     public void insertTab(String title, Icon icon, Component component, String tip, int index) {
 
-	final Dockable dockable = BbDockTabbedPane.getDockable(component);
+        final Dockable dockable = BbDockTabbedPane.getDockable(component);
 
-	// Si se está añadiendo un tab al final entonces la operación anterior
-	// probablemente haya sido un addTab. En ese caso comprobar si hay una
-	// posición mejor donde insertarlo
-	if ((index == this.getTabCount()) && (dockable != null)) {
-	    index = this.getIndexForDockable(dockable);
-	}
+        // Si se está añadiendo un tab al final entonces la operación anterior
+        // probablemente haya sido un addTab. En ese caso comprobar si hay una
+        // posición mejor donde insertarlo
+        if ((index == this.getTabCount()) && (dockable != null)) {
+            index = this.getIndexForDockable(dockable);
+        }
 
-	// Comprobar si se está moviendo una pestaña
-	final int rFoundAt = (dockable != null) ? this.indexOfDockable(dockable) : BbDockTabbedPane.NOT_FOUND;
-	final int rIndex = ((rFoundAt != BbDockTabbedPane.NOT_FOUND) && (rFoundAt < index)) ? index - 1 : index;
+        // Comprobar si se está moviendo una pestaña
+        final int rFoundAt = (dockable != null) ? this.indexOfDockable(dockable) : BbDockTabbedPane.NOT_FOUND;
+        final int rIndex = ((rFoundAt != BbDockTabbedPane.NOT_FOUND) && (rFoundAt < index)) ? index - 1 : index;
 
-	super.insertTab(title, icon, component, tip, index);
+        super.insertTab(title, icon, component, tip, index);
 
-	// Recordar la posición de ola pestaña
-	this.afterInsertTab(rIndex);
+        // Recordar la posición de ola pestaña
+        this.afterInsertTab(rIndex);
     }
 
     /**
@@ -143,33 +143,33 @@ public class BbDockTabbedPane extends DockTabbedPane {
      */
     protected void afterInsertTab(int rIndex) {
 
-	Assert.isTrue((rIndex >= 0) && (rIndex < this.getTabCount()));
+        Assert.isTrue((rIndex >= 0) && (rIndex < this.getTabCount()));
 
-	final Dockable dockable = this.getDockableAt(rIndex);
+        final Dockable dockable = this.getDockableAt(rIndex);
 
-	if (dockable == null) {
-	    // 20090324, (JAF), sino hay problemas al maximizar
-	    return;
-	}
+        if (dockable == null) {
+            // 20090324, (JAF), sino hay problemas al maximizar
+            return;
+        }
 
-	// Las posiciones virtuales
-	final int vBef = this.getVirtualIndex(rIndex - 1);
-	final int vAft = this.getVirtualIndex(rIndex + 1);
-	final int vCur = this.getVirtualIndex(rIndex);
-	final int size = this.getAllTabs().size();
-	int vPos = this.calculatePosition(vBef, vAft, vCur, size);
-	if (vPos == BbDockTabbedPane.NOT_FOUND) {
-	    vPos = 0;
-	}
+        // Las posiciones virtuales
+        final int vBef = this.getVirtualIndex(rIndex - 1);
+        final int vAft = this.getVirtualIndex(rIndex + 1);
+        final int vCur = this.getVirtualIndex(rIndex);
+        final int size = this.getAllTabs().size();
+        int vPos = this.calculatePosition(vBef, vAft, vCur, size);
+        if (vPos == BbDockTabbedPane.NOT_FOUND) {
+            vPos = 0;
+        }
 
-	// Añadir la pestaña en la posición adecuada
-	this.getAllTabs().add(vPos, dockable);
+        // Añadir la pestaña en la posición adecuada
+        this.getAllTabs().add(vPos, dockable);
 
-	// Eliminar la pestaña duplicada, si es que la hubiese
-	if (vCur != BbDockTabbedPane.NOT_FOUND) {
-	    final int vPosToRemove = (vCur >= vPos) ? vCur + 1 : vCur;
-	    this.getAllTabs().remove(vPosToRemove);
-	}
+        // Eliminar la pestaña duplicada, si es que la hubiese
+        if (vCur != BbDockTabbedPane.NOT_FOUND) {
+            final int vPosToRemove = (vCur >= vPos) ? vCur + 1 : vCur;
+            this.getAllTabs().remove(vPosToRemove);
+        }
     }
 
     /**
@@ -179,7 +179,7 @@ public class BbDockTabbedPane extends DockTabbedPane {
      */
     protected List<Dockable> getAllTabs() {
 
-	return this.allTabs;
+        return this.allTabs;
     }
 
     /**
@@ -197,28 +197,28 @@ public class BbDockTabbedPane extends DockTabbedPane {
      */
     private int calculatePosition(int before, int after, int current, int size) {
 
-	// Comprobar el invariante
-	Assert.isTrue((before == BbDockTabbedPane.NOT_FOUND)//
-		|| (after == BbDockTabbedPane.NOT_FOUND) //
-		|| (before < after));
+        // Comprobar el invariante
+        Assert.isTrue((before == BbDockTabbedPane.NOT_FOUND)//
+                || (after == BbDockTabbedPane.NOT_FOUND) //
+                || (before < after));
 
-	// Convertir after para simplificar los cálculos
-	int positiveAfter = after;
-	if (positiveAfter == BbDockTabbedPane.NOT_FOUND) {
-	    positiveAfter = (size > 0) ? size : 0;
-	}
+        // Convertir after para simplificar los cálculos
+        int positiveAfter = after;
+        if (positiveAfter == BbDockTabbedPane.NOT_FOUND) {
+            positiveAfter = (size > 0) ? size : 0;
+        }
 
-	// Calcular la posición virtual de inserción
-	int pos = BbDockTabbedPane.NOT_FOUND;
-	if ((current != BbDockTabbedPane.NOT_FOUND) && (current > before) && (current < positiveAfter)) {
-	    pos = current;
-	} else if (before != BbDockTabbedPane.NOT_FOUND) {
-	    pos = before + 1;
-	} else if (after != BbDockTabbedPane.NOT_FOUND) {
-	    pos = after;
-	}
+        // Calcular la posición virtual de inserción
+        int pos = BbDockTabbedPane.NOT_FOUND;
+        if ((current != BbDockTabbedPane.NOT_FOUND) && (current > before) && (current < positiveAfter)) {
+            pos = current;
+        } else if (before != BbDockTabbedPane.NOT_FOUND) {
+            pos = before + 1;
+        } else if (after != BbDockTabbedPane.NOT_FOUND) {
+            pos = after;
+        }
 
-	return pos;
+        return pos;
     }
 
     /**
@@ -233,13 +233,13 @@ public class BbDockTabbedPane extends DockTabbedPane {
      */
     private int getRealIndex(int vIndex) {
 
-	if ((vIndex < 0) || (vIndex >= this.getAllTabs().size())) {
-	    return BbDockTabbedPane.NOT_FOUND;
-	}
+        if ((vIndex < 0) || (vIndex >= this.getAllTabs().size())) {
+            return BbDockTabbedPane.NOT_FOUND;
+        }
 
-	final Dockable dockable = this.getAllTabs().get(vIndex);
+        final Dockable dockable = this.getAllTabs().get(vIndex);
 
-	return this.indexOfDockable(dockable);
+        return this.indexOfDockable(dockable);
     }
 
     /**
@@ -253,13 +253,13 @@ public class BbDockTabbedPane extends DockTabbedPane {
      */
     private int getVirtualIndex(int rIndex) {
 
-	if ((rIndex < 0) || (rIndex >= this.getTabCount())) {
-	    return BbDockTabbedPane.NOT_FOUND;
-	}
+        if ((rIndex < 0) || (rIndex >= this.getTabCount())) {
+            return BbDockTabbedPane.NOT_FOUND;
+        }
 
-	final Dockable dockable = this.getDockableAt(rIndex);
+        final Dockable dockable = this.getDockableAt(rIndex);
 
-	return this.getAllTabs().indexOf(dockable);
+        return this.getAllTabs().indexOf(dockable);
     }
 
     /**
@@ -271,14 +271,14 @@ public class BbDockTabbedPane extends DockTabbedPane {
      */
     private int searchBackward(int vIndex) {
 
-	for (int i = vIndex - 1; i >= 0; --i) {
-	    final int pos = this.getRealIndex(i);
-	    if (pos != BbDockTabbedPane.NOT_FOUND) {
-		return pos;
-	    }
-	}
+        for (int i = vIndex - 1; i >= 0; --i) {
+            final int pos = this.getRealIndex(i);
+            if (pos != BbDockTabbedPane.NOT_FOUND) {
+                return pos;
+            }
+        }
 
-	return BbDockTabbedPane.NOT_FOUND;
+        return BbDockTabbedPane.NOT_FOUND;
     }
 
     /**
@@ -290,6 +290,6 @@ public class BbDockTabbedPane extends DockTabbedPane {
      */
     private static Dockable getDockable(Component component) {
 
-	return (component instanceof DockView) ? ((DockView) component).getDockable() : null;
+        return (component instanceof DockView) ? ((DockView) component).getDockable() : null;
     }
 }

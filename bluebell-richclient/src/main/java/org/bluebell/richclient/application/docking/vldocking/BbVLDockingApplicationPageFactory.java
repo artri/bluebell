@@ -41,8 +41,8 @@ public class BbVLDockingApplicationPageFactory<T> extends VLDockingApplicationPa
      */
     public BbVLDockingApplicationPageFactory() {
 
-	super();
-	this.windowsWithListeners = new HashSet<ApplicationWindow>();
+        super();
+        this.windowsWithListeners = new HashSet<ApplicationWindow>();
     }
 
     /**
@@ -61,17 +61,17 @@ public class BbVLDockingApplicationPageFactory<T> extends VLDockingApplicationPa
     @Override
     public ApplicationPage createApplicationPage(ApplicationWindow window, PageDescriptor descriptor) {
 
-	VLDockingApplicationPage page = this.findPage(window, descriptor);
-	if (page == null) {
-	    // Crear y cachear la página.
-	    page = new BbVLDockingApplicationPage<T>(window, descriptor);
-	    this.cachePage(page);
+        VLDockingApplicationPage page = this.findPage(window, descriptor);
+        if (page == null) {
+            // Crear y cachear la página.
+            page = new BbVLDockingApplicationPage<T>(window, descriptor);
+            this.cachePage(page);
 
-	    // Añade los listeners necesarios a la ventana.
-	    this.addPageListenersIfNeeded(window);
-	}
+            // Añade los listeners necesarios a la ventana.
+            this.addPageListenersIfNeeded(window);
+        }
 
-	return page;
+        return page;
     }
 
     /**
@@ -82,29 +82,29 @@ public class BbVLDockingApplicationPageFactory<T> extends VLDockingApplicationPa
      */
     private void addPageListenersIfNeeded(ApplicationWindow window) {
 
-	final Boolean alreadyAdded = this.windowsWithListeners.add(window);
-	if (alreadyAdded) {
-	    window.addPageListener(new PageListener() {
-		/**
-		 * Ocultar el control de la página cuando se cierra.
-		 * 
-		 * @see org.springframework.richclient.application.PageListener#pageClosed(org.springframework.richclient.application.ApplicationPage)
-		 */
-		public void pageClosed(ApplicationPage page) {
+        final Boolean alreadyAdded = this.windowsWithListeners.add(window);
+        if (alreadyAdded) {
+            window.addPageListener(new PageListener() {
+                /**
+                 * Ocultar el control de la página cuando se cierra.
+                 * 
+                 * @see org.springframework.richclient.application.PageListener#pageClosed
+                 */
+                public void pageClosed(ApplicationPage page) {
 
-		    page.getControl().setVisible(Boolean.FALSE);
-		}
+                    page.getControl().setVisible(Boolean.FALSE);
+                }
 
-		/**
-		 * Hacer visible el control de la página cuando se abre.
-		 * 
-		 * @see org.springframework.richclient.application.PageListener#pageOpened(org.springframework.richclient.application.ApplicationPage)
-		 */
-		public void pageOpened(ApplicationPage page) {
+                /**
+                 * Hacer visible el control de la página cuando se abre.
+                 * 
+                 * @see org.springframework.richclient.application.PageListener#pageOpened
+                 */
+                public void pageOpened(ApplicationPage page) {
 
-		    page.getControl().setVisible(Boolean.TRUE);
-		}
-	    });
-	}
+                    page.getControl().setVisible(Boolean.TRUE);
+                }
+            });
+        }
     }
 }

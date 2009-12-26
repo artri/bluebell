@@ -19,6 +19,6 @@ public class BbDockableContainerFactory extends DefaultDockableContainerFactory 
     @Override
     public TabbedDockableContainer createTabbedDockableContainer() {
 
-	return new BbDockTabbedPane();
+        return new BbDockTabbedPane();
     }
 }

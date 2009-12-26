@@ -12,7 +12,6 @@ import junit.framework.TestCase;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.RandomUtils;
-import org.bluebell.richclient.application.docking.vldocking.BbDockTabbedPane;
 
 import com.vlsolutions.swing.docking.DockKey;
 import com.vlsolutions.swing.docking.Dockable;
@@ -31,8 +30,8 @@ public class TestBbDockTabbedPane extends TestCase {
     private static final int SIZE = 5;
 
     static {
-	// Required property for this tests
-	UIManager.put("TabbedDockableContainer.tabPlacement", 1);
+        // Required property for this tests
+        UIManager.put("TabbedDockableContainer.tabPlacement", 1);
     }
 
     /**
@@ -55,7 +54,7 @@ public class TestBbDockTabbedPane extends TestCase {
      */
     public void testSimplestTabInsertion() {
 
-	this.checkCorrectness();
+        this.checkCorrectness();
     }
 
     /**
@@ -79,19 +78,19 @@ public class TestBbDockTabbedPane extends TestCase {
      */
     public void testTabRemovalAndInsertingForeward() {
 
-	// Remove tabs in ascendant order
-	for (int i = 0; i < TestBbDockTabbedPane.SIZE; ++i) {
-	    this.tabbedPane.remove(0);
-	}
+        // Remove tabs in ascendant order
+        for (int i = 0; i < TestBbDockTabbedPane.SIZE; ++i) {
+            this.tabbedPane.remove(0);
+        }
 
-	// Add tabs in ascendant order
-	for (int i = 0; i < TestBbDockTabbedPane.SIZE; ++i) {
+        // Add tabs in ascendant order
+        for (int i = 0; i < TestBbDockTabbedPane.SIZE; ++i) {
 
-	    TestCase.assertEquals(i, this.getIndexForDockable(i));
-	    this.insertTab(this.tabs[i], this.getIndexForDockable(i));
-	}
+            TestCase.assertEquals(i, this.getIndexForDockable(i));
+            this.insertTab(this.tabs[i], this.getIndexForDockable(i));
+        }
 
-	this.checkCorrectness();
+        this.checkCorrectness();
     }
 
     /**
@@ -115,18 +114,18 @@ public class TestBbDockTabbedPane extends TestCase {
      */
     public void testTabRemovalAndInsertingBackward() {
 
-	// Remove tabs in descendant order
-	for (int i = 0; i < TestBbDockTabbedPane.SIZE; ++i) {
-	    this.tabbedPane.remove(this.tabbedPane.getTabCount() - 1);
-	}
+        // Remove tabs in descendant order
+        for (int i = 0; i < TestBbDockTabbedPane.SIZE; ++i) {
+            this.tabbedPane.remove(this.tabbedPane.getTabCount() - 1);
+        }
 
-	// Add tabs in descendant order
-	for (int i = TestBbDockTabbedPane.SIZE - 1; i >= 0; --i) {
-	    TestCase.assertEquals(0, this.getIndexForDockable(i));
-	    this.insertTab(this.tabs[i], this.getIndexForDockable(i));
-	}
+        // Add tabs in descendant order
+        for (int i = TestBbDockTabbedPane.SIZE - 1; i >= 0; --i) {
+            TestCase.assertEquals(0, this.getIndexForDockable(i));
+            this.insertTab(this.tabs[i], this.getIndexForDockable(i));
+        }
 
-	this.checkCorrectness();
+        this.checkCorrectness();
     }
 
     /**
@@ -155,33 +154,33 @@ public class TestBbDockTabbedPane extends TestCase {
      */
     public void testAditionalInsertion() {
 
-	// The attached tabs
-	final Dockable[] aditionalTabs = new Dockable[TestBbDockTabbedPane.SIZE];
-	for (int i = 0; i < TestBbDockTabbedPane.SIZE; ++i) {
-	    aditionalTabs[i] = this.createDockable(i + "bis");
-	}
+        // The attached tabs
+        final Dockable[] aditionalTabs = new Dockable[TestBbDockTabbedPane.SIZE];
+        for (int i = 0; i < TestBbDockTabbedPane.SIZE; ++i) {
+            aditionalTabs[i] = this.createDockable(i + "bis");
+        }
 
-	// Remove tabs in ascendant order
-	for (int i = 0; i < TestBbDockTabbedPane.SIZE; ++i) {
-	    this.tabbedPane.remove(0);
-	}
+        // Remove tabs in ascendant order
+        for (int i = 0; i < TestBbDockTabbedPane.SIZE; ++i) {
+            this.tabbedPane.remove(0);
+        }
 
-	// Add tabs in ascendant order
-	for (int i = 0; i < TestBbDockTabbedPane.SIZE; ++i) {
-	    this.insertTab(aditionalTabs[i], i);
-	}
+        // Add tabs in ascendant order
+        for (int i = 0; i < TestBbDockTabbedPane.SIZE; ++i) {
+            this.insertTab(aditionalTabs[i], i);
+        }
 
-	// Attach tabs in ascendant order
-	for (int i = 0; i < TestBbDockTabbedPane.SIZE; ++i) {
-	    TestCase.assertEquals(i + TestBbDockTabbedPane.SIZE, this.getIndexForDockable(i));
-	    this.insertTab(this.tabs[i], this.getIndexForDockable(i));
-	}
+        // Attach tabs in ascendant order
+        for (int i = 0; i < TestBbDockTabbedPane.SIZE; ++i) {
+            TestCase.assertEquals(i + TestBbDockTabbedPane.SIZE, this.getIndexForDockable(i));
+            this.insertTab(this.tabs[i], this.getIndexForDockable(i));
+        }
 
-	for (int i = 0; i < TestBbDockTabbedPane.SIZE; ++i) {
-	    TestCase.assertEquals(aditionalTabs[i], this.tabbedPane.getComponentAt(i));
+        for (int i = 0; i < TestBbDockTabbedPane.SIZE; ++i) {
+            TestCase.assertEquals(aditionalTabs[i], this.tabbedPane.getComponentAt(i));
 
-	    TestCase.assertEquals(this.tabs[i], this.tabbedPane.getComponentAt(i + TestBbDockTabbedPane.SIZE));
-	}
+            TestCase.assertEquals(this.tabs[i], this.tabbedPane.getComponentAt(i + TestBbDockTabbedPane.SIZE));
+        }
     }
 
     /**
@@ -191,10 +190,10 @@ public class TestBbDockTabbedPane extends TestCase {
      */
     public void testTabRemovalAndInsertingRandom() {
 
-	final int iterations = 10000;
-	for (int i = 0; i < iterations; ++i) {
-	    this.doTestTabRemovalAndInsertingRandom();
-	}
+        final int iterations = 10000;
+        for (int i = 0; i < iterations; ++i) {
+            this.doTestTabRemovalAndInsertingRandom();
+        }
     }
 
     /**
@@ -202,23 +201,23 @@ public class TestBbDockTabbedPane extends TestCase {
      */
     protected void doTestTabRemovalAndInsertingRandom() {
 
-	final List<Integer> removalOrder = new ArrayList<Integer>();
-	final List<Integer> insertionOrder = Arrays.asList(new Integer[] { 0, 1, 2, 3, 4 });
+        final List<Integer> removalOrder = new ArrayList<Integer>();
+        final List<Integer> insertionOrder = Arrays.asList(new Integer[] { 0, 1, 2, 3, 4 });
 
-	// Remove tabs randomly
-	for (int i = 0; i < TestBbDockTabbedPane.SIZE; ++i) {
-	    final int maxValue = TestBbDockTabbedPane.SIZE - i;
-	    removalOrder.add(i, maxValue != 0 ? RandomUtils.nextInt(maxValue) : 0);
-	    this.tabbedPane.remove(removalOrder.get(i));
-	}
+        // Remove tabs randomly
+        for (int i = 0; i < TestBbDockTabbedPane.SIZE; ++i) {
+            final int maxValue = TestBbDockTabbedPane.SIZE - i;
+            removalOrder.add(i, maxValue != 0 ? RandomUtils.nextInt(maxValue) : 0);
+            this.tabbedPane.remove(removalOrder.get(i));
+        }
 
-	// Add tabs randomly
-	Collections.shuffle(insertionOrder);
-	for (int i = 0; i < TestBbDockTabbedPane.SIZE; ++i) {
-	    this.insertTab(this.tabs[insertionOrder.get(i)], this.getIndexForDockable(insertionOrder.get(i)));
-	}
+        // Add tabs randomly
+        Collections.shuffle(insertionOrder);
+        for (int i = 0; i < TestBbDockTabbedPane.SIZE; ++i) {
+            this.insertTab(this.tabs[insertionOrder.get(i)], this.getIndexForDockable(insertionOrder.get(i)));
+        }
 
-	this.checkCorrectness();
+        this.checkCorrectness();
     }
 
     /**
@@ -232,12 +231,12 @@ public class TestBbDockTabbedPane extends TestCase {
     @Override
     protected void setUp() throws Exception {
 
-	this.tabbedPane = new BbDockTabbedPane();
+        this.tabbedPane = new BbDockTabbedPane();
 
-	for (int i = 0; i < TestBbDockTabbedPane.SIZE; ++i) {
-	    this.tabs[i] = this.createDockable(((Integer) i).toString());
-	    this.insertTab(this.tabs[i], i);
-	}
+        for (int i = 0; i < TestBbDockTabbedPane.SIZE; ++i) {
+            this.tabs[i] = this.createDockable(((Integer) i).toString());
+            this.insertTab(this.tabs[i], i);
+        }
     }
 
     /**
@@ -249,9 +248,9 @@ public class TestBbDockTabbedPane extends TestCase {
      */
     private int getIndexForDockable(int i) {
 
-	final int indexForDockable = this.tabbedPane.getIndexForDockable(this.tabs[i]);
+        final int indexForDockable = this.tabbedPane.getIndexForDockable(this.tabs[i]);
 
-	return indexForDockable != -1 ? indexForDockable : 0;
+        return indexForDockable != -1 ? indexForDockable : 0;
     }
 
     /**
@@ -264,7 +263,7 @@ public class TestBbDockTabbedPane extends TestCase {
      */
     private void insertTab(Dockable tab, int position) {
 
-	this.tabbedPane.insertTab(tab.getDockKey().getName(), null, tab.getComponent(), StringUtils.EMPTY, position);
+        this.tabbedPane.insertTab(tab.getDockKey().getName(), null, tab.getComponent(), StringUtils.EMPTY, position);
     }
 
     /**
@@ -272,9 +271,9 @@ public class TestBbDockTabbedPane extends TestCase {
      */
     private void checkCorrectness() {
 
-	for (int i = 0; i < TestBbDockTabbedPane.SIZE; ++i) {
-	    TestCase.assertEquals(i, this.getIndexForDockable(i));
-	}
+        for (int i = 0; i < TestBbDockTabbedPane.SIZE; ++i) {
+            TestCase.assertEquals(i, this.getIndexForDockable(i));
+        }
     }
 
     /**
@@ -286,8 +285,8 @@ public class TestBbDockTabbedPane extends TestCase {
      */
     private Dockable createDockable(String name) {
 
-	final DockKey dockKey = new DockKey(name, name);
+        final DockKey dockKey = new DockKey(name, name);
 
-	return new DockablePanel(new JLabel(name), dockKey);
+        return new DockablePanel(new JLabel(name), dockKey);
     }
 }

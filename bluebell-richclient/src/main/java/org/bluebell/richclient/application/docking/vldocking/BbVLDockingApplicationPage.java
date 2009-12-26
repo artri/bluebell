@@ -49,13 +49,13 @@ public class BbVLDockingApplicationPage<T> extends VLDockingApplicationPage {
      * Message for page creation exceptions.
      */
     private static final MessageFormat PAGE_BUILDING_FAILED_FMT = new MessageFormat(
-	    "Failed to build page with id \"{0}\" using layout \"{1}\"");
+            "Failed to build page with id \"{0}\" using layout \"{1}\"");
 
     /**
      * Message for page closing exception.
      */
     private static final MessageFormat PAGE_CLOSING_FAILED_FMT = new MessageFormat(
-	    "Failed to close page with id \"{0}\" using layout \"{1}\"");
+            "Failed to close page with id \"{0}\" using layout \"{1}\"");
 
     /**
      * Message format for building user layout locations.
@@ -107,7 +107,7 @@ public class BbVLDockingApplicationPage<T> extends VLDockingApplicationPage {
      */
     public BbVLDockingApplicationPage(ApplicationWindow window, PageDescriptor pageDescriptor) {
 
-	super(window, pageDescriptor);
+        super(window, pageDescriptor);
     }
 
     /**
@@ -115,12 +115,12 @@ public class BbVLDockingApplicationPage<T> extends VLDockingApplicationPage {
      */
     public void resetLayout() {
 
-	Assert.state(this.isControlCreated(), "this.isControlCreated() should be true");
+        Assert.state(this.isControlCreated(), "this.isControlCreated() should be true");
 
-	final DockingDesktop dockingDesktop = (DockingDesktop) this.getControl();
+        final DockingDesktop dockingDesktop = (DockingDesktop) this.getControl();
 
-	this.saveLayout(dockingDesktop, this.getUserLayout());
-	this.buildLayout(dockingDesktop, this.getInitialLayout());
+        this.saveLayout(dockingDesktop, this.getUserLayout());
+        this.buildLayout(dockingDesktop, this.getInitialLayout());
     }
 
     /**
@@ -135,33 +135,33 @@ public class BbVLDockingApplicationPage<T> extends VLDockingApplicationPage {
      */
     public void buildLayout(DockingDesktop dockingDesktop, Resource layout) {
 
-	Assert.notNull(dockingDesktop, "dockingDesktop");
+        Assert.notNull(dockingDesktop, "dockingDesktop");
 
-	if (layout == null) {
-	    this.getPageDescriptor().buildInitialLayout(this);
-	    return;
-	}
+        if (layout == null) {
+            this.getPageDescriptor().buildInitialLayout(this);
+            return;
+        }
 
-	try {
-	    // Force an exception if file doesn't exist
-	    layout.getFile();
+        try {
+            // Force an exception if file doesn't exist
+            layout.getFile();
 
-	    // Read layout file
-	    final InputStream in = layout.getInputStream();
-	    dockingDesktop.getContext().readXML(in);
-	    in.close();
+            // Read layout file
+            final InputStream in = layout.getInputStream();
+            dockingDesktop.getContext().readXML(in);
+            in.close();
 
-	} catch (IOException e) {
-	    throw new ApplicationPageException("Error reading workspace layout \"" + layout + "\"", e, this.getId());
-	} catch (SAXException e) {
-	    throw new ApplicationPageException("Error reading workspace layout \"" + layout + "\"", e, this.getId());
-	} catch (ParserConfigurationException e) {
-	    throw new ApplicationPageException("Error reading workspace layout \"" + layout + "\"", e, this.getId());
-	} finally {
-	    if (ArrayUtils.isEmpty(dockingDesktop.getDockables())) {
-		this.getPageDescriptor().buildInitialLayout(this);
-	    }
-	}
+        } catch (IOException e) {
+            throw new ApplicationPageException("Error reading workspace layout \"" + layout + "\"", e, this.getId());
+        } catch (SAXException e) {
+            throw new ApplicationPageException("Error reading workspace layout \"" + layout + "\"", e, this.getId());
+        } catch (ParserConfigurationException e) {
+            throw new ApplicationPageException("Error reading workspace layout \"" + layout + "\"", e, this.getId());
+        } finally {
+            if (ArrayUtils.isEmpty(dockingDesktop.getDockables())) {
+                this.getPageDescriptor().buildInitialLayout(this);
+            }
+        }
     }
 
     /**
@@ -176,22 +176,22 @@ public class BbVLDockingApplicationPage<T> extends VLDockingApplicationPage {
      */
     public void saveLayout(DockingDesktop dockingDesktop, Resource dest) {
 
-	Assert.notNull(dockingDesktop, "dockingDesktop");
+        Assert.notNull(dockingDesktop, "dockingDesktop");
 
-	try {
-	    // Create file if doesn't exist
-	    final File userLayoutFile = dest.getFile();
-	    if (!dest.exists()) {
-		FileUtils.touch(userLayoutFile);
-	    }
+        try {
+            // Create file if doesn't exist
+            final File userLayoutFile = dest.getFile();
+            if (!dest.exists()) {
+                FileUtils.touch(userLayoutFile);
+            }
 
-	    // Write XML
-	    final OutputStream out = new FileOutputStream(userLayoutFile);
-	    dockingDesktop.getContext().writeXML(out);
-	    out.close();
-	} catch (final IOException e) {
-	    throw new ApplicationPageException("Error writing workspace layout \"" + dest + "\"", e, this.getId());
-	}
+            // Write XML
+            final OutputStream out = new FileOutputStream(userLayoutFile);
+            dockingDesktop.getContext().writeXML(out);
+            out.close();
+        } catch (final IOException e) {
+            throw new ApplicationPageException("Error writing workspace layout \"" + dest + "\"", e, this.getId());
+        }
     }
 
     /**
@@ -200,9 +200,9 @@ public class BbVLDockingApplicationPage<T> extends VLDockingApplicationPage {
     @Override
     public String getId() {
 
-	final String id = super.getId();
+        final String id = super.getId();
 
-	return (id != null) ? id : BbVLDockingApplicationPage.PAGE_ID_IF_NULL;
+        return (id != null) ? id : BbVLDockingApplicationPage.PAGE_ID_IF_NULL;
     }
 
     /**
@@ -213,7 +213,7 @@ public class BbVLDockingApplicationPage<T> extends VLDockingApplicationPage {
     @Override
     public boolean close() {
 
-	return this.doClose();
+        return this.doClose();
     }
 
     /**
@@ -222,11 +222,13 @@ public class BbVLDockingApplicationPage<T> extends VLDockingApplicationPage {
     @Override
     public String toString() {
 
-	return new ToStringBuilder(this, ToStringStyle.SIMPLE_STYLE).append("id", this.getId()).toString();
+        return new ToStringBuilder(this, ToStringStyle.SIMPLE_STYLE).append("id", this.getId()).toString();
     }
 
     /**
-     * Creates the control using three attempts in this order:
+     * Creates the control using three attempts.
+     * <p />
+     * It follows this order:
      * <ol>
      * <li>{@link #getLayout()}
      * <li>{@link #getInitialLayout()}
@@ -240,22 +242,22 @@ public class BbVLDockingApplicationPage<T> extends VLDockingApplicationPage {
     @Override
     protected JComponent createControl() {
 
-	final List<Exception> errors = new ArrayList<Exception>();
+        final List<Exception> errors = new ArrayList<Exception>();
 
-	DockingDesktop dockingDesktop = this.doCreateControl(this.getLayout(), errors);
-	if (dockingDesktop == null) {
-	    dockingDesktop = this.doCreateControl(this.getInitialLayout(), errors);
-	}
-	if (dockingDesktop == null) {
-	    dockingDesktop = this.doCreateControl(null, errors);
-	}
-	if (dockingDesktop == null) {
-	    if (!errors.isEmpty()) {
-		throw new ApplicationPageException(errors.get(0), this.getId());
-	    }
-	}
+        DockingDesktop dockingDesktop = this.doCreateControl(this.getLayout(), errors);
+        if (dockingDesktop == null) {
+            dockingDesktop = this.doCreateControl(this.getInitialLayout(), errors);
+        }
+        if (dockingDesktop == null) {
+            dockingDesktop = this.doCreateControl(null, errors);
+        }
+        if (dockingDesktop == null) {
+            if (!errors.isEmpty()) {
+                throw new ApplicationPageException(errors.get(0), this.getId());
+            }
+        }
 
-	return dockingDesktop;
+        return dockingDesktop;
     }
 
     /**
@@ -265,12 +267,12 @@ public class BbVLDockingApplicationPage<T> extends VLDockingApplicationPage {
      */
     protected Resource getLayout() {
 
-	final Resource userLayout = this.getUserLayout();
-	if ((userLayout != null) && userLayout.exists()) {
-	    return userLayout;
-	}
+        final Resource theUserLayout = this.getUserLayout();
+        if ((theUserLayout != null) && theUserLayout.exists()) {
+            return theUserLayout;
+        }
 
-	return this.getInitialLayout();
+        return this.getInitialLayout();
     }
 
     /**
@@ -280,11 +282,11 @@ public class BbVLDockingApplicationPage<T> extends VLDockingApplicationPage {
      */
     protected Resource getInitialLayout() {
 
-	if ((this.initialLayout == null) && (this.getPageDescriptor() instanceof VLDockingPageDescriptor)) {
-	    this.initialLayout = ((VLDockingPageDescriptor) this.getPageDescriptor()).getInitialLayout();
-	}
+        if ((this.initialLayout == null) && (this.getPageDescriptor() instanceof VLDockingPageDescriptor)) {
+            this.initialLayout = ((VLDockingPageDescriptor) this.getPageDescriptor()).getInitialLayout();
+        }
 
-	return this.initialLayout;
+        return this.initialLayout;
     }
 
     /**
@@ -296,21 +298,21 @@ public class BbVLDockingApplicationPage<T> extends VLDockingApplicationPage {
      */
     protected Resource getUserLayout() {
 
-	if ((this.userLayout == null) && (this.getInitialLayout() != null)) {
-	    final String userHome = SystemUtils.getUserHome().getAbsolutePath();
-	    final String applicationName = this.getApplication().getName();
-	    String filename = StringUtils.EMPTY;
-	    if (this.getInitialLayout() != null) {
-		filename = this.getInitialLayout().getFilename();
-	    }
+        if ((this.userLayout == null) && (this.getInitialLayout() != null)) {
+            final String userHome = SystemUtils.getUserHome().getAbsolutePath();
+            final String applicationName = this.getApplication().getName();
+            String filename = StringUtils.EMPTY;
+            if (this.getInitialLayout() != null) {
+                filename = this.getInitialLayout().getFilename();
+            }
 
-	    final String userLayoutLocation = BbVLDockingApplicationPage.USER_LAYOUT_LOCATION_FMT.format(//
-		    new String[] { userHome, applicationName, filename });
+            final String userLayoutLocation = BbVLDockingApplicationPage.USER_LAYOUT_LOCATION_FMT.format(//
+                    new String[] { userHome, applicationName, filename });
 
-	    this.userLayout = new FileSystemResource(userLayoutLocation);
-	}
+            this.userLayout = new FileSystemResource(userLayoutLocation);
+        }
 
-	return this.userLayout;
+        return this.userLayout;
     }
 
     /**
@@ -326,36 +328,37 @@ public class BbVLDockingApplicationPage<T> extends VLDockingApplicationPage {
     @SuppressWarnings("unchecked")
     private DockingDesktop doCreateControl(Resource layout, List<Exception> exceptions) {
 
-	// Recover from previous failures
-	final DockingContext dockingContext = this.getDockingContext();
-	final List<DockingDesktop> dockingDesktops = new ArrayList<DockingDesktop>(dockingContext.getDesktopList());
-	for (final DockingDesktop dockingDesktop : dockingDesktops) {
-	    dockingContext.removeDesktop(dockingDesktop);
-	}
+        // Recover from previous failures
+        final DockingContext dockingContext = this.getDockingContext();
+        final List<DockingDesktop> dockingDesktops = new ArrayList<DockingDesktop>(dockingContext.getDesktopList());
+        for (final DockingDesktop dockingDesktop : dockingDesktops) {
+            dockingContext.removeDesktop(dockingDesktop);
+        }
 
-	// 20091223, HACK, set temporally a null initial layout before calling super and restore the value later.
-	// This will avoid reading the same layout twice.
-	super.setInitialLayout(null);
+        // 20091223, HACK, set temporally a null initial layout before calling
+        // super and restore the value later.
+        // This will avoid reading the same layout twice.
+        super.setInitialLayout(null);
 
-	DockingDesktop dockingDesktop = null;
-	try {
-	    dockingDesktop = (DockingDesktop) super.createControl();
-	    this.buildLayout(dockingDesktop, this.getLayout());
-	} catch (Exception e) {
+        DockingDesktop dockingDesktop = null;
+        try {
+            dockingDesktop = (DockingDesktop) super.createControl();
+            this.buildLayout(dockingDesktop, this.getLayout());
+        } catch (Exception e) {
 
-	    final String resourceDescription = (layout != null) ? layout.getDescription() : StringUtils.EMPTY;
-	    final String message = BbVLDockingApplicationPage.PAGE_BUILDING_FAILED_FMT.format(//
-		    new String[] { this.getPageDescriptor().getId(), resourceDescription });
+            final String resourceDescription = (layout != null) ? layout.getDescription() : StringUtils.EMPTY;
+            final String message = BbVLDockingApplicationPage.PAGE_BUILDING_FAILED_FMT.format(//
+                    new String[] { this.getPageDescriptor().getId(), resourceDescription });
 
-	    BbVLDockingApplicationPage.LOGGER.error(message, e);
+            BbVLDockingApplicationPage.LOGGER.error(message, e);
 
-	    // (JAF), 20090720, register exception to be handled later
-	    exceptions.add(e);
-	} finally {
-	    this.setInitialLayout(this.getInitialLayout());
-	}
+            // (JAF), 20090720, register exception to be handled later
+            exceptions.add(e);
+        } finally {
+            this.setInitialLayout(this.getInitialLayout());
+        }
 
-	return dockingDesktop;
+        return dockingDesktop;
     }
 
     /**
@@ -365,50 +368,54 @@ public class BbVLDockingApplicationPage<T> extends VLDockingApplicationPage {
      */
     private Boolean doClose() {
 
-	// 20090913, (JAF), prevents attemps to close a non existing control (i.e.: on exit command execution after page
-	// creation exception)
-	if (!this.isControlCreated()) {
-	    return Boolean.TRUE;
-	}
+        // 20090913, (JAF), prevents attemps to close a non existing control
+        // (i.e.: on exit command execution after page
+        // creation exception)
+        if (!this.isControlCreated()) {
+            return Boolean.TRUE;
+        }
 
-	// HACK, set temporally a null initial layout before calling super#close and restore the value later.
-	// This will avoid writing the layout twice.
-	super.setInitialLayout(null);
+        // HACK, set temporally a null initial layout before calling super#close
+        // and restore the value later.
+        // This will avoid writing the layout twice.
+        super.setInitialLayout(null);
 
-	final Resource layout = this.getUserLayout();
-	Boolean success = null;
-	try {
-	    this.saveLayout((DockingDesktop) this.getControl(), layout);
-	    success = super.close();
-	} catch (Exception e) {
-	    final String resourceDescription = (layout != null) ? layout.getDescription() : StringUtils.EMPTY;
-	    final String message = BbVLDockingApplicationPage.PAGE_CLOSING_FAILED_FMT.format(//
-		    new String[] { this.getPageDescriptor().getId(), resourceDescription });
+        final Resource layout = this.getUserLayout();
+        Boolean success = null;
+        try {
+            this.saveLayout((DockingDesktop) this.getControl(), layout);
+            success = super.close();
+        } catch (Exception e) {
+            final String resourceDescription = (layout != null) ? layout.getDescription() : StringUtils.EMPTY;
+            final String message = BbVLDockingApplicationPage.PAGE_CLOSING_FAILED_FMT.format(//
+                    new String[] { this.getPageDescriptor().getId(), resourceDescription });
 
-	    BbVLDockingApplicationPage.LOGGER.error(message, e);
-	} finally {
-	    this.setInitialLayout(this.getInitialLayout());
-	}
+            BbVLDockingApplicationPage.LOGGER.error(message, e);
+        } finally {
+            this.setInitialLayout(this.getInitialLayout());
+        }
 
-	return success;
+        return success;
     }
 }
 
 // /**
 // * Modifica el comportamiento de
 // * {@link
-// org.springframework.richclient.application.support.AbstractApplicationPage#createPageComponent(PageComponentDescriptor)}
-// * con el objetivo de cachear los componentes de página creados en función del descriptor.
+// org.springframework.richclient.application.support.AbstractApplicationPage#createPageComponent
+// * con el objetivo de cachear los componentes de página creados en función del
+// descriptor.
 // *
 // * @param descriptor
 // * el descriptor.
 // * @return el componente de página.
 // *
 // * @see
-// org.springframework.richclient.application.support.AbstractApplicationPage#createPageComponent(PageComponentDescriptor)
+// org.springframework.richclient.application.support.AbstractApplicationPage#createPageComponent
 // */
 // @Override
-// protected PageComponent createPageComponent(PageComponentDescriptor descriptor) {
+// protected PageComponent createPageComponent(PageComponentDescriptor
+// descriptor) {
 //
 // // Obtener el componente de la caché
 // PageComponent pageComponent = this.cachedPageComponents.get(descriptor);
@@ -429,7 +436,8 @@ public class BbVLDockingApplicationPage<T> extends VLDockingApplicationPage {
 // * Sobreescribe {@link VLDockingApplicationPage#doAddPageComponent} para que:
 // * <ol>
 // * <li>Sincronice los componentes de la página.
-// * <li>No añada el <em>dockable</em> al <em>desktop</em> si el dockable ya está creado. Este comportamiento es
+// * <li>No añada el <em>dockable</em> al <em>desktop</em> si el dockable ya
+// está creado. Este comportamiento es
 // * erróneo ya que pudiera ser que la página esté cerrada.
 // * </ol>
 // *
@@ -443,10 +451,12 @@ public class BbVLDockingApplicationPage<T> extends VLDockingApplicationPage {
 //
 // super.doAddPageComponent(pageComponent);
 //
-// // HACK, (JAF), 20080417, continue just only if dockable is different from null. In such a case super does not
+// // HACK, (JAF), 20080417, continue just only if dockable is different from
+// null. In such a case super does not
 // // call layout builder
 // final Dockable dockable = this.getDockable(pageComponent);
 // if (dockable != null) {
-// this.getLayoutManager().addDockable(((DockingDesktop) this.getControl()), dockable);
+// this.getLayoutManager().addDockable(((DockingDesktop) this.getControl()),
+// dockable);
 // }
 // }

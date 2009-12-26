@@ -46,7 +46,7 @@ public class FormBackedVLDockingViewDescriptor<T extends AbstractForm> extends V
      * Mensaje asociado a la excepción que se produce si no hay un constructor apropiado.
      */
     private static final MessageFormat NO_CONSTRUCTOR_ERROR_MESSAGE = new MessageFormat(
-	    "No constructor with {0} parameters found");
+            "No constructor with {0} parameters found");
 
     /**
      * Mensaje asociado a la excepción que se produce si no es posible establecer alguna propiedad.
@@ -84,12 +84,12 @@ public class FormBackedVLDockingViewDescriptor<T extends AbstractForm> extends V
      */
     public FormBackedVLDockingViewDescriptor() {
 
-	super();
-	this.setViewClass(FormBackedView.class);
+        super();
+        this.setViewClass(FormBackedView.class);
 
-	// HACK method para obtener el application event multicaster
-	this.applicationEventMulticaster = (ApplicationEventMulticaster) //
-	this.getApplicationContext().getBean(AbstractApplicationContext.APPLICATION_EVENT_MULTICASTER_BEAN_NAME);
+        // HACK method para obtener el application event multicaster
+        this.applicationEventMulticaster = (ApplicationEventMulticaster) //
+        this.getApplicationContext().getBean(AbstractApplicationContext.APPLICATION_EVENT_MULTICASTER_BEAN_NAME);
     }
 
     /**
@@ -99,7 +99,7 @@ public class FormBackedVLDockingViewDescriptor<T extends AbstractForm> extends V
      */
     public Class<T> getFormClass() {
 
-	return this.formClass;
+        return this.formClass;
     }
 
     /**
@@ -115,10 +115,10 @@ public class FormBackedVLDockingViewDescriptor<T extends AbstractForm> extends V
     @SuppressWarnings("unchecked")
     public T instantiateForm() {
 
-	final Class[] parameterTypes = new Class[] {};
-	final Object[] parameterValues = new Object[] {};
+        final Class[] parameterTypes = new Class[] {};
+        final Object[] parameterValues = new Object[] {};
 
-	return this.instantiate(this.getFormClass(), parameterTypes, parameterValues);
+        return this.instantiate(this.getFormClass(), parameterTypes, parameterValues);
     }
 
     /**
@@ -143,10 +143,10 @@ public class FormBackedVLDockingViewDescriptor<T extends AbstractForm> extends V
     @SuppressWarnings("unchecked")
     public T instantiateForm(Object bean, String propertyName) {
 
-	final Class[] parameterTypes = new Class[] { Object.class, String.class };
-	final Object[] parameterValues = new Object[] { bean, propertyName };
+        final Class[] parameterTypes = new Class[] { Object.class, String.class };
+        final Object[] parameterValues = new Object[] { bean, propertyName };
 
-	return this.instantiate(this.getFormClass(), parameterTypes, parameterValues);
+        return this.instantiate(this.getFormClass(), parameterTypes, parameterValues);
     }
 
     /**
@@ -157,7 +157,7 @@ public class FormBackedVLDockingViewDescriptor<T extends AbstractForm> extends V
      */
     public void setBean(Object bean) {
 
-	this.bean = bean;
+        this.bean = bean;
     }
 
     /**
@@ -168,7 +168,7 @@ public class FormBackedVLDockingViewDescriptor<T extends AbstractForm> extends V
      */
     public void setFormClass(Class<T> formClass) {
 
-	this.formClass = formClass;
+        this.formClass = formClass;
     }
 
     /**
@@ -179,7 +179,7 @@ public class FormBackedVLDockingViewDescriptor<T extends AbstractForm> extends V
      */
     public void setFormProperties(Map<String, Object> formProperties) {
 
-	this.formProperties = formProperties;
+        this.formProperties = formProperties;
     }
 
     /**
@@ -190,7 +190,7 @@ public class FormBackedVLDockingViewDescriptor<T extends AbstractForm> extends V
      */
     public void setPropertyName(String propertyName) {
 
-	this.propertyName = propertyName;
+        this.propertyName = propertyName;
     }
 
     /**
@@ -206,11 +206,11 @@ public class FormBackedVLDockingViewDescriptor<T extends AbstractForm> extends V
     @Override
     public final void setViewClass(Class viewClass) {
 
-	if (!FormBackedView.class.isAssignableFrom(viewClass)) {
-	    throw new IllegalArgumentException("FormBackedView is not assignable from " + viewClass);
-	} else {
-	    super.setViewClass(viewClass);
-	}
+        if (!FormBackedView.class.isAssignableFrom(viewClass)) {
+            throw new IllegalArgumentException("FormBackedView is not assignable from " + viewClass);
+        } else {
+            super.setViewClass(viewClass);
+        }
     }
 
     /**
@@ -224,21 +224,21 @@ public class FormBackedVLDockingViewDescriptor<T extends AbstractForm> extends V
     @Override
     protected View createView() {
 
-	// Crear la vista
-	final FormBackedView<T> view = (FormBackedView<T>) super.createView();
+        // Crear la vista
+        final FormBackedView<T> view = (FormBackedView<T>) super.createView();
 
-	// Obtener el formulario y establecer su formulario y accesor.
-	final T form = this.createForm();
-	view.setBackingForm(form);
+        // Obtener el formulario y establecer su formulario y accesor.
+        final T form = this.createForm();
+        view.setBackingForm(form);
 
-	// Se registran listeners para los formularios que implementan el
-	// interface ApplicationListener
-	if (form instanceof ApplicationListener) {
-	    final ApplicationListener applicationListener = (ApplicationListener) form;
-	    this.applicationEventMulticaster.addApplicationListener(applicationListener);
-	}
+        // Se registran listeners para los formularios que implementan el
+        // interface ApplicationListener
+        if (form instanceof ApplicationListener) {
+            final ApplicationListener applicationListener = (ApplicationListener) form;
+            this.applicationEventMulticaster.addApplicationListener(applicationListener);
+        }
 
-	return view;
+        return view;
     }
 
     /**
@@ -257,11 +257,11 @@ public class FormBackedVLDockingViewDescriptor<T extends AbstractForm> extends V
      */
     private T createForm() {
 
-	if ((this.getBean() != null) && (this.getPropertyName() != null)) {
-	    return this.instantiateForm(this.getBean(), this.getPropertyName());
-	} else {
-	    return this.instantiateForm();
-	}
+        if ((this.getBean() != null) && (this.getPropertyName() != null)) {
+            return this.instantiateForm(this.getBean(), this.getPropertyName());
+        } else {
+            return this.instantiateForm();
+        }
     }
 
     /**
@@ -271,7 +271,7 @@ public class FormBackedVLDockingViewDescriptor<T extends AbstractForm> extends V
      */
     private Object getBean() {
 
-	return this.bean;
+        return this.bean;
     }
 
     /**
@@ -281,7 +281,7 @@ public class FormBackedVLDockingViewDescriptor<T extends AbstractForm> extends V
      */
     private Map<String, Object> getFormProperties() {
 
-	return this.formProperties;
+        return this.formProperties;
     }
 
     /**
@@ -291,7 +291,7 @@ public class FormBackedVLDockingViewDescriptor<T extends AbstractForm> extends V
      */
     private String getPropertyName() {
 
-	return this.propertyName;
+        return this.propertyName;
     }
 
     /**
@@ -311,38 +311,40 @@ public class FormBackedVLDockingViewDescriptor<T extends AbstractForm> extends V
     @SuppressWarnings("unchecked")
     private T instantiate(Class<T> clazz, Class[] parameterTypes, Object[] parameterValues) {
 
-	T instance = null;
-	try {
-	    final Constructor<T> constructor = clazz.getConstructor(parameterTypes);
+        T instance = null;
+        try {
+            final Constructor<T> constructor = clazz.getConstructor(parameterTypes);
 
-	    // Instanciar el formulario
-	    instance = (T) BeanUtils.instantiateClass(constructor, parameterValues);
+            // Instanciar el formulario
+            instance = (T) BeanUtils.instantiateClass(constructor, parameterValues);
 
-	    // Establecer las propiedades del formulario
-	    if (this.getFormProperties() != null) {
-		final BeanWrapper wrapper = new BeanWrapperImpl(instance);
-		wrapper.setPropertyValues(this.getFormProperties());
-	    }
-	} catch (final SecurityException e) {
-	    throw new FormInstantiationException(FormBackedVLDockingViewDescriptor.NO_CONSTRUCTOR_ERROR_MESSAGE.format(//
-		    new Object[] { parameterTypes.length }), e, clazz.getName());
-	} catch (final NoSuchMethodException e) {
-	    throw new FormInstantiationException(FormBackedVLDockingViewDescriptor.NO_CONSTRUCTOR_ERROR_MESSAGE.format(//
-		    new Object[] { parameterTypes.length }), clazz.getName());
-	} catch (final BeanInstantiationException e) {
-	    throw new FormInstantiationException(FormBackedVLDockingViewDescriptor.INSTANTIATION_ERROR_MESSAGE, e,
-		    clazz.getName());
-	} catch (final InvalidPropertyException e) {
-	    throw new FormInstantiationException(FormBackedVLDockingViewDescriptor.PROPERTY_ERROR_MESSAGE, e, clazz
-		    .getName());
-	} catch (final PropertyBatchUpdateException e) {
-	    throw new FormInstantiationException(FormBackedVLDockingViewDescriptor.PROPERTY_ERROR_MESSAGE, e, clazz
-		    .getName());
-	} catch (final PropertyAccessException e) {
-	    throw new FormInstantiationException(FormBackedVLDockingViewDescriptor.PROPERTY_ERROR_MESSAGE, e, clazz
-		    .getName());
-	}
+            // Establecer las propiedades del formulario
+            if (this.getFormProperties() != null) {
+                final BeanWrapper wrapper = new BeanWrapperImpl(instance);
+                wrapper.setPropertyValues(this.getFormProperties());
+            }
+        } catch (final SecurityException e) {
+            throw new FormInstantiationException(//
+                    FormBackedVLDockingViewDescriptor.NO_CONSTRUCTOR_ERROR_MESSAGE.format(//
+                            new Object[] { parameterTypes.length }), e, clazz.getName());
+        } catch (final NoSuchMethodException e) {
+            throw new FormInstantiationException(//
+                    FormBackedVLDockingViewDescriptor.NO_CONSTRUCTOR_ERROR_MESSAGE.format(//
+                            new Object[] { parameterTypes.length }), clazz.getName());
+        } catch (final BeanInstantiationException e) {
+            throw new FormInstantiationException(//
+                    FormBackedVLDockingViewDescriptor.INSTANTIATION_ERROR_MESSAGE, e, clazz.getName());
+        } catch (final InvalidPropertyException e) {
+            throw new FormInstantiationException(//
+                    FormBackedVLDockingViewDescriptor.PROPERTY_ERROR_MESSAGE, e, clazz.getName());
+        } catch (final PropertyBatchUpdateException e) {
+            throw new FormInstantiationException(//
+                    FormBackedVLDockingViewDescriptor.PROPERTY_ERROR_MESSAGE, e, clazz.getName());
+        } catch (final PropertyAccessException e) {
+            throw new FormInstantiationException(//
+                    FormBackedVLDockingViewDescriptor.PROPERTY_ERROR_MESSAGE, e, clazz.getName());
+        }
 
-	return instance;
+        return instance;
     }
 }
