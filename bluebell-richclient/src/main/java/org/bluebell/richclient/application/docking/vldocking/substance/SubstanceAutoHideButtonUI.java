@@ -28,7 +28,7 @@ public class SubstanceAutoHideButtonUI extends AutoHideButtonUI {
      */
     public SubstanceAutoHideButtonUI() {
 
-	super();
+        super();
     }
 
     /**
@@ -37,8 +37,8 @@ public class SubstanceAutoHideButtonUI extends AutoHideButtonUI {
     @Override
     public void installUI(JComponent comp) {
 
-	super.installUI(comp);
-	this.installBorder((AutoHideButton) comp);
+        super.installUI(comp);
+        this.installBorder((AutoHideButton) comp);
     }
 
     /**
@@ -50,6 +50,6 @@ public class SubstanceAutoHideButtonUI extends AutoHideButtonUI {
      */
     public static ComponentUI createUI(JComponent c) {
 
-	return SubstanceAutoHideButtonUI.INSTANCE;
+        return SubstanceAutoHideButtonUI.INSTANCE;
     }
 }

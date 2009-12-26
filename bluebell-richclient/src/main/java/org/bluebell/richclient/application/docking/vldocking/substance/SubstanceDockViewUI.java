@@ -45,7 +45,7 @@ public class SubstanceDockViewUI extends DockViewUI implements ActivationAware {
      */
     public SubstanceDockViewUI() {
 
-	super();
+        super();
     }
 
     /**
@@ -54,10 +54,10 @@ public class SubstanceDockViewUI extends DockViewUI implements ActivationAware {
     @Override
     public void installUI(JComponent c) {
 
-	super.installUI(c);
+        super.installUI(c);
 
-	final DockView dockView = (DockView) c;
-	this.activate(dockView, dockView.getTitleBar().isActive());
+        final DockView dockView = (DockView) c;
+        this.activate(dockView, dockView.getTitleBar().isActive());
     }
 
     /**
@@ -66,8 +66,8 @@ public class SubstanceDockViewUI extends DockViewUI implements ActivationAware {
     @Override
     public void uninstallUI(JComponent c) {
 
-	super.uninstallUI(c);
-	c.setBorder(null);
+        super.uninstallUI(c);
+        c.setBorder(null);
     }
 
     /**
@@ -75,10 +75,10 @@ public class SubstanceDockViewUI extends DockViewUI implements ActivationAware {
      */
     public void activate(JComponent target, Boolean active) {
 
-	Assert.isInstanceOf(DockView.class, target, "target");
-	Assert.notNull(active, "active");
+        Assert.isInstanceOf(DockView.class, target, "target");
+        Assert.notNull(active, "active");
 
-	this.installBorder((DockView) target, active);
+        this.installBorder((DockView) target, active);
     }
 
     /**
@@ -87,7 +87,7 @@ public class SubstanceDockViewUI extends DockViewUI implements ActivationAware {
     @Override
     protected void installMaximizedDockableBorder(DockView dockView) {
 
-	this.installBorder(dockView, Boolean.FALSE);
+        this.installBorder(dockView, Boolean.FALSE);
     }
 
     /**
@@ -96,7 +96,7 @@ public class SubstanceDockViewUI extends DockViewUI implements ActivationAware {
     @Override
     protected void installSingleDockableBorder(DockView dockView) {
 
-	this.installBorder(dockView, Boolean.FALSE);
+        this.installBorder(dockView, Boolean.FALSE);
     }
 
     /**
@@ -105,7 +105,7 @@ public class SubstanceDockViewUI extends DockViewUI implements ActivationAware {
     @Override
     protected void installTabbedDockableBorder(DockView dockView) {
 
-	this.installBorder(dockView, Boolean.FALSE);
+        this.installBorder(dockView, Boolean.FALSE);
     }
 
     /**
@@ -120,27 +120,27 @@ public class SubstanceDockViewUI extends DockViewUI implements ActivationAware {
      */
     protected final void installBorder(DockView dockView, Boolean active) {
 
-	final Container parent = dockView.getParent();
+        final Container parent = dockView.getParent();
 
-	final Border border;
-	if (parent instanceof TabbedDockableContainer) {
-	    final Container grandParent = parent.getParent();
-	    if (grandParent instanceof DockingPanel) {
-		border = UIManager.getBorder(VLDockingUtil.activationKey("DockView.maximizedDockableBorder", active));
-	    } else {
-		border = UIManager.getBorder(VLDockingUtil.activationKey("DockView.singleDockableBorder", active));
-	    }
-	} else if (parent instanceof SplitContainer) {
-	    border = UIManager.getBorder(VLDockingUtil.activationKey("DockView.singleDockableBorder", active));
-	} else if (parent instanceof DockingPanel) {
-	    border = UIManager.getBorder(VLDockingUtil.activationKey("DockView.maximizedDockableBorder", active));
-	} else if (parent instanceof JPanel) { // FloatingDialog
-	    border = UIManager.getBorder(VLDockingUtil.activationKey("DockView.singleDockableBorder", active));
-	} else {
-	    border = UIManager.getBorder(VLDockingUtil.activationKey("DockView.maximizedDockableBorder", active));
-	}
+        final Border border;
+        if (parent instanceof TabbedDockableContainer) {
+            final Container grandParent = parent.getParent();
+            if (grandParent instanceof DockingPanel) {
+                border = UIManager.getBorder(VLDockingUtil.activationKey("DockView.maximizedDockableBorder", active));
+            } else {
+                border = UIManager.getBorder(VLDockingUtil.activationKey("DockView.singleDockableBorder", active));
+            }
+        } else if (parent instanceof SplitContainer) {
+            border = UIManager.getBorder(VLDockingUtil.activationKey("DockView.singleDockableBorder", active));
+        } else if (parent instanceof DockingPanel) {
+            border = UIManager.getBorder(VLDockingUtil.activationKey("DockView.maximizedDockableBorder", active));
+        } else if (parent instanceof JPanel) { // FloatingDialog
+            border = UIManager.getBorder(VLDockingUtil.activationKey("DockView.singleDockableBorder", active));
+        } else {
+            border = UIManager.getBorder(VLDockingUtil.activationKey("DockView.maximizedDockableBorder", active));
+        }
 
-	dockView.setBorder(border);
+        dockView.setBorder(border);
     }
 
     /**
@@ -152,6 +152,6 @@ public class SubstanceDockViewUI extends DockViewUI implements ActivationAware {
      */
     public static ComponentUI createUI(JComponent c) {
 
-	return SubstanceDockViewUI.INSTANCE;
+        return SubstanceDockViewUI.INSTANCE;
     }
 }

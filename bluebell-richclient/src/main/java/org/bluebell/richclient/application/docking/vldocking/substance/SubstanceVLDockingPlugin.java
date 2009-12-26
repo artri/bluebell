@@ -31,10 +31,16 @@ import com.vlsolutions.swing.docking.DockableContainerFactory;
  */
 public class SubstanceVLDockingPlugin implements LafComponentPlugin, SkinChangeListener {
 
+    /**
+     * The default margin size.
+     */
     public static final Integer MARGIN_SIZE = 5;
 
     // TODO, explicar el tamaño de los borders
 
+    /**
+     * The default border size.
+     */
     public static final Integer BORDER_SIZE = 1;
 
     /**
@@ -42,7 +48,7 @@ public class SubstanceVLDockingPlugin implements LafComponentPlugin, SkinChangeL
      */
     public SubstanceVLDockingPlugin() {
 
-	super();
+        super();
     }
 
     /**
@@ -50,15 +56,15 @@ public class SubstanceVLDockingPlugin implements LafComponentPlugin, SkinChangeL
      */
     public void skinChanged() {
 
-	DockingPreferencesWidgetExtension.uninstallWidgetDesktopStyle();
+        DockingPreferencesWidgetExtension.uninstallWidgetDesktopStyle();
 
-	// Initialize default VLDocking setup
-	// http://www.vlsolutions.com/en/documentation/docking/tutorial/tutorial8.php
-	DockingPreferencesWidgetExtension.setWidgetDesktopStyle();
-	
-	for (Window window : Window.getWindows()) {
-		SwingUtilities.updateComponentTreeUI(window);
-	}
+        // Initialize default VLDocking setup
+        // http://www.vlsolutions.com/en/documentation/docking/tutorial/tutorial8.php
+        DockingPreferencesWidgetExtension.setWidgetDesktopStyle();
+
+        for (Window window : Window.getWindows()) {
+            SwingUtilities.updateComponentTreeUI(window);
+        }
 
     }
 
@@ -69,27 +75,27 @@ public class SubstanceVLDockingPlugin implements LafComponentPlugin, SkinChangeL
      */
     public Object[] getDefaults(Object mSkin) {
 
-	final SubstanceSkin skin = (SubstanceSkin) mSkin;
+        final SubstanceSkin skin = (SubstanceSkin) mSkin;
 
-	this.reset(skin);
+        this.reset(skin);
 
-	final Map<String, Object> defaultsMap = this.getDefaultsMap(skin);
-	final ArrayList<Object> defaults = new ArrayList<Object>(defaultsMap.size() * 2);
-	for (Map.Entry<String, Object> entry : defaultsMap.entrySet()) {
-	    if (entry.getKey() != null) {
-		defaults.add(entry.getKey());
-		defaults.add(entry.getValue());
-	    }
-	}
+        final Map<String, Object> defaultsMap = this.getDefaultsMap(skin);
+        final ArrayList<Object> defaults = new ArrayList<Object>(defaultsMap.size() * 2);
+        for (Map.Entry<String, Object> entry : defaultsMap.entrySet()) {
+            if (entry.getKey() != null) {
+                defaults.add(entry.getKey());
+                defaults.add(entry.getValue());
+            }
+        }
 
-	return defaults.toArray(new Object[defaults.size()]);
+        return defaults.toArray(new Object[defaults.size()]);
     }
 
     /**
-     * Proceeds according to <a
-     * href="http://www.vlsolutions.com/en/documentation/docking/tutorial/tutorial8.php">VLDocking Tutorial</a>:
+     * Proceeds according to <a href= "http://www.vlsolutions.com/en/documentation/docking/tutorial/tutorial8.php"
+     * >VLDocking Tutorial</a>:
      * <p>
-     * <quote> Please note that to avoid having your own UI settings beeing erased by the default ones, you will have to
+     * <div> Please note that to avoid having your own UI settings beeing erased by the default ones, you will have to
      * follow the pattern :
      * <ol>
      * <li>pre-install the default ui settings in you main() method, or any method prior DockingDesktop usage
@@ -97,18 +103,19 @@ public class SubstanceVLDockingPlugin implements LafComponentPlugin, SkinChangeL
      * </ol>
      * 
      * <pre>
-     * 	public static void main(String[] args){ // first, preload the UI to avoid erasing your own customizations
+     *  public static void main(String[] args){ // first, preload the UI to avoid erasing your own customizations
      * 
-     * 		DockingUISettings.getInstance().installUI(); 
+     *          DockingUISettings.getInstance().installUI(); 
      * 
-     * 		// declare your border
-     * 		Border myBorder = ... 
+     *          // declare your border
+     *          Border myBorder = ... 
      * 
-     * 		// and start customizing...
-     * 		UIManager.put(&quot;DockView.maximizedDockableBorder&quot;, myBorder); ... }
+     *          // and start customizing...
+     *          UIManager.put(&quot;DockView.maximizedDockableBorder&quot;, myBorder); ... }
      * </pre>
      * 
-     * </quote>
+     * </div>
+     * 
      * <p>
      * <b>Note</b> this method is called once so we need to make extra actions at every skin change.
      * 
@@ -118,15 +125,15 @@ public class SubstanceVLDockingPlugin implements LafComponentPlugin, SkinChangeL
      */
     public void initialize() {
 
-	// Change dockable container factory
-	DockableContainerFactory.setFactory(new SubstanceDockableContainerFactory());
+        // Change dockable container factory
+        DockableContainerFactory.setFactory(new SubstanceDockableContainerFactory());
 
-	// Initialize default VLDocking setup
-	// http://www.vlsolutions.com/en/documentation/docking/tutorial/tutorial8.php
-	DockingPreferencesWidgetExtension.setWidgetDesktopStyle();
+        // Initialize default VLDocking setup
+        // http://www.vlsolutions.com/en/documentation/docking/tutorial/tutorial8.php
+        DockingPreferencesWidgetExtension.setWidgetDesktopStyle();
 
-	// Register the skin change listener
-	SubstanceLookAndFeel.registerSkinChangeListener(this);
+        // Register the skin change listener
+        SubstanceLookAndFeel.registerSkinChangeListener(this);
     }
 
     /**
@@ -134,10 +141,10 @@ public class SubstanceVLDockingPlugin implements LafComponentPlugin, SkinChangeL
      */
     public void uninitialize() {
 
-	this.reset(null);
+        this.reset(null);
 
-	// Unregister the skin change listener
-	SubstanceLookAndFeel.unregisterSkinChangeListener(this);
+        // Unregister the skin change listener
+        SubstanceLookAndFeel.unregisterSkinChangeListener(this);
     }
 
     /**
@@ -150,55 +157,59 @@ public class SubstanceVLDockingPlugin implements LafComponentPlugin, SkinChangeL
      */
     protected Map<String, Object> getDefaultsMap(SubstanceSkin skin) {
 
-	if (skin == null) {
-	    skin = SubstanceLookAndFeel.getCurrentSkin();
-	}
-	Assert.notNull(skin, "skin"); // Invariant
+        if (skin == null) {
+            skin = SubstanceLookAndFeel.getCurrentSkin();
+        }
+        Assert.notNull(skin, "skin"); // Invariant
 
-	final Map<String, Object> defaults = new HashMap<String, Object>();
+        final Map<String, Object> defaults = new HashMap<String, Object>();
 
-	final Color shadow = skin.getMainDefaultColorScheme().getDarkColor();
-	final Color highlight = skin.getMainDefaultColorScheme().getLightColor();
-	final Color background = skin.getMainDefaultColorScheme().getBackgroundFillColor();
-	final Color active = skin.getMainActiveColorScheme().getMidColor();
-	final Color inactive = skin.getMainDefaultColorScheme().getMidColor();
+        final Color shadow = skin.getMainDefaultColorScheme().getDarkColor();
+        final Color highlight = skin.getMainDefaultColorScheme().getLightColor();
+        final Color background = skin.getMainDefaultColorScheme().getBackgroundFillColor();
+        final Color active = skin.getMainActiveColorScheme().getMidColor();
+        final Color inactive = skin.getMainDefaultColorScheme().getMidColor();
 
-	// Widget style colors
-	defaults.put(VLDockingUtil.DockingColor.BACKGROUND.getKey(), background);
-	defaults.put(VLDockingUtil.DockingColor.SHADOW.getKey(), shadow);
-	defaults.put(VLDockingUtil.DockingColor.HIGHLIGHT.getKey(), highlight);
-	defaults.put(VLDockingUtil.DockingColor.ACTIVE_WIDGET.getKey(), active);
-	defaults.put(VLDockingUtil.DockingColor.INACTIVE_WIDGET.getKey(), inactive);
+        // Widget style colors
+        defaults.put(VLDockingUtil.DockingColor.BACKGROUND.getKey(), background);
+        defaults.put(VLDockingUtil.DockingColor.SHADOW.getKey(), shadow);
+        defaults.put(VLDockingUtil.DockingColor.HIGHLIGHT.getKey(), highlight);
+        defaults.put(VLDockingUtil.DockingColor.ACTIVE_WIDGET.getKey(), active);
+        defaults.put(VLDockingUtil.DockingColor.INACTIVE_WIDGET.getKey(), inactive);
 
-	// Color properties for detached dockables:
-	// TODO cambiar esto
-	defaults.put("activeCaption", background);
-	defaults.put("inactiveCaption", background);
-	defaults.put("activeCaptionBorder", active);
-	defaults.put("inactiveCaptionBorder", inactive);
+        // Color properties for detached dockables:
+        // TODO cambiar esto
+        defaults.put("activeCaption", background);
+        defaults.put("inactiveCaption", background);
+        defaults.put("activeCaptionBorder", active);
+        defaults.put("inactiveCaptionBorder", inactive);
 
-	// TabbedContainer
-	// Request focus on tab selection, otherwise activation will not be triggered correctly
-	defaults.put("TabbedContainer.requestFocusOnTabSelection", Boolean.TRUE);
+        // TabbedContainer
+        // Request focus on tab selection, otherwise activation will not be
+        // triggered correctly
+        defaults.put("TabbedContainer.requestFocusOnTabSelection", Boolean.TRUE);
 
-	// UI Delegates: must be the latest
-	defaults.put("AutoHideButtonUI", SubstanceAutoHideButtonUI.class.getName());
-	defaults.put("AutoHideExpandPanelUI", SubstanceAutoHideExpandPanelUI.class.getName());
-	defaults.put("DetachedDockViewUI", SubstanceDockViewUI.class.getName());
-	defaults.put("DockViewUI", SubstanceDockViewUI.class.getName());
-	defaults.put("DockViewTitleBarUI", SubstanceDockViewTitleBarUI.class.getName());
-	defaults.put("DockingSplitPaneUI", SubstanceDockingSplitPaneUI.class.getName());
+        // UI Delegates: must be the latest
+        defaults.put("AutoHideButtonUI", SubstanceAutoHideButtonUI.class.getName());
+        defaults.put("AutoHideExpandPanelUI", SubstanceAutoHideExpandPanelUI.class.getName());
+        defaults.put("DetachedDockViewUI", SubstanceDockViewUI.class.getName());
+        defaults.put("DockViewUI", SubstanceDockViewUI.class.getName());
+        defaults.put("DockViewTitleBarUI", SubstanceDockViewTitleBarUI.class.getName());
+        defaults.put("DockingSplitPaneUI", SubstanceDockingSplitPaneUI.class.getName());
 
-	return defaults;
+        return defaults;
     }
 
     /**
+     * Reset changes.
      * 
+     * @param skin
+     *            the skin previous changes applies to.
      */
     private void reset(SubstanceSkin skin) {
 
-	for (String key : this.getDefaultsMap(skin).keySet()) {
-	    UIManager.put(key, null);
-	}
+        for (String key : this.getDefaultsMap(skin).keySet()) {
+            UIManager.put(key, null);
+        }
     }
 }

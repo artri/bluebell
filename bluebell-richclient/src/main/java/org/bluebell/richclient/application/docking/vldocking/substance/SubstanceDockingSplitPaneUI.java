@@ -35,7 +35,7 @@ public class SubstanceDockingSplitPaneUI extends DockingSplitPaneUI {
      */
     public SubstanceDockingSplitPaneUI() {
 
-	super();
+        super();
     }
 
     /**
@@ -44,9 +44,9 @@ public class SubstanceDockingSplitPaneUI extends DockingSplitPaneUI {
     @Override
     public void uninstallUI(JComponent c) {
 
-	super.uninstallUI(c);
+        super.uninstallUI(c);
 
-	c.setBorder(null);
+        c.setBorder(null);
     }
 
     /**
@@ -55,29 +55,31 @@ public class SubstanceDockingSplitPaneUI extends DockingSplitPaneUI {
     @Override
     public void paint(Graphics g, JComponent jc) {
 
-	super.paint(g, jc);
+        super.paint(g, jc);
 
-	// Change border
-	final Border border = UIManager.getBorder("SplitContainer.border");
-	if (!this.existBorderInHierarchy(jc, border)) {
-	    jc.setBorder(border);
-	}
+        // Change border
+        final Border border = UIManager.getBorder("SplitContainer.border");
+        if (!this.existBorderInHierarchy(jc, border)) {
+            jc.setBorder(border);
+        }
     }
 
     /**
      * Creates the default divider.
+     * 
+     * @return the divider.
      */
     public BasicSplitPaneDivider createDefaultDivider() {
 
-	final BasicSplitPaneDivider divider = super.createDefaultDivider();
+        final BasicSplitPaneDivider divider = super.createDefaultDivider();
 
-	// Change background color
-	final Color backgroundColor = DockingColor.BACKGROUND.getColor();
-	if (backgroundColor != null) {
-	    divider.setBackground(backgroundColor);
-	}
+        // Change background color
+        final Color backgroundColor = DockingColor.BACKGROUND.getColor();
+        if (backgroundColor != null) {
+            divider.setBackground(backgroundColor);
+        }
 
-	return divider;
+        return divider;
     }
 
     /**
@@ -91,15 +93,15 @@ public class SubstanceDockingSplitPaneUI extends DockingSplitPaneUI {
      */
     private Boolean existBorderInHierarchy(JComponent jc, Border border) {
 
-	final Container parent = jc.getParent();
+        final Container parent = jc.getParent();
 
-	if (jc.getBorder() == border) {
-	    return Boolean.TRUE;
-	} else if (parent instanceof JComponent) {
-	    return this.existBorderInHierarchy((JComponent) parent, border);
-	} else {
-	    return Boolean.FALSE;
-	}
+        if (jc.getBorder() == border) {
+            return Boolean.TRUE;
+        } else if (parent instanceof JComponent) {
+            return this.existBorderInHierarchy((JComponent) parent, border);
+        } else {
+            return Boolean.FALSE;
+        }
     }
 
     /**
@@ -111,6 +113,6 @@ public class SubstanceDockingSplitPaneUI extends DockingSplitPaneUI {
      */
     public static ComponentUI createUI(JComponent c) {
 
-	return new SubstanceDockingSplitPaneUI();
+        return new SubstanceDockingSplitPaneUI();
     }
 }

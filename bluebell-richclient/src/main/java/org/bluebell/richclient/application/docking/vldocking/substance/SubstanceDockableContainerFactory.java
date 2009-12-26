@@ -24,12 +24,12 @@ public class SubstanceDockableContainerFactory extends BbDockableContainerFactor
      */
     public FloatingDockableContainer createFloatingDockableContainer(Window owner) {
 
-	final Boolean defaultLookAndFeelDecorated = JDialog.isDefaultLookAndFeelDecorated();
+        final Boolean defaultLookAndFeelDecorated = JDialog.isDefaultLookAndFeelDecorated();
 
-	JDialog.setDefaultLookAndFeelDecorated(Boolean.FALSE);
-	final FloatingDockableContainer floatingDockableContainer = super.createFloatingDockableContainer(owner);
-	JDialog.setDefaultLookAndFeelDecorated(defaultLookAndFeelDecorated);
+        JDialog.setDefaultLookAndFeelDecorated(Boolean.FALSE);
+        final FloatingDockableContainer floatingDockableContainer = super.createFloatingDockableContainer(owner);
+        JDialog.setDefaultLookAndFeelDecorated(defaultLookAndFeelDecorated);
 
-	return floatingDockableContainer;
+        return floatingDockableContainer;
     }
 }

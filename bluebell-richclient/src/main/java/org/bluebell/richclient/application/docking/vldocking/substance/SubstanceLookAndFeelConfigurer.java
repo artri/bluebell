@@ -36,25 +36,30 @@ import org.springframework.util.Assert;
  * The simplest configuration requires the following bean in the startup aplication context:
  * 
  * <pre>
- * 	&lt;bean id=&quot;substanceLookAndFeelConfigurer&quot; class=&quot;org.bluebell.richclient.application.config.SubstanceLookAndFeelConfigurer&quot; &gt;
- * 		&lt;constructor-arg index=&quot;0&quot; value=&quot;org.jvnet.substance.skin.SubstanceCremeCoffeeLookAndFeel&quot;/&gt;
- * 	&lt;/bean&gt;
- * &lt;p&gt;
+ *      &lt;bean id=&quot;substanceLookAndFeelConfigurer&quot; 
+ *              class=&quot;org.bluebell.richclient.application.config.SubstanceLookAndFeelConfigurer&quot; &gt;
+ *              &lt;constructor-arg index=&quot;0&quot; 
+ *              value=&quot;org.jvnet.substance.skin.SubstanceCremeCoffeeLookAndFeel&quot;/&gt;
+ *      &lt;/bean&gt;
+ * </pre>
+ * 
  * However is better to define the following beans in the startup application context:
  * 
- * &lt;pre&gt;
- * 	&lt;aop:aspectj-autoproxy/&gt; 
+ * <pre>
+ *      &lt;aop:aspectj-autoproxy/&gt; 
  * 
- * 	&lt;bean id=&quot;splashScreen&quot;
- * 		class=&quot;org.springframework.richclient.application.splash.ProgressSplashScreen&quot; /&gt;
+ *      &lt;bean id=&quot;splashScreen&quot;
+ *              class=&quot;org.springframework.richclient.application.splash.ProgressSplashScreen&quot; /&gt;
  * 
- * 	&lt;util:property-path id=&quot;progressMonitor&quot; path=&quot;splashScreen.progressMonitor&quot;/&gt;
+ *      &lt;util:property-path id=&quot;progressMonitor&quot; path=&quot;splashScreen.progressMonitor&quot;/&gt;
  * 
- * 	&lt;bean id=&quot;substanceLookAndFeelConfigurer&quot; class=&quot;org.bluebell.richclient.application.config.SubstanceLookAndFeelConfigurer&quot;
- * 		p:proxy-bean-ref=&quot;progressMonitor&quot;&gt;
- * 		&lt;constructor-arg index=&quot;0&quot; value=&quot;org.jvnet.substance.skin.SubstanceCremeCoffeeLookAndFeel&quot;/&gt;
- * 	&lt;/bean&gt;
- * &lt;/pre&gt;
+ *      &lt;bean id=&quot;substanceLookAndFeelConfigurer&quot; 
+ *              class=&quot;org.bluebell.richclient.application.config.SubstanceLookAndFeelConfigurer&quot;
+ *              p:proxy-bean-ref=&quot;progressMonitor&quot;&gt;
+ *              &lt;constructor-arg index=&quot;0&quot; 
+ *              value=&quot;org.jvnet.substance.skin.SubstanceCremeCoffeeLookAndFeel&quot;/&gt;
+ *      &lt;/bean&gt;
+ * </pre>
  * <p>
  * The extra beans are needed to intercept progress monitor operations and execute them into the Event Dispatcher
  * Thread. Since progress monitor is not a bean an additional work is needed in order to intercept invocations:
@@ -92,8 +97,8 @@ public class SubstanceLookAndFeelConfigurer extends UIManagerConfigurer implemen
      */
     public SubstanceLookAndFeelConfigurer(String lookAndFeelName) {
 
-	super();
-	this.setLookAndFeel(lookAndFeelName);
+        super();
+        this.setLookAndFeel(lookAndFeelName);
     }
 
     /**
@@ -102,16 +107,16 @@ public class SubstanceLookAndFeelConfigurer extends UIManagerConfigurer implemen
     @Override
     public void setLookAndFeel(final String className) {
 
-	if (SwingUtilities.isEventDispatchThread()) {
-	    super.setLookAndFeel(className);
-	} else {
-	    EventQueue.invokeLater(new Runnable() {
-		public void run() {
+        if (SwingUtilities.isEventDispatchThread()) {
+            super.setLookAndFeel(className);
+        } else {
+            EventQueue.invokeLater(new Runnable() {
+                public void run() {
 
-		    SubstanceLookAndFeelConfigurer.super.setLookAndFeel(className);
-		}
-	    });
-	}
+                    SubstanceLookAndFeelConfigurer.super.setLookAndFeel(className);
+                }
+            });
+        }
     }
 
     /**
@@ -120,16 +125,16 @@ public class SubstanceLookAndFeelConfigurer extends UIManagerConfigurer implemen
     @Override
     public void setLookAndFeelWithName(final String lookAndFeelName) {
 
-	if (SwingUtilities.isEventDispatchThread()) {
-	    super.setLookAndFeelWithName(lookAndFeelName);
-	} else {
-	    EventQueue.invokeLater(new Runnable() {
-		public void run() {
+        if (SwingUtilities.isEventDispatchThread()) {
+            super.setLookAndFeelWithName(lookAndFeelName);
+        } else {
+            EventQueue.invokeLater(new Runnable() {
+                public void run() {
 
-		    SubstanceLookAndFeelConfigurer.super.setLookAndFeelWithName(lookAndFeelName);
-		}
-	    });
-	}
+                    SubstanceLookAndFeelConfigurer.super.setLookAndFeelWithName(lookAndFeelName);
+                }
+            });
+        }
     }
 
     /**
@@ -137,16 +142,17 @@ public class SubstanceLookAndFeelConfigurer extends UIManagerConfigurer implemen
      */
     public void afterPropertiesSet() throws Exception {
 
-	 for (Map.Entry<String, Resource> entry : this.getImageLocations().entrySet()) {
-	 final String imageKey = entry.getKey();
-	
-	 try {
-	 final ImageIcon icon = new ImageIcon(entry.getValue().getURL());
-	 UIManager.put(imageKey, icon);
-	 } catch (Exception e) {
-	 // Nothing to do
-	 }
-	 }
+        for (Map.Entry<String, Resource> entry : this.getImageLocations().entrySet()) {
+            final String imageKey = entry.getKey();
+
+            try {
+                final ImageIcon icon = new ImageIcon(entry.getValue().getURL());
+                UIManager.put(imageKey, icon);
+            } catch (Exception e) {
+                new String("Avoid CS warnings");
+                // Nothing to do
+            }
+        }
     }
 
     /**
@@ -156,7 +162,7 @@ public class SubstanceLookAndFeelConfigurer extends UIManagerConfigurer implemen
      */
     public Map<String, Resource> getImageLocations() {
 
-	return this.imageLocations;
+        return this.imageLocations;
     }
 
     /**
@@ -167,9 +173,9 @@ public class SubstanceLookAndFeelConfigurer extends UIManagerConfigurer implemen
      */
     public void setImageLocations(Map<String, Resource> imageLocations) {
 
-	Assert.notNull(imageLocations, "imageLocations");
+        Assert.notNull(imageLocations, "imageLocations");
 
-	this.imageLocations = imageLocations;
+        this.imageLocations = imageLocations;
     }
 
     /**
@@ -180,9 +186,9 @@ public class SubstanceLookAndFeelConfigurer extends UIManagerConfigurer implemen
      */
     public void setProgressMonitorProxyBean(Object progressMonitorProxyBean) {
 
-	Assert.notNull(progressMonitorProxyBean, "progressMonitorProxyBean");
+        Assert.notNull(progressMonitorProxyBean, "progressMonitorProxyBean");
 
-	this.progressMonitorProxyBean = progressMonitorProxyBean;
+        this.progressMonitorProxyBean = progressMonitorProxyBean;
     }
 
     /**
@@ -200,7 +206,8 @@ public class SubstanceLookAndFeelConfigurer extends UIManagerConfigurer implemen
      * <p>
      * This method does nothing.
      */
-    @Pointcut("execution(* org.springframework.richclient.application.splash.MonitoringSplashScreen.getProgressMonitor(..))")
+    @Pointcut("execution(* org.springframework.richclient.application.splash.MonitoringSplashScreen."
+            + "getProgressMonitor(..))")
     protected final void monitoringSplashScreenGetProgressMonitorOperation() {
 
     }
@@ -227,30 +234,30 @@ public class SubstanceLookAndFeelConfigurer extends UIManagerConfigurer implemen
     @Around("progressMonitorOperation()")
     protected final Object doInEventDispatcherThread(final ProceedingJoinPoint pjp) throws Throwable {
 
-	final Object[] returnValue = new Object[1];
-	final Throwable[] throwable = new Throwable[1];
+        final Object[] returnValue = new Object[1];
+        final Throwable[] throwable = new Throwable[1];
 
-	if (SwingUtilities.isEventDispatchThread()) {
-	    returnValue[0] = pjp.proceed();
-	} else {
-	    EventQueue.invokeAndWait(new Runnable() {
-		public void run() {
+        if (SwingUtilities.isEventDispatchThread()) {
+            returnValue[0] = pjp.proceed();
+        } else {
+            EventQueue.invokeAndWait(new Runnable() {
+                public void run() {
 
-		    try {
-			returnValue[0] = pjp.proceed();
-		    } catch (final Throwable e) {
-			throwable[0] = e;
-		    }
-		}
-	    });
-	}
+                    try {
+                        returnValue[0] = pjp.proceed();
+                    } catch (final Throwable e) {
+                        throwable[0] = e;
+                    }
+                }
+            });
+        }
 
-	// Re-throw throwable
-	if (throwable[0] != null) {
-	    throw throwable[0];
-	}
+        // Re-throw throwable
+        if (throwable[0] != null) {
+            throw throwable[0];
+        }
 
-	return returnValue[0];
+        return returnValue[0];
     }
 
     /**
@@ -268,9 +275,9 @@ public class SubstanceLookAndFeelConfigurer extends UIManagerConfigurer implemen
     @Around("monitoringSplashScreenGetProgressMonitorOperation()")
     protected final Object replaceProgressMonitorAdvice(final ProceedingJoinPoint pjp) throws Throwable {
 
-	final Object returnValue = this.doInEventDispatcherThread(pjp);
+        final Object returnValue = this.doInEventDispatcherThread(pjp);
 
-	return (this.getProgressMonitorProxyBean() != null) ? this.getProgressMonitorProxyBean() : returnValue;
+        return (this.getProgressMonitorProxyBean() != null) ? this.getProgressMonitorProxyBean() : returnValue;
     }
 
     /**
@@ -284,57 +291,57 @@ public class SubstanceLookAndFeelConfigurer extends UIManagerConfigurer implemen
     @Around("splashScreenOperation()")
     protected final void splashAdvice(final ProceedingJoinPoint pjp) throws Throwable {
 
-	final Boolean defaultLookAndFeelDecorated = JFrame.isDefaultLookAndFeelDecorated();
-	JFrame.setDefaultLookAndFeelDecorated(Boolean.FALSE);
-	pjp.proceed();
-	JFrame.setDefaultLookAndFeelDecorated(defaultLookAndFeelDecorated);
+        final Boolean defaultLookAndFeelDecorated = JFrame.isDefaultLookAndFeelDecorated();
+        JFrame.setDefaultLookAndFeelDecorated(Boolean.FALSE);
+        pjp.proceed();
+        JFrame.setDefaultLookAndFeelDecorated(defaultLookAndFeelDecorated);
     }
 
     /**
      * {@inheritDoc}
      * <p>
-     * <quote>Proceeds according to <a href="https://substance.dev.java.net/docs/faq.html">Substance FAQ</a>:
+     * Proceeds according to <a href="https://substance.dev.java.net/docs/faq.html">Substance FAQ</a>:
      * <p>
      * <dl>
-     * <dt>Question 16: How do i make Substance to paint the title panes?</dt>
+     * <dt>Question 16: How do i make Substance to paint the title panes?
      * <dd>In case you wish to use cross-platform frame and dialog decorations, use the following before you instantiate
      * your first top-level window: <code>JFrame.setDefaultLookAndFeelDecorated(true);</code> and
      * <code>JDialog.setDefaultLookAndFeelDecorated(true);</code>. This, however, causes flicker on resize due to a
      * known Swing bug. For Windows, there is a workaround, using
      * <code>System.setProperty("sun.awt.noerasebackground", "true");</code>. You can set this property along with the
-     * above two lines.</dd>
+     * above two lines.
      * </dl>
-     * </quote>
+     * 
      */
     @Override
     protected void doInstallCustomDefaults() throws Exception {
 
-	// https://substance.dev.java.net/docs/faq.html
-	JFrame.setDefaultLookAndFeelDecorated(Boolean.TRUE);
-	JDialog.setDefaultLookAndFeelDecorated(Boolean.TRUE);
-	System.setProperty("sun.awt.noerasebackground", "true");
+        // https://substance.dev.java.net/docs/faq.html
+        JFrame.setDefaultLookAndFeelDecorated(Boolean.TRUE);
+        JDialog.setDefaultLookAndFeelDecorated(Boolean.TRUE);
+        System.setProperty("sun.awt.noerasebackground", "true");
 
-	// LafWidget
-	UIManager.put(LafWidget.AUTO_SCROLL, Boolean.TRUE);
-	UIManager.put(LafWidget.COMPONENT_PREVIEW_PAINTER, new DefaultPreviewPainter());
-	UIManager.put(LafWidget.TABBED_PANE_PREVIEW_PAINTER, new DefaultTabPreviewPainter() {
-	    @Override
-	    public TabOverviewKind getOverviewKind(JTabbedPane tabPane) {
+        // LafWidget
+        UIManager.put(LafWidget.AUTO_SCROLL, Boolean.TRUE);
+        UIManager.put(LafWidget.COMPONENT_PREVIEW_PAINTER, new DefaultPreviewPainter());
+        UIManager.put(LafWidget.TABBED_PANE_PREVIEW_PAINTER, new DefaultTabPreviewPainter() {
+            @Override
+            public TabOverviewKind getOverviewKind(JTabbedPane tabPane) {
 
-		return TabOverviewKind.ROUND_CAROUSEL;
-	    }
-	});
+                return TabOverviewKind.ROUND_CAROUSEL;
+            }
+        });
 
-	// Substance
-	UIManager.put(SubstanceLookAndFeel.SHOW_EXTRA_WIDGETS, Boolean.TRUE);
-	UIManager.put(SubstanceLookAndFeel.PASSWORD_ECHO_PER_CHAR, 2);
-	UIManager.put(SubstanceLookAndFeel.TABBED_PANE_CONTENT_BORDER_KIND, TabContentPaneBorderKind.SINGLE_PLACEMENT);
-	UIManager.put(SubstanceLookAndFeel.TABBED_PANE_CLOSE_BUTTONS_PROPERTY, Boolean.FALSE);
+        // Substance
+        UIManager.put(SubstanceLookAndFeel.SHOW_EXTRA_WIDGETS, Boolean.TRUE);
+        UIManager.put(SubstanceLookAndFeel.PASSWORD_ECHO_PER_CHAR, 2);
+        UIManager.put(SubstanceLookAndFeel.TABBED_PANE_CONTENT_BORDER_KIND, TabContentPaneBorderKind.SINGLE_PLACEMENT);
+        UIManager.put(SubstanceLookAndFeel.TABBED_PANE_CLOSE_BUTTONS_PROPERTY, Boolean.FALSE);
 
-	// Fade
-	FadeConfigurationManager.getInstance().allowFades(FadeKind.GHOSTING_BUTTON_PRESS);
-	FadeConfigurationManager.getInstance().allowFades(FadeKind.GHOSTING_ICON_ROLLOVER);
-	FadeConfigurationManager.getInstance().allowFades(FadeKind.SELECTION);
+        // Fade
+        FadeConfigurationManager.getInstance().allowFades(FadeKind.GHOSTING_BUTTON_PRESS);
+        FadeConfigurationManager.getInstance().allowFades(FadeKind.GHOSTING_ICON_ROLLOVER);
+        FadeConfigurationManager.getInstance().allowFades(FadeKind.SELECTION);
     }
 
     /**
@@ -344,6 +351,6 @@ public class SubstanceLookAndFeelConfigurer extends UIManagerConfigurer implemen
      */
     private Object getProgressMonitorProxyBean() {
 
-	return this.progressMonitorProxyBean;
+        return this.progressMonitorProxyBean;
     }
 }

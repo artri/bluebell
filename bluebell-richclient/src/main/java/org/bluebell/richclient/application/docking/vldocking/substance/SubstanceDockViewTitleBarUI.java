@@ -47,7 +47,7 @@ public class SubstanceDockViewTitleBarUI extends DockViewTitleBarUI implements A
      */
     public SubstanceDockViewTitleBarUI(DockViewTitleBar tb) {
 
-	super(tb);
+        super(tb);
     }
 
     /**
@@ -58,9 +58,9 @@ public class SubstanceDockViewTitleBarUI extends DockViewTitleBarUI implements A
     @Override
     public void installUI(JComponent c) {
 
-	super.installUI(c);
+        super.installUI(c);
 
-	SubstanceLookAndFeel.setDecorationType(c, DecorationAreaType.SECONDARY_TITLE_PANE);
+        SubstanceLookAndFeel.setDecorationType(c, DecorationAreaType.SECONDARY_TITLE_PANE);
     }
 
     /**
@@ -69,9 +69,9 @@ public class SubstanceDockViewTitleBarUI extends DockViewTitleBarUI implements A
     @Override
     public void uninstallUI(JComponent c) {
 
-	super.uninstallUI(c);
+        super.uninstallUI(c);
 
-	SubstanceLookAndFeel.setDecorationType(c, DecorationAreaType.NONE);
+        SubstanceLookAndFeel.setDecorationType(c, DecorationAreaType.NONE);
     }
 
     /**
@@ -82,8 +82,9 @@ public class SubstanceDockViewTitleBarUI extends DockViewTitleBarUI implements A
      */
     @Override
     public void paint(Graphics g, JComponent c) {
-    
-        this.installLabel(); // Re-install label in order to support font resizing
+
+        this.installLabel(); // Re-install label in order to support font
+        // resizing
         this.installBackground();
     }
 
@@ -93,32 +94,32 @@ public class SubstanceDockViewTitleBarUI extends DockViewTitleBarUI implements A
     @Override
     public void propertyChange(PropertyChangeEvent e) {
 
-	if ("active".equals(e.getPropertyName())) {
+        if ("active".equals(e.getPropertyName())) {
 
-	    final Boolean active = (Boolean) e.getNewValue();
-	    final Dockable dockable = this.titleBar.getDockable();
+            final Boolean active = (Boolean) e.getNewValue();
+            final Dockable dockable = this.titleBar.getDockable();
 
-	    this.repaintDockable(dockable, active);
-	} else {
-	    super.propertyChange(e);
-	}
+            this.repaintDockable(dockable, active);
+        } else {
+            super.propertyChange(e);
+        }
     }
 
     /**
      * {@inheritDoc}
      */
     public void activate(JComponent target, Boolean active) {
-    
+
         final DockViewTitleBar dockViewTitleBar = (DockViewTitleBar) target;
-    
+
         final SubstanceSkin skin = SubstanceCoreUtilities.getSkin(dockViewTitleBar);
         if (skin != null) {
-    
+
             final Color color;
             if (active) {
-        	color = VLDockingUtil.DockingColor.ACTIVE_WIDGET.getColor();
+                color = VLDockingUtil.DockingColor.ACTIVE_WIDGET.getColor();
             } else {
-        	color = VLDockingUtil.DockingColor.INACTIVE_WIDGET.getColor();
+                color = VLDockingUtil.DockingColor.INACTIVE_WIDGET.getColor();
             }
             dockViewTitleBar.setBackground(color);
         }
@@ -132,7 +133,7 @@ public class SubstanceDockViewTitleBarUI extends DockViewTitleBarUI implements A
     @Override
     protected void installBackground() {
 
-	this.activate(this.titleBar, this.titleBar.isActive());
+        this.activate(this.titleBar, this.titleBar.isActive());
     }
 
     /**
@@ -145,19 +146,19 @@ public class SubstanceDockViewTitleBarUI extends DockViewTitleBarUI implements A
      */
     private void repaintDockable(Dockable dockable, Boolean active) {
 
-	final DockableContainer dockableContainer = DockingUtilities.findSingleDockableContainer(dockable);
+        final DockableContainer dockableContainer = DockingUtilities.findSingleDockableContainer(dockable);
 
-	if ((dockableContainer != null) && (dockableContainer instanceof JComponent)) {
-	    final JComponent jComponent = (JComponent) dockableContainer;
-	    final ComponentUI componentUI = UIManager.getUI(jComponent);
+        if ((dockableContainer != null) && (dockableContainer instanceof JComponent)) {
+            final JComponent jComponent = (JComponent) dockableContainer;
+            final ComponentUI componentUI = UIManager.getUI(jComponent);
 
-	    if (componentUI instanceof ActivationAware) {
-		final ActivationAware activationAware = (ActivationAware) componentUI;
+            if (componentUI instanceof ActivationAware) {
+                final ActivationAware activationAware = (ActivationAware) componentUI;
 
-		activationAware.activate(jComponent, active);
-		jComponent.repaint();
-	    }
-	}
+                activationAware.activate(jComponent, active);
+                jComponent.repaint();
+            }
+        }
     }
 
     /**
@@ -169,6 +170,6 @@ public class SubstanceDockViewTitleBarUI extends DockViewTitleBarUI implements A
      */
     public static SubstanceDockViewTitleBarUI createUI(JComponent tb) {
 
-	return new SubstanceDockViewTitleBarUI((DockViewTitleBar) tb);
+        return new SubstanceDockViewTitleBarUI((DockViewTitleBar) tb);
     }
 }

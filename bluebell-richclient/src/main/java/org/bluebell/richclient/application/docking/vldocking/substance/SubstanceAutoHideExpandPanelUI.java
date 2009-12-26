@@ -40,36 +40,37 @@ public class SubstanceAutoHideExpandPanelUI extends AutoHideExpandPanelUI implem
     /**
      * The singleton UI instance.
      */
-    private static SubstanceAutoHideExpandPanelUI INSTANCE = new SubstanceAutoHideExpandPanelUI();
+    private static final SubstanceAutoHideExpandPanelUI INSTANCE = new SubstanceAutoHideExpandPanelUI();
 
     /**
      * The field "content" from <code>AutoHideExpandPanel</code>.
      */
     private static final Field CONTENT_FIELD = ReflectionUtils.findField(//
-	    AutoHideExpandPanel.class, "content", JPanel.class);
+            AutoHideExpandPanel.class, "content", JPanel.class);
 
     /**
      * The field "selectedButton" from <code>AutoHideExpandPanel</code>.
      */
-    private static final Field SELECTED_BUTTON_FIELD = ReflectionUtils.findField(//
-	    AutoHideExpandPanel.class, "selectedButton", AutoHideButton.class);
+    private static final Field SELECTED_BUTTON_FIELD = ReflectionUtils.findField(
+    //
+            AutoHideExpandPanel.class, "selectedButton", AutoHideButton.class);
 
     static {
-	ReflectionUtils.makeAccessible(SubstanceAutoHideExpandPanelUI.CONTENT_FIELD);
-	ReflectionUtils.makeAccessible(SubstanceAutoHideExpandPanelUI.SELECTED_BUTTON_FIELD);
+        ReflectionUtils.makeAccessible(SubstanceAutoHideExpandPanelUI.CONTENT_FIELD);
+        ReflectionUtils.makeAccessible(SubstanceAutoHideExpandPanelUI.SELECTED_BUTTON_FIELD);
     }
 
     /**
      * Ancestor listener used to install borders.
      */
-    protected ViewAncestorListener ancestorListener = new ViewAncestorListener();
+    private ViewAncestorListener ancestorListener = new ViewAncestorListener();
 
     /**
      * Creates the UI.
      */
     public SubstanceAutoHideExpandPanelUI() {
 
-	super();
+        super();
     }
 
     /**
@@ -77,10 +78,10 @@ public class SubstanceAutoHideExpandPanelUI extends AutoHideExpandPanelUI implem
      */
     public void activate(JComponent target, Boolean active) {
 
-	Assert.isInstanceOf(AutoHideExpandPanel.class, target, "target");
-	Assert.notNull(active, "active");
+        Assert.isInstanceOf(AutoHideExpandPanel.class, target, "target");
+        Assert.notNull(active, "active");
 
-	this.installBorder((AutoHideExpandPanel) target, active);
+        this.installBorder((AutoHideExpandPanel) target, active);
     }
 
     /**
@@ -89,12 +90,12 @@ public class SubstanceAutoHideExpandPanelUI extends AutoHideExpandPanelUI implem
     @Override
     public void installUI(JComponent comp) {
 
-	final AutoHideExpandPanel autoHideExpandPanel = (AutoHideExpandPanel) comp;
+        final AutoHideExpandPanel autoHideExpandPanel = (AutoHideExpandPanel) comp;
 
-	super.installUI(comp);
+        super.installUI(comp);
 
-	autoHideExpandPanel.addAncestorListener(this.ancestorListener);
-	this.installDraggerBorders(autoHideExpandPanel);
+        autoHideExpandPanel.addAncestorListener(this.ancestorListener);
+        this.installDraggerBorders(autoHideExpandPanel);
     }
 
     /**
@@ -103,14 +104,14 @@ public class SubstanceAutoHideExpandPanelUI extends AutoHideExpandPanelUI implem
     @Override
     public void uninstallUI(JComponent comp) {
 
-	final AutoHideExpandPanel autoHideExpandPanel = (AutoHideExpandPanel) comp;
+        final AutoHideExpandPanel autoHideExpandPanel = (AutoHideExpandPanel) comp;
 
-	super.uninstallUI(autoHideExpandPanel);
+        super.uninstallUI(autoHideExpandPanel);
 
-	comp.removeAncestorListener(this.ancestorListener);
+        comp.removeAncestorListener(this.ancestorListener);
 
-	this.uninstallBorder(autoHideExpandPanel);
-	this.uninstallDraggerBorders(autoHideExpandPanel);
+        this.uninstallBorder(autoHideExpandPanel);
+        this.uninstallDraggerBorders(autoHideExpandPanel);
     }
 
     /**
@@ -123,32 +124,34 @@ public class SubstanceAutoHideExpandPanelUI extends AutoHideExpandPanelUI implem
      */
     protected void installBorder(AutoHideExpandPanel autoHideExpandPanel, Boolean active) {
 
-	final Integer zone = this.getZone(autoHideExpandPanel);
-	final JPanel content = this.getContentPane(autoHideExpandPanel);
+        final Integer zone = this.getZone(autoHideExpandPanel);
+        final JPanel content = this.getContentPane(autoHideExpandPanel);
 
-	if ((zone != null) && (content != null)) {
-	    Border border = null;
+        if ((zone != null) && (content != null)) {
+            Border border = null;
 
-	    switch (zone) {
-		case DockingConstants.INT_HIDE_TOP:
-		    border = UIManager.getBorder(//
-			    VLDockingUtil.activationKey("AutoHideExpandPanel.expandFromTopBorder", active));
-		    break;
-		case DockingConstants.INT_HIDE_LEFT:
-		    border = UIManager.getBorder(//
-			    VLDockingUtil.activationKey("AutoHideExpandPanel.expandFromLeftBorder", active));
-		    break;
-		case DockingConstants.INT_HIDE_BOTTOM:
-		    border = UIManager.getBorder(VLDockingUtil.activationKey(
-			    "AutoHideExpandPanel.expandFromBottomBorder", active));
-		    break;
-		case DockingConstants.INT_HIDE_RIGHT:
-		    border = UIManager.getBorder(//
-			    VLDockingUtil.activationKey("AutoHideExpandPanel.expandFromRightBorder", active));
-		    break;
-	    }
-	    content.setBorder(border);
-	}
+            switch (zone) {
+                case DockingConstants.INT_HIDE_TOP:
+                    border = UIManager.getBorder(//
+                            VLDockingUtil.activationKey("AutoHideExpandPanel.expandFromTopBorder", active));
+                    break;
+                case DockingConstants.INT_HIDE_LEFT:
+                    border = UIManager.getBorder(//
+                            VLDockingUtil.activationKey("AutoHideExpandPanel.expandFromLeftBorder", active));
+                    break;
+                case DockingConstants.INT_HIDE_BOTTOM:
+                    border = UIManager.getBorder(//
+                            VLDockingUtil.activationKey("AutoHideExpandPanel.expandFromBottomBorder", active));
+                    break;
+                case DockingConstants.INT_HIDE_RIGHT:
+                    border = UIManager.getBorder(//
+                            VLDockingUtil.activationKey("AutoHideExpandPanel.expandFromRightBorder", active));
+                    break;
+                default:
+                    throw new IllegalArgumentException("Illegal zone: \"" + zone + "\"");
+            }
+            content.setBorder(border);
+        }
     }
 
     /**
@@ -159,23 +162,23 @@ public class SubstanceAutoHideExpandPanelUI extends AutoHideExpandPanelUI implem
      */
     protected void installDraggerBorders(AutoHideExpandPanel autoHideExpandPanel) {
 
-	final Border topDraggerBorder = UIManager.getBorder("AutoHideExpandPanel.topDraggerBorder");
-	final Border leftDraggerBorder = UIManager.getBorder("AutoHideExpandPanel.leftDraggerBorder");
-	final Border bottomDraggerBorder = UIManager.getBorder("AutoHideExpandPanel.bottomDraggerBorder");
-	final Border rightDraggerBorder = UIManager.getBorder("AutoHideExpandPanel.rightDraggerBorder");
+        final Border topDraggerBorder = UIManager.getBorder("AutoHideExpandPanel.topDraggerBorder");
+        final Border leftDraggerBorder = UIManager.getBorder("AutoHideExpandPanel.leftDraggerBorder");
+        final Border bottomDraggerBorder = UIManager.getBorder("AutoHideExpandPanel.bottomDraggerBorder");
+        final Border rightDraggerBorder = UIManager.getBorder("AutoHideExpandPanel.rightDraggerBorder");
 
-	if (topDraggerBorder != null) {
-	    autoHideExpandPanel.getTopDragger().setBorder(topDraggerBorder);
-	}
-	if (leftDraggerBorder != null) {
-	    autoHideExpandPanel.getLeftDragger().setBorder(leftDraggerBorder);
-	}
-	if (bottomDraggerBorder != null) {
-	    autoHideExpandPanel.getBottomDragger().setBorder(bottomDraggerBorder);
-	}
-	if (rightDraggerBorder != null) {
-	    autoHideExpandPanel.getRightDragger().setBorder(rightDraggerBorder);
-	}
+        if (topDraggerBorder != null) {
+            autoHideExpandPanel.getTopDragger().setBorder(topDraggerBorder);
+        }
+        if (leftDraggerBorder != null) {
+            autoHideExpandPanel.getLeftDragger().setBorder(leftDraggerBorder);
+        }
+        if (bottomDraggerBorder != null) {
+            autoHideExpandPanel.getBottomDragger().setBorder(bottomDraggerBorder);
+        }
+        if (rightDraggerBorder != null) {
+            autoHideExpandPanel.getRightDragger().setBorder(rightDraggerBorder);
+        }
     }
 
     /**
@@ -186,8 +189,8 @@ public class SubstanceAutoHideExpandPanelUI extends AutoHideExpandPanelUI implem
      */
     protected void uninstallBorder(AutoHideExpandPanel autoHideExpandPanel) {
 
-	final JPanel content = this.getContentPane(autoHideExpandPanel);
-	content.setBorder(null);
+        final JPanel content = this.getContentPane(autoHideExpandPanel);
+        content.setBorder(null);
     }
 
     /**
@@ -198,10 +201,10 @@ public class SubstanceAutoHideExpandPanelUI extends AutoHideExpandPanelUI implem
      */
     protected void uninstallDraggerBorders(AutoHideExpandPanel autoHideExpandPanel) {
 
-	autoHideExpandPanel.getTopDragger().setBorder(null);
-	autoHideExpandPanel.getLeftDragger().setBorder(null);
-	autoHideExpandPanel.getBottomDragger().setBorder(null);
-	autoHideExpandPanel.getRightDragger().setBorder(null);
+        autoHideExpandPanel.getTopDragger().setBorder(null);
+        autoHideExpandPanel.getLeftDragger().setBorder(null);
+        autoHideExpandPanel.getBottomDragger().setBorder(null);
+        autoHideExpandPanel.getRightDragger().setBorder(null);
     }
 
     /**
@@ -215,17 +218,17 @@ public class SubstanceAutoHideExpandPanelUI extends AutoHideExpandPanelUI implem
      */
     private JPanel getContentPane(AutoHideExpandPanel autoHideExpandPanel) {
 
-	JPanel content = null;
-	try {
-	    content = (JPanel) //
-	    SubstanceAutoHideExpandPanelUI.CONTENT_FIELD.get(autoHideExpandPanel);
-	} catch (IllegalArgumentException e) {
-	    throw new IllegalStateException("Error accessing selected button field", e);
-	} catch (IllegalAccessException e) {
-	    throw new IllegalStateException("Error accessing selected button field", e);
-	}
+        JPanel content = null;
+        try {
+            content = (JPanel) //
+            SubstanceAutoHideExpandPanelUI.CONTENT_FIELD.get(autoHideExpandPanel);
+        } catch (IllegalArgumentException e) {
+            throw new IllegalStateException("Error accessing selected button field", e);
+        } catch (IllegalAccessException e) {
+            throw new IllegalStateException("Error accessing selected button field", e);
+        }
 
-	return content;
+        return content;
     }
 
     /**
@@ -245,22 +248,22 @@ public class SubstanceAutoHideExpandPanelUI extends AutoHideExpandPanelUI implem
      */
     private Integer getZone(AutoHideExpandPanel autoHideExpandPanel) {
 
-	Integer zone = null;
+        Integer zone = null;
 
-	try {
-	    final AutoHideButton selectedButton = (AutoHideButton) //
-	    SubstanceAutoHideExpandPanelUI.SELECTED_BUTTON_FIELD.get(autoHideExpandPanel);
+        try {
+            final AutoHideButton selectedButton = (AutoHideButton) //
+            SubstanceAutoHideExpandPanelUI.SELECTED_BUTTON_FIELD.get(autoHideExpandPanel);
 
-	    if (selectedButton != null) {
-		zone = selectedButton.getZone();
-	    }
-	} catch (IllegalArgumentException e) {
-	    throw new IllegalStateException("Error accessing selected button field", e);
-	} catch (IllegalAccessException e) {
-	    throw new IllegalStateException("Error accessing selected button field", e);
-	}
+            if (selectedButton != null) {
+                zone = selectedButton.getZone();
+            }
+        } catch (IllegalArgumentException e) {
+            throw new IllegalStateException("Error accessing selected button field", e);
+        } catch (IllegalAccessException e) {
+            throw new IllegalStateException("Error accessing selected button field", e);
+        }
 
-	return zone;
+        return zone;
     }
 
     /**
@@ -272,28 +275,36 @@ public class SubstanceAutoHideExpandPanelUI extends AutoHideExpandPanelUI implem
      */
     public static ComponentUI createUI(JComponent c) {
 
-	return SubstanceAutoHideExpandPanelUI.INSTANCE;
+        return SubstanceAutoHideExpandPanelUI.INSTANCE;
     }
 
     /**
      * Ancestor listener used to install borders.
-     * 
      */
     protected class ViewAncestorListener implements AncestorListener {
 
-	public void ancestorAdded(AncestorEvent ancestorEvent) {
+        /**
+         * {@inheritDoc}
+         */
+        public void ancestorAdded(AncestorEvent ancestorEvent) {
 
-	    final AutoHideExpandPanel autoHideExpandPanel = (AutoHideExpandPanel) ancestorEvent.getComponent();
-	    SubstanceAutoHideExpandPanelUI.this.installBorder(autoHideExpandPanel, Boolean.FALSE);
-	}
+            final AutoHideExpandPanel autoHideExpandPanel = (AutoHideExpandPanel) ancestorEvent.getComponent();
+            SubstanceAutoHideExpandPanelUI.this.installBorder(autoHideExpandPanel, Boolean.FALSE);
+        }
 
-	public void ancestorMoved(AncestorEvent ancestorEvent) {
+        /**
+         * {@inheritDoc}
+         */
+        public void ancestorMoved(AncestorEvent ancestorEvent) {
 
-	}
+        }
 
-	public void ancestorRemoved(AncestorEvent ancestorEvent) {
+        /**
+         * {@inheritDoc}
+         */
+        public void ancestorRemoved(AncestorEvent ancestorEvent) {
 
-	}
+        }
     }
 
 }
