@@ -13,7 +13,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.binding.MutablePropertyAccessStrategy;
 import org.springframework.binding.form.FieldMetadata;
-import org.springframework.binding.form.support.AbstractFormModel;
 import org.springframework.binding.form.support.DefaultFormModel;
 import org.springframework.binding.form.support.FormModelMediatingValueModel;
 import org.springframework.binding.value.ValueModel;
@@ -24,8 +23,9 @@ import org.springframework.util.ReflectionUtils;
  * <ul>
  * <li>El constructor {@link DefaultFormModel#DefaultFormModel(MutablePropertyAccessStrategy)} no prepara el
  * <em>value model</em>.
- * <li>El método {@link AbstractFormModel#add(String, ValueModel, FieldMetadata)} no permanece a la escucha de cambios
- * en la metainformación del campo.
+ * <li>El método
+ * {@link org.springframework.binding.form.support.AbstractFormModel#add(String, ValueModel, FieldMetadata)} no
+ * permanece a la escucha de cambios en la metainformación del campo.
  * <li>Después del <em>commit</em> no se limpian los campos <em>dirty</em> del <em>form model</em>.
  * </ul>
  * 
@@ -39,9 +39,12 @@ import org.springframework.util.ReflectionUtils;
  */
 public class BbDefaultFormModel extends DefaultFormModel {
 
-    // TODO, (JAF), 20091001, revisar el post http://forum.springframework.org/showthread.php?t=57378 a ver si han
-    // solucionado el problema. Después de eso, crear un test que lo demuestre (quizás con el de TableBinding sea
-    // suficiente) y mover el javadoc siguiente a un sitio mejor (no se si el test u otro clase).
+    // TODO, (JAF), 20091001, revisar el post
+    // http://forum.springframework.org/showthread.php?t=57378 a ver si han
+    // solucionado el problema. Después de eso, crear un test que lo demuestre
+    // (quizás con el de TableBinding sea
+    // suficiente) y mover el javadoc siguiente a un sitio mejor (no se si el
+    // test u otro clase).
 
     /**
      * According to <a href="http://forum.springsource.org/showthread.php?p=263013">Binding error messages</a>
@@ -63,7 +66,7 @@ public class BbDefaultFormModel extends DefaultFormModel {
      * Mensaje de error indicando que no se puede limpiar el dirty de un formulario.
      */
     private static final MessageFormat FMT_ERROR_CLEARING = new MessageFormat(//
-	    "Error clearing dirty form and value models from form model with id {0}");
+            "Error clearing dirty form and value models from form model with id {0}");
 
     /**
      * Log para la clase {@link BbFormModelHelper}.
@@ -85,10 +88,11 @@ public class BbDefaultFormModel extends DefaultFormModel {
      */
     public BbDefaultFormModel(MutablePropertyAccessStrategy domainObjectAccessStrategy, boolean bufferChanges) {
 
-	super(domainObjectAccessStrategy, bufferChanges);
+        super(domainObjectAccessStrategy, bufferChanges);
 
-	// (JAF), 20091001, the failure has been already solved by Spring RCP guys
-	// this.prepareValueModel(domainObjectAccessStrategy.getDomainObjectHolder());
+        // (JAF), 20091001, the failure has been already solved by Spring RCP
+        // guys
+        // this.prepareValueModel(domainObjectAccessStrategy.getDomainObjectHolder());
     }
 
     /**
@@ -99,7 +103,7 @@ public class BbDefaultFormModel extends DefaultFormModel {
      */
     public BbDefaultFormModel(ValueModel valueModel) {
 
-	super(valueModel);
+        super(valueModel);
     }
 
     /**
@@ -120,13 +124,13 @@ public class BbDefaultFormModel extends DefaultFormModel {
     @Override
     public ValueModel add(String propertyName, ValueModel valueModel, FieldMetadata metadata) {
 
-	// Si este método ha sido invocado por add(String, ValueModel)
-	// con esta comprobación se evita añadir dos listeners
-	if (!(valueModel instanceof FormModelMediatingValueModel)) {
-	    metadata.addPropertyChangeListener(FieldMetadata.DIRTY_PROPERTY, this.childStateChangeHandler);
-	}
+        // Si este método ha sido invocado por add(String, ValueModel)
+        // con esta comprobación se evita añadir dos listeners
+        if (!(valueModel instanceof FormModelMediatingValueModel)) {
+            metadata.addPropertyChangeListener(FieldMetadata.DIRTY_PROPERTY, this.childStateChangeHandler);
+        }
 
-	return super.add(propertyName, valueModel, metadata);
+        return super.add(propertyName, valueModel, metadata);
     }
 
     /**
@@ -139,9 +143,9 @@ public class BbDefaultFormModel extends DefaultFormModel {
     @Override
     public void commit() {
 
-	super.commit();
+        super.commit();
 
-	this.clearDirtyFormAndValueModels();
+        this.clearDirtyFormAndValueModels();
     }
 
     /**
@@ -153,12 +157,13 @@ public class BbDefaultFormModel extends DefaultFormModel {
     @Override
     public void setFormObject(Object formObject) {
 
-	// TODO, (JAF), this class should dissapear once Spring RCP guys solve related bugs
-	this.clearBindingErrorMessages();
+        // TODO, (JAF), this class should dissapear once Spring RCP guys solve
+        // related bugs
+        this.clearBindingErrorMessages();
 
-	super.setFormObject(formObject);
+        super.setFormObject(formObject);
 
-	this.clearDirtyFormAndValueModels();
+        this.clearDirtyFormAndValueModels();
     }
 
     /**
@@ -167,7 +172,7 @@ public class BbDefaultFormModel extends DefaultFormModel {
     @Override
     public String toString() {
 
-	return new ToStringBuilder(this, ToStringStyle.SIMPLE_STYLE).append("id", this.getId()).toString();
+        return new ToStringBuilder(this, ToStringStyle.SIMPLE_STYLE).append("id", this.getId()).toString();
     }
 
     /**
@@ -176,10 +181,10 @@ public class BbDefaultFormModel extends DefaultFormModel {
     @Override
     protected void childStateChanged(PropertyChangeEvent evt) {
 
-	super.childStateChanged(evt);
+        super.childStateChanged(evt);
 
-	// Información de depuración acerca del estado dirty
-	DirtyTrackingUtils.handle(evt);
+        // Información de depuración acerca del estado dirty
+        DirtyTrackingUtils.handle(evt);
     }
 
     /**
@@ -190,16 +195,16 @@ public class BbDefaultFormModel extends DefaultFormModel {
      */
     private void clearBindingErrorMessages() {
 
-	final Field bindingErrorMessagesField = ReflectionUtils.findField(//
-		DefaultFormModel.class, "bindingErrorMessages", Map.class);
-	ReflectionUtils.makeAccessible(bindingErrorMessagesField);
-	try {
-	    ((Map<?, ?>) bindingErrorMessagesField.get(this)).clear();
-	} catch (IllegalArgumentException e) {
-	    e.printStackTrace();
-	} catch (IllegalAccessException e) {
-	    e.printStackTrace();
-	}
+        final Field bindingErrorMessagesField = ReflectionUtils.findField(//
+                DefaultFormModel.class, "bindingErrorMessages", Map.class);
+        ReflectionUtils.makeAccessible(bindingErrorMessagesField);
+        try {
+            ((Map<?, ?>) bindingErrorMessagesField.get(this)).clear();
+        } catch (IllegalArgumentException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        }
 
     }
 
@@ -208,16 +213,17 @@ public class BbDefaultFormModel extends DefaultFormModel {
      */
     private void clearDirtyFormAndValueModels() {
 
-	// Limpiar los campos dirty
-	try {
-	    final Set<?> dirtyValueAndFormModels = (Set<?>) BbFormModelHelper.dirtyValueAndFormModelsField.get(this);
-	    dirtyValueAndFormModels.clear();
-	} catch (final IllegalArgumentException e) {
-	    BbDefaultFormModel.LOGGER.error(BbDefaultFormModel.FMT_ERROR_CLEARING.format(//
-		    new String[] { this.getId() }), e);
-	} catch (final IllegalAccessException e) {
-	    BbDefaultFormModel.LOGGER.error(BbDefaultFormModel.FMT_ERROR_CLEARING.format(//
-		    new String[] { this.getId() }), e);
-	}
+        // Limpiar los campos dirty
+        try {
+            final Set<?> dirtyValueAndFormModels = (Set<?>) BbFormModelHelper.DIRTY_VALUE_AND_FORM_MODELS_FIELD
+                    .get(this);
+            dirtyValueAndFormModels.clear();
+        } catch (final IllegalArgumentException e) {
+            BbDefaultFormModel.LOGGER.error(BbDefaultFormModel.FMT_ERROR_CLEARING.format(//
+                    new String[] { this.getId() }), e);
+        } catch (final IllegalAccessException e) {
+            BbDefaultFormModel.LOGGER.error(BbDefaultFormModel.FMT_ERROR_CLEARING.format(//
+                    new String[] { this.getId() }), e);
+        }
     }
 }

@@ -24,8 +24,8 @@ public class PersonSearchForm extends AbstractBbSearchForm<Person, Person> {
      */
     public PersonSearchForm() {
 
-	super("personSearchForm");
-	this.setFormModel(BbFormModelHelper.createValidatingFormModel(new Person(), this.getId()));
+        super("personSearchForm");
+        this.setFormModel(BbFormModelHelper.createValidatingFormModel(new Person(), this.getId()));
     }
 
     /**
@@ -34,19 +34,19 @@ public class PersonSearchForm extends AbstractBbSearchForm<Person, Person> {
     @Override
     protected Collection<Person> doSearch(Person searchParams) {
 
-	final List<Person> searchResults = new ArrayList<Person>();
-	searchResults.add(searchParams);
-	searchParams.setName(searchParams.getName().concat("foo"));
-	searchResults.add(searchParams);
-	searchParams.setName(searchParams.getName().concat("foo"));
-	searchResults.add(searchParams);
-	searchParams.setName(searchParams.getName().concat("foo"));
-	searchResults.add(searchParams);
-	searchParams.setName(searchParams.getName().concat("foo"));
-	searchResults.add(searchParams);
-	searchParams.setName(searchParams.getName().concat("foo"));
+        final List<Person> searchResults = new ArrayList<Person>();
+        searchResults.add(searchParams);
+        searchParams.setName(searchParams.getName().concat("foo"));
+        searchResults.add(searchParams);
+        searchParams.setName(searchParams.getName().concat("foo"));
+        searchResults.add(searchParams);
+        searchParams.setName(searchParams.getName().concat("foo"));
+        searchResults.add(searchParams);
+        searchParams.setName(searchParams.getName().concat("foo"));
+        searchResults.add(searchParams);
+        searchParams.setName(searchParams.getName().concat("foo"));
 
-	return searchResults;
+        return searchResults;
     }
 
     /**
@@ -55,14 +55,14 @@ public class PersonSearchForm extends AbstractBbSearchForm<Person, Person> {
     @Override
     protected JComponent createSearchParamsControl() {
 
-	final SwingBindingFactory bindingFactory = (SwingBindingFactory) this.getBindingFactory();
-	final TableFormBuilder formBuilder = new TableFormBuilder(bindingFactory);
+        final SwingBindingFactory bindingFactory = (SwingBindingFactory) this.getBindingFactory();
+        final TableFormBuilder formBuilder = new TableFormBuilder(bindingFactory);
 
-	formBuilder.add("name");
-	formBuilder.row();
-	formBuilder.add("age");
-	formBuilder.row();
+        formBuilder.add("name");
+        formBuilder.row();
+        formBuilder.add("age");
+        formBuilder.row();
 
-	return formBuilder.getForm();
+        return formBuilder.getForm();
     }
 }

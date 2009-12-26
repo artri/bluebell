@@ -27,7 +27,8 @@ public class BbHibernateRulesValidator extends HibernateRulesValidator {
     /**
      * El nombre del campo <code>hibernateValidator</code> de la clase {@link HibernateRulesValidator}.
      */
-    // private static final String HIBERNATE_VALIDATOR_FIELD_NAME = "hibernateValidator";
+    // private static final String HIBERNATE_VALIDATOR_FIELD_NAME =
+    // "hibernateValidator";
 
     /**
      * Creates a new HibernateRulesValidator with additionally a set of properties that should not be validated.
@@ -40,23 +41,24 @@ public class BbHibernateRulesValidator extends HibernateRulesValidator {
      *            properties that should not be checked though are
      */
     @SuppressWarnings("unchecked")
-    public BbHibernateRulesValidator(ValidatingFormModel formModel, Class clazz, Set<String> ignoredHibernateProperties) {
+    public BbHibernateRulesValidator(ValidatingFormModel formModel, Class clazz, //
+            Set<String> ignoredHibernateProperties) {
 
-	super(formModel, clazz, ignoredHibernateProperties);
+        super(formModel, clazz, ignoredHibernateProperties);
 
-	// TODO descomentar
-	// Obtener el campo con el validador de Hibernate Validator
-	//        
-	// final Field field =
-	// ReflectionUtils.findField(HibernateRulesValidator.class,
-	// BbHibernateRulesValidator.HIBERNATE_VALIDATOR_FIELD_NAME,
-	// ClassValidator.class);
-	//
-	// // Hacer el campo accesible
-	// ReflectionUtils.makeAccessible(field);
-	//
-	// // Establecer el nuevo valor del validador
-	// ReflectionUtils.setField(field, this, new ClassValidator(clazz));
+        // TODO descomentar
+        // Obtener el campo con el validador de Hibernate Validator
+        //        
+        // final Field field =
+        // ReflectionUtils.findField(HibernateRulesValidator.class,
+        // BbHibernateRulesValidator.HIBERNATE_VALIDATOR_FIELD_NAME,
+        // ClassValidator.class);
+        //
+        // // Hacer el campo accesible
+        // ReflectionUtils.makeAccessible(field);
+        //
+        // // Establecer el nuevo valor del validador
+        // ReflectionUtils.setField(field, this, new ClassValidator(clazz));
     }
 
     /**
@@ -68,8 +70,8 @@ public class BbHibernateRulesValidator extends HibernateRulesValidator {
      *            The class of the object this validator needs to check
      */
     public BbHibernateRulesValidator(ValidatingFormModel formModel, Class<//
-	    ? extends Object> clazz) {
+            ? extends Object> clazz) {
 
-	this(formModel, clazz, new HashSet<String>());
+        this(formModel, clazz, new HashSet<String>());
     }
 }

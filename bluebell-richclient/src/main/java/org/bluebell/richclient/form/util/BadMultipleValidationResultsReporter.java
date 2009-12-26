@@ -43,14 +43,14 @@ public class BadMultipleValidationResultsReporter implements ValidationResultsRe
      *            tabla de errores en la que se registran los errores de validación.
      */
     public BadMultipleValidationResultsReporter(final String formId, final ValidationResultsModel resultsModel,
-	    final ProblemsTable messagesReceiver) {
+            final ProblemsTable messagesReceiver) {
 
-	Assert.notNull(resultsModel, "resultsModel is required");
-	Assert.notNull(messagesReceiver, "messagePane is required");
-	this.formId = formId;
-	this.messagesReceiver = messagesReceiver;
-	this.resultsModel = resultsModel;
-	this.init();
+        Assert.notNull(resultsModel, "resultsModel is required");
+        Assert.notNull(messagesReceiver, "messagePane is required");
+        this.formId = formId;
+        this.messagesReceiver = messagesReceiver;
+        this.resultsModel = resultsModel;
+        this.init();
     }
 
     /**
@@ -58,7 +58,7 @@ public class BadMultipleValidationResultsReporter implements ValidationResultsRe
      */
     public final void clearErrors() {
 
-	this.messagesReceiver.clear();
+        this.messagesReceiver.clear();
     }
 
     /**
@@ -68,7 +68,7 @@ public class BadMultipleValidationResultsReporter implements ValidationResultsRe
      */
     public final boolean hasErrors() {
 
-	return this.resultsModel.getHasErrors();
+        return this.resultsModel.getHasErrors();
     }
 
     /**
@@ -79,12 +79,12 @@ public class BadMultipleValidationResultsReporter implements ValidationResultsRe
      */
     public final void validationResultsChanged(ValidationResults results) {
 
-	if (this.resultsModel.getMessageCount() == 0) {
-	    this.messagesReceiver.clear();
-	} else {
-	    this.messagesReceiver.clear();
-	    this.messagesReceiver.addValidationProblems(this.formId, this.getValidationMessages(this.resultsModel));
-	}
+        if (this.resultsModel.getMessageCount() == 0) {
+            this.messagesReceiver.clear();
+        } else {
+            this.messagesReceiver.clear();
+            this.messagesReceiver.addValidationProblems(this.formId, this.getValidationMessages(this.resultsModel));
+        }
     }
 
     /**
@@ -97,19 +97,19 @@ public class BadMultipleValidationResultsReporter implements ValidationResultsRe
     @SuppressWarnings("unchecked")
     protected final Collection<Problem> getValidationMessages(final ValidationResults resultsModel) {
 
-	final Collection<Problem> problems = new ArrayList<Problem>();
+        final Collection<Problem> problems = new ArrayList<Problem>();
 
-	for (final Iterator<ValidationMessage> i = resultsModel.getMessages().iterator(); i.hasNext();) {
-	    final ValidationMessage message = i.next();
-	    if (message != null) {
-		// TODO Definir política para la generación de los IDs de
-		// los errores.
-		problems.add(new Problem(message.getSeverity(), 0, message.getMessage()));
+        for (final Iterator<ValidationMessage> i = resultsModel.getMessages().iterator(); i.hasNext();) {
+            final ValidationMessage message = i.next();
+            if (message != null) {
+                // TODO Definir política para la generación de los IDs de
+                // los errores.
+                problems.add(new Problem(message.getSeverity(), 0, message.getMessage()));
 
-	    }
-	}
+            }
+        }
 
-	return problems;
+        return problems;
 
     }
 
@@ -118,7 +118,7 @@ public class BadMultipleValidationResultsReporter implements ValidationResultsRe
      */
     private void init() {
 
-	this.resultsModel.addValidationListener(this);
-	this.validationResultsChanged(null);
+        this.resultsModel.addValidationListener(this);
+        this.validationResultsChanged(null);
     }
 }

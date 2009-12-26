@@ -10,7 +10,6 @@ import java.util.List;
 import javax.swing.JTextField;
 
 import org.bluebell.binding.validation.support.BbValidationMessage;
-import org.bluebell.richclient.form.MultipleValidationResultsReporter;
 import org.bluebell.richclient.samples.simple.form.PersonChildForm;
 import org.bluebell.richclient.test.AbstractBbSamplesTests;
 import org.junit.After;
@@ -22,7 +21,7 @@ import org.springframework.richclient.application.PageDescriptor;
 import org.springframework.richclient.form.Form;
 
 /**
- * Tests the correct behaviour of {@link MultipleValidationResultsReporter}.
+ * Tests the correct behaviour of {@link org.bluebell.richclient.form.MultipleValidationResultsReporter}.
  * 
  * @author <a href = "mailto:julio.arguello@gmail.com" >Julio Argüello (JAF)</a>
  */
@@ -50,11 +49,11 @@ public class TestMultipleValidationResultsReporter extends AbstractBbSamplesTest
     @Test
     public void testDependencyInjection() {
 
-	super.testDependencyInjection();
+        super.testDependencyInjection();
 
-	Assert.assertNotNull(this.masterFormModel);
-	Assert.assertNotNull(this.dispatcherFormModel);
-	Assert.assertNotNull(this.detailFormModel);
+        Assert.assertNotNull(this.masterFormModel);
+        Assert.assertNotNull(this.dispatcherFormModel);
+        Assert.assertNotNull(this.detailFormModel);
     }
 
     /**
@@ -64,24 +63,26 @@ public class TestMultipleValidationResultsReporter extends AbstractBbSamplesTest
     @Test
     public void testBindingErrors() {
 
-	final PersonChildForm form = new PersonChildForm();
-	// final ValidatingFormModel formModel = FormModelHelper.createFormModel(new Person());
+        final PersonChildForm form = new PersonChildForm();
+        // final ValidatingFormModel formModel =
+        // FormModelHelper.createFormModel(new Person());
 
-	// After executing new form object command validation messages are empty
-	form.getNewFormObjectCommand().execute();
-	Assert.assertEquals(0, form.getFormModel().getValidationResults().getMessageCount());
+        // After executing new form object command validation messages are empty
+        form.getNewFormObjectCommand().execute();
+        Assert.assertEquals(0, form.getFormModel().getValidationResults().getMessageCount());
 
-	// Set a illegal age and a validation error is raised
-	this.userAction(form, "age", "Illegal Value");
-	Assert.assertEquals(1, form.getFormModel().getValidationResults().getMessageCount());
+        // Set a illegal age and a validation error is raised
+        this.userAction(form, "age", "Illegal Value");
+        Assert.assertEquals(1, form.getFormModel().getValidationResults().getMessageCount());
 
-	// Execute the reset command and the count backs to 0
-	form.reset();
-	Assert.assertEquals(0, form.getFormModel().getValidationResults().getMessageCount());
+        // Execute the reset command and the count backs to 0
+        form.reset();
+        Assert.assertEquals(0, form.getFormModel().getValidationResults().getMessageCount());
 
-	// After executing new form object command the count is 0 (whithout fixing the error the count backs to 1!!!!)
-	form.getNewFormObjectCommand().execute();
-	Assert.assertEquals(0, form.getFormModel().getValidationResults().getMessageCount());
+        // After executing new form object command the count is 0 (whithout
+        // fixing the error the count backs to 1!!!!)
+        form.getNewFormObjectCommand().execute();
+        Assert.assertEquals(0, form.getFormModel().getValidationResults().getMessageCount());
     }
 
     /**
@@ -90,20 +91,20 @@ public class TestMultipleValidationResultsReporter extends AbstractBbSamplesTest
     @Test
     public void testSimplestValidationCase() {
 
-	this.initializeVariables(this.personPageDescriptor);
+        this.initializeVariables(this.getPersonPageDescriptor());
 
-	// After executing new form object command validation messages are empty
-	this.getBackingForm(this.masterView).getNewFormObjectCommand().execute();
-	Assert.assertEquals(0, this.detailFormModel.getValidationResults().getMessageCount());
+        // After executing new form object command validation messages are empty
+        this.getBackingForm(this.getMasterView()).getNewFormObjectCommand().execute();
+        Assert.assertEquals(0, this.detailFormModel.getValidationResults().getMessageCount());
 
-	// Set a illegal age and a validation error is raised
-	this.userAction(this.getBackingForm(this.detailView), "age", "IllegalValue");
-	Assert.assertEquals(1, this.getValidationMessages().size());
-	Assert.assertEquals("age", this.getValidationMessages().get(0).getProperty());
+        // Set a illegal age and a validation error is raised
+        this.userAction(this.getBackingForm(this.getDetailView()), "age", "IllegalValue");
+        Assert.assertEquals(1, this.getValidationMessages().size());
+        Assert.assertEquals("age", this.getValidationMessages().get(0).getProperty());
 
-	// Execute the cancel command and the count backs to 0
-	this.getBackingForm(this.masterView).getCancelCommand().execute();
-	Assert.assertEquals(0, this.getValidationMessages().size());
+        // Execute the cancel command and the count backs to 0
+        this.getBackingForm(this.getMasterView()).getCancelCommand().execute();
+        Assert.assertEquals(0, this.getValidationMessages().size());
     }
 
     /**
@@ -112,26 +113,26 @@ public class TestMultipleValidationResultsReporter extends AbstractBbSamplesTest
     @Test
     public void testValidatingState() {
 
-	this.initializeVariables(this.personPageDescriptor);
+        this.initializeVariables(this.getPersonPageDescriptor());
 
-	// Initial state
-	Assert.assertFalse(this.masterFormModel.isValidating());
-	Assert.assertFalse(this.dispatcherFormModel.isValidating());
-	Assert.assertFalse(this.detailFormModel.isValidating());
+        // Initial state
+        Assert.assertFalse(this.masterFormModel.isValidating());
+        Assert.assertFalse(this.dispatcherFormModel.isValidating());
+        Assert.assertFalse(this.detailFormModel.isValidating());
 
-	// After executing new form object command
-	this.getBackingForm(this.masterView).getNewFormObjectCommand().execute();
+        // After executing new form object command
+        this.getBackingForm(this.getMasterView()).getNewFormObjectCommand().execute();
 
-	Assert.assertFalse(this.masterFormModel.isValidating());
-	Assert.assertTrue(this.dispatcherFormModel.isValidating());
-	Assert.assertTrue(this.detailFormModel.isValidating());
+        Assert.assertFalse(this.masterFormModel.isValidating());
+        Assert.assertTrue(this.dispatcherFormModel.isValidating());
+        Assert.assertTrue(this.detailFormModel.isValidating());
 
-	// After executing cancel command
-	this.getBackingForm(this.masterView).getCancelCommand().execute();
+        // After executing cancel command
+        this.getBackingForm(this.getMasterView()).getCancelCommand().execute();
 
-	Assert.assertFalse(this.masterFormModel.isValidating());
-	Assert.assertFalse(this.dispatcherFormModel.isValidating());
-	Assert.assertFalse(this.detailFormModel.isValidating());
+        Assert.assertFalse(this.masterFormModel.isValidating());
+        Assert.assertFalse(this.dispatcherFormModel.isValidating());
+        Assert.assertFalse(this.detailFormModel.isValidating());
     }
 
     /**
@@ -140,50 +141,51 @@ public class TestMultipleValidationResultsReporter extends AbstractBbSamplesTest
     @Test
     public void testValidationWithSiblingForm() {
 
-	this.initializeVariables(this.personPageDescriptor);
+        this.initializeVariables(this.getPersonPageDescriptor());
 
-	// Atach a new child form
-	final PersonChildForm siblingForm = new PersonChildForm("siblingForm");
-	this.getBackingForm(this.masterView).addChildForm(siblingForm);
+        // Atach a new child form
+        final PersonChildForm siblingForm = new PersonChildForm("siblingForm");
+        this.getBackingForm(this.getMasterView()).addChildForm(siblingForm);
 
-	// After executing new form object command validation messages are empty
-	this.getBackingFormModel(this.detailView).getValidationResults().getMessages();
-	this.getBackingForm(this.masterView).getNewFormObjectCommand().execute();
-	Assert.assertEquals(0, this.getValidationMessages().size());
+        // After executing new form object command validation messages are empty
+        this.getBackingFormModel(this.getDetailView()).getValidationResults().getMessages();
+        this.getBackingForm(this.getMasterView()).getNewFormObjectCommand().execute();
+        Assert.assertEquals(0, this.getValidationMessages().size());
 
-	// Set a illegal age on detail form and a validation message is raised
-	this.userAction(this.getBackingForm(this.detailView), "age", "IllegalValue");
-	Assert.assertEquals(1, this.getValidationMessages().size());
-	Assert.assertEquals(1, this.dispatcherFormModel.getValidationResults().getMessageCount());
-	Assert.assertEquals(1, this.detailFormModel.getValidationResults().getMessageCount());
-	Assert.assertEquals(0, siblingForm.getFormModel().getValidationResults().getMessageCount());
+        // Set a illegal age on detail form and a validation message is raised
+        this.userAction(this.getBackingForm(this.getDetailView()), "age", "IllegalValue");
+        Assert.assertEquals(1, this.getValidationMessages().size());
+        Assert.assertEquals(1, this.dispatcherFormModel.getValidationResults().getMessageCount());
+        Assert.assertEquals(1, this.detailFormModel.getValidationResults().getMessageCount());
+        Assert.assertEquals(0, siblingForm.getFormModel().getValidationResults().getMessageCount());
 
-	// Set a illegal age on sibling form and other validation message is raised
-	((JTextField) this.getComponentNamed(siblingForm, "age")).setText("Illegal Value");
-	Assert.assertEquals(2, this.getValidationMessages().size());
-	Assert.assertEquals(2, this.dispatcherFormModel.getValidationResults().getMessageCount());
-	Assert.assertEquals(1, this.detailFormModel.getValidationResults().getMessageCount());
-	Assert.assertEquals(1, siblingForm.getFormModel().getValidationResults().getMessageCount());
+        // Set a illegal age on sibling form and other validation message is
+        // raised
+        ((JTextField) this.getComponentNamed(siblingForm, "age")).setText("Illegal Value");
+        Assert.assertEquals(2, this.getValidationMessages().size());
+        Assert.assertEquals(2, this.dispatcherFormModel.getValidationResults().getMessageCount());
+        Assert.assertEquals(1, this.detailFormModel.getValidationResults().getMessageCount());
+        Assert.assertEquals(1, siblingForm.getFormModel().getValidationResults().getMessageCount());
 
-	// Test validation messages are the expected
-	Assert.assertEquals(2, this.getValidationMessages().size());
-	final BbValidationMessage firstValidationMessage = (BbValidationMessage) this.getValidationMessages().get(0);
-	final BbValidationMessage secondValidationMessage = (BbValidationMessage) this.getValidationMessages().get(1);
-	Assert.assertEquals("age", firstValidationMessage.getProperty());
-	Assert.assertEquals("age", secondValidationMessage.getProperty());
+        // Test validation messages are the expected
+        Assert.assertEquals(2, this.getValidationMessages().size());
+        final BbValidationMessage firstValidationMessage = (BbValidationMessage) this.getValidationMessages().get(0);
+        final BbValidationMessage secondValidationMessage = (BbValidationMessage) this.getValidationMessages().get(1);
+        Assert.assertEquals("age", firstValidationMessage.getProperty());
+        Assert.assertEquals("age", secondValidationMessage.getProperty());
 
-	final Boolean b1 = "siblingForm".equals(firstValidationMessage.getFormModel().getId());
-	final Boolean b2 = "personDetailForm".equals(secondValidationMessage.getFormModel().getId());
-	final Boolean b3 = "personDetailForm".equals(firstValidationMessage.getFormModel().getId());
-	final Boolean b4 = "siblingForm".equals(secondValidationMessage.getFormModel().getId());
-	Assert.assertTrue(b1 && b2 || b3 && b4);
+        final Boolean b1 = "siblingForm".equals(firstValidationMessage.getFormModel().getId());
+        final Boolean b2 = "personDetailForm".equals(secondValidationMessage.getFormModel().getId());
+        final Boolean b3 = "personDetailForm".equals(firstValidationMessage.getFormModel().getId());
+        final Boolean b4 = "siblingForm".equals(secondValidationMessage.getFormModel().getId());
+        Assert.assertTrue(b1 && b2 || b3 && b4);
 
-	// Execute the cancel command and the count backs to 0
-	this.getBackingForm(this.masterView).getCancelCommand().execute();
-	Assert.assertEquals(0, this.getValidationMessages().size());
-	Assert.assertEquals(0, this.dispatcherFormModel.getValidationResults().getMessageCount());
-	Assert.assertEquals(0, this.detailFormModel.getValidationResults().getMessageCount());
-	Assert.assertEquals(0, siblingForm.getFormModel().getValidationResults().getMessageCount());
+        // Execute the cancel command and the count backs to 0
+        this.getBackingForm(this.getMasterView()).getCancelCommand().execute();
+        Assert.assertEquals(0, this.getValidationMessages().size());
+        Assert.assertEquals(0, this.dispatcherFormModel.getValidationResults().getMessageCount());
+        Assert.assertEquals(0, this.detailFormModel.getValidationResults().getMessageCount());
+        Assert.assertEquals(0, siblingForm.getFormModel().getValidationResults().getMessageCount());
     }
 
     /**
@@ -192,14 +194,14 @@ public class TestMultipleValidationResultsReporter extends AbstractBbSamplesTest
     @Override
     public void initializeVariables(PageDescriptor pageDescriptor) {
 
-	super.initializeVariables(pageDescriptor);
+        super.initializeVariables(pageDescriptor);
 
-	this.masterFormModel = this.getBackingFormModel(this.masterView);
-	this.detailFormModel = this.getBackingFormModel(this.detailView);
-	this.dispatcherFormModel = (ValidatingFormModel) this.detailFormModel.getParent();
+        this.masterFormModel = this.getBackingFormModel(this.getMasterView());
+        this.detailFormModel = this.getBackingFormModel(this.getDetailView());
+        this.dispatcherFormModel = (ValidatingFormModel) this.detailFormModel.getParent();
 
-	// Ensure detail form model is not linked with master form model
-	Assert.assertNull(this.dispatcherFormModel.getParent());
+        // Ensure detail form model is not linked with master form model
+        Assert.assertNull(this.dispatcherFormModel.getParent());
     }
 
     /**
@@ -208,9 +210,9 @@ public class TestMultipleValidationResultsReporter extends AbstractBbSamplesTest
     @After
     public void cancel() throws Exception {
 
-	if (this.masterView != null) {
-	    this.getBackingForm(this.masterView).getCancelCommand().execute();
-	}
+        if (this.getMasterView() != null) {
+            this.getBackingForm(this.getMasterView()).getCancelCommand().execute();
+        }
     }
 
     /**
@@ -224,7 +226,7 @@ public class TestMultipleValidationResultsReporter extends AbstractBbSamplesTest
      */
     private Component getComponentNamed(Form form, String name) {
 
-	return TestMultipleValidationResultsReporter.getDescendantNamed(name, form.getControl());
+        return TestMultipleValidationResultsReporter.getDescendantNamed(name, form.getControl());
     }
 
     /**
@@ -234,7 +236,7 @@ public class TestMultipleValidationResultsReporter extends AbstractBbSamplesTest
      */
     private List<ValidationMessage> getValidationMessages() {
 
-	return this.getBackingForm(this.validationView).getValidationMessages();
+        return this.getBackingForm(this.getValidationView()).getValidationMessages();
     }
 
     /**
@@ -249,7 +251,7 @@ public class TestMultipleValidationResultsReporter extends AbstractBbSamplesTest
      */
     private void userAction(Form form, String property, String value) {
 
-	((JTextField) this.getComponentNamed(form, property)).replaceSelection(value);
+        ((JTextField) this.getComponentNamed(form, property)).replaceSelection(value);
     }
 
     /**
@@ -263,29 +265,25 @@ public class TestMultipleValidationResultsReporter extends AbstractBbSamplesTest
      */
     public static Component getDescendantNamed(String name, Component parent) {
 
-	// TODO, (JAF), mover esto de aquí.
+        // TODO, (JAF), mover esto de aquí.
 
-	org.springframework.util.Assert.notNull(name, "name");
-	org.springframework.util.Assert.notNull(parent, "parent");
+        org.springframework.util.Assert.notNull(name, "name");
+        org.springframework.util.Assert.notNull(parent, "parent");
 
-	// Base case
-	if (name.equals(parent.getName())) {
+        if (name.equals(parent.getName())) { // Base case
+            return parent;
+        } else if (parent instanceof Container) { // Recursive case
+            for (final Component component : ((Container) parent).getComponents()) {
 
-	    return parent;
-	}
-	// Recursive case
-	else if (parent instanceof Container) {
-	    for (final Component component : ((Container) parent).getComponents()) {
+                final Component foundComponent = //
+                TestMultipleValidationResultsReporter.getDescendantNamed(name, component);
 
-		final Component foundComponent = //
-		TestMultipleValidationResultsReporter.getDescendantNamed(name, component);
+                if (foundComponent != null) {
+                    return foundComponent;
+                }
+            }
+        }
 
-		if (foundComponent != null) {
-		    return foundComponent;
-		}
-	    }
-	}
-
-	return null;
+        return null;
     }
 }

@@ -20,7 +20,7 @@ public abstract class AbstractBbRichClientTests extends AbstractJUnit4SpringCont
      * The global application instance.
      */
     @Autowired
-    protected Application application;
+    private Application application;
 
     /**
      * {@inheritDoc}
@@ -28,10 +28,20 @@ public abstract class AbstractBbRichClientTests extends AbstractJUnit4SpringCont
     @Override
     public void afterPropertiesSet() throws Exception {
 
-	// org.springframework.util.Assert is preferred (i.e.: over junit.framework.Assert)to avoid get binded to a
-	// specific test framework
-	Assert.notNull(this.applicationContext, "this.applicationContext");
+        // org.springframework.util.Assert is preferred (i.e.: over junit.framework.Assert)to avoid get binded to a
+        // specific test framework
+        Assert.notNull(this.applicationContext, "this.applicationContext");
 
-	new ApplicationLauncher(this.applicationContext);
+        new ApplicationLauncher(this.applicationContext);
+    }
+
+    /**
+     * Gets the application.
+     * 
+     * @return the application
+     */
+    public Application getApplication() {
+
+        return this.application;
     }
 }

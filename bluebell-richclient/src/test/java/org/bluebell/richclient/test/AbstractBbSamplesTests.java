@@ -25,6 +25,7 @@ import org.springframework.richclient.application.ApplicationWindow;
 import org.springframework.richclient.application.PageDescriptor;
 import org.springframework.richclient.application.support.MultiViewPageDescriptor;
 import org.springframework.richclient.form.Form;
+import org.springframework.util.Assert;
 
 /**
  * Base class for creating tests based on Bluebell richclient architecture.
@@ -59,7 +60,7 @@ public abstract class AbstractBbSamplesTests extends AbstractBbRichClientTests {
     protected static final String APPLICATION_PAGE_FACTORY_BEAN_NAME = "applicationPageFactory";
 
     /**
-     * The master view descriptor bean name
+     * The master view descriptor bean name.
      */
     protected static final String MASTER_VIEW_DESCRIPTOR_BEAN_NAME = "personMasterViewDescriptor";
 
@@ -79,52 +80,52 @@ public abstract class AbstractBbSamplesTests extends AbstractBbRichClientTests {
     protected static final String VALIDATION_VIEW_DESCRIPTOR_BEAN_NAME = "validationViewDescriptor";
 
     /**
-     * The page descriptor to be populated.
+     * The application page to be tested.
      */
-    @Autowired
-    protected MultiViewPageDescriptor personPageDescriptor;
+    private ApplicationPage applicationPage;
 
     /**
      * The factory to create application pages.
      */
-    protected ApplicationPageFactory applicationPageFactory;
+    private ApplicationPageFactory applicationPageFactory;
+
+    /**
+     * The page descriptor to be populated.
+     */
+    @Autowired
+    private MultiViewPageDescriptor personPageDescriptor;
 
     /**
      * The active window.
      */
-    protected ApplicationWindow activeWindow;
-
-    /**
-     * The application page to be tested.
-     */
-    protected ApplicationPage applicationPage;
+    private ApplicationWindow activeWindow;
 
     /**
      * The master view to be tested.
      */
-    protected FormBackedView<AbstractBb2TableMasterForm<Person>> masterView;
+    private FormBackedView<AbstractBb2TableMasterForm<Person>> masterView;
 
     /**
      * The detail view to be tested.
      */
-    protected FormBackedView<AbstractBbChildForm<Person>> detailView;
+    private FormBackedView<AbstractBbChildForm<Person>> detailView;
 
     /**
      * The search view to be tested.
      */
-    protected FormBackedView<AbstractBbSearchForm<Person, Person>> searchView;
+    private FormBackedView<AbstractBbSearchForm<Person, Person>> searchView;
 
     /**
      * The validation view to be tested.
      */
-    protected FormBackedView<BbValidationForm<Person>> validationView;
+    private FormBackedView<BbValidationForm<Person>> validationView;
 
     /**
      * Creates the test indicating that protected variables should be populated.
      */
     protected AbstractBbSamplesTests() {
 
-	System.setProperty("richclient.startingPageId", "personPageDescriptor");
+        System.setProperty("richclient.startingPageId", "personPageDescriptor");
     }
 
     /**
@@ -132,19 +133,19 @@ public abstract class AbstractBbSamplesTests extends AbstractBbRichClientTests {
      */
     public void testDependencyInjection() {
 
-	// Populated variables
-	TestCase.assertNotNull(this.personPageDescriptor);
+        // Populated variables
+        TestCase.assertNotNull(this.getPersonPageDescriptor());
 
-	this.initializeVariables(this.personPageDescriptor);
+        this.initializeVariables(this.getPersonPageDescriptor());
 
-	// Initialized variables
-	TestCase.assertNotNull(this.applicationPageFactory);
-	TestCase.assertNotNull(this.activeWindow);
-	TestCase.assertNotNull(this.applicationPage);
-	TestCase.assertNotNull(this.masterView);
-	TestCase.assertNotNull(this.searchView);
-	TestCase.assertNotNull(this.detailView);
-	TestCase.assertNotNull(this.validationView);
+        // Initialized variables
+        TestCase.assertNotNull(this.getApplicationPageFactory());
+        TestCase.assertNotNull(this.getActiveWindow());
+        TestCase.assertNotNull(this.getApplicationPage());
+        TestCase.assertNotNull(this.getMasterView());
+        TestCase.assertNotNull(this.getSearchView());
+        TestCase.assertNotNull(this.getDetailView());
+        TestCase.assertNotNull(this.getValidationView());
     }
 
     /**
@@ -152,43 +153,50 @@ public abstract class AbstractBbSamplesTests extends AbstractBbRichClientTests {
      * <p>
      * Call this method at the beginning of every test case.
      * 
-     * @throws Exception
-     *             in case of error.
+     * @param pageDescriptor
+     *            the page descriptor this method applies to.
      */
+    @SuppressWarnings("unchecked")
     public void initializeVariables(PageDescriptor pageDescriptor) {
 
-	// Retrieve application page factory
-	this.applicationPageFactory = this.getService(ApplicationPageFactory.class);
+        // Retrieve application page factory
+        this.setApplicationPageFactory(this.getService(ApplicationPageFactory.class));
 
-	// Retrieve active window
-	this.activeWindow = Application.instance().getActiveWindow();
+        // Retrieve active window
+        this.setActiveWindow(Application.instance().getActiveWindow());
 
-	// Create related page
-	this.applicationPage = this.applicationPageFactory.createApplicationPage(this.activeWindow, pageDescriptor);
+        // Create related page
+        this.setApplicationPage(//
+                this.getApplicationPageFactory().createApplicationPage(this.getActiveWindow(), pageDescriptor));
 
-	try {
-	    EventQueue.invokeAndWait(new Runnable() {
+        try {
+            EventQueue.invokeAndWait(new Runnable() {
 
-		@Override
-		public void run() {
+                @Override
+                public void run() {
 
-		    // Nothing to do, just waiting for page creation to be completed
-		}
-	    });
-	} catch (InterruptedException e) {
-	    TestCase.fail(e.getMessage());
-	} catch (InvocationTargetException e) {
-	    TestCase.fail(e.getMessage());
-	}
+                    // Nothing to do, just waiting for page creation to be completed
+                    new String("Avoid CS warning");
+                }
+            });
+        } catch (InterruptedException e) {
+            TestCase.fail(e.getMessage());
+        } catch (InvocationTargetException e) {
+            TestCase.fail(e.getMessage());
+        }
 
-	// Fire page components creation and show the new page
-	this.activeWindow.showPage(this.applicationPage);
+        // Fire page components creation and show the new page
+        this.getActiveWindow().showPage(this.getApplicationPage());
 
-	// Retrieve page components
-	this.masterView = this.applicationPage.getView(AbstractBbSamplesTests.MASTER_VIEW_DESCRIPTOR_BEAN_NAME);
-	this.searchView = this.applicationPage.getView(AbstractBbSamplesTests.SEARCH_VIEW_DESCRIPTOR_BEAN_NAME);
-	this.detailView = this.applicationPage.getView(AbstractBbSamplesTests.DETAIL_VIEW_DESCRIPTOR_BEAN_NAME);
-	this.validationView = this.applicationPage.getView(AbstractBbSamplesTests.VALIDATION_VIEW_DESCRIPTOR_BEAN_NAME);
+        // Retrieve page components
+        this.setMasterView((FormBackedView<AbstractBb2TableMasterForm<Person>>) //
+                this.getApplicationPage().getView(AbstractBbSamplesTests.MASTER_VIEW_DESCRIPTOR_BEAN_NAME));
+        this.setSearchView((FormBackedView<AbstractBbSearchForm<Person, Person>>) //
+                this.getApplicationPage().getView(AbstractBbSamplesTests.SEARCH_VIEW_DESCRIPTOR_BEAN_NAME));
+        this.setDetailView((FormBackedView<AbstractBbChildForm<Person>>) //
+                this.getApplicationPage().getView(AbstractBbSamplesTests.DETAIL_VIEW_DESCRIPTOR_BEAN_NAME));
+        this.setValidationView((FormBackedView<BbValidationForm<Person>>) //
+                this.getApplicationPage().getView(AbstractBbSamplesTests.VALIDATION_VIEW_DESCRIPTOR_BEAN_NAME));
     }
 
     /**
@@ -203,7 +211,7 @@ public abstract class AbstractBbSamplesTests extends AbstractBbRichClientTests {
     @SuppressWarnings("unchecked")
     protected final <T> T getService(Class<T> serviceClass) {
 
-	return (T) ApplicationServicesLocator.services().getService(serviceClass);
+        return (T) ApplicationServicesLocator.services().getService(serviceClass);
     }
 
     /**
@@ -217,7 +225,7 @@ public abstract class AbstractBbSamplesTests extends AbstractBbRichClientTests {
      */
     protected final <T extends Form> T getBackingForm(FormBackedView<T> view) {
 
-	return (view != null) ? view.getBackingForm() : null;
+        return (view != null) ? view.getBackingForm() : null;
     }
 
     /**
@@ -231,6 +239,169 @@ public abstract class AbstractBbSamplesTests extends AbstractBbRichClientTests {
      */
     protected final <T extends Form> ValidatingFormModel getBackingFormModel(FormBackedView<T> view) {
 
-	return (view != null) ? BbPageComponentsConfigurer.getBackingForm(view).getFormModel() : null;
+        return (view != null) ? BbPageComponentsConfigurer.getBackingForm(view).getFormModel() : null;
+    }
+
+    /**
+     * Gets the activeWindow.
+     * 
+     * @return the activeWindow
+     */
+    protected ApplicationWindow getActiveWindow() {
+
+        return this.activeWindow;
+    }
+
+    /**
+     * Gets the applicationPage.
+     * 
+     * @return the applicationPage
+     */
+    protected ApplicationPage getApplicationPage() {
+
+        return this.applicationPage;
+    }
+
+    /**
+     * Gets the applicationPageFactory.
+     * 
+     * @return the applicationPageFactory
+     */
+    protected ApplicationPageFactory getApplicationPageFactory() {
+
+        return this.applicationPageFactory;
+    }
+
+    /**
+     * Gets the personPageDescriptor.
+     * 
+     * @return the personPageDescriptor
+     */
+    protected MultiViewPageDescriptor getPersonPageDescriptor() {
+
+        return this.personPageDescriptor;
+    }
+
+    /**
+     * Gets the masterView.
+     * 
+     * @return the masterView
+     */
+    protected FormBackedView<AbstractBb2TableMasterForm<Person>> getMasterView() {
+
+        return this.masterView;
+    }
+
+    /**
+     * Gets the detailView.
+     * 
+     * @return the detailView
+     */
+    protected FormBackedView<AbstractBbChildForm<Person>> getDetailView() {
+
+        return this.detailView;
+    }
+
+    /**
+     * Gets the searchView.
+     * 
+     * @return the searchView
+     */
+    protected FormBackedView<AbstractBbSearchForm<Person, Person>> getSearchView() {
+
+        return this.searchView;
+    }
+
+    /**
+     * Gets the validationView.
+     * 
+     * @return the validationView
+     */
+    protected FormBackedView<BbValidationForm<Person>> getValidationView() {
+
+        return this.validationView;
+    }
+
+    /**
+     * Sets the activeWindow.
+     * 
+     * @param activeWindow
+     *            the activeWindow to set
+     */
+    private void setActiveWindow(ApplicationWindow activeWindow) {
+
+        Assert.notNull(activeWindow, "activeWindow");
+
+        this.activeWindow = activeWindow;
+    }
+
+    /**
+     * Sets the applicationPage.
+     * 
+     * @param applicationPage
+     *            the applicationPage to set
+     */
+    private void setApplicationPage(ApplicationPage applicationPage) {
+
+        Assert.notNull(applicationPage, "applicationPage");
+
+        this.applicationPage = applicationPage;
+    }
+
+    /**
+     * Sets the applicationPageFactory.
+     * 
+     * @param applicationPageFactory
+     *            the applicationPageFactory to set
+     */
+    private void setApplicationPageFactory(ApplicationPageFactory applicationPageFactory) {
+
+        Assert.notNull(applicationPageFactory, "applicationPageFactory");
+
+        this.applicationPageFactory = applicationPageFactory;
+    }
+
+    /**
+     * Sets the masterView.
+     * 
+     * @param masterView
+     *            the masterView to set
+     */
+    private void setMasterView(FormBackedView<AbstractBb2TableMasterForm<Person>> masterView) {
+
+        this.masterView = masterView;
+    }
+
+    /**
+     * Sets the detailView.
+     * 
+     * @param detailView
+     *            the detailView to set
+     */
+    private void setDetailView(FormBackedView<AbstractBbChildForm<Person>> detailView) {
+
+        this.detailView = detailView;
+    }
+
+    /**
+     * Sets the searchView.
+     * 
+     * @param searchView
+     *            the searchView to set
+     */
+    private void setSearchView(FormBackedView<AbstractBbSearchForm<Person, Person>> searchView) {
+
+        this.searchView = searchView;
+    }
+
+    /**
+     * Sets the validationView.
+     * 
+     * @param validationView
+     *            the validationView to set
+     */
+    private void setValidationView(FormBackedView<BbValidationForm<Person>> validationView) {
+
+        this.validationView = validationView;
     }
 }

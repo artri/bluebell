@@ -52,7 +52,8 @@ public class BbFormModelHelper extends FormModelHelper {
     /**
      * El campo de <code>AbstractFormModel</code> con la propiedad "dirtyValueAndFormModels".
      */
-    static Field dirtyValueAndFormModelsField;
+    public static final Field DIRTY_VALUE_AND_FORM_MODELS_FIELD = ReflectionUtils.findField(//
+            AbstractFormModel.class, "dirtyValueAndFormModels", Set.class);
 
     /**
      * Log para la clase {@link BbFormModelHelper}.
@@ -63,21 +64,16 @@ public class BbFormModelHelper extends FormModelHelper {
      * El mensaje a mostrar cuando no es posible instanciar una colección usando su constructor por defecto.
      */
     private static final MessageFormat NO_INSTANTIABLE_FMT = new MessageFormat(
-	    "Error instantiating collection of type {0}, " + "does a default constructor exist?");
+            "Error instantiating collection of type {0}, " + "does a default constructor exist?");
 
     /**
      * El mensaje a mostrar cuando no es posible validar el modelo usando Hibernate Validator.
      */
     private static final MessageFormat NO_VALIDABLE_FMT = new MessageFormat(
-	    "The form model with id {0} cannot be validated " + "using Hibernate Validator: unknown class");
+            "The form model with id {0} cannot be validated " + "using Hibernate Validator: unknown class");
 
     static {
-	BbFormModelHelper.dirtyValueAndFormModelsField = ReflectionUtils.findField(
-	//
-		AbstractFormModel.class, "dirtyValueAndFormModels", Set.class);
-
-	ReflectionUtils.makeAccessible(//
-		BbFormModelHelper.dirtyValueAndFormModelsField);
+        ReflectionUtils.makeAccessible(BbFormModelHelper.DIRTY_VALUE_AND_FORM_MODELS_FIELD);
     }
 
     /**
@@ -97,7 +93,7 @@ public class BbFormModelHelper extends FormModelHelper {
      */
     public static DirtyTrackingValueModel addCollectionValueModel(ValidatingFormModel formModel, String propertyName) {
 
-	return BbFormModelHelper.addCollectionValueModel(formModel, propertyName, Boolean.TRUE);
+        return BbFormModelHelper.addCollectionValueModel(formModel, propertyName, Boolean.TRUE);
     }
 
     /**
@@ -171,43 +167,43 @@ public class BbFormModelHelper extends FormModelHelper {
      */
     @SuppressWarnings("unchecked")
     public static DirtyTrackingValueModel addCollectionValueModel(ValidatingFormModel formModel, String propertyName,
-	    Boolean deepCopyEnabled) {
+            Boolean deepCopyEnabled) {
 
-	org.springframework.util.Assert.isInstanceOf(BbDefaultFormModel.class, formModel);
+        org.springframework.util.Assert.isInstanceOf(BbDefaultFormModel.class, formModel);
 
-	final PropertyMetadataAccessStrategy pmas = ((AbstractFormModel) formModel).getPropertyAccessStrategy()
-		.getMetadataAccessStrategy();
-	final MutablePropertyAccessStrategy pas = ((AbstractFormModel) formModel).getFormObjectPropertyAccessStrategy();
+        final PropertyMetadataAccessStrategy pmas = ((AbstractFormModel) formModel).getPropertyAccessStrategy()
+                .getMetadataAccessStrategy();
+        final MutablePropertyAccessStrategy pas = ((AbstractFormModel) formModel).getFormObjectPropertyAccessStrategy();
 
-	// 1. Crear un value model para la propiedad
-	final ValueModel propertyVm = pas.getPropertyValueModel(propertyName);
+        // 1. Crear un value model para la propiedad
+        final ValueModel propertyVm = pas.getPropertyValueModel(propertyName);
 
-	// 2. Crear un BufferedCollectionValueModel envolviendo el value model
-	// del punto 1.
-	final DirtyTrackingDCBCVM collectionVm = new DirtyTrackingDCBCVM(//
-		propertyVm, //
-		pmas.getPropertyType(propertyName), //
-		null, //
-		propertyName, //
-		deepCopyEnabled);
+        // 2. Crear un BufferedCollectionValueModel envolviendo el value model
+        // del punto 1.
+        final DirtyTrackingDCBCVM collectionVm = new DirtyTrackingDCBCVM(//
+                propertyVm, //
+                pmas.getPropertyType(propertyName), //
+                null, //
+                propertyName, //
+                deepCopyEnabled);
 
-	// 3. Crear la metainformación de collectionVm.
-	final FieldMetadata collectionVmMetadata = new DefaultFieldMetadata(//
-		formModel, //
-		collectionVm, //
-		pmas.getPropertyType(propertyName), //
-		!pmas.isWriteable(propertyName), //
-		pmas.getAllUserMetadata(propertyName));
+        // 3. Crear la metainformación de collectionVm.
+        final FieldMetadata collectionVmMetadata = new DefaultFieldMetadata(//
+                formModel, //
+                collectionVm, //
+                pmas.getPropertyType(propertyName), //
+                !pmas.isWriteable(propertyName), //
+                pmas.getAllUserMetadata(propertyName));
 
-	// 4. Añadir el value model al form model para que se le registre un
-	// commit trigger.
-	formModel.add(propertyName, collectionVm);
+        // 4. Añadir el value model al form model para que se le registre un
+        // commit trigger.
+        formModel.add(propertyName, collectionVm);
 
-	// 5. Re-añadir el value model al form model para que este permanezca a
-	// la escucha de los cambios sobre el mismo.
-	formModel.add(propertyName, collectionVm, collectionVmMetadata);
+        // 5. Re-añadir el value model al form model para que este permanezca a
+        // la escucha de los cambios sobre el mismo.
+        formModel.add(propertyName, collectionVm, collectionVmMetadata);
 
-	return collectionVm;
+        return collectionVm;
     }
 
     /**
@@ -230,9 +226,9 @@ public class BbFormModelHelper extends FormModelHelper {
      */
     @Deprecated
     public static ValidatingFormModel createChildPageCollectionFormModel(ValidatingFormModel parentFormModel, Class<//
-	    ? extends Object> clazz, String propertyName) {
+            ? extends Object> clazz, String propertyName) {
 
-	return BbFormModelHelper.createValidatingChildPageCollectionFormModel(parentFormModel, clazz, propertyName);
+        return BbFormModelHelper.createValidatingChildPageCollectionFormModel(parentFormModel, clazz, propertyName);
     }
 
     /**
@@ -249,9 +245,9 @@ public class BbFormModelHelper extends FormModelHelper {
     @SuppressWarnings("unchecked")
     public static TableModel createTableModel(EventList eventList, String[] columnPropertyNames, String id) {
 
-	final GlazedTableModel tableModel = new GlazedTableModel(eventList, columnPropertyNames, id);
+        final GlazedTableModel tableModel = new GlazedTableModel(eventList, columnPropertyNames, id);
 
-	return tableModel;
+        return tableModel;
     }
 
     /**
@@ -259,8 +255,6 @@ public class BbFormModelHelper extends FormModelHelper {
      * <p>
      * El value model debe existir y su valor debe ser de tipo {@link EventList}.
      * 
-     * @param rowClass
-     *            la clase representada por cada fila.
      * @param formModel
      *            el <em>form model</em>.
      * @param propertyName
@@ -275,18 +269,18 @@ public class BbFormModelHelper extends FormModelHelper {
      */
     @SuppressWarnings("unchecked")
     public static TableModel createTableModel(FormModel formModel, String propertyName, String[] columnPropertyNames,
-	    String id) {
+            String id) {
 
-	// El value model de la propiedad
-	final ValueModel valueModel = formModel.getValueModel(propertyName);
-	org.springframework.util.Assert.isTrue(valueModel != null, "Value model must exist");
+        // El value model de la propiedad
+        final ValueModel valueModel = formModel.getValueModel(propertyName);
+        org.springframework.util.Assert.isTrue(valueModel != null, "Value model must exist");
 
-	// El valor de la propiedad debe ser una event list
-	final Object value = valueModel.getValue();
-	org.springframework.util.Assert.isInstanceOf(EventList.class, value);
+        // El valor de la propiedad debe ser una event list
+        final Object value = valueModel.getValue();
+        org.springframework.util.Assert.isInstanceOf(EventList.class, value);
 
-	// Crear el table model
-	return BbFormModelHelper.createTableModel((EventList) value, columnPropertyNames, id);
+        // Crear el table model
+        return BbFormModelHelper.createTableModel((EventList) value, columnPropertyNames, id);
     }
 
     /**
@@ -307,11 +301,11 @@ public class BbFormModelHelper extends FormModelHelper {
      *      String , Class )
      */
     public static ValidatingFormModel createValidatingChildPageCollectionFormModel(
-	    HierarchicalFormModel parentFormModel, Class<//
-	    ? extends Object> clazz, String propertyName) {
+            HierarchicalFormModel parentFormModel, Class<//
+            ? extends Object> clazz, String propertyName) {
 
-	return BbFormModelHelper.createValidatingChildPageCollectionFormModel(parentFormModel, clazz, propertyName,
-		Set.class);
+        return BbFormModelHelper.createValidatingChildPageCollectionFormModel(parentFormModel, clazz, propertyName,
+                Set.class);
     }
 
     /**
@@ -333,44 +327,44 @@ public class BbFormModelHelper extends FormModelHelper {
      */
     @SuppressWarnings("unchecked")
     public static ValidatingFormModel createValidatingChildPageCollectionFormModel(
-	    HierarchicalFormModel parentFormModel, Class<//
-	    ? extends Object> clazz, String propertyName, //
-	    final Class<//
-	    ? extends Collection> collectionClazz) {
+            HierarchicalFormModel parentFormModel, Class<//
+            ? extends Object> clazz, String propertyName, //
+            final Class<//
+            ? extends Collection> collectionClazz) {
 
-	// El value model de la propiedad a representar
-	final ValueModel propertyVM = parentFormModel.getValueModel(propertyName);
+        // El value model de la propiedad a representar
+        final ValueModel propertyVM = parentFormModel.getValueModel(propertyName);
 
-	// Construir el buffered value model
-	final DirtyTrackingDCBCVM collectionVM = new DirtyTrackingDCBCVM(propertyVM, collectionClazz, clazz,
-		propertyName);
+        // Construir el buffered value model
+        final DirtyTrackingDCBCVM collectionVM = new DirtyTrackingDCBCVM(propertyVM, collectionClazz, clazz,
+                propertyName);
 
-	// Crear el nuevo modelo a partir de la estrategia
-	final DefaultFormModel formModel = new BbDefaultFormModel(new BeanPropertyAccessStrategy(collectionVM), true) {
+        // Crear el nuevo modelo a partir de la estrategia
+        final DefaultFormModel formModel = new BbDefaultFormModel(new BeanPropertyAccessStrategy(collectionVM), true) {
 
-	    @Override
-	    protected void handleSetNullFormObject() {
+            @Override
+            protected void handleSetNullFormObject() {
 
-		if (BbFormModelHelper.LOGGER.isDebugEnabled()) {
-		    BbFormModelHelper.LOGGER.debug("New form object value is null; resetting "
-			    + "to a new collection and disabling form");
-		}
-		try {
-		    final Class class2Create = BufferedCollectionValueModel.getConcreteCollectionType(collectionClazz);
-		    this.getFormObjectHolder().setValue(class2Create.newInstance());
-		    this.setEnabled(Boolean.FALSE);
-		} catch (final InstantiationException e) {
-		    throw new BbApplicationException(BbFormModelHelper.NO_INSTANTIABLE_FMT.format(//
-			    new String[] { collectionClazz.getName() }), e);
-		} catch (final IllegalAccessException e) {
-		    throw new BbApplicationException(BbFormModelHelper.NO_INSTANTIABLE_FMT.format(//
-			    new String[] { collectionClazz.getName() }), e);
-		}
+                if (BbFormModelHelper.LOGGER.isDebugEnabled()) {
+                    BbFormModelHelper.LOGGER.debug("New form object value is null; resetting "
+                            + "to a new collection and disabling form");
+                }
+                try {
+                    final Class class2Create = BufferedCollectionValueModel.getConcreteCollectionType(collectionClazz);
+                    this.getFormObjectHolder().setValue(class2Create.newInstance());
+                    this.setEnabled(Boolean.FALSE);
+                } catch (final InstantiationException e) {
+                    throw new BbApplicationException(BbFormModelHelper.NO_INSTANTIABLE_FMT.format(//
+                            new String[] { collectionClazz.getName() }), e);
+                } catch (final IllegalAccessException e) {
+                    throw new BbApplicationException(BbFormModelHelper.NO_INSTANTIABLE_FMT.format(//
+                            new String[] { collectionClazz.getName() }), e);
+                }
 
-	    }
-	};
+            }
+        };
 
-	return formModel;
+        return formModel;
     }
 
     /**
@@ -387,7 +381,7 @@ public class BbFormModelHelper extends FormModelHelper {
      */
     public static ValidatingFormModel createValidatingChildPageFormModel(HierarchicalFormModel parentModel) {
 
-	return BbFormModelHelper.createValidatingChildPageFormModel(parentModel, null);
+        return BbFormModelHelper.createValidatingChildPageFormModel(parentModel, null);
     }
 
     /**
@@ -405,10 +399,10 @@ public class BbFormModelHelper extends FormModelHelper {
      * @see FormModelHelper#createChildPageFormModel(HierarchicalFormModel, String)
      */
     public static ValidatingFormModel createValidatingChildPageFormModel(HierarchicalFormModel parentModel,
-	    String childPageName) {
+            String childPageName) {
 
-	return BbFormModelHelper.createValidatingChildPageFormModel(parentModel, childPageName, parentModel
-		.getFormObjectHolder());
+        return BbFormModelHelper.createValidatingChildPageFormModel(parentModel, childPageName, parentModel
+                .getFormObjectHolder());
     }
 
     /**
@@ -429,11 +423,11 @@ public class BbFormModelHelper extends FormModelHelper {
      * @see FormModelHelper#createChildPageFormModel(HierarchicalFormModel, String, String)
      */
     public static ValidatingFormModel createValidatingChildPageFormModel(HierarchicalFormModel parentModel,
-	    String childPageName, String childFormObjectPropertyPath) {
+            String childPageName, String childFormObjectPropertyPath) {
 
-	final ValueModel childValueModel = parentModel.getValueModel(childFormObjectPropertyPath);
+        final ValueModel childValueModel = parentModel.getValueModel(childFormObjectPropertyPath);
 
-	return BbFormModelHelper.createValidatingChildPageFormModel(parentModel, childPageName, childValueModel);
+        return BbFormModelHelper.createValidatingChildPageFormModel(parentModel, childPageName, childValueModel);
     }
 
     /**
@@ -454,14 +448,14 @@ public class BbFormModelHelper extends FormModelHelper {
      * @see FormModelHelper#createChildPageFormModel(HierarchicalFormModel, String, ValueModel)
      */
     public static ValidatingFormModel createValidatingChildPageFormModel(HierarchicalFormModel parentModel,
-	    String childPageName, ValueModel childFormObjectHolder) {
+            String childPageName, ValueModel childFormObjectHolder) {
 
-	final ValidatingFormModel child = BbFormModelHelper.createValidatingFormModel(childFormObjectHolder);
+        final ValidatingFormModel child = BbFormModelHelper.createValidatingFormModel(childFormObjectHolder);
 
-	child.setId(childPageName);
-	parentModel.addChild(child);
+        child.setId(childPageName);
+        parentModel.addChild(child);
 
-	return child;
+        return child;
     }
 
     /**
@@ -478,7 +472,7 @@ public class BbFormModelHelper extends FormModelHelper {
      */
     public static HierarchicalFormModel createValidatingCompoundFormModel(Object formObject) {
 
-	return BbFormModelHelper.createValidatingCompoundFormModel(formObject, null);
+        return BbFormModelHelper.createValidatingCompoundFormModel(formObject, null);
     }
 
     /**
@@ -499,7 +493,7 @@ public class BbFormModelHelper extends FormModelHelper {
      */
     public static ValidatingFormModel createValidatingCompoundFormModel(Object formObject, String formId) {
 
-	return BbFormModelHelper.createValidatingFormModel(formObject, formId);
+        return BbFormModelHelper.createValidatingFormModel(formObject, formId);
     }
 
     /**
@@ -520,7 +514,7 @@ public class BbFormModelHelper extends FormModelHelper {
      */
     public static ValidatingFormModel createValidatingCompoundFormModel(ValueModel formObjectHolder, String formId) {
 
-	return BbFormModelHelper.createValidatingFormModel(formObjectHolder, formId);
+        return BbFormModelHelper.createValidatingFormModel(formObjectHolder, formId);
     }
 
     /**
@@ -536,7 +530,7 @@ public class BbFormModelHelper extends FormModelHelper {
      */
     public static ValidatingFormModel createValidatingFormModel(Object formObject) {
 
-	return BbFormModelHelper.createValidatingFormModel(formObject, true);
+        return BbFormModelHelper.createValidatingFormModel(formObject, true);
     }
 
     /**
@@ -554,7 +548,7 @@ public class BbFormModelHelper extends FormModelHelper {
      */
     public static ValidatingFormModel createValidatingFormModel(Object formObject, boolean bufferChanges) {
 
-	return BbFormModelHelper.createValidatingFormModel(formObject, bufferChanges, null);
+        return BbFormModelHelper.createValidatingFormModel(formObject, bufferChanges, null);
     }
 
     /**
@@ -575,14 +569,14 @@ public class BbFormModelHelper extends FormModelHelper {
      * @see FormModelHelper#createFormModel(Object, boolean, RulesSource, String)
      */
     public static ValidatingFormModel createValidatingFormModel(Object formObject, boolean bufferChanges,
-	    RulesSource rulesSource, String formId) {
+            RulesSource rulesSource, String formId) {
 
-	final ValidatingFormModel formModel = BbFormModelHelper.//
-		createValidatingFormModel(formObject, bufferChanges, formId);
+        final ValidatingFormModel formModel = BbFormModelHelper.//
+                createValidatingFormModel(formObject, bufferChanges, formId);
 
-	formModel.setValidator(new RulesValidator(formModel, rulesSource));
+        formModel.setValidator(new RulesValidator(formModel, rulesSource));
 
-	return formModel;
+        return formModel;
     }
 
     /**
@@ -601,9 +595,10 @@ public class BbFormModelHelper extends FormModelHelper {
      * 
      * @see FormModelHelper#createFormModel(Object, boolean, String)
      */
-    public static ValidatingFormModel createValidatingFormModel(Object formObject, boolean bufferChanges, String formId) {
+    public static ValidatingFormModel createValidatingFormModel(//
+            Object formObject, boolean bufferChanges, String formId) {
 
-	return BbFormModelHelper.createValidatingFormModel(new ValueHolder(formObject), bufferChanges, formId);
+        return BbFormModelHelper.createValidatingFormModel(new ValueHolder(formObject), bufferChanges, formId);
     }
 
     /**
@@ -622,7 +617,7 @@ public class BbFormModelHelper extends FormModelHelper {
      */
     public static ValidatingFormModel createValidatingFormModel(Object formObject, String formId) {
 
-	return BbFormModelHelper.createValidatingFormModel(formObject, true, formId);
+        return BbFormModelHelper.createValidatingFormModel(formObject, true, formId);
     }
 
     /**
@@ -639,7 +634,7 @@ public class BbFormModelHelper extends FormModelHelper {
      */
     public static ValidatingFormModel createValidatingFormModel(ValueModel formObjectHolder) {
 
-	return BbFormModelHelper.createValidatingFormModel(formObjectHolder, true, null);
+        return BbFormModelHelper.createValidatingFormModel(formObjectHolder, true, null);
     }
 
     /**
@@ -659,40 +654,43 @@ public class BbFormModelHelper extends FormModelHelper {
      * @see FormModelHelper#createFormModel(ValueModel, boolean, String)
      */
     public static ValidatingFormModel createValidatingFormModel(ValueModel formObjectHolder, boolean bufferChanges,
-	    String formId) {
+            String formId) {
 
-	// Construir el modelo internacionalizable
-	final DefaultFormModel formModel = new BbDefaultFormModel(new BeanPropertyAccessStrategy(formObjectHolder),
-		bufferChanges);
-	formModel.setId(formId);
+        // Construir el modelo internacionalizable
+        final DefaultFormModel formModel = new BbDefaultFormModel(new BeanPropertyAccessStrategy(formObjectHolder),
+                bufferChanges);
+        formModel.setId(formId);
 
-	// Hacer que el modelo valide usando Hibernate Validator.
-	final Object value = formObjectHolder.getValue();
-	if (value != null) {
-	    // El validador de Hibernate
+        // Hacer que el modelo valide usando Hibernate Validator.
+        final Object value = formObjectHolder.getValue();
+        if (value != null) {
+            // El validador de Hibernate
 
-	    // TODO (JAF), 20090913, HibernateValidator is now disabled, int the future it will probably be replaced by
-	    // JSR 303 validator
-	    // final HibernateRulesValidator hibernateValidator = new BbHibernateRulesValidator(formModel, value
-	    // .getClass());
+            // TODO (JAF), 20090913, HibernateValidator is now disabled, int the
+            // future it will probably be replaced by
+            // JSR 303 validator
+            // final HibernateRulesValidator hibernateValidator = new
+            // BbHibernateRulesValidator(formModel, value
+            // .getClass());
 
-	    // El validador de Spring RCP
-	    final RulesValidator rcpValidator = new RulesValidator(formModel);
-	    final CompositeRichValidator compositeValidator = new CompositeRichValidator(
-		    new RichValidator[] { rcpValidator });
-	    // final CompositeRichValidator compositeValidator = new CompositeRichValidator(hibernateValidator,
-	    // rcpValidator);
+            // El validador de Spring RCP
+            final RulesValidator rcpValidator = new RulesValidator(formModel);
+            final CompositeRichValidator compositeValidator = new CompositeRichValidator(
+                    new RichValidator[] { rcpValidator });
+            // final CompositeRichValidator compositeValidator = new
+            // CompositeRichValidator(hibernateValidator,
+            // rcpValidator);
 
-	    // Establecer el validador y activar la validación
-	    formModel.setValidator(compositeValidator);
-	    formModel.setValidating(Boolean.TRUE);
-	} else {
-	    BbFormModelHelper.LOGGER.warn(BbFormModelHelper.NO_VALIDABLE_FMT.format(new String[] { formId }));
-	}
+            // Establecer el validador y activar la validación
+            formModel.setValidator(compositeValidator);
+            formModel.setValidating(Boolean.TRUE);
+        } else {
+            BbFormModelHelper.LOGGER.warn(BbFormModelHelper.NO_VALIDABLE_FMT.format(new String[] { formId }));
+        }
 
-	// Registrar el modelo para recibir notificaciones
-	// ante cambios en el idioma.
-	return formModel;
+        // Registrar el modelo para recibir notificaciones
+        // ante cambios en el idioma.
+        return formModel;
     }
 
     /**
@@ -711,7 +709,7 @@ public class BbFormModelHelper extends FormModelHelper {
      */
     public static ValidatingFormModel createValidatingFormModel(ValueModel formObjectHolder, String formId) {
 
-	return BbFormModelHelper.createValidatingFormModel(formObjectHolder, true, formId);
+        return BbFormModelHelper.createValidatingFormModel(formObjectHolder, true, formId);
     }
 
     /**
@@ -727,7 +725,7 @@ public class BbFormModelHelper extends FormModelHelper {
      */
     public static ValidatingFormModel createValidatingUnbufferedFormModel(Object formObject) {
 
-	return BbFormModelHelper.createValidatingFormModel(formObject, false);
+        return BbFormModelHelper.createValidatingFormModel(formObject, false);
     }
 
     /**
@@ -746,7 +744,7 @@ public class BbFormModelHelper extends FormModelHelper {
      */
     public static ValidatingFormModel createValidatingUnbufferedFormModel(Object formObject, String formId) {
 
-	return BbFormModelHelper.createValidatingFormModel(formObject, false, formId);
+        return BbFormModelHelper.createValidatingFormModel(formObject, false, formId);
     }
 
     /**
@@ -765,7 +763,7 @@ public class BbFormModelHelper extends FormModelHelper {
      */
     public static ValidatingFormModel createValidatingUnbufferedFormModel(ValueModel formObjectHolder, String formId) {
 
-	return BbFormModelHelper.createValidatingFormModel(formObjectHolder, false, formId);
+        return BbFormModelHelper.createValidatingFormModel(formObjectHolder, false, formId);
     }
 
     /**
@@ -776,12 +774,12 @@ public class BbFormModelHelper extends FormModelHelper {
      */
     public static void enableFormModel(HierarchicalFormModel formModel) {
 
-	if (formModel.getParent() != null) {
-	    BbFormModelHelper.enableFormModel(formModel.getParent());
-	}
+        if (formModel.getParent() != null) {
+            BbFormModelHelper.enableFormModel(formModel.getParent());
+        }
 
-	if (ConfigurableFormModel.class.isAssignableFrom(formModel.getClass())) {
-	    ((ConfigurableFormModel) formModel).setEnabled(Boolean.TRUE);
-	}
+        if (ConfigurableFormModel.class.isAssignableFrom(formModel.getClass())) {
+            ((ConfigurableFormModel) formModel).setEnabled(Boolean.TRUE);
+        }
     }
 }

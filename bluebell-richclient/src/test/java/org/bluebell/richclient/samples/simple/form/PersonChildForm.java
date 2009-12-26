@@ -26,19 +26,22 @@ public class PersonChildForm extends AbstractBbChildForm<Person> {
      */
     public PersonChildForm() {
 
-	this(PersonChildForm.FORM_ID);
+        this(PersonChildForm.FORM_ID);
     }
 
     /**
+     * Creates the form given its id.
+     * 
      * @param formId
+     *            the form id.
      */
     public PersonChildForm(String formId) {
 
-	super(formId);
+        super(formId);
 
-	final ValidatingFormModel formModel = BbFormModelHelper.createValidatingFormModel(new Person());
-	formModel.setId(formId);
-	this.setFormModel(formModel);
+        final ValidatingFormModel formModel = BbFormModelHelper.createValidatingFormModel(new Person());
+        formModel.setId(formId);
+        this.setFormModel(formModel);
     }
 
     /**
@@ -47,7 +50,7 @@ public class PersonChildForm extends AbstractBbChildForm<Person> {
     @Override
     public void setFormModel(ValidatingFormModel formModel) {
 
-	super.setFormModel(formModel);
+        super.setFormModel(formModel);
     }
 
     /**
@@ -56,7 +59,7 @@ public class PersonChildForm extends AbstractBbChildForm<Person> {
     @Override
     protected ValidatingFormModel createFormModel(ValidatingFormModel parentFormModel) {
 
-	return BbFormModelHelper.createValidatingFormModel(parentFormModel.getFormObject(), this.getId());
+        return BbFormModelHelper.createValidatingFormModel(parentFormModel.getFormObject(), this.getId());
     }
 
     /**
@@ -65,14 +68,14 @@ public class PersonChildForm extends AbstractBbChildForm<Person> {
     @Override
     protected JComponent createFormControl() {
 
-	final SwingBindingFactory bindingFactory = (SwingBindingFactory) this.getBindingFactory();
-	final TableFormBuilder formBuilder = new TableFormBuilder(bindingFactory);
+        final SwingBindingFactory bindingFactory = (SwingBindingFactory) this.getBindingFactory();
+        final TableFormBuilder formBuilder = new TableFormBuilder(bindingFactory);
 
-	formBuilder.add("name");
-	formBuilder.row();
-	formBuilder.add("age");
-	formBuilder.row();
+        formBuilder.add("name");
+        formBuilder.row();
+        formBuilder.add("age");
+        formBuilder.row();
 
-	return formBuilder.getForm();
+        return formBuilder.getForm();
     }
 }

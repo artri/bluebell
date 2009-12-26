@@ -21,6 +21,6 @@ public class TestRichclientContextLoad extends AbstractBbRichClientTests {
     @Test
     public void testDependencyInjection() {
 
-	TestCase.assertNotNull(this.application);
+        TestCase.assertNotNull(this.getApplication());
     }
 }

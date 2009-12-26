@@ -37,15 +37,15 @@ public class DefaultEntityRenderer<T, ID extends Serializable> implements Fields
      */
     public Collection<Field> getFields(Class<T> clazz) {
 
-	final List<Field> fields = new ArrayList<Field>();
+        final List<Field> fields = new ArrayList<Field>();
 
-	for (final Field field : clazz.getDeclaredFields()) {
-	    if (this.isValid(field)) {
-		fields.add(field);
-	    }
-	}
+        for (final Field field : clazz.getDeclaredFields()) {
+            if (this.isValid(field)) {
+                fields.add(field);
+            }
+        }
 
-	return fields;
+        return fields;
     }
 
     /**
@@ -59,16 +59,16 @@ public class DefaultEntityRenderer<T, ID extends Serializable> implements Fields
      */
     public TableFormBuilder render(BindingFactory bindingFactory, Collection<Field> fields) {
 
-	final TableFormBuilder formBuilder = new TableFormBuilder(bindingFactory);
-	formBuilder.setLabelAttributes("colGrId=label colSpec=right:pref");
+        final TableFormBuilder formBuilder = new TableFormBuilder(bindingFactory);
+        formBuilder.setLabelAttributes("colGrId=label colSpec=right:pref");
 
-	formBuilder.row();
-	for (final Field field : fields) {
-	    formBuilder.add(field.getName());
-	    formBuilder.row();
-	}
+        formBuilder.row();
+        for (final Field field : fields) {
+            formBuilder.add(field.getName());
+            formBuilder.row();
+        }
 
-	return formBuilder;
+        return formBuilder;
     }
 
     /**
@@ -84,11 +84,11 @@ public class DefaultEntityRenderer<T, ID extends Serializable> implements Fields
      */
     private boolean isValid(Field field) {
 
-	final int modifiers = field.getModifiers();
+        final int modifiers = field.getModifiers();
 
-	final boolean isStatic = Modifier.isStatic(modifiers);
-	final boolean isCollection = Collection.class.isAssignableFrom(field.getType());
+        final boolean isStatic = Modifier.isStatic(modifiers);
+        final boolean isCollection = Collection.class.isAssignableFrom(field.getType());
 
-	return !isStatic && !isCollection;
+        return !isStatic && !isCollection;
     }
 }

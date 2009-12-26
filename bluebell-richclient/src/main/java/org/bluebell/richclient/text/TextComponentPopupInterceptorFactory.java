@@ -32,7 +32,7 @@ public class TextComponentPopupInterceptorFactory implements FormComponentInterc
      */
     public TextComponentPopupInterceptorFactory() {
 
-	super();
+        super();
     }
 
     /**
@@ -44,7 +44,7 @@ public class TextComponentPopupInterceptorFactory implements FormComponentInterc
      */
     public FormComponentInterceptor getInterceptor(FormModel formModel) {
 
-	return new TextComponentPopupInterceptor(formModel);
+        return new TextComponentPopupInterceptor(formModel);
     }
 
     /**
@@ -55,46 +55,45 @@ public class TextComponentPopupInterceptorFactory implements FormComponentInterc
      */
     private static final class ExtendedTextComponentPopup extends TextComponentPopup {
 
-	/**
-	 * Construye el popup.
-	 * 
-	 * @param textComponent
-	 *            el componente de texto asociado al popup.
-	 * @param resetUndoHistoryTrigger
-	 *            un manejador para gestionar la mecánica de <em>UNDO</em>.
-	 */
-	private ExtendedTextComponentPopup(JTextComponent textComponent, CommitTrigger resetUndoHistoryTrigger) {
+        /**
+         * Construye el popup.
+         * 
+         * @param textComponent
+         *            el componente de texto asociado al popup.
+         * @param resetUndoHistoryTrigger
+         *            un manejador para gestionar la mecánica de <em>UNDO</em>.
+         */
+        private ExtendedTextComponentPopup(JTextComponent textComponent, CommitTrigger resetUndoHistoryTrigger) {
 
-	    super(textComponent, resetUndoHistoryTrigger);
-	}
+            super(textComponent, resetUndoHistoryTrigger);
+        }
 
-/**
-	         * Invocado cada vez que el componente de texto pierde el foco.
-	         * <p>
-	         * A diferencia de {@link TextComponentPopup no hace nada.
-	         * 
-	         * @param e
-	         *            el evento notificando la perdida del foco.
-	         */
-	@Override
-	public void focusLost(FocusEvent e) {
+        /**
+         * Invocado cada vez que el componente de texto pierde el foco.
+         * <p>
+         * A diferencia de {@link TextComponentPopup no hace nada.
+         * 
+         * @param e the focus event.
+         */
+        @Override
+        public void focusLost(FocusEvent e) {
 
-	    // Nothing to do
-	}
+            // Nothing to do
+        }
 
-	/**
-	 * Añade un nuevo menú popup a un componente dado.
-	 * 
-	 * @param textComponent
-	 *            el componente de texto.
-	 * @param resetUndoHistoryTrigger
-	 *            un manejador para gestionar la mecánica de <em>UNDO</em>.
-	 * @see TextCom
-	 */
-	public static void attachPopup(JTextComponent textComponent, CommitTrigger resetUndoHistoryTrigger) {
+        /**
+         * Añade un nuevo menú popup a un componente dado.
+         * 
+         * @param textComponent
+         *            el componente de texto.
+         * @param resetUndoHistoryTrigger
+         *            un manejador para gestionar la mecánica de <em>UNDO</em>.
+         * @see TextCom
+         */
+        public static void attachPopup(JTextComponent textComponent, CommitTrigger resetUndoHistoryTrigger) {
 
-	    new ExtendedTextComponentPopup(textComponent, resetUndoHistoryTrigger);
-	}
+            new ExtendedTextComponentPopup(textComponent, resetUndoHistoryTrigger);
+        }
     }
 
     /**
@@ -103,92 +102,92 @@ public class TextComponentPopupInterceptorFactory implements FormComponentInterc
      * @author <a href = "mailto:julio.arguello@gmail.com" >Julio Argüello (JAF)</a>
      */
     private class TextComponentPopupInterceptor extends AbstractFormComponentInterceptor implements
-	    PropertyChangeListener, CommitListener {
+            PropertyChangeListener, CommitListener {
 
-	/**
-	 * Un manejador.
-	 */
-	private CommitTrigger resetTrigger;
+        /**
+         * Un manejador.
+         */
+        private CommitTrigger resetTrigger;
 
-	/**
-	 * Construye el interceptor dado el modelo del formulario.
-	 * 
-	 * @param formModel
-	 *            el modelo del formulario.
-	 */
-	protected TextComponentPopupInterceptor(FormModel formModel) {
+        /**
+         * Construye el interceptor dado el modelo del formulario.
+         * 
+         * @param formModel
+         *            el modelo del formulario.
+         */
+        protected TextComponentPopupInterceptor(FormModel formModel) {
 
-	    super(formModel);
-	}
+            super(formModel);
+        }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public void postCommit(FormModel formModel) {
+        /**
+         * {@inheritDoc}
+         */
+        public void postCommit(FormModel formModel) {
 
-	    this.getResetTrigger().commit();
-	}
+            this.getResetTrigger().commit();
+        }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public void preCommit(FormModel formModel) {
+        /**
+         * {@inheritDoc}
+         */
+        public void preCommit(FormModel formModel) {
 
-	    // Nothing to do
-	}
+            // Nothing to do
+        }
 
-	/**
-	 * Procesa cada propiedad del formulario asociándole un menú popup si sólo si su componente es de tipo texto o
-	 * incluye un componente de tipo texto.
-	 * 
-	 * @param propertyName
-	 *            el nombre de la propiedad.
-	 * @param component
-	 *            el componente representando la propiedad.
-	 */
-	@Override
-	public void processComponent(String propertyName, JComponent component) {
+        /**
+         * Procesa cada propiedad del formulario asociándole un menú popup si sólo si su componente es de tipo texto o
+         * incluye un componente de tipo texto.
+         * 
+         * @param propertyName
+         *            el nombre de la propiedad.
+         * @param component
+         *            el componente representando la propiedad.
+         */
+        @Override
+        public void processComponent(String propertyName, JComponent component) {
 
-	    final JComponent innerComp = this.getInnerComponent(component);
-	    if (innerComp instanceof JTextComponent) {
-		TextComponentPopupInterceptorFactory.ExtendedTextComponentPopup.attachPopup((JTextComponent) innerComp,
-			this.getResetTrigger());
-	    } else if (innerComp instanceof TextComponentContainer) {
-		TextComponentPopupInterceptorFactory.ExtendedTextComponentPopup.attachPopup(((TextComponentContainer) //
-			innerComp).getComponent(), this.getResetTrigger());
-	    }
-	}
+            final JComponent innerComp = this.getInnerComponent(component);
+            if (innerComp instanceof JTextComponent) {
+                TextComponentPopupInterceptorFactory.ExtendedTextComponentPopup.attachPopup((JTextComponent) innerComp,
+                        this.getResetTrigger());
+            } else if (innerComp instanceof TextComponentContainer) {
+                TextComponentPopupInterceptorFactory.ExtendedTextComponentPopup.attachPopup(((TextComponentContainer) //
+                        innerComp).getComponent(), this.getResetTrigger());
+            }
+        }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public void propertyChange(PropertyChangeEvent evt) {
+        /**
+         * {@inheritDoc}
+         */
+        public void propertyChange(PropertyChangeEvent evt) {
 
-	    this.getResetTrigger().commit();
-	}
+            this.getResetTrigger().commit();
+        }
 
-	/**
-	 * Obtiene el manejador para resetear y si no existe lo crea y registra los <em>listeners</em> correspondientes.
-	 * 
-	 * @return el manejador.
-	 */
-	private CommitTrigger getResetTrigger() {
+        /**
+         * Obtiene el manejador para resetear y si no existe lo crea y registra los <em>listeners</em> correspondientes.
+         * 
+         * @return el manejador.
+         */
+        private CommitTrigger getResetTrigger() {
 
-	    if (this.resetTrigger == null) {
-		this.resetTrigger = new CommitTrigger();
-		this.registerListeners();
-	    }
-	    return this.resetTrigger;
-	}
+            if (this.resetTrigger == null) {
+                this.resetTrigger = new CommitTrigger();
+                this.registerListeners();
+            }
+            return this.resetTrigger;
+        }
 
-	/**
-	 * Registra los <em>listeners</em> sobre el modelo del formulario.
-	 */
-	private void registerListeners() {
+        /**
+         * Registra los <em>listeners</em> sobre el modelo del formulario.
+         */
+        private void registerListeners() {
 
-	    final FormModel formModel = this.getFormModel();
-	    formModel.addCommitListener(this);
-	    formModel.getFormObjectHolder().addValueChangeListener(this);
-	}
+            final FormModel formModel = this.getFormModel();
+            formModel.addCommitListener(this);
+            formModel.getFormObjectHolder().addValueChangeListener(this);
+        }
     }
 }

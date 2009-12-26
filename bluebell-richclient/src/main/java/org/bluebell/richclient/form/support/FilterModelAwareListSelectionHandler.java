@@ -50,9 +50,9 @@ public class FilterModelAwareListSelectionHandler<T> extends ListSelectionListen
     private static final Map<String, Object> REFRESH_COMMAND_PARAMETERS = new HashMap<String, Object>();
 
     static {
-	FilterModelAwareListSelectionHandler.REFRESH_COMMAND_PARAMETERS.put(AbstractBbTableMasterForm.//
-		CLEAR_SELECTION_BEFORE_REFRESH_COMMAND_PARAM, //
-		Boolean.FALSE);
+        FilterModelAwareListSelectionHandler.REFRESH_COMMAND_PARAMETERS.put(AbstractBbTableMasterForm.//
+                CLEAR_SELECTION_BEFORE_REFRESH_COMMAND_PARAM, //
+                Boolean.FALSE);
     }
 
     /**
@@ -96,13 +96,13 @@ public class FilterModelAwareListSelectionHandler<T> extends ListSelectionListen
      *            la tabla maestra.
      */
     public FilterModelAwareListSelectionHandler(AbstractBbTableMasterForm<T> masterForm, AbstractDetailForm detailForm,
-	    JTable jTable) {
+            JTable jTable) {
 
-	this.masterForm = masterForm;
-	this.detailForm = detailForm;
-	this.masterTable = jTable;
-	this.applicationServicesAccessor = new CustomApplicationServicesAccessor();
-	this.createDialogs();
+        this.masterForm = masterForm;
+        this.detailForm = detailForm;
+        this.masterTable = jTable;
+        this.applicationServicesAccessor = new CustomApplicationServicesAccessor();
+        this.createDialogs();
     }
 
     /**
@@ -126,45 +126,45 @@ public class FilterModelAwareListSelectionHandler<T> extends ListSelectionListen
     @SuppressWarnings("unchecked")
     public void handleSelection(int[] filteredIdxs) {
 
-	// ¿Ha tenido éxito la operación?
-	Boolean success = Boolean.TRUE;
-	final Boolean isSingleSelection = (filteredIdxs.length == 1);
+        // ¿Ha tenido éxito la operación?
+        Boolean success = Boolean.TRUE;
+        final Boolean isSingleSelection = (filteredIdxs.length == 1);
 
-	// Obtener los índices originales
-	final int[] originalIdxs = FilterModelUtil.getRealRowNumbers(//
-		this.getMasterTable().getModel(), filteredIdxs);
+        // Obtener los índices originales
+        final int[] originalIdxs = FilterModelUtil.getRealRowNumbers(//
+                this.getMasterTable().getModel(), filteredIdxs);
 
-	// Obtener los objetos seleccionados
-	final Object[] selections = new Object[originalIdxs.length];
-	for (int i = 0; i < originalIdxs.length; ++i) {
-	    final T entity = (T) this.getMasterForm().getMasterEventList()//
-		    .get(originalIdxs[i]);
+        // Obtener los objetos seleccionados
+        final Object[] selections = new Object[originalIdxs.length];
+        for (int i = 0; i < originalIdxs.length; ++i) {
+            final T entity = (T) this.getMasterForm().getMasterEventList()//
+                    .get(originalIdxs[i]);
 
-	    // Refrescar la selección por si hubiese sido modificada o
-	    // eliminada desde alguna otra ventana o ubicación.
-	    selections[i] = this.getMasterForm().doRefreshIfNeeded(entity);
-	    // selections[i] = this.getMasterForm().doRefresh(entity);
+            // Refrescar la selección por si hubiese sido modificada o
+            // eliminada desde alguna otra ventana o ubicación.
+            selections[i] = this.getMasterForm().doRefreshIfNeeded(entity);
+            // selections[i] = this.getMasterForm().doRefresh(entity);
 
-	    // Si el refresco ha fallado alertar al usuario y eliminar la
-	    // entidad de la lista.
-	    if (selections[i] == null) {
-		this.alertFailureOnRefresh(entity);
-		this.getMasterForm().getMasterEventList()//
-			.remove(originalIdxs[i]);
-		success = Boolean.FALSE;
-	    }
-	}
+            // Si el refresco ha fallado alertar al usuario y eliminar la
+            // entidad de la lista.
+            if (selections[i] == null) {
+                this.alertFailureOnRefresh(entity);
+                this.getMasterForm().getMasterEventList()//
+                        .remove(originalIdxs[i]);
+                success = Boolean.FALSE;
+            }
+        }
 
-	// Si el refresco ha tenido éxito delegar en los método
-	// onSingleSelection u onMultiSelection sobrecargados
-	if (!success) {
-	    return;
-	} else if (isSingleSelection) {
-	    this.onSingleSelection(//
-		    originalIdxs[0], filteredIdxs[0], (T) selections[0]);
-	} else {
-	    this.onMultiSelection(originalIdxs, filteredIdxs, selections);
-	}
+        // Si el refresco ha tenido éxito delegar en los método
+        // onSingleSelection u onMultiSelection sobrecargados
+        if (!success) {
+            return;
+        } else if (isSingleSelection) {
+            this.onSingleSelection(//
+                    originalIdxs[0], filteredIdxs[0], (T) selections[0]);
+        } else {
+            this.onMultiSelection(originalIdxs, filteredIdxs, selections);
+        }
     }
 
     /**
@@ -176,14 +176,14 @@ public class FilterModelAwareListSelectionHandler<T> extends ListSelectionListen
      */
     public void maybeChangeSelection(final int newIndex) {
 
-	if (newIndex == this.getDetailForm().getSelectedIndex()) {
-	    return;
-	} else if (this.getDetailForm().isDirty()) {
-	    this.getDirtyDialog().setNewIndex(newIndex);
-	    this.getDirtyDialog().showDialog();
-	} else {
-	    this.getDetailForm().setSelectedIndex(newIndex);
-	}
+        if (newIndex == this.getDetailForm().getSelectedIndex()) {
+            return;
+        } else if (this.getDetailForm().isDirty()) {
+            this.getDirtyDialog().setNewIndex(newIndex);
+            this.getDirtyDialog().showDialog();
+        } else {
+            this.getDetailForm().setSelectedIndex(newIndex);
+        }
     }
 
     /**
@@ -193,7 +193,7 @@ public class FilterModelAwareListSelectionHandler<T> extends ListSelectionListen
      */
     protected CustomApplicationServicesAccessor getApplicationServicesAccessor() {
 
-	return this.applicationServicesAccessor;
+        return this.applicationServicesAccessor;
     }
 
     /**
@@ -203,7 +203,7 @@ public class FilterModelAwareListSelectionHandler<T> extends ListSelectionListen
      */
     protected AbstractDetailForm getDetailForm() {
 
-	return this.detailForm;
+        return this.detailForm;
     }
 
     /**
@@ -213,7 +213,7 @@ public class FilterModelAwareListSelectionHandler<T> extends ListSelectionListen
      */
     protected DirtyConfirmationDialog getDirtyDialog() {
 
-	return this.dirtyDialog;
+        return this.dirtyDialog;
     }
 
     /**
@@ -223,7 +223,7 @@ public class FilterModelAwareListSelectionHandler<T> extends ListSelectionListen
      */
     protected AbstractBbTableMasterForm<T> getMasterForm() {
 
-	return this.masterForm;
+        return this.masterForm;
     }
 
     /**
@@ -233,7 +233,7 @@ public class FilterModelAwareListSelectionHandler<T> extends ListSelectionListen
      */
     protected JTable getMasterTable() {
 
-	return this.masterTable;
+        return this.masterTable;
     }
 
     /**
@@ -243,7 +243,7 @@ public class FilterModelAwareListSelectionHandler<T> extends ListSelectionListen
      */
     protected MessageDialog getRefreshFailureDialog() {
 
-	return this.refreshFailureDialog;
+        return this.refreshFailureDialog;
     }
 
     /**
@@ -254,10 +254,10 @@ public class FilterModelAwareListSelectionHandler<T> extends ListSelectionListen
      */
     protected void installSelectionHandler() {
 
-	final ListSelectionModel lsm = this.getMasterTable().getSelectionModel();
-	if (lsm != null) {
-	    lsm.addListSelectionListener(this);
-	}
+        final ListSelectionModel lsm = this.getMasterTable().getSelectionModel();
+        if (lsm != null) {
+            lsm.addListSelectionListener(this);
+        }
     }
 
     /**
@@ -296,7 +296,7 @@ public class FilterModelAwareListSelectionHandler<T> extends ListSelectionListen
     @Override
     protected final void onMultiSelection(int[] filteredIdxs) {
 
-	this.executeRefreshCommand();
+        this.executeRefreshCommand();
     }
 
     /**
@@ -315,10 +315,10 @@ public class FilterModelAwareListSelectionHandler<T> extends ListSelectionListen
      */
     protected void onMultiSelection(int[] originalIdxs, int[] filteredIdxs, Object[] selection) {
 
-	// (JAF), 20090721, ha sido necesario cambiar la signatura de "T[]
-	// selection" a "Object[] selection" para evitar errores en tiempo de
-	// ejecución con los castings
-	this.handleSelection(originalIdxs, filteredIdxs, selection);
+        // (JAF), 20090721, ha sido necesario cambiar la signatura de "T[]
+        // selection" a "Object[] selection" para evitar errores en tiempo de
+        // ejecución con los castings
+        this.handleSelection(originalIdxs, filteredIdxs, selection);
     }
 
     /**
@@ -327,7 +327,7 @@ public class FilterModelAwareListSelectionHandler<T> extends ListSelectionListen
     @Override
     protected void onNoSelection() {
 
-	this.maybeChangeSelection(-1);
+        this.maybeChangeSelection(-1);
     }
 
     /**
@@ -342,7 +342,7 @@ public class FilterModelAwareListSelectionHandler<T> extends ListSelectionListen
     @Override
     protected final void onSingleSelection(int filteredIdx) {
 
-	this.executeRefreshCommand();
+        this.executeRefreshCommand();
     }
 
     /**
@@ -361,7 +361,7 @@ public class FilterModelAwareListSelectionHandler<T> extends ListSelectionListen
      */
     protected void onSingleSelection(int originalIdx, int filteredIdx, T selection) {
 
-	this.handleSelection(new int[] { originalIdx }, new int[] { filteredIdx }, new Object[] { selection });
+        this.handleSelection(new int[] { originalIdx }, new int[] { filteredIdx }, new Object[] { selection });
     }
 
     /**
@@ -372,7 +372,7 @@ public class FilterModelAwareListSelectionHandler<T> extends ListSelectionListen
      */
     protected void setDirtyDialog(DirtyConfirmationDialog dialog) {
 
-	this.dirtyDialog = dialog;
+        this.dirtyDialog = dialog;
     }
 
     /**
@@ -383,7 +383,7 @@ public class FilterModelAwareListSelectionHandler<T> extends ListSelectionListen
      */
     protected void setRefreshFailureDialog(MessageDialog refreshFailureDialog) {
 
-	this.refreshFailureDialog = refreshFailureDialog;
+        this.refreshFailureDialog = refreshFailureDialog;
     }
 
     /**
@@ -394,10 +394,10 @@ public class FilterModelAwareListSelectionHandler<T> extends ListSelectionListen
      */
     protected void uninstallSelectionHandler() {
 
-	final ListSelectionModel lsm = this.getMasterTable().getSelectionModel();
-	if (lsm != null) {
-	    lsm.removeListSelectionListener(this);
-	}
+        final ListSelectionModel lsm = this.getMasterTable().getSelectionModel();
+        if (lsm != null) {
+            lsm.removeListSelectionListener(this);
+        }
     }
 
     /**
@@ -408,7 +408,7 @@ public class FilterModelAwareListSelectionHandler<T> extends ListSelectionListen
      */
     private void alertFailureOnRefresh(T selection) {
 
-	this.getRefreshFailureDialog().showDialog();
+        this.getRefreshFailureDialog().showDialog();
     }
 
     /**
@@ -416,33 +416,33 @@ public class FilterModelAwareListSelectionHandler<T> extends ListSelectionListen
      */
     private void createDialogs() {
 
-	final CustomApplicationServicesAccessor a = this.getApplicationServicesAccessor();
+        final CustomApplicationServicesAccessor a = this.getApplicationServicesAccessor();
 
-	final String dirtyFormDialogTitle = a.getMessage(new String[] {//
-		this.getMasterForm().getId() + ".dirtyChange.title", //
-			"masterForm.dirtyChange.title" });
+        final String dirtyFormDialogTitle = a.getMessage(new String[] {//
+                this.getMasterForm().getId() + ".dirtyChange.title", //
+                        "masterForm.dirtyChange.title" });
 
-	final String dirtyFormDialogMessage = a.getMessage(new String[] { //
-		this.getMasterForm().getId() + ".dirtyChange.message", //
-			"masterForm.dirtyChange.message" });
+        final String dirtyFormDialogMessage = a.getMessage(new String[] { //
+                this.getMasterForm().getId() + ".dirtyChange.message", //
+                        "masterForm.dirtyChange.message" });
 
-	final String refreshFailureDialogTitle = a.getMessage(new String[] { // 
-		this.getMasterForm().getId() + ".refreshFailure.title", //
-			"masterForm.refreshFailure.title" });
+        final String refreshFailureDialogTitle = a.getMessage(new String[] { // 
+                this.getMasterForm().getId() + ".refreshFailure.title", //
+                        "masterForm.refreshFailure.title" });
 
-	final String refreshFailureDialogText = a.getMessage(new String[] {//
-		this.getMasterForm().getId() + ".refreshFailure.message", //
-			"masterForm.refreshFailure.message" });
+        final String refreshFailureDialogText = a.getMessage(new String[] {//
+                this.getMasterForm().getId() + ".refreshFailure.message", //
+                        "masterForm.refreshFailure.message" });
 
-	final Message refreshFailureMessage = new DefaultMessage(//
-		refreshFailureDialogText, Severity.ERROR);
+        final Message refreshFailureMessage = new DefaultMessage(//
+                refreshFailureDialogText, Severity.ERROR);
 
-	// Crear los diálogos
-	this.setDirtyDialog(new DirtyConfirmationDialog(//
-		dirtyFormDialogTitle, dirtyFormDialogMessage));
+        // Crear los diálogos
+        this.setDirtyDialog(new DirtyConfirmationDialog(//
+                dirtyFormDialogTitle, dirtyFormDialogMessage));
 
-	this.setRefreshFailureDialog(new MessageDialog(//
-		refreshFailureDialogTitle, refreshFailureMessage));
+        this.setRefreshFailureDialog(new MessageDialog(//
+                refreshFailureDialogTitle, refreshFailureMessage));
     }
 
     /**
@@ -450,25 +450,25 @@ public class FilterModelAwareListSelectionHandler<T> extends ListSelectionListen
      */
     private void executeRefreshCommand() {
 
-	// (JAF), 20090329, delegar la selección en un comando para beneficiarse
-	// de sus interceptores y políticas
-	// try {
-	this.getMasterForm().getRefreshCommand().execute(//
-		FilterModelAwareListSelectionHandler.REFRESH_COMMAND_PARAMETERS//
-		);
+        // (JAF), 20090329, delegar la selección en un comando para beneficiarse
+        // de sus interceptores y políticas
+        // try {
+        this.getMasterForm().getRefreshCommand().execute(//
+                FilterModelAwareListSelectionHandler.REFRESH_COMMAND_PARAMETERS//
+                );
 
-	/*
-	 * (JAF), 20090730, es preferible delegar la gestión del error en un exception handler
-	 */
-	// } catch (Throwable t) {
-	// // (JAF), 20090630, tratar las situaciones de error ya que de otro
-	// // modo el cliente se queda inestable
-	// this.getMasterForm().keepAliveAfterFailure();
-	//
-	// // Manejar la excepción (Aunque quizás hubiera sido mejor
-	// // relanzarla)
-	// RcpMain.handleException(t);
-	// }
+        /*
+         * (JAF), 20090730, es preferible delegar la gestión del error en un exception handler
+         */
+        // } catch (Throwable t) {
+        // // (JAF), 20090630, tratar las situaciones de error ya que de otro
+        // // modo el cliente se queda inestable
+        // this.getMasterForm().keepAliveAfterFailure();
+        //
+        // // Manejar la excepción (Aunque quizás hubiera sido mejor
+        // // relanzarla)
+        // RcpMain.handleException(t);
+        // }
     }
 
     /**
@@ -494,32 +494,32 @@ public class FilterModelAwareListSelectionHandler<T> extends ListSelectionListen
     @SuppressWarnings("unchecked")
     private void handleSelection(int[] originalIdxs, int[] filteredIdxs, Object[] selection) {
 
-	// (JAF), 20090721, ha sido necesario cambiar la signatura de "T[]
-	// selection" a "Object[]" selection para evitar errores en tiempo de
-	// ejecución con los castings
+        // (JAF), 20090721, ha sido necesario cambiar la signatura de "T[]
+        // selection" a "Object[]" selection para evitar errores en tiempo de
+        // ejecución con los castings
 
-	final Boolean isSingleSelection = (filteredIdxs.length == 1);
+        final Boolean isSingleSelection = (filteredIdxs.length == 1);
 
-	// Desinstalar el selectionHandler temporalmente para actualizar por
-	// una parte la masterEventList y por otra la selección en la tabla
-	// maestra (este último punto se hace necesario por el empleo de
-	// VLJTable).
-	this.uninstallSelectionHandler();
-	this.getMasterTable().clearSelection();
-	for (int i = 0; i < originalIdxs.length; ++i) {
-	    this.getMasterForm().getMasterEventList().set(//
-		    originalIdxs[i], selection[i]);
-	}
-	for (int i = 0; i < originalIdxs.length; ++i) {
-	    this.getMasterTable().addRowSelectionInterval(//
-		    filteredIdxs[i], filteredIdxs[i]);
-	}
-	this.installSelectionHandler();
+        // Desinstalar el selectionHandler temporalmente para actualizar por
+        // una parte la masterEventList y por otra la selección en la tabla
+        // maestra (este último punto se hace necesario por el empleo de
+        // VLJTable).
+        this.uninstallSelectionHandler();
+        this.getMasterTable().clearSelection();
+        for (int i = 0; i < originalIdxs.length; ++i) {
+            this.getMasterForm().getMasterEventList().set(//
+                    originalIdxs[i], selection[i]);
+        }
+        for (int i = 0; i < originalIdxs.length; ++i) {
+            this.getMasterTable().addRowSelectionInterval(//
+                    filteredIdxs[i], filteredIdxs[i]);
+        }
+        this.installSelectionHandler();
 
-	// Si la selección es simple consultar al usuario si se debe continuar
-	if (isSingleSelection) {
-	    this.maybeChangeSelection(originalIdxs[0]);
-	}
+        // Si la selección es simple consultar al usuario si se debe continuar
+        if (isSingleSelection) {
+            this.maybeChangeSelection(originalIdxs[0]);
+        }
     }
 
     /**
@@ -533,23 +533,23 @@ public class FilterModelAwareListSelectionHandler<T> extends ListSelectionListen
      * @author <a href = "mailto:julio.arguello@gmail.com" >Julio Argüello (JAF)</a>
      */
     private static class CustomApplicationServicesAccessor extends ApplicationServicesAccessor {
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected String getMessage(String[] messageCodes) {
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        protected String getMessage(String[] messageCodes) {
 
-	    return super.getMessage(messageCodes);
-	}
+            return super.getMessage(messageCodes);
+        }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected String getMessage(String[] messageCodes, Object[] args) {
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        protected String getMessage(String[] messageCodes, Object[] args) {
 
-	    return super.getMessage(messageCodes, args);
-	}
+            return super.getMessage(messageCodes, args);
+        }
     }
 
     /**
@@ -560,111 +560,110 @@ public class FilterModelAwareListSelectionHandler<T> extends ListSelectionListen
      */
     private class DirtyConfirmationDialog extends ConfirmationDialog {
 
-	/**
-	 * El nuevo índice a confirmar.
-	 */
-	private int newIndex = -1;
+        /**
+         * El nuevo índice a confirmar.
+         */
+        private int newIndex = -1;
 
-	/**
-	 * Construye el diálogo a partir de su título y mensaje.
-	 * 
-	 * @param title
-	 *            el título.
-	 * @param message
-	 *            el mensaje.
-	 */
-	public DirtyConfirmationDialog(String title, String message) {
+        /**
+         * Construye el diálogo a partir de su título y mensaje.
+         * 
+         * @param title
+         *            el título.
+         * @param message
+         *            el mensaje.
+         */
+        public DirtyConfirmationDialog(String title, String message) {
 
-	    super(title, message);
-	}
+            super(title, message);
+        }
 
-	/**
-	 * Obtiene el nuevo índice a confirmar.
-	 * 
-	 * @return el índice.
-	 */
-	public int getNewIndex() {
+        /**
+         * Obtiene el nuevo índice a confirmar.
+         * 
+         * @return el índice.
+         */
+        public int getNewIndex() {
 
-	    return this.newIndex;
-	}
+            return this.newIndex;
+        }
 
-	/**
-	 * Estable el nuevo índice a confirmar.
-	 * 
-	 * @param newIndex
-	 *            el índice.
-	 */
-	public void setNewIndex(int newIndex) {
+        /**
+         * Estable el nuevo índice a confirmar.
+         * 
+         * @param newIndex
+         *            el índice.
+         */
+        public void setNewIndex(int newIndex) {
 
-	    this.newIndex = newIndex;
-	}
+            this.newIndex = newIndex;
+        }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected JComponent createDialogContentPane() {
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        protected JComponent createDialogContentPane() {
 
-	    final FormModel detailFormModel = FilterModelAwareListSelectionHandler.//
-	    this.getDetailForm().getFormModel();
+            final FormModel detailFormModel = FilterModelAwareListSelectionHandler.//
+            this.getDetailForm().getFormModel();
 
-	    final String i18nDirtyPropertiesHtmlString = DirtyTrackingUtils.getI18nDirtyPropertiesHtmlString(//
-		    detailFormModel);
+            final String i18nDirtyPropertiesHtmlString = DirtyTrackingUtils.getI18nDirtyPropertiesHtmlString(//
+                    detailFormModel);
 
-	    final JComponent messageAreaPane = super.createDialogContentPane();
-	    final JComponent jFormattedTextField = new JFormattedTextField(i18nDirtyPropertiesHtmlString);
+            final JComponent messageAreaPane = super.createDialogContentPane();
+            final JComponent jFormattedTextField = new JFormattedTextField(i18nDirtyPropertiesHtmlString);
 
-	    final JPanel jPanel = new JPanel(new BorderLayout());
-	    jPanel.add(messageAreaPane, BorderLayout.NORTH);
-	    jPanel.add(jFormattedTextField, BorderLayout.SOUTH);
+            final JPanel jPanel = new JPanel(new BorderLayout());
+            jPanel.add(messageAreaPane, BorderLayout.NORTH);
+            jPanel.add(jFormattedTextField, BorderLayout.SOUTH);
 
-	    return jPanel;
-	}
+            return jPanel;
+        }
 
-	/**
-	 *{@inheritDoc}
-	 */
-	@Override
-	protected void onCancel() {
+        /**
+         *{@inheritDoc}
+         */
+        @Override
+        protected void onCancel() {
 
-	    super.onCancel();
+            super.onCancel();
 
-	    final AbstractDetailForm detailForm = FilterModelAwareListSelectionHandler.this.getDetailForm();
-	    final ListSelectionModel selectionModel = FilterModelAwareListSelectionHandler.this//
-		    .getMasterTable().getSelectionModel();
+            final AbstractDetailForm theDetailForm = FilterModelAwareListSelectionHandler.this.getDetailForm();
+            final ListSelectionModel selectionModel = FilterModelAwareListSelectionHandler.this//
+                    .getMasterTable().getSelectionModel();
 
-	    // Si se está editando un nuevo objeto limpiar la selección, en caso
-	    // contrario establecerla
-	    final int oldIdx = detailForm.getSelectedIndex();
-	    if (detailForm.isEditingNewFormObject()) {
-		selectionModel.clearSelection();
-	    } else {
-		selectionModel.setSelectionInterval(oldIdx, oldIdx);
-	    }
+            // Si se está editando un nuevo objeto limpiar la selección, en caso
+            // contrario establecerla
+            final int oldIdx = theDetailForm.getSelectedIndex();
+            if (theDetailForm.isEditingNewFormObject()) {
+                selectionModel.clearSelection();
+            } else {
+                selectionModel.setSelectionInterval(oldIdx, oldIdx);
+            }
 
-	    // Notificar al manejador
-	    FilterModelAwareListSelectionHandler.this.onCancel(oldIdx);
-	}
+            // Notificar al manejador
+            FilterModelAwareListSelectionHandler.this.onCancel(oldIdx);
+        }
 
-	/**
-	 *{@inheritDoc}
-	 */
-	@Override
-	protected void onConfirm() {
+        /**
+         *{@inheritDoc}
+         */
+        @Override
+        protected void onConfirm() {
 
-	    final AbstractDetailForm detailForm = FilterModelAwareListSelectionHandler.this.getDetailForm();
+            final AbstractDetailForm theDetailForm = FilterModelAwareListSelectionHandler.this.getDetailForm();
 
-	    // Establecer el índice del elemento seleccionado
-	    final int oldIdx = detailForm.getSelectedIndex();
-	    final int newIdx = this.getNewIndex();
-	    detailForm.setSelectedIndex(newIdx);
+            // Establecer el índice del elemento seleccionado
+            final int oldIdx = theDetailForm.getSelectedIndex();
+            final int newIdx = this.getNewIndex();
+            theDetailForm.setSelectedIndex(newIdx);
 
-	    // (JAF), 20090630, limpiar el dirty antes de seleccionar
-	    DirtyTrackingUtils.clearDirty(FilterModelAwareListSelectionHandler.//
-		    this.getDetailForm().getFormModel());
+            // (JAF), 20090630, limpiar el dirty antes de seleccionar
+            DirtyTrackingUtils.clearDirty(FilterModelAwareListSelectionHandler.this.getDetailForm().getFormModel());
 
-	    // Notificar al manejador
-	    FilterModelAwareListSelectionHandler.this.onConfirm(oldIdx, newIdx);
-	}
+            // Notificar al manejador
+            FilterModelAwareListSelectionHandler.this.onConfirm(oldIdx, newIdx);
+        }
     }
 }

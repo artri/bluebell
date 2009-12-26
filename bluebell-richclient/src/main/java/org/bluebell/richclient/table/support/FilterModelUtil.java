@@ -32,7 +32,7 @@ public final class FilterModelUtil {
      */
     private FilterModelUtil() {
 
-	super();
+        super();
     }
 
     /**
@@ -45,26 +45,26 @@ public final class FilterModelUtil {
      */
     public static List<Integer> getFilteredSelectedIdxs(JTable jTable) {
 
-	final List<Integer> filteredIdxs = new ArrayList<Integer>();
+        final List<Integer> filteredIdxs = new ArrayList<Integer>();
 
-	final ListSelectionModel sm = jTable.getSelectionModel();
+        final ListSelectionModel sm = jTable.getSelectionModel();
 
-	// Comprobar que exista al menos un elemento seleccionado.
-	if (sm.isSelectionEmpty()) {
-	    return filteredIdxs;
-	}
+        // Comprobar que exista al menos un elemento seleccionado.
+        if (sm.isSelectionEmpty()) {
+            return filteredIdxs;
+        }
 
-	// Iterar sobre los items seleccionados
-	final int min = sm.getMinSelectionIndex();
-	final int max = sm.getMaxSelectionIndex();
+        // Iterar sobre los items seleccionados
+        final int min = sm.getMinSelectionIndex();
+        final int max = sm.getMaxSelectionIndex();
 
-	for (int idx = max; idx >= min; idx--) {
-	    if (sm.isSelectedIndex(idx)) {
-		filteredIdxs.add(idx);
-	    }
-	}
+        for (int idx = max; idx >= min; idx--) {
+            if (sm.isSelectedIndex(idx)) {
+                filteredIdxs.add(idx);
+            }
+        }
 
-	return filteredIdxs;
+        return filteredIdxs;
     }
 
     /**
@@ -79,26 +79,26 @@ public final class FilterModelUtil {
     @SuppressWarnings("unchecked")
     public static List<Integer> getOriginalSelectedIdxs(final JTable jTable) {
 
-	final List<Integer> filteresIdxs = FilterModelUtil.getFilteredSelectedIdxs(jTable);
-	final List<Integer> originalIdxs = (List<Integer>) CollectionUtils.collect(//
-		filteresIdxs, new Transformer() {
+        final List<Integer> filteresIdxs = FilterModelUtil.getFilteredSelectedIdxs(jTable);
+        final List<Integer> originalIdxs = (List<Integer>) CollectionUtils.collect(//
+                filteresIdxs, new Transformer() {
 
-		    public Object transform(Object input) {
+                    public Object transform(Object input) {
 
-			return FilterModelUtil.getRealRowNumber(//
-				jTable.getModel(), (Integer) input);
-		    }
+                        return FilterModelUtil.getRealRowNumber(//
+                                jTable.getModel(), (Integer) input);
+                    }
 
-		});
+                });
 
-	Collections.sort(originalIdxs, new Comparator<Integer>() {
-	    public int compare(Integer o1, Integer o2) {
+        Collections.sort(originalIdxs, new Comparator<Integer>() {
+            public int compare(Integer o1, Integer o2) {
 
-		return o1.compareTo(o2) * -1;
-	    }
-	});
+                return o1.compareTo(o2) * -1;
+            }
+        });
 
-	return originalIdxs;
+        return originalIdxs;
     }
 
     /**
@@ -113,14 +113,14 @@ public final class FilterModelUtil {
      */
     public static int getRealRowNumber(TableModel tableModel, int indexInFilterModel) {
 
-	if (indexInFilterModel < 0) {
-	    return indexInFilterModel;
-	}
-//	else if (tableModel instanceof FilterModel) {
-//	    return ((FilterModel) tableModel).getSourceRow(indexInFilterModel);
-//	}
+        if (indexInFilterModel < 0) {
+            return indexInFilterModel;
+        }
+        // else if (tableModel instanceof FilterModel) {
+        // return ((FilterModel) tableModel).getSourceRow(indexInFilterModel);
+        // }
 
-	return indexInFilterModel;
+        return indexInFilterModel;
     }
 
     /**
@@ -135,14 +135,14 @@ public final class FilterModelUtil {
      */
     public static int[] getRealRowNumbers(TableModel tableModel, int[] indexesInFilterModel) {
 
-	final int[] indexesInOriginalModel = new int[indexesInFilterModel.length];
+        final int[] indexesInOriginalModel = new int[indexesInFilterModel.length];
 
-	for (int i = 0; i < indexesInFilterModel.length; ++i) {
-	    indexesInOriginalModel[i] = FilterModelUtil.getRealRowNumber(//
-		    tableModel, indexesInFilterModel[i]);
-	}
+        for (int i = 0; i < indexesInFilterModel.length; ++i) {
+            indexesInOriginalModel[i] = FilterModelUtil.getRealRowNumber(//
+                    tableModel, indexesInFilterModel[i]);
+        }
 
-	return indexesInOriginalModel;
+        return indexesInOriginalModel;
     }
 
     /**
@@ -158,25 +158,25 @@ public final class FilterModelUtil {
      */
     public static <T> List<T> getRowsAsViewed(TableModel tableModel, EventList<T> masterEventList) {
 
-	// TODO, (JAF), 20080611, el hecho de pasar como parámetro
-	// masterEventList quizás rompa la encapsulación, pero se ha hecho así
-	// por simplicidad. Quizás sea posible obtenerlas a partir del
-	// FilterModel.
+        // TODO, (JAF), 20080611, el hecho de pasar como parámetro
+        // masterEventList quizás rompa la encapsulación, pero se ha hecho así
+        // por simplicidad. Quizás sea posible obtenerlas a partir del
+        // FilterModel.
 
-//	if (tableModel instanceof FilterModel) {
-//	    final List<T> rows = new ArrayList<T>();
-//
-//	    final FilterModel filterModel = (FilterModel) tableModel;
-//	    for (int i = 0; i < filterModel.getRowCount(); ++i) {
-//		final int sourceRow = filterModel.getSourceRow(i);
-//		final T t = masterEventList.get(sourceRow);
-//		rows.add(t);
-//	    }
-//
-//	    return rows;
-//	}
+        // if (tableModel instanceof FilterModel) {
+        // final List<T> rows = new ArrayList<T>();
+        //
+        // final FilterModel filterModel = (FilterModel) tableModel;
+        // for (int i = 0; i < filterModel.getRowCount(); ++i) {
+        // final int sourceRow = filterModel.getSourceRow(i);
+        // final T t = masterEventList.get(sourceRow);
+        // rows.add(t);
+        // }
+        //
+        // return rows;
+        // }
 
-	return masterEventList;
+        return masterEventList;
     }
 
     /**
@@ -197,36 +197,36 @@ public final class FilterModelUtil {
      */
     public static <T> void replace(TableModel tableModel, EventList<T> masterEventList, Collection<T> entities) {
 
-	// TODO, (JAF), 20081002, el hecho de pasar como parámetro
-	// masterEventList quizás rompa la encapsulación, pero se ha hecho así
-	// por simplicidad. Quizás sea posible obtenerlas a partir del
-	// FilterModel.
+        // TODO, (JAF), 20081002, el hecho de pasar como parámetro
+        // masterEventList quizás rompa la encapsulación, pero se ha hecho así
+        // por simplicidad. Quizás sea posible obtenerlas a partir del
+        // FilterModel.
 
-	// Obtener el table model envuelto si es que lo hubiera
-	final GlazedTableModel glazedTableModel = FilterModelUtil.unwrapTableModel(tableModel);
+        // Obtener el table model envuelto si es que lo hubiera
+        final GlazedTableModel glazedTableModel = FilterModelUtil.unwrapTableModel(tableModel);
 
-	if (glazedTableModel != null) {
-	    final TableModelListener[] listeners = glazedTableModel.getTableModelListeners();
+        if (glazedTableModel != null) {
+            final TableModelListener[] listeners = glazedTableModel.getTableModelListeners();
 
-	    // Desinstalar los listeners del modelo de la tabla.
-	    for (final TableModelListener listener : listeners) {
-		glazedTableModel.removeTableModelListener(listener);
-	    }
+            // Desinstalar los listeners del modelo de la tabla.
+            for (final TableModelListener listener : listeners) {
+                glazedTableModel.removeTableModelListener(listener);
+            }
 
-	    // Reemplazar las entidades de la tabla.
-	    // Estas dos operaciones son casi igual de pesadas pero no es
-	    // posible fusionarlas.
-	    masterEventList.clear();
-	    masterEventList.addAll(entities);
+            // Reemplazar las entidades de la tabla.
+            // Estas dos operaciones son casi igual de pesadas pero no es
+            // posible fusionarlas.
+            masterEventList.clear();
+            masterEventList.addAll(entities);
 
-	    // Instalar de nuevo los listeners.
-	    for (final TableModelListener listener : listeners) {
-		glazedTableModel.addTableModelListener(listener);
-	    }
+            // Instalar de nuevo los listeners.
+            for (final TableModelListener listener : listeners) {
+                glazedTableModel.addTableModelListener(listener);
+            }
 
-	    // Notificar que se ha producido un cambio.
-	    glazedTableModel.fireTableDataChanged();
-	}
+            // Notificar que se ha producido un cambio.
+            glazedTableModel.fireTableDataChanged();
+        }
     }
 
     /**
@@ -248,32 +248,32 @@ public final class FilterModelUtil {
      */
     @SuppressWarnings("unchecked")
     public static <Q> void setSelectedEntities(EventList<Q> eventList, JTable table, Collection<Q> entities,
-	    Boolean addIfNotFound) {
+            Boolean addIfNotFound) {
 
-	// Si la entidad no pertenece a la event list entonces añadirla.
-	for (final Q entity : entities) {
-	    final int foundAt = eventList.indexOf(entity);
-	    if (foundAt != -1) {
-		eventList.set(foundAt, entity);
-	    } else if (addIfNotFound) {
-		eventList.add(entity);
-	    }
-	}
+        // Si la entidad no pertenece a la event list entonces añadirla.
+        for (final Q entity : entities) {
+            final int foundAt = eventList.indexOf(entity);
+            if (foundAt != -1) {
+                eventList.set(foundAt, entity);
+            } else if (addIfNotFound) {
+                eventList.add(entity);
+            }
+        }
 
-	// Obtener la posición de la entidad relativa al orden con el que el
-	// usuario las visualiza.
-	final List viewedRows = FilterModelUtil.getRowsAsViewed(table.getModel(), eventList);
+        // Obtener la posición de la entidad relativa al orden con el que el
+        // usuario las visualiza.
+        final List viewedRows = FilterModelUtil.getRowsAsViewed(table.getModel(), eventList);
 
-	// Limpiar la selección
-	table.clearSelection();
-	for (final Q entity : entities) {
-	    final int indexToSelect = viewedRows.indexOf(entity);
+        // Limpiar la selección
+        table.clearSelection();
+        for (final Q entity : entities) {
+            final int indexToSelect = viewedRows.indexOf(entity);
 
-	    // Seleccionar la fila referenciada por el índice obtenido
-	    if (indexToSelect >= 0) {
-		table.addRowSelectionInterval(indexToSelect, indexToSelect);
-	    }
-	}
+            // Seleccionar la fila referenciada por el índice obtenido
+            if (indexToSelect >= 0) {
+                table.addRowSelectionInterval(indexToSelect, indexToSelect);
+            }
+        }
     }
 
     /**
@@ -293,24 +293,24 @@ public final class FilterModelUtil {
     @SuppressWarnings("unchecked")
     public static <Q> void setSelectedEntity(EventList<Q> eventList, JTable table, Q entity) {
 
-	// Si la entidad no pertenece a la event list entonces añadirla.
-	final int foundAt = eventList.indexOf(entity);
-	if (foundAt != -1) {
-	    // JAF, 20090325, si la encuentra la reestablece
-	    eventList.set(foundAt, entity);
-	} else {
-	    eventList.add(entity);
-	}
+        // Si la entidad no pertenece a la event list entonces añadirla.
+        final int foundAt = eventList.indexOf(entity);
+        if (foundAt != -1) {
+            // JAF, 20090325, si la encuentra la reestablece
+            eventList.set(foundAt, entity);
+        } else {
+            eventList.add(entity);
+        }
 
-	// Obtener la posición de la entidad relativa al orden con el que el
-	// usuario las visualiza.
-	final List viewedRows = FilterModelUtil.getRowsAsViewed(table.getModel(), eventList);
-	final int indexToSelect = viewedRows.indexOf(entity);
+        // Obtener la posición de la entidad relativa al orden con el que el
+        // usuario las visualiza.
+        final List viewedRows = FilterModelUtil.getRowsAsViewed(table.getModel(), eventList);
+        final int indexToSelect = viewedRows.indexOf(entity);
 
-	// Seleccionar la fila referenciada por el índice obtenido.
-	if (indexToSelect >= 0) {
-	    table.setRowSelectionInterval(indexToSelect, indexToSelect);
-	}
+        // Seleccionar la fila referenciada por el índice obtenido.
+        if (indexToSelect >= 0) {
+            table.setRowSelectionInterval(indexToSelect, indexToSelect);
+        }
     }
 
     /**
@@ -324,16 +324,18 @@ public final class FilterModelUtil {
      */
     private static GlazedTableModel unwrapTableModel(TableModel tableModel) {
 
-	// TODO delete dependency to FilterModel and improve this code
-	return (GlazedTableModel) tableModel;
-	
-//	if (!(tableModel instanceof FilterModel)) {
-//	    return null;
-//	}
-//
-//	// Obtener y retornar el modelo envuelto si es del tipo apropiado
-//	final TableModel wrappedTableModel = ((FilterModel) tableModel).getModel();
-//
-//	return wrappedTableModel instanceof GlazedTableModel ? (GlazedTableModel) wrappedTableModel : null;
+        // TODO delete dependency to FilterModel and improve this code
+        return (GlazedTableModel) tableModel;
+
+        // if (!(tableModel instanceof FilterModel)) {
+        // return null;
+        // }
+        //
+        // // Obtener y retornar el modelo envuelto si es del tipo apropiado
+        // final TableModel wrappedTableModel = ((FilterModel)
+        // tableModel).getModel();
+        //
+        // return wrappedTableModel instanceof GlazedTableModel ?
+        // (GlazedTableModel) wrappedTableModel : null;
     }
 }

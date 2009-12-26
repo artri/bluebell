@@ -42,9 +42,9 @@ public class ProblemsTable {
      */
     public ProblemsTable() {
 
-	this.eventList = new BasicEventList<ProblemBean>();
-	this.modelProblems = new HashMap<String, Collection<ProblemBean>>();
-	this.validationProblems = new HashMap<String, Collection<ProblemBean>>();
+        this.eventList = new BasicEventList<ProblemBean>();
+        this.modelProblems = new HashMap<String, Collection<ProblemBean>>();
+        this.validationProblems = new HashMap<String, Collection<ProblemBean>>();
     }
 
     /**
@@ -58,8 +58,8 @@ public class ProblemsTable {
      */
     public final void addModelProblems(final String id, final Collection<Problem> problems) {
 
-	this.modelProblems.put(id, this.wrapProblems(problems));
-	this.refreshEventList();
+        this.modelProblems.put(id, this.wrapProblems(problems));
+        this.refreshEventList();
     }
 
     /**
@@ -73,8 +73,8 @@ public class ProblemsTable {
      */
     public final void addValidationProblems(final String id, final Collection<Problem> problems) {
 
-	this.validationProblems.put(id, this.wrapProblems(problems));
-	this.refreshEventList();
+        this.validationProblems.put(id, this.wrapProblems(problems));
+        this.refreshEventList();
     }
 
     /**
@@ -82,9 +82,9 @@ public class ProblemsTable {
      */
     public final void clear() {
 
-	this.modelProblems.clear();
-	this.validationProblems.clear();
-	this.eventList.clear();
+        this.modelProblems.clear();
+        this.validationProblems.clear();
+        this.eventList.clear();
     }
 
     /**
@@ -92,8 +92,8 @@ public class ProblemsTable {
      */
     public final void clearModelErrors() {
 
-	this.modelProblems.clear();
-	this.refreshEventList();
+        this.modelProblems.clear();
+        this.refreshEventList();
     }
 
     /**
@@ -101,8 +101,8 @@ public class ProblemsTable {
      */
     public final void clearValidationErrors() {
 
-	this.validationProblems.clear();
-	this.refreshEventList();
+        this.validationProblems.clear();
+        this.refreshEventList();
     }
 
     /**
@@ -112,7 +112,7 @@ public class ProblemsTable {
      */
     public final EventList<ProblemBean> getEventList() {
 
-	return this.eventList;
+        return this.eventList;
     }
 
     /**
@@ -120,18 +120,18 @@ public class ProblemsTable {
      */
     private void refreshEventList() {
 
-	// Se limpia la EventList
-	this.eventList.clear();
+        // Se limpia la EventList
+        this.eventList.clear();
 
-	// Se agregan los problemas del Modelo.
-	for (final Collection<ProblemBean> problems : this.modelProblems.values()) {
-	    this.eventList.addAll(problems);
-	}
+        // Se agregan los problemas del Modelo.
+        for (final Collection<ProblemBean> problems : this.modelProblems.values()) {
+            this.eventList.addAll(problems);
+        }
 
-	// Se agregan los problemas de validación
-	for (final Collection<ProblemBean> problems : this.validationProblems.values()) {
-	    this.eventList.addAll(problems);
-	}
+        // Se agregan los problemas de validación
+        for (final Collection<ProblemBean> problems : this.validationProblems.values()) {
+            this.eventList.addAll(problems);
+        }
     }
 
     /**
@@ -144,12 +144,12 @@ public class ProblemsTable {
      */
     private Collection<ProblemBean> wrapProblems(final Collection<Problem> problems) {
 
-	final Collection<ProblemBean> problemBeans = new ArrayList<ProblemBean>();
+        final Collection<ProblemBean> problemBeans = new ArrayList<ProblemBean>();
 
-	for (final Problem problem : problems) {
-	    problemBeans.add(new ProblemBean(problem));
-	}
+        for (final Problem problem : problems) {
+            problemBeans.add(new ProblemBean(problem));
+        }
 
-	return problemBeans;
+        return problemBeans;
     }
 }

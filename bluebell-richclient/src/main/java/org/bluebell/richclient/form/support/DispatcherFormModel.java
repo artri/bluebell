@@ -1,6 +1,5 @@
 package org.bluebell.richclient.form.support;
 
-import org.bluebell.richclient.form.BbDispatcherForm;
 import org.bluebell.richclient.form.util.BbDefaultFormModel;
 import org.springframework.binding.form.FormModel;
 import org.springframework.binding.form.support.DefaultFormModel;
@@ -9,7 +8,7 @@ import org.springframework.richclient.form.AbstractForm;
 
 /**
  * Modelo que delega la ejecución de alguno de sus métodos en un formulario (Pensado para formularios de tipo
- * {@link BbDispatcherForm}).
+ * {@link org.bluebell.richclient.form.BbDispatcherForm}).
  * <p>
  * Los métodos delegados son:
  * <ul>
@@ -54,10 +53,10 @@ public class DispatcherFormModel extends BbDefaultFormModel {
      */
     public DispatcherFormModel(ValueModel valueModel, AbstractForm delegateForm) {
 
-	super(valueModel);
+        super(valueModel);
 
-	this.setId(DispatcherFormModel.FORM_MODEL_ID);
-	this.delegateForm = delegateForm;
+        this.setId(DispatcherFormModel.FORM_MODEL_ID);
+        this.delegateForm = delegateForm;
     }
 
     /**
@@ -70,7 +69,7 @@ public class DispatcherFormModel extends BbDefaultFormModel {
     // "public"
     public final void doInternalReset() {
 
-	super.reset();
+        super.reset();
     }
 
     /**
@@ -83,7 +82,7 @@ public class DispatcherFormModel extends BbDefaultFormModel {
     // "public"
     public final void doInternalRevert() {
 
-	super.revert();
+        super.revert();
     }
 
     /**
@@ -99,7 +98,7 @@ public class DispatcherFormModel extends BbDefaultFormModel {
     // "public"
     public final void doInternalSetEnabled(boolean enabled) {
 
-	super.setEnabled(enabled);
+        super.setEnabled(enabled);
     }
 
     /**
@@ -109,7 +108,7 @@ public class DispatcherFormModel extends BbDefaultFormModel {
      */
     public AbstractForm getDelegateForm() {
 
-	return this.delegateForm;
+        return this.delegateForm;
     }
 
     /**
@@ -121,33 +120,34 @@ public class DispatcherFormModel extends BbDefaultFormModel {
     @Override
     public boolean isDirty() {
 
-	return this.delegateForm.isDirty();
+        return this.delegateForm.isDirty();
     }
 
     /**
      * Resetea el modelo e invoca a {@link AbstractForm#reset()} sobre el formulario delegado.
      * 
-     * @see BbDispatcherForm#reset()
+     * @see org.bluebell.richclient.form.BbDispatcherForm#reset()
      */
     @Override
     public void reset() {
 
-	// (JAF), 20080914, delegateForm#reset() executes this.doInternalReset()
-	// this.doInternalReset();
-	this.delegateForm.reset();
+        // (JAF), 20080914, delegateForm#reset() executes this.doInternalReset()
+        // this.doInternalReset();
+        this.delegateForm.reset();
     }
 
     /**
      * Deshace los cambios sobre el modelo e invoca a {@link AbstractForm#revert()} sobre el formulario delegado.
      * 
-     * @see BbDispatcherForm#revert()
+     * @see org.bluebell.richclient.form.BbDispatcherForm#revert()
      */
     @Override
     public void revert() {
 
-	// (JAF), 20080914, delegateForm#revert() executes this.doInternalRevert();
-	// this.doInternalRevert();
-	this.delegateForm.revert();
+        // (JAF), 20080914, delegateForm#revert() executes
+        // this.doInternalRevert();
+        // this.doInternalRevert();
+        this.delegateForm.revert();
     }
 
     /**
@@ -157,14 +157,14 @@ public class DispatcherFormModel extends BbDefaultFormModel {
      * @param enabled
      *            <em>flag</em> indicando si se ha de habilitar el modelo.
      * 
-     * @see BbDispatcherForm#setEnabled(boolean)
+     * @see org.bluebell.richclient.form.BbDispatcherForm#setEnabled(boolean)
      */
     @Override
     public void setEnabled(boolean enabled) {
 
-	// (JAF), 20080914, delegateForm#setEnabled() executes setEnabled
-	// this.doInternalSetEnabled(enabled);
-	this.delegateForm.setEnabled(enabled);
+        // (JAF), 20080914, delegateForm#setEnabled() executes setEnabled
+        // this.doInternalSetEnabled(enabled);
+        this.delegateForm.setEnabled(enabled);
     }
 
     /**
@@ -174,13 +174,13 @@ public class DispatcherFormModel extends BbDefaultFormModel {
      * @param formObject
      *            el objeto a establecer.
      * 
-     * @see BbDispatcherForm#setFormObject(Object)
+     * @see org.bluebell.richclient.form.BbDispatcherForm#setFormObject(Object)
      */
     @Override
     public void setFormObject(Object formObject) {
 
-	// (JAF), 20080914, delegateForm#setFormObject() executes setFormObject
-	this.delegateForm.setFormObject(formObject);
+        // (JAF), 20080914, delegateForm#setFormObject() executes setFormObject
+        this.delegateForm.setFormObject(formObject);
     }
 
     /**
@@ -194,11 +194,12 @@ public class DispatcherFormModel extends BbDefaultFormModel {
     @Override
     public void setValidating(boolean validating) {
 
-	// Validation on children checks parent form model validating state at first
-	super.setValidating(validating);
-	for (final FormModel childFormModel : this.getChildren()) {
-	    ((DefaultFormModel) childFormModel).setValidating(validating);
-	}
+        // Validation on children checks parent form model validating state at
+        // first
+        super.setValidating(validating);
+        for (final FormModel childFormModel : this.getChildren()) {
+            ((DefaultFormModel) childFormModel).setValidating(validating);
+        }
     }
 
     /**
@@ -209,12 +210,13 @@ public class DispatcherFormModel extends BbDefaultFormModel {
     @Override
     public void validate() {
 
-	// (JAF), 20090914, this call is not needed anymore: delegate form model should not validate itself, it's just a
-	// dispatcher to the child form models
-	// super.validate();
-	for (final FormModel childFormModel : this.getChildren()) {
-	    ((DefaultFormModel) childFormModel).validate();
-	}
+        // (JAF), 20090914, this call is not needed anymore: delegate form model
+        // should not validate itself, it's just a
+        // dispatcher to the child form models
+        // super.validate();
+        for (final FormModel childFormModel : this.getChildren()) {
+            ((DefaultFormModel) childFormModel).validate();
+        }
     }
 
     /**
@@ -227,6 +229,6 @@ public class DispatcherFormModel extends BbDefaultFormModel {
      */
     protected final void doInternalSetFormObject(Object formObject) {
 
-	super.setFormObject(formObject);
+        super.setFormObject(formObject);
     }
 }

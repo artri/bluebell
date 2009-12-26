@@ -16,7 +16,7 @@ public class PersonMasterForm extends AbstractBb2TableMasterForm<Person> {
      */
     public PersonMasterForm() {
 
-	super("personMasterForm", Person.class);
+        super("personMasterForm", Person.class);
     }
 
     /**
@@ -25,7 +25,7 @@ public class PersonMasterForm extends AbstractBb2TableMasterForm<Person> {
     @Override
     protected Person doDelete(Person person) {
 
-	return person;
+        return person;
     }
 
     /**
@@ -34,7 +34,7 @@ public class PersonMasterForm extends AbstractBb2TableMasterForm<Person> {
     @Override
     protected Person doInsert(Person person) {
 
-	return person;
+        return person;
     }
 
     /**
@@ -43,7 +43,7 @@ public class PersonMasterForm extends AbstractBb2TableMasterForm<Person> {
     @Override
     protected Person doRefresh(Person person) {
 
-	return person;
+        return person;
     }
 
     /**
@@ -52,7 +52,7 @@ public class PersonMasterForm extends AbstractBb2TableMasterForm<Person> {
     @Override
     protected Person doUpdate(Person person) {
 
-	return person;
+        return person;
     }
 
     /**
@@ -61,6 +61,6 @@ public class PersonMasterForm extends AbstractBb2TableMasterForm<Person> {
     @Override
     protected String[] getColumnPropertyNames() {
 
-	return new String[] { "name", "age", "name", "age", "name", "age", "name", "age" };
+        return new String[] { "name", "age", "name", "age", "name", "age", "name", "age" };
     }
 }

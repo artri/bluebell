@@ -34,9 +34,9 @@ public class TestBbPageComponentsConfigurer extends AbstractBbSamplesTests {
     @Test
     public void testMasterViewDescriptor() {
 
-	this.initTest(new String[] { AbstractBbSamplesTests.MASTER_VIEW_DESCRIPTOR_BEAN_NAME });
+        this.initTest(new String[] { AbstractBbSamplesTests.MASTER_VIEW_DESCRIPTOR_BEAN_NAME });
 
-	this.assertViewDescriptors(Boolean.FALSE, Boolean.TRUE, Boolean.TRUE, Boolean.TRUE);
+        this.assertViewDescriptors(Boolean.FALSE, Boolean.TRUE, Boolean.TRUE, Boolean.TRUE);
     }
 
     /**
@@ -45,9 +45,9 @@ public class TestBbPageComponentsConfigurer extends AbstractBbSamplesTests {
     @Test
     public void testDetailViewDescriptor() {
 
-	this.initTest(new String[] { AbstractBbSamplesTests.DETAIL_VIEW_DESCRIPTOR_BEAN_NAME });
+        this.initTest(new String[] { AbstractBbSamplesTests.DETAIL_VIEW_DESCRIPTOR_BEAN_NAME });
 
-	this.assertViewDescriptors(Boolean.TRUE, Boolean.FALSE, Boolean.TRUE, Boolean.TRUE);
+        this.assertViewDescriptors(Boolean.TRUE, Boolean.FALSE, Boolean.TRUE, Boolean.TRUE);
     }
 
     /**
@@ -56,9 +56,9 @@ public class TestBbPageComponentsConfigurer extends AbstractBbSamplesTests {
     @Test
     public void testSearchViewDescriptor() {
 
-	this.initTest(new String[] { AbstractBbSamplesTests.SEARCH_VIEW_DESCRIPTOR_BEAN_NAME });
+        this.initTest(new String[] { AbstractBbSamplesTests.SEARCH_VIEW_DESCRIPTOR_BEAN_NAME });
 
-	this.assertViewDescriptors(Boolean.TRUE, Boolean.TRUE, Boolean.FALSE, Boolean.TRUE);
+        this.assertViewDescriptors(Boolean.TRUE, Boolean.TRUE, Boolean.FALSE, Boolean.TRUE);
     }
 
     /**
@@ -67,9 +67,9 @@ public class TestBbPageComponentsConfigurer extends AbstractBbSamplesTests {
     @Test
     public void testValidationViewDescriptor() {
 
-	this.initTest(new String[] { AbstractBbSamplesTests.VALIDATION_VIEW_DESCRIPTOR_BEAN_NAME });
+        this.initTest(new String[] { AbstractBbSamplesTests.VALIDATION_VIEW_DESCRIPTOR_BEAN_NAME });
 
-	this.assertViewDescriptors(Boolean.TRUE, Boolean.TRUE, Boolean.TRUE, Boolean.FALSE);
+        this.assertViewDescriptors(Boolean.TRUE, Boolean.TRUE, Boolean.TRUE, Boolean.FALSE);
     }
 
     /**
@@ -78,10 +78,10 @@ public class TestBbPageComponentsConfigurer extends AbstractBbSamplesTests {
     @Test
     public void testMasterAndDetailViewDescriptors() {
 
-	this.initTest(new String[] { AbstractBbSamplesTests.MASTER_VIEW_DESCRIPTOR_BEAN_NAME,
-		AbstractBbSamplesTests.DETAIL_VIEW_DESCRIPTOR_BEAN_NAME });
+        this.initTest(new String[] { AbstractBbSamplesTests.MASTER_VIEW_DESCRIPTOR_BEAN_NAME,
+                AbstractBbSamplesTests.DETAIL_VIEW_DESCRIPTOR_BEAN_NAME });
 
-	this.assertViewDescriptors(Boolean.FALSE, Boolean.FALSE, Boolean.TRUE, Boolean.TRUE);
+        this.assertViewDescriptors(Boolean.FALSE, Boolean.FALSE, Boolean.TRUE, Boolean.TRUE);
     }
 
     /**
@@ -90,10 +90,10 @@ public class TestBbPageComponentsConfigurer extends AbstractBbSamplesTests {
     @Test
     public void testMasterAndDetailViewDescriptorsReverse() {
 
-	this.initTest(new String[] { AbstractBbSamplesTests.DETAIL_VIEW_DESCRIPTOR_BEAN_NAME,
-		AbstractBbSamplesTests.MASTER_VIEW_DESCRIPTOR_BEAN_NAME });
+        this.initTest(new String[] { AbstractBbSamplesTests.DETAIL_VIEW_DESCRIPTOR_BEAN_NAME,
+                AbstractBbSamplesTests.MASTER_VIEW_DESCRIPTOR_BEAN_NAME });
 
-	this.assertViewDescriptors(Boolean.FALSE, Boolean.FALSE, Boolean.TRUE, Boolean.TRUE);
+        this.assertViewDescriptors(Boolean.FALSE, Boolean.FALSE, Boolean.TRUE, Boolean.TRUE);
     }
 
     /**
@@ -102,10 +102,10 @@ public class TestBbPageComponentsConfigurer extends AbstractBbSamplesTests {
     @Test
     public void testMasterAndSearchViewDescriptors() {
 
-	this.initTest(new String[] { AbstractBbSamplesTests.MASTER_VIEW_DESCRIPTOR_BEAN_NAME,
-		AbstractBbSamplesTests.SEARCH_VIEW_DESCRIPTOR_BEAN_NAME });
+        this.initTest(new String[] { AbstractBbSamplesTests.MASTER_VIEW_DESCRIPTOR_BEAN_NAME,
+                AbstractBbSamplesTests.SEARCH_VIEW_DESCRIPTOR_BEAN_NAME });
 
-	this.assertViewDescriptors(Boolean.FALSE, Boolean.TRUE, Boolean.FALSE, Boolean.TRUE);
+        this.assertViewDescriptors(Boolean.FALSE, Boolean.TRUE, Boolean.FALSE, Boolean.TRUE);
     }
 
     /**
@@ -114,10 +114,10 @@ public class TestBbPageComponentsConfigurer extends AbstractBbSamplesTests {
     @Test
     public void testMasterAndSearchViewDescriptorsReverse() {
 
-	this.initTest(new String[] { AbstractBbSamplesTests.SEARCH_VIEW_DESCRIPTOR_BEAN_NAME,
-		AbstractBbSamplesTests.MASTER_VIEW_DESCRIPTOR_BEAN_NAME });
+        this.initTest(new String[] { AbstractBbSamplesTests.SEARCH_VIEW_DESCRIPTOR_BEAN_NAME,
+                AbstractBbSamplesTests.MASTER_VIEW_DESCRIPTOR_BEAN_NAME });
 
-	this.assertViewDescriptors(Boolean.FALSE, Boolean.TRUE, Boolean.FALSE, Boolean.TRUE);
+        this.assertViewDescriptors(Boolean.FALSE, Boolean.TRUE, Boolean.FALSE, Boolean.TRUE);
     }
 
     /**
@@ -126,11 +126,11 @@ public class TestBbPageComponentsConfigurer extends AbstractBbSamplesTests {
     @Test
     public void testFullPage() {
 
-	final List<?> viewDescriptors = this.personPageDescriptor.getViewDescriptors();
-	final String[] viewDescriptorsArray = viewDescriptors.toArray(new String[viewDescriptors.size()]);
-	this.initTest(viewDescriptorsArray);
+        final List<?> viewDescriptors = this.getPersonPageDescriptor().getViewDescriptors();
+        final String[] viewDescriptorsArray = viewDescriptors.toArray(new String[viewDescriptors.size()]);
+        this.initTest(viewDescriptorsArray);
 
-	this.assertViewDescriptors(Boolean.FALSE, Boolean.FALSE, Boolean.FALSE, Boolean.FALSE);
+        this.assertViewDescriptors(Boolean.FALSE, Boolean.FALSE, Boolean.FALSE, Boolean.FALSE);
     }
 
     /**
@@ -139,41 +139,48 @@ public class TestBbPageComponentsConfigurer extends AbstractBbSamplesTests {
     @Test
     public void testFullPageReverse() {
 
-	final List<?> viewDescriptors = this.personPageDescriptor.getViewDescriptors();
-	final String[] viewDescriptorsArray = viewDescriptors.toArray(new String[viewDescriptors.size()]);
-	ArrayUtils.reverse(viewDescriptorsArray);
-	this.initTest(viewDescriptorsArray);
+        final List<?> viewDescriptors = this.getPersonPageDescriptor().getViewDescriptors();
+        final String[] viewDescriptorsArray = viewDescriptors.toArray(new String[viewDescriptors.size()]);
+        ArrayUtils.reverse(viewDescriptorsArray);
+        this.initTest(viewDescriptorsArray);
 
-	this.assertViewDescriptors(Boolean.FALSE, Boolean.FALSE, Boolean.FALSE, Boolean.FALSE);
+        this.assertViewDescriptors(Boolean.FALSE, Boolean.FALSE, Boolean.FALSE, Boolean.FALSE);
     }
 
+    /**
+     * Tests multiple invocations.
+     */
     @Test
     public void testMultipleInvocations() {
 
-	this.testFullPageReverse();
-	this.assertViewDescriptors(Boolean.FALSE, Boolean.FALSE, Boolean.FALSE, Boolean.FALSE);
+        this.testFullPageReverse();
+        this.assertViewDescriptors(Boolean.FALSE, Boolean.FALSE, Boolean.FALSE, Boolean.FALSE);
 
-	new BbPageComponentsConfigurer<Object>().configureApplicationPage(this.applicationPage);
-	this.assertViewDescriptors(Boolean.FALSE, Boolean.FALSE, Boolean.FALSE, Boolean.FALSE);
+        new BbPageComponentsConfigurer<Object>().configureApplicationPage(this.getApplicationPage());
+        this.assertViewDescriptors(Boolean.FALSE, Boolean.FALSE, Boolean.FALSE, Boolean.FALSE);
 
-	new BbPageComponentsConfigurer<Object>().configureApplicationPage(this.applicationPage);
-	this.assertViewDescriptors(Boolean.FALSE, Boolean.FALSE, Boolean.FALSE, Boolean.FALSE);
+        new BbPageComponentsConfigurer<Object>().configureApplicationPage(this.getApplicationPage());
+        this.assertViewDescriptors(Boolean.FALSE, Boolean.FALSE, Boolean.FALSE, Boolean.FALSE);
     }
 
     /**
      * Creates a page with the given view descriptors and show it in the active window.
+     * 
+     * @param viewDescriptorIds
+     *            the view descriptors.
+     * @return the resultant page descriptor.
      */
     private PageDescriptor initTest(String[] viewDescriptorIds) {
 
-	// Create the page descriptor (use diferent id each time)
-	final MultiViewPageDescriptor multiViewPageDescriptor = new MultiViewPageDescriptor();
-	multiViewPageDescriptor.setId(StringUtils.join(viewDescriptorIds));
-	multiViewPageDescriptor.setViewDescriptors(Arrays.asList(viewDescriptorIds));
+        // Create the page descriptor (use diferent id each time)
+        final MultiViewPageDescriptor multiViewPageDescriptor = new MultiViewPageDescriptor();
+        multiViewPageDescriptor.setId(StringUtils.join(viewDescriptorIds));
+        multiViewPageDescriptor.setViewDescriptors(Arrays.asList(viewDescriptorIds));
 
-	// Initialize test variables
-	super.initializeVariables(multiViewPageDescriptor);
+        // Initialize test variables
+        super.initializeVariables(multiViewPageDescriptor);
 
-	return multiViewPageDescriptor;
+        return multiViewPageDescriptor;
     }
 
     /**
@@ -189,50 +196,51 @@ public class TestBbPageComponentsConfigurer extends AbstractBbSamplesTests {
      *            <code>true</code> if validation view is null.
      */
     private void assertViewDescriptors(Boolean masterViewIsNull, Boolean detailViewIsNull, Boolean searchViewIsNull,
-	    Boolean validationViewIsNull) {
+            Boolean validationViewIsNull) {
 
-	// Page views related assertions
-	TestCase.assertTrue(masterViewIsNull == (this.masterView == null));
-	TestCase.assertTrue(detailViewIsNull == (this.detailView == null));
-	TestCase.assertTrue(searchViewIsNull == (this.searchView == null));
-	TestCase.assertTrue(validationViewIsNull == (this.validationView == null));
+        // Page views related assertions
+        TestCase.assertTrue(masterViewIsNull == (this.getMasterView() == null));
+        TestCase.assertTrue(detailViewIsNull == (this.getDetailView() == null));
+        TestCase.assertTrue(searchViewIsNull == (this.getSearchView() == null));
+        TestCase.assertTrue(validationViewIsNull == (this.getValidationView() == null));
 
-	// Master form related assertions
-	final AbstractBb2TableMasterForm<Person> masterForm = this.getBackingForm(this.masterView);
-	final AbstractBbChildForm<Person> detailForm = this.getBackingForm(this.detailView);
-	final AbstractBbSearchForm<Person, ?> searchForm = this.getBackingForm(this.searchView);
-	final BbValidationForm<Person> validationForm = this.getBackingForm(this.validationView);
+        // Master form related assertions
+        final AbstractBb2TableMasterForm<Person> masterForm = this.getBackingForm(this.getMasterView());
+        final AbstractBbChildForm<Person> detailForm = this.getBackingForm(this.getDetailView());
+        final AbstractBbSearchForm<Person, ?> searchForm = this.getBackingForm(this.getSearchView());
+        final BbValidationForm<Person> validationForm = this.getBackingForm(this.getValidationView());
 
-	if (masterForm != null) {
-	    if (detailForm != null) {
-		TestCase.assertTrue(masterForm.getDetailForms().contains(detailForm));
-		TestCase.assertNotNull(this.detailView.getGlobalCommandsAccessor());
-	    } else {
-		TestCase.assertTrue(masterForm.getDetailForms().isEmpty());
-	    }
-	    if (searchForm != null) {
-		TestCase.assertTrue(masterForm.getSearchForms().contains(searchForm));
-		TestCase.assertNotNull(this.searchView.getGlobalCommandsAccessor());
-	    } else {
-		TestCase.assertTrue(masterForm.getSearchForms().isEmpty());
-	    }
-	    if (validationForm != null) {
-		// TODO
-		// TestCase.assertTrue(masterForm.getSearchForms().contains(searchForm));
-		TestCase.assertNotNull(this.validationView.getGlobalCommandsAccessor());
-	    } else {
-		// TODO
-		// TestCase.assertTrue(masterForm.getSearchForms().isEmpty());
-	    }
-	}
-	if (detailForm != null) {
-	    TestCase.assertEquals(masterForm, detailForm.getMasterForm());
-	}
-	if (searchForm != null) {
-	    TestCase.assertEquals(masterForm, searchForm.getMasterForm());
-	}
-	if (validationForm != null) {
-	    TestCase.assertEquals(masterForm, validationForm.getMasterForm());
-	}
+        if (masterForm != null) {
+            if (detailForm != null) {
+                TestCase.assertTrue(masterForm.getDetailForms().contains(detailForm));
+                TestCase.assertNotNull(this.getDetailView().getGlobalCommandsAccessor());
+            } else {
+                TestCase.assertTrue(masterForm.getDetailForms().isEmpty());
+            }
+            if (searchForm != null) {
+                TestCase.assertTrue(masterForm.getSearchForms().contains(searchForm));
+                TestCase.assertNotNull(this.getSearchView().getGlobalCommandsAccessor());
+            } else {
+                TestCase.assertTrue(masterForm.getSearchForms().isEmpty());
+            }
+            if (validationForm != null) {
+                // TODO
+                // TestCase.assertTrue(masterForm.getSearchForms().contains(searchForm));
+                TestCase.assertNotNull(this.getValidationView().getGlobalCommandsAccessor());
+            } else {
+                new String("Avoid CS warnings");
+                // TODO
+                // TestCase.assertTrue(masterForm.getSearchForms().isEmpty());
+            }
+        }
+        if (detailForm != null) {
+            TestCase.assertEquals(masterForm, detailForm.getMasterForm());
+        }
+        if (searchForm != null) {
+            TestCase.assertEquals(masterForm, searchForm.getMasterForm());
+        }
+        if (validationForm != null) {
+            TestCase.assertEquals(masterForm, validationForm.getMasterForm());
+        }
     }
 }
