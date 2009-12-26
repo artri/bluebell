@@ -36,9 +36,9 @@ public class SubstanceSkinChooserComboBox extends AbstractForm {
      */
     public SubstanceSkinChooserComboBox() {
 
-	super();
+        super();
 
-	this.setFormModel(FormModelHelper.createFormModel(new SkinBean()));
+        this.setFormModel(FormModelHelper.createFormModel(new SkinBean()));
     }
 
     /**
@@ -48,18 +48,18 @@ public class SubstanceSkinChooserComboBox extends AbstractForm {
     @Override
     protected JComponent createFormControl() {
 
-	// The backing form object, transformer and value change listener
-	final SkinBean skin = (SkinBean) this.getFormObject();
+        // The backing form object, transformer and value change listener
+        final SkinBean skin = (SkinBean) this.getFormObject();
 
-	// Collect all the skins
-	final Collection<SkinBean> skins = CollectionUtils.collect(SubstanceLookAndFeel.getAllSkins().entrySet(), skin);
+        // Collect all the skins
+        final Collection<SkinBean> skins = CollectionUtils.collect(SubstanceLookAndFeel.getAllSkins().entrySet(), skin);
 
-	// Create the binding
-	final SwingBindingFactory bindingFactory = (SwingBindingFactory) this.getBindingFactory();
-	final Binding binding = bindingFactory.createBoundComboBox("skinBean", skins, "displayName");
-	this.getFormModel().getValueModel(binding.getProperty()).addValueChangeListener(skin);
+        // Create the binding
+        final SwingBindingFactory bindingFactory = (SwingBindingFactory) this.getBindingFactory();
+        final Binding binding = bindingFactory.createBoundComboBox("skinBean", skins, "displayName");
+        this.getFormModel().getValueModel(binding.getProperty()).addValueChangeListener(skin);
 
-	return binding.getControl();
+        return binding.getControl();
     }
 
     /**
@@ -75,181 +75,181 @@ public class SubstanceSkinChooserComboBox extends AbstractForm {
      */
     protected class SkinBean implements Transformer, PropertyChangeListener {
 
-	/**
-	 * The property to bind.
-	 */
-	private SkinBean skinBean;
+        /**
+         * The property to bind.
+         */
+        private SkinBean skinBean;
 
-	/**
-	 * The skin display name.
-	 */
-	private String displayName;
+        /**
+         * The skin display name.
+         */
+        private String displayName;
 
-	/**
-	 * The skin class name.
-	 */
-	private String className;
+        /**
+         * The skin class name.
+         */
+        private String className;
 
-	/**
-	 * Constructs the bean.
-	 */
-	public SkinBean() {
+        /**
+         * Constructs the bean.
+         */
+        public SkinBean() {
 
-	    final SubstanceSkin skin = SubstanceLookAndFeel.getCurrentSkin();
-	    if (skin != null) {
-		this.init(skin.getDisplayName(), skin.getClass().getName());
-	    }
-	}
+            final SubstanceSkin skin = SubstanceLookAndFeel.getCurrentSkin();
+            if (skin != null) {
+                this.init(skin.getDisplayName(), skin.getClass().getName());
+            }
+        }
 
-	/**
-	 * Constructs the bean given the skin display name and class.
-	 * 
-	 * @param displayName
-	 *            the display name.
-	 * @param className
-	 *            the class name.
-	 */
-	public SkinBean(String displayName, String className) {
+        /**
+         * Constructs the bean given the skin display name and class.
+         * 
+         * @param displayName
+         *            the display name.
+         * @param className
+         *            the class name.
+         */
+        public SkinBean(String displayName, String className) {
 
-	    this.init(displayName, className);
-	}
+            this.init(displayName, className);
+        }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@SuppressWarnings("unchecked")
-	public Object transform(Object input) {
+        /**
+         * {@inheritDoc}
+         */
+        @SuppressWarnings("unchecked")
+        public Object transform(Object input) {
 
-	    final Map.Entry<String, SkinInfo> entry = (Map.Entry<String, SkinInfo>) input;
+            final Map.Entry<String, SkinInfo> entry = (Map.Entry<String, SkinInfo>) input;
 
-	    return new SkinBean(entry.getKey(), entry.getValue().getClassName());
-	}
+            return new SkinBean(entry.getKey(), entry.getValue().getClassName());
+        }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public void propertyChange(PropertyChangeEvent evt) {
+        /**
+         * {@inheritDoc}
+         */
+        public void propertyChange(PropertyChangeEvent evt) {
 
-	    final SkinBean skin = (SkinBean) evt.getNewValue();
+            final SkinBean skin = (SkinBean) evt.getNewValue();
 
-	    SwingUtilities.invokeLater(new Runnable() {
+            SwingUtilities.invokeLater(new Runnable() {
 
-		public void run() {
+                public void run() {
 
-		    SubstanceLookAndFeel.setSkin(skin.getClassName());
-		}
-	    });
+                    SubstanceLookAndFeel.setSkin(skin.getClassName());
+                }
+            });
 
-	    // Get back the focus
-	    SubstanceSkinChooserComboBox.this.getControl().requestFocusInWindow();
-	}
+            // Get back the focus
+            SubstanceSkinChooserComboBox.this.getControl().requestFocusInWindow();
+        }
 
-	/**
-	 * Gets the display name.
-	 * 
-	 * @return the display name.
-	 */
-	public String getDisplayName() {
+        /**
+         * Gets the display name.
+         * 
+         * @return the display name.
+         */
+        public String getDisplayName() {
 
-	    return this.displayName;
-	}
+            return this.displayName;
+        }
 
-	/**
-	 * Gets the className.
-	 * 
-	 * @return the className.
-	 */
-	public String getClassName() {
+        /**
+         * Gets the className.
+         * 
+         * @return the className.
+         */
+        public String getClassName() {
 
-	    return this.className;
-	}
+            return this.className;
+        }
 
-	/**
-	 * Gets the skinBean.
-	 * 
-	 * @return the skinBean.
-	 */
-	public SkinBean getSkinBean() {
+        /**
+         * Gets the skinBean.
+         * 
+         * @return the skinBean.
+         */
+        public SkinBean getSkinBean() {
 
-	    return skinBean;
-	}
+            return skinBean;
+        }
 
-	/**
-	 * Sets the skinBean.
-	 * 
-	 * @param skinBean
-	 *            the skinBean to set.
-	 */
-	public void setSkinBean(SkinBean skinBean) {
+        /**
+         * Sets the skinBean.
+         * 
+         * @param skinBean
+         *            the skinBean to set.
+         */
+        public void setSkinBean(SkinBean skinBean) {
 
-	    Assert.notNull(skinBean, "skinBean");
+            Assert.notNull(skinBean, "skinBean");
 
-	    this.skinBean = skinBean;
-	}
+            this.skinBean = skinBean;
+        }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public boolean equals(Object object) {
+        /**
+         * {@inheritDoc}
+         */
+        public boolean equals(Object object) {
 
-	    if (!(object instanceof SkinBean)) {
-		return Boolean.FALSE;
-	    }
+            if (!(object instanceof SkinBean)) {
+                return Boolean.FALSE;
+            }
 
-	    final SkinBean rhs = (SkinBean) object;
-	    return new EqualsBuilder().append(this.getClassName(), rhs.getClassName()).isEquals();
-	}
+            final SkinBean rhs = (SkinBean) object;
+            return new EqualsBuilder().append(this.getClassName(), rhs.getClassName()).isEquals();
+        }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public int hashCode() {
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public int hashCode() {
 
-	    final int hashCode1 = -1756175427;
-	    final int hashCode2 = 2141418625;
+            final int hashCode1 = -1756175427;
+            final int hashCode2 = 2141418625;
 
-	    return new HashCodeBuilder(hashCode1, hashCode2).append(this.getClassName()).toHashCode();
-	}
+            return new HashCodeBuilder(hashCode1, hashCode2).append(this.getClassName()).toHashCode();
+        }
 
-	/**
-	 * Initializes the bean state.
-	 * 
-	 * @param displayName
-	 *            the skin display name.
-	 * @param className
-	 *            the skin class name.
-	 */
-	private void init(String displayName, String className) {
+        /**
+         * Initializes the bean state.
+         * 
+         * @param displayName
+         *            the skin display name.
+         * @param className
+         *            the skin class name.
+         */
+        private void init(String displayName, String className) {
 
-	    this.setDisplayName(displayName);
-	    this.setClassName(className);
-	}
+            this.setDisplayName(displayName);
+            this.setClassName(className);
+        }
 
-	/**
-	 * Sets the display name.
-	 * 
-	 * @param displayName
-	 *            the display name to set.
-	 */
-	private void setDisplayName(String displayName) {
+        /**
+         * Sets the display name.
+         * 
+         * @param displayName
+         *            the display name to set.
+         */
+        private void setDisplayName(String displayName) {
 
-	    Assert.notNull(displayName, "displayName");
+            Assert.notNull(displayName, "displayName");
 
-	    this.displayName = displayName;
-	}
+            this.displayName = displayName;
+        }
 
-	/**
-	 * Sets the className.
-	 * 
-	 * @param className
-	 *            the className to set
-	 */
-	private void setClassName(String className) {
+        /**
+         * Sets the className.
+         * 
+         * @param className
+         *            the className to set
+         */
+        private void setClassName(String className) {
 
-	    Assert.notNull(className, "className");
+            Assert.notNull(className, "className");
 
-	    this.className = className;
-	}
+            this.className = className;
+        }
     }
 }

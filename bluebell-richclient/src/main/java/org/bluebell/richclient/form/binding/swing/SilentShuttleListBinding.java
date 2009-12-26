@@ -60,11 +60,11 @@ public class SilentShuttleListBinding extends ShuttleListBinding {
      *            el <em>path</em> de la propiedad a vincular.
      */
     public SilentShuttleListBinding(final SilentShuttleList list, final FormModel formModel,
-	    final String formPropertyPath) {
+            final String formPropertyPath) {
 
-	super(list, formModel, formPropertyPath);
+        super(list, formModel, formPropertyPath);
 
-	list.setBinding(this);
+        list.setBinding(this);
     }
 
     /**
@@ -79,13 +79,12 @@ public class SilentShuttleListBinding extends ShuttleListBinding {
     @Override
     public void setSelectedItemsHolder(ValueModel selectedItemsHolder) {
 
-	super.setSelectedItemsHolder(selectedItemsHolder);
+        super.setSelectedItemsHolder(selectedItemsHolder);
 
-	this.selectedItemsHolder = selectedItemsHolder;
-	if (this.selectedItemsHolder != null) {
-	    this.selectedItemsHolder.addValueChangeListener(//
-		    this.getValueChangeHandler());
-	}
+        this.selectedItemsHolder = selectedItemsHolder;
+        if (this.selectedItemsHolder != null) {
+            this.selectedItemsHolder.addValueChangeListener(this.getValueChangeHandler());
+        }
     }
 
     /**
@@ -95,8 +94,8 @@ public class SilentShuttleListBinding extends ShuttleListBinding {
     @SuppressWarnings("unchecked")
     protected boolean collectionsEqual(Collection a1, Collection a2) {
 
-	// TODO, 20080916, evaluar la necesidad de utilizar apache commons
-	return super.collectionsEqual(a1, a2);
+        // TODO, 20080916, evaluar la necesidad de utilizar apache commons
+        return super.collectionsEqual(a1, a2);
     }
 
     /**
@@ -105,22 +104,22 @@ public class SilentShuttleListBinding extends ShuttleListBinding {
     @Override
     protected JComponent doBindControl() {
 
-	final ValueModel currentSelectedItemsHolder = this.selectedItemsHolder;
+        final ValueModel currentSelectedItemsHolder = this.selectedItemsHolder;
 
-	// Invocar a super asegurándose de que no establece el value model
-	// mediador, ya que será este método quien lo haga
-	this.setSelectedItemsHolder(null);
+        // Invocar a super asegurándose de que no establece el value model
+        // mediador, ya que será este método quien lo haga
+        this.setSelectedItemsHolder(null);
 
-	this.setShuttleList((ShuttleList) super.doBindControl());
-	if (this.selectedItemsHolder != null) {
-	    this.setSelectedValue(null);
-	    this.getShuttleList().addListSelectionListener(//
-		    this.getListSelectedValueMediator());
-	}
+        this.setShuttleList((ShuttleList) super.doBindControl());
+        if (this.selectedItemsHolder != null) {
+            this.setSelectedValue(null);
+            this.getShuttleList().addListSelectionListener(//
+                    this.getListSelectedValueMediator());
+        }
 
-	this.setSelectedItemsHolder(currentSelectedItemsHolder);
+        this.setSelectedItemsHolder(currentSelectedItemsHolder);
 
-	return this.getShuttleList();
+        return this.getShuttleList();
     }
 
     /**
@@ -129,23 +128,23 @@ public class SilentShuttleListBinding extends ShuttleListBinding {
     @Override
     protected void setSelectedValue(final PropertyChangeListener silentValueChangeHandler) {
 
-	final int[] indices = this.indicesOf(//
-		this.getSelectedItemsHolder().getValue());
+        final int[] indices = this.indicesOf(//
+                this.getSelectedItemsHolder().getValue());
 
-	if (indices.length < 1) {
-	    this.getShuttleList().clearSelection();
-	} else {
-	    final ListSelectionListener listener = this.getListSelectedValueMediator();
+        if (indices.length < 1) {
+            this.getShuttleList().clearSelection();
+        } else {
+            final ListSelectionListener listener = this.getListSelectedValueMediator();
 
-	    this.getShuttleList().removeListSelectionListener(listener);
-	    this.getShuttleList().setSelectedIndices(indices);
-	    this.getShuttleList().addListSelectionListener(listener);
+            this.getShuttleList().removeListSelectionListener(listener);
+            this.getShuttleList().setSelectedIndices(indices);
+            this.getShuttleList().addListSelectionListener(listener);
 
-	    // The selection may now be different than what is reflected in
-	    // collection property if this is SINGLE_INTERVAL_SELECTION, so
-	    // modify if needed...
-	    this.updateSelectionHolderFromList(silentValueChangeHandler);
-	}
+            // The selection may now be different than what is reflected in
+            // collection property if this is SINGLE_INTERVAL_SELECTION, so
+            // modify if needed...
+            this.updateSelectionHolderFromList(silentValueChangeHandler);
+        }
     }
 
     /**
@@ -157,11 +156,11 @@ public class SilentShuttleListBinding extends ShuttleListBinding {
      */
     private ListSelectedValueMediator getListSelectedValueMediator() {
 
-	if (this.listSelectedValueMediator == null) {
-	    this.listSelectedValueMediator = new ListSelectedValueMediator();
-	}
+        if (this.listSelectedValueMediator == null) {
+            this.listSelectedValueMediator = new ListSelectedValueMediator();
+        }
 
-	return this.listSelectedValueMediator;
+        return this.listSelectedValueMediator;
     }
 
     /**
@@ -171,7 +170,7 @@ public class SilentShuttleListBinding extends ShuttleListBinding {
      */
     private ValueModel getSelectedItemsHolder() {
 
-	return this.selectedItemsHolder;
+        return this.selectedItemsHolder;
     }
 
     /**
@@ -181,7 +180,7 @@ public class SilentShuttleListBinding extends ShuttleListBinding {
      */
     private ShuttleList getShuttleList() {
 
-	return this.shuttleList;
+        return this.shuttleList;
     }
 
     /**
@@ -193,11 +192,11 @@ public class SilentShuttleListBinding extends ShuttleListBinding {
      */
     private PropertyChangeListener getValueChangeHandler() {
 
-	if (this.valueChangeHandler == null) {
-	    this.valueChangeHandler = new ValueChangeHandler();
-	}
+        if (this.valueChangeHandler == null) {
+            this.valueChangeHandler = new ValueChangeHandler();
+        }
 
-	return this.valueChangeHandler;
+        return this.valueChangeHandler;
     }
 
     /**
@@ -208,7 +207,7 @@ public class SilentShuttleListBinding extends ShuttleListBinding {
      */
     private void setShuttleList(ShuttleList shuttleList) {
 
-	this.shuttleList = shuttleList;
+        this.shuttleList = shuttleList;
     }
 
     /**
@@ -220,150 +219,138 @@ public class SilentShuttleListBinding extends ShuttleListBinding {
      */
     public static class SilentShuttleList extends ShuttleList {
 
-	/**
-	 * Es una clase <code>Serializable</code>.
-	 */
-	private static final long serialVersionUID = -5739305710971644175L;
+        /**
+         * Es una clase <code>Serializable</code>.
+         */
+        private static final long serialVersionUID = -5739305710971644175L;
 
-	/**
-	 * El binding al que pertenece esta lista.
-	 */
-	private SilentShuttleListBinding binding;
+        /**
+         * El binding al que pertenece esta lista.
+         */
+        private SilentShuttleListBinding binding;
 
-	/**
-	 * El <em>listener</em> a evitar.
-	 */
-	private ListSelectionListener listenerToSkip;
+        /**
+         * El <em>listener</em> a evitar.
+         */
+        private ListSelectionListener listenerToSkip;
 
-	/**
-	 * Construye el control con el botón de edición activo.
-	 */
-	public SilentShuttleList() {
+        /**
+         * Construye el control con el botón de edición activo.
+         */
+        public SilentShuttleList() {
 
-	    super(Boolean.TRUE);
-	}
+            super(Boolean.TRUE);
+        }
 
-	/**
-	 * Obtiene el <em>binding</em> al que pertenece esta lista.
-	 * 
-	 * @return el <em>binding</em> al que pertenece esta lista.
-	 */
-	public SilentShuttleListBinding getBinding() {
+        /**
+         * Obtiene el <em>binding</em> al que pertenece esta lista.
+         * 
+         * @return el <em>binding</em> al que pertenece esta lista.
+         */
+        public SilentShuttleListBinding getBinding() {
 
-	    return this.binding;
-	}
+            return this.binding;
+        }
 
-	/**
-	 * Obtiene el <em>listener</em> a saltarse.
-	 * 
-	 * @return el <em>listener</em> a saltarse.
-	 */
-	public ListSelectionListener getListenerToSkip() {
+        /**
+         * Obtiene el <em>listener</em> a saltarse.
+         * 
+         * @return el <em>listener</em> a saltarse.
+         */
+        public ListSelectionListener getListenerToSkip() {
 
-	    return this.listenerToSkip;
-	}
+            return this.listenerToSkip;
+        }
 
-	/**
-	 * Establece el <em>binding</em> al que pertenece esta lista.
-	 * 
-	 * @param binding
-	 *            el <em>binding</em> al que pertenece esta lista.
-	 */
-	public void setBinding(SilentShuttleListBinding binding) {
+        /**
+         * Establece el <em>binding</em> al que pertenece esta lista.
+         * 
+         * @param binding
+         *            el <em>binding</em> al que pertenece esta lista.
+         */
+        public void setBinding(SilentShuttleListBinding binding) {
 
-	    this.binding = binding;
-	}
+            this.binding = binding;
+        }
 
-	/**
-	 * Establece el <em>listener</em> a saltarse.
-	 * 
-	 * @param listenerToSkip
-	 *            el <em>listener</em> a saltarse.
-	 */
-	public void setListenerToSkip(ListSelectionListener listenerToSkip) {
+        /**
+         * Establece el <em>listener</em> a saltarse.
+         * 
+         * @param listenerToSkip
+         *            el <em>listener</em> a saltarse.
+         */
+        public void setListenerToSkip(ListSelectionListener listenerToSkip) {
 
-	    this.listenerToSkip = listenerToSkip;
-	}
+            this.listenerToSkip = listenerToSkip;
+        }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected void moveAllLeftToRight() {
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        protected void moveAllLeftToRight() {
 
-	    final SilentShuttleListBinding binding = this.getBinding();
+            final SilentShuttleListBinding theBinding = this.getBinding();
 
-	    // Realizar el cambio de forma silenciosa
-	    this.removeListSelectionListener(//
-		    binding.getListSelectedValueMediator());
-	    super.moveAllLeftToRight();
-	    this.addListSelectionListener(//
-		    binding.getListSelectedValueMediator());
+            // Realizar el cambio de forma silenciosa
+            this.removeListSelectionListener(theBinding.getListSelectedValueMediator());
+            super.moveAllLeftToRight();
+            this.addListSelectionListener(theBinding.getListSelectedValueMediator());
 
-	    // Actualizar el value model con los elementos seleccionados
-	    binding.updateSelectionHolderFromList(//
-		    binding.getValueChangeHandler());
-	}
+            // Actualizar el value model con los elementos seleccionados
+            theBinding.updateSelectionHolderFromList(theBinding.getValueChangeHandler());
+        }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected void moveAllRightToLeft() {
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        protected void moveAllRightToLeft() {
 
-	    final SilentShuttleListBinding binding = this.getBinding();
+            final SilentShuttleListBinding theBinding = this.getBinding();
 
-	    // Realizar el cambio de forma silenciosa
-	    this.removeListSelectionListener(//
-		    binding.getListSelectedValueMediator());
-	    super.moveAllRightToLeft();
-	    this.addListSelectionListener(//
-		    binding.getListSelectedValueMediator());
+            // Realizar el cambio de forma silenciosa
+            this.removeListSelectionListener(theBinding.getListSelectedValueMediator());
+            super.moveAllRightToLeft();
+            this.addListSelectionListener(theBinding.getListSelectedValueMediator());
 
-	    // Actualizar el value model con los elementos seleccionados
-	    binding.updateSelectionHolderFromList(//
-		    binding.getValueChangeHandler());
-	}
+            // Actualizar el value model con los elementos seleccionados
+            theBinding.updateSelectionHolderFromList(theBinding.getValueChangeHandler());
+        }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected void moveLeftToRight() {
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        protected void moveLeftToRight() {
 
-	    final SilentShuttleListBinding binding = this.getBinding();
+            final SilentShuttleListBinding theBinding = this.getBinding();
 
-	    // Realizar el cambio de forma silenciosa
-	    this.removeListSelectionListener(//
-		    binding.getListSelectedValueMediator());
-	    super.moveLeftToRight();
-	    this.addListSelectionListener(//
-		    binding.getListSelectedValueMediator());
+            // Realizar el cambio de forma silenciosa
+            this.removeListSelectionListener(theBinding.getListSelectedValueMediator());
+            super.moveLeftToRight();
+            this.addListSelectionListener(theBinding.getListSelectedValueMediator());
 
-	    // Actualizar el value model con los elementos seleccionados
-	    binding.updateSelectionHolderFromList(//
-		    binding.getValueChangeHandler());
-	}
+            // Actualizar el value model con los elementos seleccionados
+            theBinding.updateSelectionHolderFromList(theBinding.getValueChangeHandler());
+        }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected void moveRightToLeft() {
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        protected void moveRightToLeft() {
 
-	    final SilentShuttleListBinding binding = this.getBinding();
+            final SilentShuttleListBinding theBinding = this.getBinding();
 
-	    // Realizar el cambio de forma silenciosa
-	    this.removeListSelectionListener(//
-		    binding.getListSelectedValueMediator());
-	    super.moveRightToLeft();
-	    this.addListSelectionListener(//
-		    binding.getListSelectedValueMediator());
+            // Realizar el cambio de forma silenciosa
+            this.removeListSelectionListener(theBinding.getListSelectedValueMediator());
+            super.moveRightToLeft();
+            this.addListSelectionListener(theBinding.getListSelectedValueMediator());
 
-	    // Actualizar el value model con los elementos seleccionados
-	    binding.updateSelectionHolderFromList(//
-		    binding.getValueChangeHandler());
-	}
+            // Actualizar el value model con los elementos seleccionados
+            theBinding.updateSelectionHolderFromList(theBinding.getValueChangeHandler());
+        }
     }
 
     /**
@@ -377,16 +364,16 @@ public class SilentShuttleListBinding extends ShuttleListBinding {
      */
     private class ListSelectedValueMediator implements ListSelectionListener {
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public void valueChanged(ListSelectionEvent e) {
+        /**
+         * {@inheritDoc}
+         */
+        public void valueChanged(ListSelectionEvent e) {
 
-	    if (!e.getValueIsAdjusting()) {
-		SilentShuttleListBinding.this.updateSelectionHolderFromList(//
-			SilentShuttleListBinding.this.getValueChangeHandler());
-	    }
-	}
+            if (!e.getValueIsAdjusting()) {
+                SilentShuttleListBinding.this.updateSelectionHolderFromList(//
+                        SilentShuttleListBinding.this.getValueChangeHandler());
+            }
+        }
     }
 
     /**
@@ -398,14 +385,13 @@ public class SilentShuttleListBinding extends ShuttleListBinding {
      */
     private class ValueChangeHandler implements PropertyChangeListener {
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public void propertyChange(PropertyChangeEvent evt) {
+        /**
+         * {@inheritDoc}
+         */
+        public void propertyChange(PropertyChangeEvent evt) {
 
-	    SilentShuttleListBinding.this.setSelectedValue(//
-		    SilentShuttleListBinding.this.getValueChangeHandler());
-	}
+            SilentShuttleListBinding.this.setSelectedValue(SilentShuttleListBinding.this.getValueChangeHandler());
+        }
 
     }
 }

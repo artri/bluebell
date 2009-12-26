@@ -29,18 +29,18 @@ public class ResetPerspectiveCommand extends ActionCommand {
      */
     public ResetPerspectiveCommand() {
 
-	super(ResetPerspectiveCommand.COMMAND_ID);
+        super(ResetPerspectiveCommand.COMMAND_ID);
     }
 
-    /** 
+    /**
      * {@inheritDoc}
      */
     @Override
     protected void doExecuteCommand() {
 
-	final BbVLDockingApplicationPage<?> page = (BbVLDockingApplicationPage<?>) //
-	Application.instance().getActiveWindow().getPage();
+        final BbVLDockingApplicationPage<?> page = (BbVLDockingApplicationPage<?>) //
+        Application.instance().getActiveWindow().getPage();
 
-	page.resetLayout();
+        page.resetLayout();
     }
 }

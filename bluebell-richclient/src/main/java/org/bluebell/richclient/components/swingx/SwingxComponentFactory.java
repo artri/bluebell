@@ -18,8 +18,8 @@ import org.springframework.richclient.factory.DefaultComponentFactory;
  */
 public class SwingxComponentFactory extends DefaultComponentFactory {
 
-    /**7
-     * Creates a table.
+    /**
+     * 7 Creates a table.
      * 
      * @return the table.
      * 
@@ -29,14 +29,14 @@ public class SwingxComponentFactory extends DefaultComponentFactory {
     @Override
     public JTable createTable() {
 
-	final JXTable table = new JXTable();
-	
-	table.setColumnControlVisible(Boolean.TRUE);
+        final JXTable table = new JXTable();
 
-	// Sizes the scrollpane to be the same size as the table.
-	// jTable.setPreferredScrollableViewportSize(jTable.getPreferredSize());
+        table.setColumnControlVisible(Boolean.TRUE);
 
-	return table;
+        // Sizes the scrollpane to be the same size as the table.
+        // jTable.setPreferredScrollableViewportSize(jTable.getPreferredSize());
+
+        return table;
     }
 
     /**
@@ -53,10 +53,10 @@ public class SwingxComponentFactory extends DefaultComponentFactory {
     @Override
     public JTable createTable(TableModel tableModel) {
 
-	final JTable table = this.createTable();
-	table.setModel(tableModel);
+        final JTable table = this.createTable();
+        table.setModel(tableModel);
 
-	return table;
+        return table;
     }
 
     /**
@@ -65,10 +65,10 @@ public class SwingxComponentFactory extends DefaultComponentFactory {
     @Override
     public JComponent createToolBar() {
 
-	final JToolBar toolBar = (JToolBar) super.createToolBar();
-	toolBar.setFloatable(Boolean.TRUE);
-	toolBar.setEnabled(Boolean.TRUE);
+        final JToolBar toolBar = (JToolBar) super.createToolBar();
+        toolBar.setFloatable(Boolean.TRUE);
+        toolBar.setEnabled(Boolean.TRUE);
 
-	return toolBar;
+        return toolBar;
     }
 }

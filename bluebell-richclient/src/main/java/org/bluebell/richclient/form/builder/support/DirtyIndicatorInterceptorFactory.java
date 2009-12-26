@@ -21,6 +21,6 @@ public class DirtyIndicatorInterceptorFactory extends ConfigurableFormComponentI
     @Override
     protected FormComponentInterceptor createInterceptor(FormModel formModel) {
 
-	return new DirtyIndicatorInterceptor(formModel);
+        return new DirtyIndicatorInterceptor(formModel);
     }
 }

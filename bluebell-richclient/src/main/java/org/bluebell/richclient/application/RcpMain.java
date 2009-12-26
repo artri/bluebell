@@ -16,7 +16,8 @@ public class RcpMain extends Main {
     /**
      * La ubicación por defecto del contexto de aplicación.
      */
-    public static final String DEFAULT_APPLICATION_CONTEXT_PATH = "classpath*:/**/richclient/**/richclient-*-context.xml";
+    public static final String DEFAULT_APPLICATION_CONTEXT_PATH = //
+    "classpath*:/**/richclient/**/richclient-*-context.xml";
 
     /**
      * La ubicación por defecto de los comandos del contexto de aplicación.
@@ -32,7 +33,8 @@ public class RcpMain extends Main {
      * The first application context file to be loaded (order is important due to bean dependence hierarchy). This
      * avoids "depend-on" abuse.
      */
-    public static final String MAIN_APPLICATION_CONTEXT_PATH = "classpath*:/org/bluebell/richclient/application/richclient-application-context.xml";
+    public static final String MAIN_APPLICATION_CONTEXT_PATH = //
+    "classpath*:/org/bluebell/richclient/application/richclient-application-context.xml";
 
     /**
      * El <em>logger</em>.
@@ -47,12 +49,12 @@ public class RcpMain extends Main {
     @Override
     public void launch(Main main, String[] args, final String[] configLocations, final String[] baseDirs) {
 
-	// main debe ser una instancia de RcpMain
-	Assert.isInstanceOf(RcpMain.class, main);
-	final RcpMain rcpMain = (RcpMain) main;
+        // main debe ser una instancia de RcpMain
+        Assert.isInstanceOf(RcpMain.class, main);
+        final RcpMain rcpMain = (RcpMain) main;
 
-	// Lanzar definitivamente la aplicación
-	rcpMain.launch(configLocations, baseDirs);
+        // Lanzar definitivamente la aplicación
+        rcpMain.launch(configLocations, baseDirs);
     }
 
     /**
@@ -65,7 +67,7 @@ public class RcpMain extends Main {
     @Override
     protected String[] getConfigLocations() {
 
-	return new String[] { RcpMain.MAIN_APPLICATION_CONTEXT_PATH, RcpMain.DEFAULT_APPLICATION_CONTEXT_PATH };
+        return new String[] { RcpMain.MAIN_APPLICATION_CONTEXT_PATH, RcpMain.DEFAULT_APPLICATION_CONTEXT_PATH };
     }
 
     /**
@@ -77,7 +79,7 @@ public class RcpMain extends Main {
      */
     protected String getStartupLocation() {
 
-	return RcpMain.DEFAULT_STARTUP_CONTEXT_PATH;
+        return RcpMain.DEFAULT_STARTUP_CONTEXT_PATH;
     }
 
     /**
@@ -94,25 +96,25 @@ public class RcpMain extends Main {
      */
     protected void launch(String[] configLocations, String[] baseDirs) {
 
-	RcpMain.LOGGER.info("Rcp Application starting up");
+        RcpMain.LOGGER.info("Rcp Application starting up");
 
-	try {
-	    // Para lanzar la plataforma, hay que construir por una parte el
-	    // contexto de arranque y por otra el contexto de aplicación
-	    // propiamente dicho, incluyendo básicamente páginas y vistas.
+        try {
+            // Para lanzar la plataforma, hay que construir por una parte el
+            // contexto de arranque y por otra el contexto de aplicación
+            // propiamente dicho, incluyendo básicamente páginas y vistas.
 
-	    // El ApplicationLauncher es responsable de cargar los contextos
-	    // (arranque y aplicación), presentar la "Splash Screen",
-	    // inicializar una instancia singleton de la aplicación y crear la
-	    // ventana de la aplicación que exhibirá la página inicial.
+            // El ApplicationLauncher es responsable de cargar los contextos
+            // (arranque y aplicación), presentar la "Splash Screen",
+            // inicializar una instancia singleton de la aplicación y crear la
+            // ventana de la aplicación que exhibirá la página inicial.
 
-	    new ApplicationLauncher(this.getStartupLocation(), //
-		    this.getContextConfigLocations(configLocations, baseDirs));
-	} catch (final Exception e) {
-	    RcpMain.handleLaunchFailure(e);
-	}
+            new ApplicationLauncher(this.getStartupLocation(), //
+                    this.getContextConfigLocations(configLocations, baseDirs));
+        } catch (final Exception e) {
+            RcpMain.handleLaunchFailure(e);
+        }
 
-	RcpMain.LOGGER.info("Rcp Application shutting down");
+        RcpMain.LOGGER.info("Rcp Application shutting down");
     }
 
     /**
@@ -124,8 +126,8 @@ public class RcpMain extends Main {
      */
     public static void handleException(Throwable t) {
 
-	Application.instance().getLifecycleAdvisor().getRegisterableExceptionHandler()//
-		.uncaughtException(Thread.currentThread(), t);
+        Application.instance().getLifecycleAdvisor().getRegisterableExceptionHandler()//
+                .uncaughtException(Thread.currentThread(), t);
     }
 
     /**
@@ -139,11 +141,11 @@ public class RcpMain extends Main {
      */
     private static void handleLaunchFailure(Throwable e) {
 
-	// TODO, (JAF), 20080610, quizás haya que tratar esta excepción de una
-	// forma diferente.
-	RcpMain.LOGGER.info("Rcp Application will exit");
-	RcpMain.LOGGER.error(e.getMessage(), e);
+        // TODO, (JAF), 20080610, quizás haya que tratar esta excepción de una
+        // forma diferente.
+        RcpMain.LOGGER.info("Rcp Application will exit");
+        RcpMain.LOGGER.error(e.getMessage(), e);
 
-	System.exit(1);
+        System.exit(1);
     }
 }

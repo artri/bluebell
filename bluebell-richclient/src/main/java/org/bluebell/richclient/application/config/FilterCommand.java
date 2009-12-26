@@ -27,7 +27,7 @@ public class FilterCommand extends ToggleCommand {
      */
     public FilterCommand(JTable table) {
 
-	this(null, table);
+        this(null, table);
     }
 
     /**
@@ -41,10 +41,10 @@ public class FilterCommand extends ToggleCommand {
      */
     public FilterCommand(String commandId, JTable table) {
 
-	super(commandId);
+        super(commandId);
 
-	this.setTable(table);
-//	this.setEnabled(this.getTable() instanceof VLJTable);
+        this.setTable(table);
+        // this.setEnabled(this.getTable() instanceof VLJTable);
     }
 
     /**
@@ -54,7 +54,7 @@ public class FilterCommand extends ToggleCommand {
      */
     public JTable getTable() {
 
-	return this.table;
+        return this.table;
     }
 
     /**
@@ -65,7 +65,7 @@ public class FilterCommand extends ToggleCommand {
      */
     public void setTable(JTable table) {
 
-	this.table = table;
+        this.table = table;
     }
 
     /**
@@ -79,12 +79,12 @@ public class FilterCommand extends ToggleCommand {
     @Override
     protected boolean onSelection(boolean selected) {
 
-	Assert.isTrue(this.isEnabled());
+        Assert.isTrue(this.isEnabled());
 
-	// Llegados a este punto el comando está habilitado y por tanto la
-	// tabla es una VLJTable
-//	((VLJTable) this.table).setFilterHeaderVisible(selected);
+        // Llegados a este punto el comando está habilitado y por tanto la
+        // tabla es una VLJTable
+        // ((VLJTable) this.table).setFilterHeaderVisible(selected);
 
-	return super.onSelection(selected);
+        return super.onSelection(selected);
     }
 }

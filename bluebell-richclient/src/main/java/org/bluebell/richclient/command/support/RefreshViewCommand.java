@@ -44,7 +44,7 @@ public class RefreshViewCommand extends ActionCommand {
      */
     public RefreshViewCommand() {
 
-	super(RefreshViewCommand.PAGE_ID);
+        super(RefreshViewCommand.PAGE_ID);
     }
 
     /**
@@ -53,10 +53,10 @@ public class RefreshViewCommand extends ActionCommand {
     @Override
     protected void doExecuteCommand() {
 
-	final ApplicationPage page = Application.instance().getActiveWindow().getPage();
-	final PageComponent pageComponent = page.getActiveComponent();
-	// page.close();
+        final ApplicationPage page = Application.instance().getActiveWindow().getPage();
+        final PageComponent pageComponent = page.getActiveComponent();
+        // page.close();
 
-	page.showView(pageComponent.getId());
+        page.showView(pageComponent.getId());
     }
 }

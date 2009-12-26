@@ -43,9 +43,9 @@ abstract class AbstractBbDetailForm<T> extends AbstractDetailForm {
      */
     public AbstractBbDetailForm(AbstractBbTableMasterForm<T> masterForm, String formId, ValueModel valueModel) {
 
-	super(masterForm.getFormModel(), formId, valueModel, masterForm.getMasterEventList());
+        super(masterForm.getFormModel(), formId, valueModel, masterForm.getMasterEventList());
 
-	this.setMasterForm(masterForm);
+        this.setMasterForm(masterForm);
     }
 
     /**
@@ -61,11 +61,11 @@ abstract class AbstractBbDetailForm<T> extends AbstractDetailForm {
      *            la lista observable de entidades editables.
      */
     protected AbstractBbDetailForm(AbstractBbTableMasterForm<T> masterForm, FormModel formModel, String formId,
-	    ObservableList editableItemList) {
+            ObservableList editableItemList) {
 
-	super(formModel, formId, editableItemList);
+        super(formModel, formId, editableItemList);
 
-	this.setMasterForm(masterForm);
+        this.setMasterForm(masterForm);
     }
 
     /**
@@ -75,7 +75,7 @@ abstract class AbstractBbDetailForm<T> extends AbstractDetailForm {
      */
     public AbstractBbTableMasterForm<T> getMasterForm() {
 
-	return this.masterForm;
+        return this.masterForm;
     }
 
     /**
@@ -85,7 +85,7 @@ abstract class AbstractBbDetailForm<T> extends AbstractDetailForm {
      */
     public Boolean isCommiting() {
 
-	return this.commiting;
+        return this.commiting;
     }
 
     /**
@@ -101,8 +101,8 @@ abstract class AbstractBbDetailForm<T> extends AbstractDetailForm {
     @Override
     public final void postCommit(FormModel formModel) {
 
-	this.doPostCommit(formModel);
-	this.setCommiting(Boolean.FALSE);
+        this.doPostCommit(formModel);
+        this.setCommiting(Boolean.FALSE);
     }
 
     /**
@@ -117,8 +117,8 @@ abstract class AbstractBbDetailForm<T> extends AbstractDetailForm {
     @Override
     public final void preCommit(FormModel formModel) {
 
-	this.setCommiting(Boolean.TRUE);
-	super.preCommit(formModel);
+        this.setCommiting(Boolean.TRUE);
+        super.preCommit(formModel);
 
     }
 
@@ -128,7 +128,7 @@ abstract class AbstractBbDetailForm<T> extends AbstractDetailForm {
     @Override
     public String toString() {
 
-	return new ToStringBuilder(this, ToStringStyle.SIMPLE_STYLE).append("id", this.getId()).toString();
+        return new ToStringBuilder(this, ToStringStyle.SIMPLE_STYLE).append("id", this.getId()).toString();
     }
 
     /**
@@ -146,35 +146,35 @@ abstract class AbstractBbDetailForm<T> extends AbstractDetailForm {
     @SuppressWarnings("unchecked")
     private void doPostCommit(FormModel formModel) {
 
-	final Boolean isInserting = this.isEditingNewFormObject();
-	T entity = (T) formModel.getFormObject();
+        final Boolean isInserting = this.isEditingNewFormObject();
+        T entity = (T) formModel.getFormObject();
 
-	if (isInserting) { // es una inserción.
-	    entity = this.getMasterForm().doInsert(entity);
-	} else { // es una actualización.
-	    entity = this.getMasterForm().doUpdate(entity);
-	}
+        if (isInserting) { // es una inserción.
+            entity = this.getMasterForm().doInsert(entity);
+        } else { // es una actualización.
+            entity = this.getMasterForm().doUpdate(entity);
+        }
 
-	// En caso de éxito actualizar la vista y publicar un evento.
-	final boolean success = entity != null;
-	if (success) {
-	    // (JAF), 20090323, está línea es innecesaria e ineficiente ya que
-	    // dispara múltiples eventos prescindibles
-	    // formModel.getFormObjectHolder().setValue(entity);
+        // En caso de éxito actualizar la vista y publicar un evento.
+        final boolean success = entity != null;
+        if (success) {
+            // (JAF), 20090323, está línea es innecesaria e ineficiente ya que
+            // dispara múltiples eventos prescindibles
+            // formModel.getFormObjectHolder().setValue(entity);
 
-	    // Ejecutar la lógica original de commit y seleccionar la fila
-	    // apropiada.
-	    super.postCommit(formModel);
-	    this.getMasterForm().setSelectedEntity(entity);
+            // Ejecutar la lógica original de commit y seleccionar la fila
+            // apropiada.
+            super.postCommit(formModel);
+            this.getMasterForm().setSelectedEntity(entity);
 
-	    // Publicar el evento
-	    // TODO, (JAF), 20080428, la publicación de eventos debería de ser
-	    // un método privada del formulario maestro. Los tipos de eventos
-	    // también deberían ser un tipo de dato privado.
-	    this.getMasterForm().publishApplicationEvent(isInserting ? EventType.CREATED //
-		    : EventType.MODIFIED, //
-		    entity);
-	}
+            // Publicar el evento
+            // TODO, (JAF), 20080428, la publicación de eventos debería de ser
+            // un método privada del formulario maestro. Los tipos de eventos
+            // también deberían ser un tipo de dato privado.
+            this.getMasterForm().publishApplicationEvent(isInserting ? EventType.CREATED //
+                    : EventType.MODIFIED, //
+                    entity);
+        }
     }
 
     /**
@@ -185,7 +185,7 @@ abstract class AbstractBbDetailForm<T> extends AbstractDetailForm {
      */
     private void setCommiting(Boolean commiting) {
 
-	this.commiting = commiting;
+        this.commiting = commiting;
     }
 
     /**
@@ -196,6 +196,6 @@ abstract class AbstractBbDetailForm<T> extends AbstractDetailForm {
      */
     private void setMasterForm(AbstractBbTableMasterForm<T> masterForm) {
 
-	this.masterForm = masterForm;
+        this.masterForm = masterForm;
     }
 }

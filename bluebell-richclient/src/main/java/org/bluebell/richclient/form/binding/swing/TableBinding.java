@@ -178,10 +178,10 @@ public class TableBinding extends CustomBinding {
      */
     public TableBinding(FormModel formModel, String formPropertyPath) {
 
-	super(formModel, formPropertyPath, null);
+        super(formModel, formPropertyPath, null);
 
-	// Establecer la tabla y sus columnas
-	this.setTable(this.getComponentFactory().createTable());
+        // Establecer la tabla y sus columnas
+        this.setTable(this.getComponentFactory().createTable());
     }
 
     /**
@@ -197,12 +197,12 @@ public class TableBinding extends CustomBinding {
      */
     public TableBinding(JTable jTable, FormModel formModel, String formPropertyPath) {
 
-	super(formModel, formPropertyPath, null);
+        super(formModel, formPropertyPath, null);
 
-	Assert.notNull(jTable);
+        Assert.notNull(jTable);
 
-	// Establecer la tabla y sus columnas
-	this.setTable(jTable);
+        // Establecer la tabla y sus columnas
+        this.setTable(jTable);
     }
 
     /**
@@ -212,11 +212,11 @@ public class TableBinding extends CustomBinding {
      */
     public ActionCommand getAddCommand() {
 
-	if (this.addCommand == null) {
-	    this.addCommand = this.createAddCommand();
-	}
+        if (this.addCommand == null) {
+            this.addCommand = this.createAddCommand();
+        }
 
-	return this.addCommand;
+        return this.addCommand;
     }
 
     /**
@@ -226,7 +226,7 @@ public class TableBinding extends CustomBinding {
      */
     public String[] getColumnPropertyNames() {
 
-	return this.columnPropertyNames;
+        return this.columnPropertyNames;
     }
 
     /**
@@ -236,7 +236,7 @@ public class TableBinding extends CustomBinding {
      */
     public Form getDialogBackingForm() {
 
-	return this.dialogBackingForm;
+        return this.dialogBackingForm;
     }
 
     /**
@@ -246,11 +246,11 @@ public class TableBinding extends CustomBinding {
      */
     public ActionCommand getFilterCommand() {
 
-	if (this.filterCommand == null) {
-	    this.filterCommand = this.createFilterCommand();
-	}
+        if (this.filterCommand == null) {
+            this.filterCommand = this.createFilterCommand();
+        }
 
-	return this.filterCommand;
+        return this.filterCommand;
     }
 
     /**
@@ -260,11 +260,11 @@ public class TableBinding extends CustomBinding {
      */
     public ActionCommand getModifyCommand() {
 
-	if (this.modifyCommand == null) {
-	    this.modifyCommand = this.createModifyCommand();
-	}
+        if (this.modifyCommand == null) {
+            this.modifyCommand = this.createModifyCommand();
+        }
 
-	return this.modifyCommand;
+        return this.modifyCommand;
     }
 
     /**
@@ -274,11 +274,11 @@ public class TableBinding extends CustomBinding {
      */
     public ActionCommand getRemoveCommand() {
 
-	if (this.removeCommand == null) {
-	    this.removeCommand = this.createRemoveCommand();
-	}
+        if (this.removeCommand == null) {
+            this.removeCommand = this.createRemoveCommand();
+        }
 
-	return this.removeCommand;
+        return this.removeCommand;
     }
 
     /**
@@ -288,7 +288,7 @@ public class TableBinding extends CustomBinding {
      */
     public JTable getTable() {
 
-	return this.table;
+        return this.table;
     }
 
     /**
@@ -299,7 +299,7 @@ public class TableBinding extends CustomBinding {
      */
     public void setColumnPropertyNames(String[] columnPropertyNames) {
 
-	this.columnPropertyNames = columnPropertyNames;
+        this.columnPropertyNames = columnPropertyNames;
     }
 
     /**
@@ -310,7 +310,7 @@ public class TableBinding extends CustomBinding {
      */
     public void setDialogBackingForm(Form form) {
 
-	this.dialogBackingForm = form;
+        this.dialogBackingForm = form;
     }
 
     /**
@@ -321,10 +321,10 @@ public class TableBinding extends CustomBinding {
      */
     public void setHeightDialog(Integer heightDialog) {
 
-	Assert.notNull(heightDialog);
-	Assert.isTrue(heightDialog > 0);
+        Assert.notNull(heightDialog);
+        Assert.isTrue(heightDialog > 0);
 
-	this.heightDialog = heightDialog;
+        this.heightDialog = heightDialog;
     }
 
     /**
@@ -335,10 +335,10 @@ public class TableBinding extends CustomBinding {
      */
     public void setWidthDialog(Integer widthDialog) {
 
-	Assert.notNull(widthDialog);
-	Assert.isTrue(widthDialog > 0);
+        Assert.notNull(widthDialog);
+        Assert.isTrue(widthDialog > 0);
 
-	this.widthDialog = widthDialog;
+        this.widthDialog = widthDialog;
     }
 
     /**
@@ -349,56 +349,56 @@ public class TableBinding extends CustomBinding {
      */
     protected void configureTable() {
 
-	// Establecer el modelo
-	this.getTable().setModel(this.createTableModel());
+        // Establecer el modelo
+        this.getTable().setModel(this.createTableModel());
 
-	// Añadir los listeners (espacio, doble click, popup y selección para
-	// actualizar el estado de los controles)
-	this.getTable().addKeyListener(new KeyListener() {
+        // Añadir los listeners (espacio, doble click, popup y selección para
+        // actualizar el estado de los controles)
+        this.getTable().addKeyListener(new KeyListener() {
 
-	    public void keyPressed(KeyEvent e) {
+            public void keyPressed(KeyEvent e) {
 
-		if (e.isAltDown() && (e.getKeyCode() == KeyEvent.VK_ENTER)
-			&& TableBinding.this.getModifyCommand().isEnabled()) {
-		    TableBinding.this.getModifyCommand().execute();
-		}
-	    }
+                if (e.isAltDown() && (e.getKeyCode() == KeyEvent.VK_ENTER)
+                        && TableBinding.this.getModifyCommand().isEnabled()) {
+                    TableBinding.this.getModifyCommand().execute();
+                }
+            }
 
-	    public void keyReleased(KeyEvent e) {
+            public void keyReleased(KeyEvent e) {
 
-		// Nothing to do
-	    }
+                // Nothing to do
+            }
 
-	    public void keyTyped(KeyEvent e) {
+            public void keyTyped(KeyEvent e) {
 
-		// Nothing to do
-	    }
-	});
-	// (JAF), 20090128, obviar el doble click ya que esa combinación está
-	// ahora pensada para la navegación.
+                // Nothing to do
+            }
+        });
+        // (JAF), 20090128, obviar el doble click ya que esa combinación está
+        // ahora pensada para la navegación.
 
-	// this.getTable().addMouseListener(
-	// new PopupMenuMouseListener(this.getPopupMenu().createPopupMenu()) {
-	//
-	// @Override
-	// public void mousePressed(MouseEvent e) {
-	//
-	// super.mousePressed(e);
-	//
-	// // Controlar el doble click
-	// if ((e.getClickCount() == 2)
-	// && TableBinding.this.getModifyCommand().isEnabled()) {
-	// TableBinding.this.getModifyCommand().execute();
-	// }
-	// }
-	// });
-	this.getTable().getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+        // this.getTable().addMouseListener(
+        // new PopupMenuMouseListener(this.getPopupMenu().createPopupMenu()) {
+        //
+        // @Override
+        // public void mousePressed(MouseEvent e) {
+        //
+        // super.mousePressed(e);
+        //
+        // // Controlar el doble click
+        // if ((e.getClickCount() == 2)
+        // && TableBinding.this.getModifyCommand().isEnabled()) {
+        // TableBinding.this.getModifyCommand().execute();
+        // }
+        // }
+        // });
+        this.getTable().getSelectionModel().addListSelectionListener(new ListSelectionListener() {
 
-	    public void valueChanged(ListSelectionEvent e) {
+            public void valueChanged(ListSelectionEvent e) {
 
-		TableBinding.this.updateControlForState();
-	    }
-	});
+                TableBinding.this.updateControlForState();
+            }
+        });
     }
 
     /**
@@ -408,15 +408,15 @@ public class TableBinding extends CustomBinding {
      */
     protected ActionCommand createAddCommand() {
 
-	// Obtener los identificadores del comando, separados por comas y
-	// ordenados según prioridad
-	final String commandId = this.getAddCommandFaceDescriptorId();
+        // Obtener los identificadores del comando, separados por comas y
+        // ordenados según prioridad
+        final String commandId = this.getAddCommandFaceDescriptorId();
 
-	// Crear el comando
-	final ActionCommand addCommand = new AddCommand(commandId);
+        // Crear el comando
+        final ActionCommand command = new AddCommand(commandId);
 
-	// Configurar el comando
-	return CommandUtil.configureCommand(addCommand, (ValidatingFormModel) this.getFormModel());
+        // Configurar el comando
+        return CommandUtil.configureCommand(command, (ValidatingFormModel) this.getFormModel());
     }
 
     /**
@@ -426,16 +426,16 @@ public class TableBinding extends CustomBinding {
      */
     protected CommandGroup createCommandGroup() {
 
-	final CommandGroup group = CommandGroup.createCommandGroup(new Object[] { this.getFilterCommand(), //
-		CommandGroupFactoryBean.SEPARATOR_MEMBER_CODE, //
-		this.getAddCommand(), //
-		this.getModifyCommand(), //
-		this.getRemoveCommand() });
+        final CommandGroup group = CommandGroup.createCommandGroup(new Object[] { this.getFilterCommand(), //
+                CommandGroupFactoryBean.SEPARATOR_MEMBER_CODE, //
+                this.getAddCommand(), //
+                this.getModifyCommand(), //
+                this.getRemoveCommand() });
 
-	group.setCommandRegistry(//
-		this.getActiveWindow().getCommandManager());
+        group.setCommandRegistry(//
+                this.getActiveWindow().getCommandManager());
 
-	return group;
+        return group;
     }
 
     /**
@@ -445,15 +445,15 @@ public class TableBinding extends CustomBinding {
      */
     protected ActionCommand createFilterCommand() {
 
-	// Obtener los identificadores del comando, separados por comas y
-	// ordenados según prioridad
-	final String commandId = this.getFilterCommandFaceDescriptorId();
+        // Obtener los identificadores del comando, separados por comas y
+        // ordenados según prioridad
+        final String commandId = this.getFilterCommandFaceDescriptorId();
 
-	// Crear el comando
-	final ActionCommand filterCommand = new FilterCommand(commandId, this.getTable());
+        // Crear el comando
+        final ActionCommand command = new FilterCommand(commandId, this.getTable());
 
-	// Configurar el comando
-	return CommandUtil.configureCommand(filterCommand, (ValidatingFormModel) this.getFormModel());
+        // Configurar el comando
+        return CommandUtil.configureCommand(command, (ValidatingFormModel) this.getFormModel());
     }
 
     /**
@@ -463,15 +463,15 @@ public class TableBinding extends CustomBinding {
      */
     protected ActionCommand createModifyCommand() {
 
-	// Obtener los identificadores del comando, separados por comas y
-	// ordenados según prioridad
-	final String commandId = this.getModifyCommandFaceDescriptorId();
+        // Obtener los identificadores del comando, separados por comas y
+        // ordenados según prioridad
+        final String commandId = this.getModifyCommandFaceDescriptorId();
 
-	// Crear el comando
-	final ActionCommand modifyCommand = new ModifyCommand(commandId);
+        // Crear el comando
+        final ActionCommand command = new ModifyCommand(commandId);
 
-	// Configurar el comando
-	return CommandUtil.configureCommand(modifyCommand, (ValidatingFormModel) this.getFormModel());
+        // Configurar el comando
+        return CommandUtil.configureCommand(command, (ValidatingFormModel) this.getFormModel());
     }
 
     /**
@@ -481,14 +481,14 @@ public class TableBinding extends CustomBinding {
      */
     protected CommandGroup createPopupMenu() {
 
-	final CommandGroup group = CommandGroup.createCommandGroup(new Object[] { this.getAddCommand(), //
-		this.getModifyCommand(), //
-		this.getRemoveCommand() });
+        final CommandGroup group = CommandGroup.createCommandGroup(new Object[] { this.getAddCommand(), //
+                this.getModifyCommand(), //
+                this.getRemoveCommand() });
 
-	group.setCommandRegistry(//
-		this.getActiveWindow().getCommandManager());
+        group.setCommandRegistry(//
+                this.getActiveWindow().getCommandManager());
 
-	return group;
+        return group;
     }
 
     /**
@@ -498,15 +498,15 @@ public class TableBinding extends CustomBinding {
      */
     protected ActionCommand createRemoveCommand() {
 
-	// Obtener los identificadores del comando, separados por comas y
-	// ordenados según prioridad
-	final String commandId = this.getRemoveCommandFaceDescriptorId();
+        // Obtener los identificadores del comando, separados por comas y
+        // ordenados según prioridad
+        final String commandId = this.getRemoveCommandFaceDescriptorId();
 
-	// Crear el comando
-	final ActionCommand removeCommand = new RemoveCommand(commandId);
+        // Crear el comando
+        final ActionCommand command = new RemoveCommand(commandId);
 
-	// Configurar el comando
-	return CommandUtil.configureCommand(removeCommand, (ValidatingFormModel) this.getFormModel());
+        // Configurar el comando
+        return CommandUtil.configureCommand(command, (ValidatingFormModel) this.getFormModel());
     }
 
     /**
@@ -515,24 +515,24 @@ public class TableBinding extends CustomBinding {
     @Override
     protected JComponent doBindControl() {
 
-	// Comprobaciones de parámetros
-	Assert.notNull(this.getColumnPropertyNames());
-	Assert.notNull(this.getDialogBackingForm());
+        // Comprobaciones de parámetros
+        Assert.notNull(this.getColumnPropertyNames());
+        Assert.notNull(this.getDialogBackingForm());
 
-	// Configurar la tabla
-	this.configureTable();
+        // Configurar la tabla
+        this.configureTable();
 
-	// Construir el control del binding
-	final JScrollPane scroolPane = new JScrollPane(this.getTable());
-	final JComponent buttonStack = this.getCommandGroup().createButtonStack();
+        // Construir el control del binding
+        final JScrollPane scroolPane = new JScrollPane(this.getTable());
+        final JComponent buttonStack = this.getCommandGroup().createButtonStack();
 
-	// La tabla a la izquierda y los botones a la derecha
-	final JPanel jPanel = new JPanel();
-	jPanel.setLayout(new BorderLayout());
-	jPanel.add(scroolPane, BorderLayout.CENTER);
-	jPanel.add(buttonStack, BorderLayout.EAST);
+        // La tabla a la izquierda y los botones a la derecha
+        final JPanel jPanel = new JPanel();
+        jPanel.setLayout(new BorderLayout());
+        jPanel.add(scroolPane, BorderLayout.CENTER);
+        jPanel.add(buttonStack, BorderLayout.EAST);
 
-	return jPanel;
+        return jPanel;
     }
 
     /**
@@ -541,7 +541,7 @@ public class TableBinding extends CustomBinding {
     @Override
     protected void enabledChanged() {
 
-	this.updateControlForState();
+        this.updateControlForState();
     }
 
     /**
@@ -553,8 +553,8 @@ public class TableBinding extends CustomBinding {
      */
     protected String getAddCommandFaceDescriptorId() {
 
-	return CommandUtil.getCommandFaceDescriptorId(//
-		TableBinding.ADD_COMMAND_ID, this.getProperty());
+        return CommandUtil.getCommandFaceDescriptorId(//
+                TableBinding.ADD_COMMAND_ID, this.getProperty());
     }
 
     /**
@@ -564,11 +564,11 @@ public class TableBinding extends CustomBinding {
      */
     protected CommandGroup getCommandGroup() {
 
-	if (this.commandGroup == null) {
-	    this.commandGroup = this.createCommandGroup();
-	}
+        if (this.commandGroup == null) {
+            this.commandGroup = this.createCommandGroup();
+        }
 
-	return this.commandGroup;
+        return this.commandGroup;
     }
 
     /**
@@ -579,16 +579,16 @@ public class TableBinding extends CustomBinding {
      */
     protected EditingDialog getDialog() {
 
-	if (this.dialog == null) {
-	    this.setDialog(new EditingDialog());
+        if (this.dialog == null) {
+            this.setDialog(new EditingDialog());
 
-	    // FormGuard para que no se habilite el comando Aceptar
-	    // cuando el formulario tiene errores.
-	    final FormGuard formGuard = new FormGuard(this.getDialogBackingForm().getFormModel());
-	    formGuard.addGuarded(this.getDialog(), FormGuard.ON_NOERRORS);
-	}
+            // FormGuard para que no se habilite el comando Aceptar
+            // cuando el formulario tiene errores.
+            final FormGuard formGuard = new FormGuard(this.getDialogBackingForm().getFormModel());
+            formGuard.addGuarded(this.getDialog(), FormGuard.ON_NOERRORS);
+        }
 
-	return this.dialog;
+        return this.dialog;
     }
 
     /**
@@ -600,8 +600,8 @@ public class TableBinding extends CustomBinding {
      */
     protected String getFilterCommandFaceDescriptorId() {
 
-	return CommandUtil.getCommandFaceDescriptorId(//
-		TableBinding.FILTER_COMMAND_ID, this.getProperty());
+        return CommandUtil.getCommandFaceDescriptorId(//
+                TableBinding.FILTER_COMMAND_ID, this.getProperty());
     }
 
     /**
@@ -611,7 +611,7 @@ public class TableBinding extends CustomBinding {
      */
     protected Integer getHeightDialog() {
 
-	return this.heightDialog;
+        return this.heightDialog;
     }
 
     /**
@@ -623,8 +623,8 @@ public class TableBinding extends CustomBinding {
      */
     protected String getModifyCommandFaceDescriptorId() {
 
-	return CommandUtil.getCommandFaceDescriptorId(//
-		TableBinding.MODIFY_COMMAND_ID, this.getProperty());
+        return CommandUtil.getCommandFaceDescriptorId(//
+                TableBinding.MODIFY_COMMAND_ID, this.getProperty());
     }
 
     /**
@@ -634,11 +634,11 @@ public class TableBinding extends CustomBinding {
      */
     protected CommandGroup getPopupMenu() {
 
-	if (this.popupMenu == null) {
-	    this.popupMenu = this.createPopupMenu();
-	}
+        if (this.popupMenu == null) {
+            this.popupMenu = this.createPopupMenu();
+        }
 
-	return this.popupMenu;
+        return this.popupMenu;
     }
 
     /**
@@ -650,8 +650,8 @@ public class TableBinding extends CustomBinding {
      */
     protected String getRemoveCommandFaceDescriptorId() {
 
-	return CommandUtil.getCommandFaceDescriptorId(//
-		TableBinding.REMOVE_COMMAND_ID, this.getProperty());
+        return CommandUtil.getCommandFaceDescriptorId(//
+                TableBinding.REMOVE_COMMAND_ID, this.getProperty());
     }
 
     /**
@@ -661,7 +661,7 @@ public class TableBinding extends CustomBinding {
      */
     protected Integer getWidthDialog() {
 
-	return this.widthDialog;
+        return this.widthDialog;
     }
 
     /**
@@ -670,7 +670,7 @@ public class TableBinding extends CustomBinding {
     @Override
     protected void readOnlyChanged() {
 
-	this.updateControlForState();
+        this.updateControlForState();
     }
 
     /**
@@ -681,7 +681,7 @@ public class TableBinding extends CustomBinding {
      */
     protected void setDialog(EditingDialog dialog) {
 
-	this.dialog = dialog;
+        this.dialog = dialog;
     }
 
     /**
@@ -692,7 +692,7 @@ public class TableBinding extends CustomBinding {
      */
     protected void setTable(JTable table) {
 
-	this.table = table;
+        this.table = table;
     }
 
     /**
@@ -701,8 +701,8 @@ public class TableBinding extends CustomBinding {
     @Override
     protected void valueModelChanged(Object newValue) {
 
-	// Ya que ValueModel y GlazedTableModel comparten event list no es
-	// necesario hacer nada.
+        // Ya que ValueModel y GlazedTableModel comparten event list no es
+        // necesario hacer nada.
     }
 
     /**
@@ -716,18 +716,18 @@ public class TableBinding extends CustomBinding {
     @SuppressWarnings("unchecked")
     private TableModel createTableModel() {
 
-	// Asegurarse de que el value model de la colección es el esperado y en
-	// caso contrario modificarlo
-	final Object value = this.getValue();
-	if (!(value instanceof EventList)) {
-	    BbFormModelHelper.addCollectionValueModel((ValidatingFormModel) //
-		    this.getFormModel(), this.getProperty(), Boolean.TRUE);
-	}
+        // Asegurarse de que el value model de la colección es el esperado y en
+        // caso contrario modificarlo
+        final Object value = this.getValue();
+        if (!(value instanceof EventList)) {
+            BbFormModelHelper.addCollectionValueModel((ValidatingFormModel) //
+                    this.getFormModel(), this.getProperty(), Boolean.TRUE);
+        }
 
-	// Crear el table model
-	final EventList<Object> eventList = (EventList<Object>) this.getValue();
+        // Crear el table model
+        final EventList<Object> eventList = (EventList<Object>) this.getValue();
 
-	return BbFormModelHelper.createTableModel(eventList, this.getColumnPropertyNames(), this.getProperty());
+        return BbFormModelHelper.createTableModel(eventList, this.getColumnPropertyNames(), this.getProperty());
     }
 
     /**
@@ -735,20 +735,20 @@ public class TableBinding extends CustomBinding {
      */
     private void updateControlForState() {
 
-	final FieldMetadata fieldMetadata = this.getFormModel().getFieldMetadata(this.getProperty());
+        final FieldMetadata fieldMetadata = this.getFormModel().getFieldMetadata(this.getProperty());
 
-	final Boolean enabled = fieldMetadata.isEnabled();
-	final Boolean readOnly = fieldMetadata.isReadOnly();
-	final int selectedRows = this.getTable().getSelectedRowCount();
-	final Boolean isSingleSelection = selectedRows == 1;
-	final Boolean isMultipleSelection = selectedRows > 0;
+        final Boolean enabled = fieldMetadata.isEnabled();
+        final Boolean readOnly = fieldMetadata.isReadOnly();
+        final int selectedRows = this.getTable().getSelectedRowCount();
+        final Boolean isSingleSelection = selectedRows == 1;
+        final Boolean isMultipleSelection = selectedRows > 0;
 
-	// Habilitar/Deshabilitar la tabla y los comandos
-	this.getTable().setEnabled(enabled && !readOnly);
-	this.getFilterCommand().setEnabled(enabled);
-	this.getAddCommand().setEnabled(enabled && !readOnly);
-	this.getModifyCommand().setEnabled(enabled && !readOnly && isSingleSelection);
-	this.getRemoveCommand().setEnabled(enabled && !readOnly && isMultipleSelection);
+        // Habilitar/Deshabilitar la tabla y los comandos
+        this.getTable().setEnabled(enabled && !readOnly);
+        this.getFilterCommand().setEnabled(enabled);
+        this.getAddCommand().setEnabled(enabled && !readOnly);
+        this.getModifyCommand().setEnabled(enabled && !readOnly && isSingleSelection);
+        this.getRemoveCommand().setEnabled(enabled && !readOnly && isMultipleSelection);
     }
 
     /**
@@ -758,26 +758,26 @@ public class TableBinding extends CustomBinding {
      */
     private class AddCommand extends ActionCommand {
 
-	/**
-	 * Construye el comando a partir de su identificador.
-	 * 
-	 * @param id
-	 *            el identificador del comando.
-	 */
-	public AddCommand(String id) {
+        /**
+         * Construye el comando a partir de su identificador.
+         * 
+         * @param id
+         *            el identificador del comando.
+         */
+        public AddCommand(String id) {
 
-	    super(id);
-	}
+            super(id);
+        }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected void doExecuteCommand() {
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        protected void doExecuteCommand() {
 
-	    TableBinding.this.getDialog().setCreatingNewEntity(Boolean.TRUE);
-	    TableBinding.this.getDialog().showDialog();
-	}
+            TableBinding.this.getDialog().setCreatingNewEntity(Boolean.TRUE);
+            TableBinding.this.getDialog().showDialog();
+        }
     }
 
     /**
@@ -785,130 +785,130 @@ public class TableBinding extends CustomBinding {
      */
     private class EditingDialog extends TitledPageApplicationDialog {
 
-	/**
-	 * <em>Flag</em> indicando si el diálogo se encuentra creando una nueva entidad o editando una existente.
-	 */
-	private Boolean creatingNewEntity;
+        /**
+         * <em>Flag</em> indicando si el diálogo se encuentra creando una nueva entidad o editando una existente.
+         */
+        private Boolean creatingNewEntity;
 
-	/**
-	 * Forma la clave del mensaje con el título del diálogo.
-	 */
-	private final MessageFormat dialogTitleFmt = new MessageFormat("{0}ApplicationDialog.title");
+        /**
+         * Forma la clave del mensaje con el título del diálogo.
+         */
+        private final MessageFormat dialogTitleFmt = new MessageFormat("{0}ApplicationDialog.title");
 
-	/**
-	 * Forma la clave del mensaje con el título del panel del diálogo.
-	 */
-	private final MessageFormat dialogTitlePaneTitleFmt = new MessageFormat("{0}ApplicationDialog.titlePane");
+        /**
+         * Forma la clave del mensaje con el título del panel del diálogo.
+         */
+        private final MessageFormat dialogTitlePaneTitleFmt = new MessageFormat("{0}ApplicationDialog.titlePane");
 
-	/**
-	 * Construye y configura el diálogo.
-	 */
-	public EditingDialog() {
+        /**
+         * Construye y configura el diálogo.
+         */
+        public EditingDialog() {
 
-	    super();
+            super();
 
-	    this.setDialogPage(new FormBackedDialogPage(//
-		    TableBinding.this.getDialogBackingForm()));
+            this.setDialogPage(new FormBackedDialogPage(//
+                    TableBinding.this.getDialogBackingForm()));
 
-	    // Configurar el diálogo
-	    this.setTitle(TableBinding.this.getMessage(//
-		    this.dialogTitleFmt.format(//
-			    new String[] { TableBinding.this.getProperty() })));
-	    this.setTitlePaneTitle(TableBinding.this.getMessage(//
-		    this.dialogTitlePaneTitleFmt.format(//
-			    new String[] { TableBinding.this.getProperty() })));
-	    this.setCloseAction(CloseAction.DISPOSE);
+            // Configurar el diálogo
+            this.setTitle(TableBinding.this.getMessage(//
+                    this.dialogTitleFmt.format(//
+                            new String[] { TableBinding.this.getProperty() })));
+            this.setTitlePaneTitle(TableBinding.this.getMessage(//
+                    this.dialogTitlePaneTitleFmt.format(//
+                            new String[] { TableBinding.this.getProperty() })));
+            this.setCloseAction(CloseAction.DISPOSE);
 
-	    // Establecer el tamaño del diálogo
-	    if ((TableBinding.this.getWidthDialog() != null) && (TableBinding.this.getHeightDialog() != null)) {
-		this.setPreferredSize(new Dimension(//
-			TableBinding.this.getWidthDialog(), //
-			TableBinding.this.getHeightDialog()));
-	    }
-	}
+            // Establecer el tamaño del diálogo
+            if ((TableBinding.this.getWidthDialog() != null) && (TableBinding.this.getHeightDialog() != null)) {
+                this.setPreferredSize(new Dimension(//
+                        TableBinding.this.getWidthDialog(), //
+                        TableBinding.this.getHeightDialog()));
+            }
+        }
 
-	/**
-	 * Indica si el diálogo se encuentra creando una nueva entidad o editando una existente.
-	 * 
-	 * @return <code>true</code> si está creando y <code>false</code> en caso contrario.
-	 */
-	public Boolean isCreatingNewEntity() {
+        /**
+         * Indica si el diálogo se encuentra creando una nueva entidad o editando una existente.
+         * 
+         * @return <code>true</code> si está creando y <code>false</code> en caso contrario.
+         */
+        public Boolean isCreatingNewEntity() {
 
-	    return this.creatingNewEntity;
-	}
+            return this.creatingNewEntity;
+        }
 
-	/**
-	 * Establece si el diálogo se encuentra creando una nueva entidad o editando una existente.
-	 * 
-	 * @param creatingNewEntity
-	 *            <code>true</code> para crear y <code>false</code> para editar.
-	 */
-	public void setCreatingNewEntity(Boolean creatingNewEntity) {
+        /**
+         * Establece si el diálogo se encuentra creando una nueva entidad o editando una existente.
+         * 
+         * @param creatingNewEntity
+         *            <code>true</code> para crear y <code>false</code> para editar.
+         */
+        public void setCreatingNewEntity(Boolean creatingNewEntity) {
 
-	    this.creatingNewEntity = creatingNewEntity;
-	}
+            this.creatingNewEntity = creatingNewEntity;
+        }
 
-	/**
-	 * Si se trata de una creación resetea el formulario, mientras que si es una edición le establece la entidad
-	 * objeto de la misma.
-	 */
-	@SuppressWarnings("unchecked")
-	@Override
-	protected void onAboutToShow() {
+        /**
+         * Si se trata de una creación resetea el formulario, mientras que si es una edición le establece la entidad
+         * objeto de la misma.
+         */
+        @SuppressWarnings("unchecked")
+        @Override
+        protected void onAboutToShow() {
 
-	    if (this.isCreatingNewEntity()) {
-		// Resetear y habilitar el formulario
-		TableBinding.this.getDialogBackingForm().reset();
-		TableBinding.this.getDialogBackingForm().getFormModel().setEnabled(Boolean.TRUE);
-	    } else {
-		// Establecer la entidad objeto de la edición en el formulario.
-		final EventList<Object> eventList = (EventList<Object>) TableBinding.this.getValue();
-		final int index = FilterModelUtil.getOriginalSelectedIdxs(//
-			TableBinding.this.getTable()).get(0);
+            if (this.isCreatingNewEntity()) {
+                // Resetear y habilitar el formulario
+                TableBinding.this.getDialogBackingForm().reset();
+                TableBinding.this.getDialogBackingForm().getFormModel().setEnabled(Boolean.TRUE);
+            } else {
+                // Establecer la entidad objeto de la edición en el formulario.
+                final EventList<Object> eventList = (EventList<Object>) TableBinding.this.getValue();
+                final int index = FilterModelUtil.getOriginalSelectedIdxs(//
+                        TableBinding.this.getTable()).get(0);
 
-		TableBinding.this.getDialogBackingForm().setFormObject(eventList.get(index));
-	    }
+                TableBinding.this.getDialogBackingForm().setFormObject(eventList.get(index));
+            }
 
-	    super.onAboutToShow();
-	}
+            super.onAboutToShow();
+        }
 
-	/**
-	 * Comitea el formulario y actualiza la tabla con la entidad modificada o de nueva creación.
-	 * 
-	 * @return <code>true</code>.
-	 */
-	@SuppressWarnings("unchecked")
-	@Override
-	protected boolean onFinish() {
+        /**
+         * Comitea el formulario y actualiza la tabla con la entidad modificada o de nueva creación.
+         * 
+         * @return <code>true</code>.
+         */
+        @SuppressWarnings("unchecked")
+        @Override
+        protected boolean onFinish() {
 
-	    // Commitear el formulario y obtener la entidad a añadir
-	    TableBinding.this.getDialogBackingForm().commit();
-	    final Object formObject = TableBinding.this.getDialogBackingForm().getFormObject();
+            // Commitear el formulario y obtener la entidad a añadir
+            TableBinding.this.getDialogBackingForm().commit();
+            final Object formObject = TableBinding.this.getDialogBackingForm().getFormObject();
 
-	    // Añadir una nueva entrada a la tabla
-	    final EventList<Object> eventList = (EventList<Object>) TableBinding.this.getValue();
+            // Añadir una nueva entrada a la tabla
+            final EventList<Object> eventList = (EventList<Object>) TableBinding.this.getValue();
 
-	    if (!this.isCreatingNewEntity()) {
-		final int index = FilterModelUtil.getOriginalSelectedIdxs(//
-			TableBinding.this.getTable()).get(0);
-		eventList.set(index, formObject);
-	    }
+            if (!this.isCreatingNewEntity()) {
+                final int index = FilterModelUtil.getOriginalSelectedIdxs(//
+                        TableBinding.this.getTable()).get(0);
+                eventList.set(index, formObject);
+            }
 
-	    if (formObject instanceof Collection) {
-		FilterModelUtil.setSelectedEntities(eventList, //
-			TableBinding.this.getTable(), //
-			(Collection) formObject, //
-			Boolean.TRUE);
-	    } else {
-		FilterModelUtil.setSelectedEntity(eventList, //
-			TableBinding.this.getTable(), //
-			formObject);
+            if (formObject instanceof Collection) {
+                FilterModelUtil.setSelectedEntities(eventList, //
+                        TableBinding.this.getTable(), //
+                        (Collection) formObject, //
+                        Boolean.TRUE);
+            } else {
+                FilterModelUtil.setSelectedEntity(eventList, //
+                        TableBinding.this.getTable(), //
+                        formObject);
 
-	    }
-	    TableBinding.this.getTable().requestFocusInWindow();
+            }
+            TableBinding.this.getTable().requestFocusInWindow();
 
-	    return Boolean.TRUE;
-	}
+            return Boolean.TRUE;
+        }
     }
 
     /**
@@ -918,26 +918,26 @@ public class TableBinding extends CustomBinding {
      */
     private class ModifyCommand extends ActionCommand {
 
-	/**
-	 * Construye el comando a partir de su identificador.
-	 * 
-	 * @param id
-	 *            el identificador del comando.
-	 */
-	public ModifyCommand(String id) {
+        /**
+         * Construye el comando a partir de su identificador.
+         * 
+         * @param id
+         *            el identificador del comando.
+         */
+        public ModifyCommand(String id) {
 
-	    super(id);
-	}
+            super(id);
+        }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected void doExecuteCommand() {
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        protected void doExecuteCommand() {
 
-	    TableBinding.this.getDialog().setCreatingNewEntity(Boolean.FALSE);
-	    TableBinding.this.getDialog().showDialog();
-	}
+            TableBinding.this.getDialog().setCreatingNewEntity(Boolean.FALSE);
+            TableBinding.this.getDialog().showDialog();
+        }
     }
 
     /**
@@ -947,33 +947,33 @@ public class TableBinding extends CustomBinding {
      */
     private class RemoveCommand extends ActionCommand {
 
-	/**
-	 * Construye el comando a partir de su identificador.
-	 * 
-	 * @param id
-	 *            el identificador del comando.
-	 */
-	public RemoveCommand(String id) {
+        /**
+         * Construye el comando a partir de su identificador.
+         * 
+         * @param id
+         *            el identificador del comando.
+         */
+        public RemoveCommand(String id) {
 
-	    super(id);
-	}
+            super(id);
+        }
 
-	/**
-	 * Permite eliminar un elemento de la tabla.
-	 */
-	@SuppressWarnings("unchecked")
-	@Override
-	protected void doExecuteCommand() {
+        /**
+         * Permite eliminar un elemento de la tabla.
+         */
+        @SuppressWarnings("unchecked")
+        @Override
+        protected void doExecuteCommand() {
 
-	    // Los índices de las filas seleccionadas
-	    final List<Integer> indexes = FilterModelUtil.getOriginalSelectedIdxs(//
-		    TableBinding.this.getTable());
+            // Los índices de las filas seleccionadas
+            final List<Integer> indexes = FilterModelUtil.getOriginalSelectedIdxs(//
+                    TableBinding.this.getTable());
 
-	    // Eliminar las filas seleccionadas
-	    final EventList<Serializable> eventList = (EventList<Serializable>) TableBinding.this.getValue();
-	    for (final int index : indexes) {
-		eventList.remove(index);
-	    }
-	}
+            // Eliminar las filas seleccionadas
+            final EventList<Serializable> eventList = (EventList<Serializable>) TableBinding.this.getValue();
+            for (final int index : indexes) {
+                eventList.remove(index);
+            }
+        }
     }
 }

@@ -16,6 +16,9 @@ import org.springframework.util.Assert;
 /**
  * Formulario genérico para la visualización de errores y conflictos.
  * 
+ * @param <T>
+ *            the type of the entities being edited.
+ * 
  * @author <a href = "mailto:julio.arguello@gmail.com" >Julio Argüello (JAF)</a>
  */
 public class BbValidationForm<T> extends ApplicationWindowAwareForm {
@@ -25,10 +28,19 @@ public class BbValidationForm<T> extends ApplicationWindowAwareForm {
      */
     private static final String FORM_NAME = "problemsForm";
 
+    /**
+     * TODO.
+     */
     private Messagable messagable;
 
+    /**
+     * The list of validation messages.
+     */
     private List<ValidationMessage> validationMessages = new ArrayList<ValidationMessage>();
 
+    /**
+     * The associated master form.
+     */
     private AbstractBb2TableMasterForm<T> masterForm;
 
     /**
@@ -38,7 +50,7 @@ public class BbValidationForm<T> extends ApplicationWindowAwareForm {
      */
     public AbstractBb2TableMasterForm<T> getMasterForm() {
 
-	return this.masterForm;
+        return this.masterForm;
     }
 
     /**
@@ -49,9 +61,9 @@ public class BbValidationForm<T> extends ApplicationWindowAwareForm {
      */
     public void setMasterForm(AbstractBb2TableMasterForm<T> masterForm) {
 
-	Assert.notNull(masterForm, "masterForm");
+        Assert.notNull(masterForm, "masterForm");
 
-	this.masterForm = masterForm;
+        this.masterForm = masterForm;
     }
 
     /**
@@ -61,7 +73,7 @@ public class BbValidationForm<T> extends ApplicationWindowAwareForm {
      */
     public List<ValidationMessage> getValidationMessages() {
 
-	return this.validationMessages;
+        return this.validationMessages;
     }
 
     /**
@@ -72,9 +84,9 @@ public class BbValidationForm<T> extends ApplicationWindowAwareForm {
      */
     public void setValidationMessages(List<ValidationMessage> validationMessages) {
 
-	Assert.notNull(validationMessages, "validationMessages");
+        Assert.notNull(validationMessages, "validationMessages");
 
-	this.validationMessages = validationMessages;
+        this.validationMessages = validationMessages;
     }
 
     /**
@@ -82,27 +94,27 @@ public class BbValidationForm<T> extends ApplicationWindowAwareForm {
      */
     public BbValidationForm() {
 
-	super(BbValidationForm.FORM_NAME);
-	this.setFormModel(BbFormModelHelper.createFormModel(new String())); // TODO
-	this.setMessagable(new DefaultMessageAreaModel() {
+        super(BbValidationForm.FORM_NAME);
+        this.setFormModel(BbFormModelHelper.createFormModel(new String())); // TODO
+        this.setMessagable(new DefaultMessageAreaModel() {
 
-	    /**
-	     * {@inheritDoc}
-	     */
-	    @Override
-	    public void setMessage(Message message) {
+            /**
+             * {@inheritDoc}
+             */
+            @Override
+            public void setMessage(Message message) {
 
-		// TODO Auto-generated method stub
-		super.setMessage(message);
+                // TODO Auto-generated method stub
+                super.setMessage(message);
 
-		if (message == null) {
-		    BbValidationForm.this.validationMessages.clear();
-		} else if (message instanceof ValidationMessage) {
-		    BbValidationForm.this.validationMessages.add((ValidationMessage) message);
-		}
-	    }
+                if (message == null) {
+                    BbValidationForm.this.validationMessages.clear();
+                } else if (message instanceof ValidationMessage) {
+                    BbValidationForm.this.validationMessages.add((ValidationMessage) message);
+                }
+            }
 
-	});
+        });
     }
 
     /**
@@ -112,7 +124,7 @@ public class BbValidationForm<T> extends ApplicationWindowAwareForm {
      */
     public Messagable getMessagable() {
 
-	return this.messagable;
+        return this.messagable;
     }
 
     /**
@@ -123,9 +135,9 @@ public class BbValidationForm<T> extends ApplicationWindowAwareForm {
      */
     public void setMessagable(Messagable messagable) {
 
-	Assert.notNull(messagable, "messagable");
+        Assert.notNull(messagable, "messagable");
 
-	this.messagable = messagable;
+        this.messagable = messagable;
     }
 
     /**
@@ -134,6 +146,6 @@ public class BbValidationForm<T> extends ApplicationWindowAwareForm {
     @Override
     protected JComponent createFormControl() {
 
-	return new JPanel();
+        return new JPanel();
     }
 }

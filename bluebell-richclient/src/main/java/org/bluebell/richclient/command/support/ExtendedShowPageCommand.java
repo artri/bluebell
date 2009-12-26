@@ -31,7 +31,7 @@ import org.springframework.richclient.command.support.ShowPageCommand;
  *            el tipo de las entidades a mostrar en la página destino.
  */
 public abstract class ExtendedShowPageCommand<T, U> extends ShowPageCommand implements MouseListener,
-	ListSelectionListener {
+        ListSelectionListener {
 
     /**
      * La tabla de la página de origen.
@@ -43,7 +43,7 @@ public abstract class ExtendedShowPageCommand<T, U> extends ShowPageCommand impl
      */
     public ExtendedShowPageCommand() {
 
-	super();
+        super();
     }
 
     /**
@@ -54,9 +54,9 @@ public abstract class ExtendedShowPageCommand<T, U> extends ShowPageCommand impl
      */
     public final void mouseClicked(MouseEvent event) {
 
-	if (event.getClickCount() == 2) {
-	    this.execute();
-	}
+        if (event.getClickCount() == 2) {
+            this.execute();
+        }
     }
 
     /**
@@ -64,7 +64,7 @@ public abstract class ExtendedShowPageCommand<T, U> extends ShowPageCommand impl
      */
     public final void mouseEntered(MouseEvent arg0) {
 
-	// Nothing to do
+        // Nothing to do
     }
 
     /**
@@ -72,7 +72,7 @@ public abstract class ExtendedShowPageCommand<T, U> extends ShowPageCommand impl
      */
     public final void mouseExited(MouseEvent arg0) {
 
-	// Nothing to do
+        // Nothing to do
     }
 
     /**
@@ -80,7 +80,7 @@ public abstract class ExtendedShowPageCommand<T, U> extends ShowPageCommand impl
      */
     public final void mousePressed(MouseEvent arg0) {
 
-	// Nothing to do
+        // Nothing to do
     }
 
     /**
@@ -88,7 +88,7 @@ public abstract class ExtendedShowPageCommand<T, U> extends ShowPageCommand impl
      */
     public final void mouseReleased(MouseEvent arg0) {
 
-	// Nothing to do
+        // Nothing to do
     }
 
     /**
@@ -97,7 +97,7 @@ public abstract class ExtendedShowPageCommand<T, U> extends ShowPageCommand impl
     @Override
     public void setBeanName(String name) {
 
-	this.setId(name);
+        this.setId(name);
     }
 
     /**
@@ -108,17 +108,17 @@ public abstract class ExtendedShowPageCommand<T, U> extends ShowPageCommand impl
      */
     public void setTargetTable(JTable targetTable) {
 
-	org.springframework.util.Assert.notNull(targetTable);
+        org.springframework.util.Assert.notNull(targetTable);
 
-	this.targetTable = targetTable;
+        this.targetTable = targetTable;
 
-	// El comando se activará o desactivará automáticamente
-	this.getTargetTable().getSelectionModel().addListSelectionListener(this);
+        // El comando se activará o desactivará automáticamente
+        this.getTargetTable().getSelectionModel().addListSelectionListener(this);
 
-	// (JAF), 20090128, Mejor hacer que este no sea el comportamiento por
-	// defecto. Se ofrece la posibilidad pero hay que hacerlo de forma
-	// explícita
-	// this.getTargetTable().addMouseListener(this);
+        // (JAF), 20090128, Mejor hacer que este no sea el comportamiento por
+        // defecto. Se ofrece la posibilidad pero hay que hacerlo de forma
+        // explícita
+        // this.getTargetTable().addMouseListener(this);
     }
 
     /**
@@ -126,12 +126,12 @@ public abstract class ExtendedShowPageCommand<T, U> extends ShowPageCommand impl
      */
     public void valueChanged(ListSelectionEvent event) {
 
-	if (event.getValueIsAdjusting()) {
-	    return;
-	}
+        if (event.getValueIsAdjusting()) {
+            return;
+        }
 
-	final int rowCount = this.getTargetTable().getSelectedRowCount();
-	ExtendedShowPageCommand.this.setEnabled(rowCount > 0);
+        final int rowCount = this.getTargetTable().getSelectedRowCount();
+        ExtendedShowPageCommand.this.setEnabled(rowCount > 0);
     }
 
     /**
@@ -141,21 +141,24 @@ public abstract class ExtendedShowPageCommand<T, U> extends ShowPageCommand impl
     @Override
     protected void doExecuteCommand() {
 
-//	final ApplicationWindow window = this.getApplicationWindow();
+        // final ApplicationWindow window = this.getApplicationWindow();
 
-	// 1. Obtener las entidades seleccionadas en origen
-//	final Collection<T> selectedEntities = this.getSelectedEntities();
+        // 1. Obtener las entidades seleccionadas en origen
+        // final Collection<T> selectedEntities = this.getSelectedEntities();
 
-	// 2. Obtener las entidades a seleccionar en destino
-//	final Collection<U> entitiesToSelect = this.getEntitiesToSelect(selectedEntities);
+        // 2. Obtener las entidades a seleccionar en destino
+        // final Collection<U> entitiesToSelect =
+        // this.getEntitiesToSelect(selectedEntities);
 
-	// 3. Mostrar la página destino
-	super.doExecuteCommand();
+        // 3. Mostrar la página destino
+        super.doExecuteCommand();
 
-	// 4. Cargar las entidades a mostrar en la página destino
-//	final ApplicationPage currentApplicationPage = window.getPage(); // FIXME
-//	(((BbVLDockingApplicationPage<U>) currentApplicationPage).getLastMasterForm())
-//		.setVisibleEntities(entitiesToSelect);
+        // 4. Cargar las entidades a mostrar en la página destino
+        // final ApplicationPage currentApplicationPage = window.getPage(); //
+        // FIXME
+        // (((BbVLDockingApplicationPage<U>)
+        // currentApplicationPage).getLastMasterForm())
+        // .setVisibleEntities(entitiesToSelect);
     }
 
     /**
@@ -174,16 +177,17 @@ public abstract class ExtendedShowPageCommand<T, U> extends ShowPageCommand impl
      * 
      * @return las entidades seleccionadas en origen.
      */
-//    @SuppressWarnings("unchecked")
+    // @SuppressWarnings("unchecked")
     protected Collection<T> getSelectedEntities() {
 
-	final ApplicationWindow window = this.getApplicationWindow();
-	final ApplicationPage previousApplicationPage = window.getPage();
+        final ApplicationWindow window = this.getApplicationWindow();
+        final ApplicationPage previousApplicationPage = window.getPage();
 
-	org.springframework.util.Assert.isInstanceOf(BbVLDockingApplicationPage.class, previousApplicationPage);
+        org.springframework.util.Assert.isInstanceOf(BbVLDockingApplicationPage.class, previousApplicationPage);
 
-	return null; // FIXME
-//	return (((BbVLDockingApplicationPage<T>) previousApplicationPage).getLastMasterForm()).getSelectedEntities();
+        return null; // FIXME
+        // return (((BbVLDockingApplicationPage<T>)
+        // previousApplicationPage).getLastMasterForm()).getSelectedEntities();
     }
 
     /**
@@ -193,6 +197,6 @@ public abstract class ExtendedShowPageCommand<T, U> extends ShowPageCommand impl
      */
     private JTable getTargetTable() {
 
-	return this.targetTable;
+        return this.targetTable;
     }
 }

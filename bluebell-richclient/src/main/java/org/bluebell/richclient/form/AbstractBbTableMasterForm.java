@@ -14,6 +14,7 @@ import javax.swing.event.ListSelectionListener;
 import javax.swing.table.TableModel;
 
 import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
 import org.bluebell.richclient.application.config.FilterCommand;
@@ -72,7 +73,7 @@ import org.springframework.util.StringUtils;
  * @author <a href = "mailto:julio.arguello@gmail.com" >Julio Argüello (JAF)</a>
  */
 public abstract class AbstractBbTableMasterForm<T extends Object> extends AbstractTableMasterForm implements
-	GlobalCommandsAccessor, ApplicationWindowAware {
+        GlobalCommandsAccessor, ApplicationWindowAware {
 
     /**
      * El nombre del parámetro de <code>refreshCommand</code> que le indica si se ha de limpiar la selección antes de
@@ -173,14 +174,14 @@ public abstract class AbstractBbTableMasterForm<T extends Object> extends Abstra
      */
     public AbstractBbTableMasterForm(String formId, Class<T> detailType) {
 
-	this(FormModelHelper.createFormModel(//
-		new ReturnEmptyCollection(), //
-		formId + AbstractBbTableMasterForm.PARENT_FORM_MODEL_SUFIX), //
-		ReturnEmptyCollection.PROPERTY_NAME, //
-		formId,//
-		detailType);
+        this(FormModelHelper.createFormModel(//
+                new ReturnEmptyCollection(), //
+                formId + AbstractBbTableMasterForm.PARENT_FORM_MODEL_SUFIX), //
+                ReturnEmptyCollection.PROPERTY_NAME, //
+                formId, //
+                detailType);
 
-	((ConfigurableFormModel) this.getFormModel().getParent()).setEnabled(Boolean.TRUE);
+        ((ConfigurableFormModel) this.getFormModel().getParent()).setEnabled(Boolean.TRUE);
     }
 
     /**
@@ -199,10 +200,10 @@ public abstract class AbstractBbTableMasterForm<T extends Object> extends Abstra
      *            la clase del tipo detalle.
      */
     private AbstractBbTableMasterForm(HierarchicalFormModel parentFormModel, String property, String formId,
-	    Class<T> detailType) {
+            Class<T> detailType) {
 
-	super(parentFormModel, property, formId, detailType);
-	this.getFormModel().setValidating(Boolean.FALSE);
+        super(parentFormModel, property, formId, detailType);
+        this.getFormModel().setValidating(Boolean.FALSE);
     }
 
     /**
@@ -219,15 +220,15 @@ public abstract class AbstractBbTableMasterForm<T extends Object> extends Abstra
     @SuppressWarnings("unchecked")
     public final T doRefreshIfNeeded(T object) {
 
-	final AbstractBbDetailForm<T> detailForm = (AbstractBbDetailForm<T>) this.getDetailForm();
+        final AbstractBbDetailForm<T> detailForm = (AbstractBbDetailForm<T>) this.getDetailForm();
 
-	final T refreshedObject = (detailForm.isCommiting() && !this.isAlwaysRefresh()) ? object : this
-		.doRefresh(object);
+        final T refreshedObject = (detailForm.isCommiting() && !this.isAlwaysRefresh()) ? object : this
+                .doRefresh(object);
 
-	// Publicar el evento
-	AbstractBbTableMasterForm.this.publishApplicationEvent(EventType.REFRESHED, refreshedObject);
+        // Publicar el evento
+        AbstractBbTableMasterForm.this.publishApplicationEvent(EventType.REFRESHED, refreshedObject);
 
-	return refreshedObject;
+        return refreshedObject;
     }
 
     /**
@@ -244,8 +245,8 @@ public abstract class AbstractBbTableMasterForm<T extends Object> extends Abstra
      */
     public ApplicationWindow getApplicationWindow() {
 
-	return (this.applicationWindow != null) ? this.applicationWindow //
-		: Application.instance().getActiveWindow();
+        return (this.applicationWindow != null) ? this.applicationWindow //
+                : Application.instance().getActiveWindow();
     }
 
     /**
@@ -257,10 +258,10 @@ public abstract class AbstractBbTableMasterForm<T extends Object> extends Abstra
      */
     public final ActionCommand getCancelCommand() {
 
-	if (this.cancelCommand == null) {
-	    this.cancelCommand = this.createCancelCommand();
-	}
-	return this.cancelCommand;
+        if (this.cancelCommand == null) {
+            this.cancelCommand = this.createCancelCommand();
+        }
+        return this.cancelCommand;
     }
 
     /**
@@ -272,10 +273,10 @@ public abstract class AbstractBbTableMasterForm<T extends Object> extends Abstra
      */
     public final ActionCommand getFilterCommand() {
 
-	if (this.filterCommand == null) {
-	    this.filterCommand = this.createFilterCommand();
-	}
-	return this.filterCommand;
+        if (this.filterCommand == null) {
+            this.filterCommand = this.createFilterCommand();
+        }
+        return this.filterCommand;
     }
 
     /**
@@ -285,10 +286,10 @@ public abstract class AbstractBbTableMasterForm<T extends Object> extends Abstra
      */
     public ActionCommand getRefreshCommand() {
 
-	if (this.refreshCommand == null) {
-	    this.refreshCommand = this.createRefreshCommand();
-	}
-	return this.refreshCommand;
+        if (this.refreshCommand == null) {
+            this.refreshCommand = this.createRefreshCommand();
+        }
+        return this.refreshCommand;
     }
 
     /**
@@ -298,10 +299,10 @@ public abstract class AbstractBbTableMasterForm<T extends Object> extends Abstra
      */
     public ActionCommand getRevertAllCommand() {
 
-	if (this.revertAllCommand == null) {
-	    this.revertAllCommand = this.createRevertAllCommand();
-	}
-	return this.revertAllCommand;
+        if (this.revertAllCommand == null) {
+            this.revertAllCommand = this.createRevertAllCommand();
+        }
+        return this.revertAllCommand;
     }
 
     /**
@@ -311,10 +312,10 @@ public abstract class AbstractBbTableMasterForm<T extends Object> extends Abstra
      */
     public ActionCommand getSaveCommand() {
 
-	if (this.saveCommand == null) {
-	    this.saveCommand = this.createSaveCommand();
-	}
-	return this.saveCommand;
+        if (this.saveCommand == null) {
+            this.saveCommand = this.createSaveCommand();
+        }
+        return this.saveCommand;
     }
 
     /**
@@ -324,10 +325,10 @@ public abstract class AbstractBbTableMasterForm<T extends Object> extends Abstra
      */
     public final ActionCommand getSelectAllCommand() {
 
-	if (this.selectAllCommand == null) {
-	    this.selectAllCommand = this.createSelectAllCommand();
-	}
-	return this.selectAllCommand;
+        if (this.selectAllCommand == null) {
+            this.selectAllCommand = this.createSelectAllCommand();
+        }
+        return this.selectAllCommand;
     }
 
     /**
@@ -337,19 +338,19 @@ public abstract class AbstractBbTableMasterForm<T extends Object> extends Abstra
      */
     public final Collection<T> getSelectedEntities() {
 
-	final Collection<T> selectedItems = new ArrayList<T>();
+        final Collection<T> selectedItems = new ArrayList<T>();
 
-	// Recuperar las entidades seleccionadas.
-	this.doForEachSelectedItem(new ListClosure<T>() {
+        // Recuperar las entidades seleccionadas.
+        this.doForEachSelectedItem(new ListClosure<T>() {
 
-	    public T call(T item, int index) {
+            public T call(T item, int index) {
 
-		selectedItems.add(item);
-		return item;
-	    }
-	});
+                selectedItems.add(item);
+                return item;
+            }
+        });
 
-	return selectedItems;
+        return selectedItems;
     }
 
     /**
@@ -359,9 +360,9 @@ public abstract class AbstractBbTableMasterForm<T extends Object> extends Abstra
      */
     public final T getSelectedEntity() {
 
-	final Collection<T> selectedEntities = this.getSelectedEntities();
+        final Collection<T> selectedEntities = this.getSelectedEntities();
 
-	return selectedEntities.isEmpty() ? null : selectedEntities.iterator().next();
+        return selectedEntities.isEmpty() ? null : selectedEntities.iterator().next();
     }
 
     /**
@@ -371,7 +372,7 @@ public abstract class AbstractBbTableMasterForm<T extends Object> extends Abstra
      */
     public Boolean isAlwaysRefresh() {
 
-	return this.alwaysRefresh;
+        return this.alwaysRefresh;
     }
 
     /**
@@ -381,8 +382,8 @@ public abstract class AbstractBbTableMasterForm<T extends Object> extends Abstra
      */
     public void keepAliveAfterFailure() {
 
-	this.setSelectedEntity(null);
-	this.getDetailForm().reset();
+        this.setSelectedEntity(null);
+        this.getDetailForm().reset();
     }
 
     /**
@@ -396,8 +397,8 @@ public abstract class AbstractBbTableMasterForm<T extends Object> extends Abstra
      */
     public void publishApplicationEvent(EventType eventType, T source) {
 
-	final ApplicationEvent applicationEvent = new LifecycleApplicationEvent(eventType.toString(), source);
-	this.getApplicationContext().publishEvent(applicationEvent);
+        final ApplicationEvent applicationEvent = new LifecycleApplicationEvent(eventType.toString(), source);
+        this.getApplicationContext().publishEvent(applicationEvent);
     }
 
     /**
@@ -408,7 +409,7 @@ public abstract class AbstractBbTableMasterForm<T extends Object> extends Abstra
      */
     public void setAlwaysRefresh(Boolean alwaysRefresh) {
 
-	this.alwaysRefresh = alwaysRefresh;
+        this.alwaysRefresh = alwaysRefresh;
     }
 
     /**
@@ -419,7 +420,7 @@ public abstract class AbstractBbTableMasterForm<T extends Object> extends Abstra
      */
     public void setApplicationWindow(ApplicationWindow window) {
 
-	this.applicationWindow = window;
+        this.applicationWindow = window;
     }
 
     /**
@@ -436,15 +437,15 @@ public abstract class AbstractBbTableMasterForm<T extends Object> extends Abstra
     @SuppressWarnings("unchecked")
     public final void setSelectedEntity(T entity) {
 
-	// (JAF), 20090730, mejora para poder limpiar la selección (ej.: para
-	// gestión de errores)
-	if (entity == null) {
-	    this.getMasterTable().clearSelection();
-	} else {
-	    // (JAF), 20080105, este método se mantiene por compatibilidad mas
-	    // ha sido reescrito en TableModelUtil
-	    FilterModelUtil.setSelectedEntity(this.getMasterEventList(), this.getMasterTable(), entity);
-	}
+        // (JAF), 20090730, mejora para poder limpiar la selección (ej.: para
+        // gestión de errores)
+        if (entity == null) {
+            this.getMasterTable().clearSelection();
+        } else {
+            // (JAF), 20080105, este método se mantiene por compatibilidad mas
+            // ha sido reescrito en TableModelUtil
+            FilterModelUtil.setSelectedEntity(this.getMasterEventList(), this.getMasterTable(), entity);
+        }
     }
 
     /**
@@ -457,7 +458,7 @@ public abstract class AbstractBbTableMasterForm<T extends Object> extends Abstra
      */
     public final void setVisibleEntities(Collection<T> entities) {
 
-	this.setVisibleEntities(entities, false);
+        this.setVisibleEntities(entities, false);
     }
 
     /**
@@ -475,45 +476,45 @@ public abstract class AbstractBbTableMasterForm<T extends Object> extends Abstra
     @SuppressWarnings("unchecked")
     public void setVisibleEntities(Collection<T> entities, boolean attach) {
 
-	// El índice del elemento seleccionado antes y después de la
-	// confirmación del usuario
-	int previousIndex = 0;
-	int currentIndex = 0;
+        // El índice del elemento seleccionado antes y después de la
+        // confirmación del usuario
+        int previousIndex = 0;
+        int currentIndex = 0;
 
-	// Deseleccionar el formulario maestro recordando el índice anterior y
-	// posterior a la selección.
-	previousIndex = this.getDetailForm().getSelectedIndex();
-	// Solicitar la confirmación del usuario
-	((FilterModelAwareListSelectionHandler<T>) this.getSelectionHandler()).maybeChangeSelection(-1);
-	currentIndex = this.getDetailForm().getSelectedIndex();
+        // Deseleccionar el formulario maestro recordando el índice anterior y
+        // posterior a la selección.
+        previousIndex = this.getDetailForm().getSelectedIndex();
+        // Solicitar la confirmación del usuario
+        ((FilterModelAwareListSelectionHandler<T>) this.getSelectionHandler()).maybeChangeSelection(-1);
+        currentIndex = this.getDetailForm().getSelectedIndex();
 
-	// Proceder si es un attach, o...
-	// ... si ha cambiado la selección, o...
-	// ... si no había nada seleccionado y sigue sin haberlo.
-	boolean proceed = attach;
-	proceed |= previousIndex != currentIndex;
-	proceed |= (previousIndex == -1) && (currentIndex == -1);
+        // Proceder si es un attach, o...
+        // ... si ha cambiado la selección, o...
+        // ... si no había nada seleccionado y sigue sin haberlo.
+        boolean proceed = attach;
+        proceed |= previousIndex != currentIndex;
+        proceed |= (previousIndex == -1) && (currentIndex == -1);
 
-	// Se desinstala primero y reinstala más adelante el selection handler
-	// para evitar la publicación redundante de eventos.
-	final Collection<T> allEntities = new HashSet<T>(entities);
-	if (proceed) {
-	    // Desinstalar el selection handler
-	    this.uninstallSelectionHandler();
+        // Se desinstala primero y reinstala más adelante el selection handler
+        // para evitar la publicación redundante de eventos.
+        final Collection<T> allEntities = new HashSet<T>(entities);
+        if (proceed) {
+            // Desinstalar el selection handler
+            this.uninstallSelectionHandler();
 
-	    if (attach) {
-		allEntities.addAll(this.getMasterEventList());
-	    }
+            if (attach) {
+                allEntities.addAll(this.getMasterEventList());
+            }
 
-	    // Actualizar la master event list
-	    FilterModelUtil.replace(this.getMasterTableModel(), this.getMasterEventList(), allEntities);
+            // Actualizar la master event list
+            FilterModelUtil.replace(this.getMasterTableModel(), this.getMasterEventList(), allEntities);
 
-	    // Reinstalar el selection handler
-	    this.installSelectionHandler();
+            // Reinstalar el selection handler
+            this.installSelectionHandler();
 
-	    // Resetear el formulario detalle
-	    this.getDetailForm().reset();
-	}
+            // Resetear el formulario detalle
+            this.getDetailForm().reset();
+        }
     }
 
     /**
@@ -522,7 +523,7 @@ public abstract class AbstractBbTableMasterForm<T extends Object> extends Abstra
     @Override
     public String toString() {
 
-	return new ToStringBuilder(this, ToStringStyle.SIMPLE_STYLE).append("id", this.getId()).toString();
+        return new ToStringBuilder(this, ToStringStyle.SIMPLE_STYLE).append("id", this.getId()).toString();
     }
 
     /**
@@ -536,9 +537,9 @@ public abstract class AbstractBbTableMasterForm<T extends Object> extends Abstra
     @Override
     protected String constructSecurityControllerId(String commandFaceId) {
 
-	final String[] ids = StringUtils.commaDelimitedListToStringArray(commandFaceId);
+        final String[] ids = StringUtils.commaDelimitedListToStringArray(commandFaceId);
 
-	return super.constructSecurityControllerId(ids[0]);
+        return super.constructSecurityControllerId(ids[0]);
     }
 
     /**
@@ -548,27 +549,26 @@ public abstract class AbstractBbTableMasterForm<T extends Object> extends Abstra
      */
     protected ActionCommand createCancelCommand() {
 
-	Assert.notNull(this.getDetailForm());
+        Assert.notNull(this.getDetailForm());
 
-	// Obtener los identificadores del comando, separados por comas y
-	// ordenados según prioridad
-	final String commandId = this.getCancelCommandFaceDescriptorId();
+        // Obtener los identificadores del comando, separados por comas y
+        // ordenados según prioridad
+        final String commandId = this.getCancelCommandFaceDescriptorId();
 
-	// Crear el comando y sincronizar su estado enabled/disabled
-	final ActionCommand cancelCommand = new TargetableActionCommand(//
-		commandId, this.getDetailForm().getCancelCommand());
+        // Crear el comando y sincronizar su estado enabled/disabled
+        final ActionCommand command = new TargetableActionCommand(commandId, this.getDetailForm().getCancelCommand());
 
-	// Determinar cuando ha de estar habilitado el comando.
-	cancelCommand.setEnabled(Boolean.FALSE);
-	this.getNewFormObjectCommand().addEnabledListener(new PropertyChangeListener() {
-	    public void propertyChange(PropertyChangeEvent evt) {
+        // Determinar cuando ha de estar habilitado el comando.
+        command.setEnabled(Boolean.FALSE);
+        this.getNewFormObjectCommand().addEnabledListener(new PropertyChangeListener() {
+            public void propertyChange(PropertyChangeEvent evt) {
 
-		cancelCommand.setEnabled(!(Boolean) evt.getNewValue());
-	    }
-	});
+                command.setEnabled(!(Boolean) evt.getNewValue());
+            }
+        });
 
-	// Configurar el comando
-	return this.configureCommand(cancelCommand, Boolean.FALSE);
+        // Configurar el comando
+        return this.configureCommand(command, Boolean.FALSE);
     }
 
     /**
@@ -578,18 +578,18 @@ public abstract class AbstractBbTableMasterForm<T extends Object> extends Abstra
      */
     protected CommandGroup createCommandGroup() {
 
-	final CommandGroup group = CommandGroup.createCommandGroup(new Object[] { this.getFilterCommand(), //
-		CommandGroupFactoryBean.SEPARATOR_MEMBER_CODE, //
-		CommandGroupFactoryBean.SEPARATOR_MEMBER_CODE, //
-		GlobalCommandIds.PROPERTIES, //
-		GlobalCommandIds.SAVE, //
-		GlobalCommandsAccessor.CANCEL, //
-		GlobalCommandIds.DELETE //
-		});
+        final CommandGroup group = CommandGroup.createCommandGroup(new Object[] { this.getFilterCommand(), //
+                CommandGroupFactoryBean.SEPARATOR_MEMBER_CODE, //
+                CommandGroupFactoryBean.SEPARATOR_MEMBER_CODE, //
+                GlobalCommandIds.PROPERTIES, //
+                GlobalCommandIds.SAVE, //
+                GlobalCommandsAccessor.CANCEL, //
+                GlobalCommandIds.DELETE //
+                });
 
-	group.setCommandRegistry(this.getApplicationWindow().getCommandManager());
+        group.setCommandRegistry(this.getApplicationWindow().getCommandManager());
 
-	return group;
+        return group;
     }
 
     /**
@@ -599,16 +599,15 @@ public abstract class AbstractBbTableMasterForm<T extends Object> extends Abstra
      */
     protected ActionCommand createFilterCommand() {
 
-	// Obtener los identificadores del comando, separados por comas y
-	// ordenados según prioridad
-	final String commandId = this.getFilterCommandFaceDescriptorId();
+        // Obtener los identificadores del comando, separados por comas y
+        // ordenados según prioridad
+        final String commandId = this.getFilterCommandFaceDescriptorId();
 
-	// Crear el comando
-	final ActionCommand filterCommand = new FilterCommand(//
-		commandId, AbstractBbTableMasterForm.this.getMasterTable());
+        // Crear el comando
+        final ActionCommand command = new FilterCommand(commandId, AbstractBbTableMasterForm.this.getMasterTable());
 
-	// Configurar el comando
-	return this.configureCommand(filterCommand, Boolean.FALSE);
+        // Configurar el comando
+        return this.configureCommand(command, Boolean.FALSE);
     }
 
     /**
@@ -620,13 +619,13 @@ public abstract class AbstractBbTableMasterForm<T extends Object> extends Abstra
     @Override
     protected JComponent createFormControl() {
 
-	// Obtener el control del formulario maestro.
-	final JComponent jComponent = super.createFormControl();
+        // Obtener el control del formulario maestro.
+        final JComponent jComponent = super.createFormControl();
 
-	// HACK, (JAF) 20080725, para que el scrolling sea más usable
-	this.getMasterTable().setPreferredScrollableViewportSize(this.getMasterTable().getPreferredSize());
+        // HACK, (JAF) 20080725, para que el scrolling sea más usable
+        this.getMasterTable().setPreferredScrollableViewportSize(this.getMasterTable().getPreferredSize());
 
-	return jComponent;
+        return jComponent;
     }
 
     /**
@@ -635,9 +634,9 @@ public abstract class AbstractBbTableMasterForm<T extends Object> extends Abstra
     @Override
     protected ActionCommand createNewFormObjectCommand() {
 
-	final ActionCommand newFormObjectCommand = super.createNewFormObjectCommand();
+        final ActionCommand newFormObjectCommand = super.createNewFormObjectCommand();
 
-	return this.configureCommand(newFormObjectCommand, Boolean.FALSE);
+        return this.configureCommand(newFormObjectCommand, Boolean.FALSE);
     }
 
     /**
@@ -647,18 +646,18 @@ public abstract class AbstractBbTableMasterForm<T extends Object> extends Abstra
      */
     protected CommandGroup createPopupMenu() {
 
-	final CommandGroup group = CommandGroup.createCommandGroup(new Object[] { GlobalCommandIds.PROPERTIES, //
-		GlobalCommandIds.SAVE, //  
-		GlobalCommandsAccessor.CANCEL, //
-		GlobalCommandIds.DELETE, //
-		CommandGroupFactoryBean.SEPARATOR_MEMBER_CODE, //
-		GlobalCommandsAccessor.REVERT, //
-		GlobalCommandsAccessor.REVERT_ALL //  
-		});
+        final CommandGroup group = CommandGroup.createCommandGroup(new Object[] { GlobalCommandIds.PROPERTIES, //
+                GlobalCommandIds.SAVE, //  
+                GlobalCommandsAccessor.CANCEL, //
+                GlobalCommandIds.DELETE, //
+                CommandGroupFactoryBean.SEPARATOR_MEMBER_CODE, //
+                GlobalCommandsAccessor.REVERT, //
+                GlobalCommandsAccessor.REVERT_ALL //  
+                });
 
-	group.setCommandRegistry(this.getApplicationWindow().getCommandManager());
+        group.setCommandRegistry(this.getApplicationWindow().getCommandManager());
 
-	return group;
+        return group;
     }
 
     /**
@@ -668,42 +667,43 @@ public abstract class AbstractBbTableMasterForm<T extends Object> extends Abstra
      */
     protected ActionCommand createRefreshCommand() {
 
-	// Obtener los identificadores del comando, separados por comas y
-	// ordenados según prioridad
-	final String commandId = this.getRefreshCommandFaceDescriptorId();
+        // Obtener los identificadores del comando, separados por comas y
+        // ordenados según prioridad
+        final String commandId = this.getRefreshCommandFaceDescriptorId();
 
-	// Crear el comando
-	final ActionCommand refreshCommand = new ActionCommand(commandId) {
+        // Crear el comando
+        final ActionCommand command = new ActionCommand(commandId) {
 
-	    /**
-	     * Refresca los objetos seleccionados.
-	     */
-	    @Override
-	    @SuppressWarnings("unchecked")
-	    protected void doExecuteCommand() {
+            /**
+             * Refresca los objetos seleccionados.
+             */
+            @Override
+            @SuppressWarnings("unchecked")
+            protected void doExecuteCommand() {
 
-		final FilterModelAwareListSelectionHandler<T> selectionHandler = (FilterModelAwareListSelectionHandler<T>) //
-		AbstractBbTableMasterForm.this.getSelectionHandler();
-		final List<Integer> filteredIdxs = FilterModelUtil.getFilteredSelectedIdxs(//
-			AbstractBbTableMasterForm.this.getMasterTable());
+                final FilterModelAwareListSelectionHandler<T> selectionHandler = //
+                (FilterModelAwareListSelectionHandler<T>) //
+                AbstractBbTableMasterForm.this.getSelectionHandler();
+                final List<Integer> filteredIdxs = FilterModelUtil.getFilteredSelectedIdxs(//
+                        AbstractBbTableMasterForm.this.getMasterTable());
 
-		// (JAF), 20090629, si clearBefore es true entonces resetear el
-		// formulario hijo antes
-		final Boolean clearSelection = this.getParameter(//
-			AbstractBbTableMasterForm.CLEAR_SELECTION_BEFORE_REFRESH_COMMAND_PARAM) == Boolean.FALSE ? Boolean.FALSE//
-			: Boolean.TRUE;
-		if (clearSelection) {
-		    ((FilterModelAwareListSelectionHandler<T>) //
-		    AbstractBbTableMasterForm.this.getSelectionHandler()).maybeChangeSelection(-1);
-		}
+                // (JAF), 20090629, si clearBefore es true entonces resetear el
+                // formulario hijo antes
+                Boolean clearSelection = (Boolean) //
+                this.getParameter(AbstractBbTableMasterForm.CLEAR_SELECTION_BEFORE_REFRESH_COMMAND_PARAM);
+                clearSelection = (Boolean) ObjectUtils.defaultIfNull(clearSelection, Boolean.TRUE);
+                if (clearSelection) {
+                    ((FilterModelAwareListSelectionHandler<T>) //
+                    AbstractBbTableMasterForm.this.getSelectionHandler()).maybeChangeSelection(-1);
+                }
 
-		selectionHandler.handleSelection(//
-			ArrayUtils.toPrimitive(filteredIdxs.toArray(new Integer[filteredIdxs.size()]), 0));
-	    }
-	};
+                selectionHandler.handleSelection(//
+                        ArrayUtils.toPrimitive(filteredIdxs.toArray(new Integer[filteredIdxs.size()]), 0));
+            }
+        };
 
-	// Configurar el comando
-	return this.configureCommand(refreshCommand, Boolean.TRUE);
+        // Configurar el comando
+        return this.configureCommand(command, Boolean.TRUE);
     }
 
     /**
@@ -713,18 +713,17 @@ public abstract class AbstractBbTableMasterForm<T extends Object> extends Abstra
      */
     protected ActionCommand createRevertAllCommand() {
 
-	Assert.notNull(this.getDetailForm());
+        Assert.notNull(this.getDetailForm());
 
-	// Obtener los identificadores del comando, separados por comas y
-	// ordenados según prioridad
-	final String commandId = this.getRevertAllCommandFaceDescriptorId();
+        // Obtener los identificadores del comando, separados por comas y
+        // ordenados según prioridad
+        final String commandId = this.getRevertAllCommandFaceDescriptorId();
 
-	// Crear el comando
-	final ActionCommand revertAllCommand = new TargetableActionCommand(//
-		commandId, this.getDetailForm().getRevertCommand());
+        // Crear el comando
+        final ActionCommand command = new TargetableActionCommand(commandId, this.getDetailForm().getRevertCommand());
 
-	// Configurar el comando
-	return this.configureCommand(revertAllCommand, Boolean.FALSE);
+        // Configurar el comando
+        return this.configureCommand(command, Boolean.FALSE);
     }
 
     /**
@@ -734,18 +733,17 @@ public abstract class AbstractBbTableMasterForm<T extends Object> extends Abstra
      */
     protected ActionCommand createSaveCommand() {
 
-	Assert.notNull(this.getDetailForm());
+        Assert.notNull(this.getDetailForm());
 
-	// Obtener los identificadores del comando, separados por comas y
-	// ordenados según prioridad
-	final String commandId = this.getSaveCommandFaceDescriptorId();
+        // Obtener los identificadores del comando, separados por comas y
+        // ordenados según prioridad
+        final String commandId = this.getSaveCommandFaceDescriptorId();
 
-	// Crear el comando
-	final ActionCommand saveCommand = new TargetableActionCommand(//
-		commandId, this.getDetailForm().getCommitCommand());
+        // Crear el comando
+        final ActionCommand command = new TargetableActionCommand(commandId, this.getDetailForm().getCommitCommand());
 
-	// Configurar el comando
-	return this.configureCommand(saveCommand, Boolean.TRUE);
+        // Configurar el comando
+        return this.configureCommand(command, Boolean.TRUE);
     }
 
     /**
@@ -755,25 +753,25 @@ public abstract class AbstractBbTableMasterForm<T extends Object> extends Abstra
      */
     protected ActionCommand createSelectAllCommand() {
 
-	// Obtener los identificadores del comando, separados por comas y
-	// ordenados según prioridad
-	final String commandId = this.getSelectAllCommandFaceDescriptorId();
+        // Obtener los identificadores del comando, separados por comas y
+        // ordenados según prioridad
+        final String commandId = this.getSelectAllCommandFaceDescriptorId();
 
-	// Crear el comando
-	final ActionCommand selectAllCommand = new ActionCommand(commandId) {
+        // Crear el comando
+        final ActionCommand command = new ActionCommand(commandId) {
 
-	    /**
-	     * Selecciona todas las entidades de la tabla maestra.
-	     */
-	    @Override
-	    protected void doExecuteCommand() {
+            /**
+             * Selecciona todas las entidades de la tabla maestra.
+             */
+            @Override
+            protected void doExecuteCommand() {
 
-		AbstractBbTableMasterForm.this.getMasterTable().selectAll();
-	    }
-	};
+                AbstractBbTableMasterForm.this.getMasterTable().selectAll();
+            }
+        };
 
-	// Configurar el comando
-	return this.configureCommand(selectAllCommand, Boolean.TRUE);
+        // Configurar el comando
+        return this.configureCommand(command, Boolean.TRUE);
     }
 
     /**
@@ -784,7 +782,7 @@ public abstract class AbstractBbTableMasterForm<T extends Object> extends Abstra
      */
     protected ListSelectionListener createSelectionHandler() {
 
-	return new FilterModelAwareListSelectionHandler<T>(this, this.getDetailForm(), this.getMasterTable());
+        return new FilterModelAwareListSelectionHandler<T>(this, this.getDetailForm(), this.getMasterTable());
     }
 
     /**
@@ -793,7 +791,7 @@ public abstract class AbstractBbTableMasterForm<T extends Object> extends Abstra
     @Override
     protected TableModel createTableModel() {
 
-	return BbFormModelHelper.createTableModel(this.getEventList(), this.getColumnPropertyNames(), this.getId());
+        return BbFormModelHelper.createTableModel(this.getEventList(), this.getColumnPropertyNames(), this.getId());
     }
 
     /**
@@ -803,28 +801,28 @@ public abstract class AbstractBbTableMasterForm<T extends Object> extends Abstra
     @Override
     protected final void deleteSelectedItems() {
 
-	// Resetear el formulario detalle para que no dé falsos avisos de dirty
-	this.getDetailForm().reset();
+        // Resetear el formulario detalle para que no dé falsos avisos de dirty
+        this.getDetailForm().reset();
 
-	this.doForEachSelectedItem(new ListClosure<T>() {
+        this.doForEachSelectedItem(new ListClosure<T>() {
 
-	    public T call(T entity, int index) {
+            public T call(T entity, int index) {
 
-		// Eliminar la entidad y retonar null en caso de fallo.
-		final boolean success = AbstractBbTableMasterForm.this.doDelete(entity) != null;
-		if (!success) {
-		    return null;
-		}
+                // Eliminar la entidad y retonar null en caso de fallo.
+                final boolean success = AbstractBbTableMasterForm.this.doDelete(entity) != null;
+                if (!success) {
+                    return null;
+                }
 
-		// Actualizar la tabla maestra.
-		AbstractBbTableMasterForm.this.getMasterEventList().remove(entity);
+                // Actualizar la tabla maestra.
+                AbstractBbTableMasterForm.this.getMasterEventList().remove(entity);
 
-		// Publicar el evento de notificación de borrado.
-		AbstractBbTableMasterForm.this.publishApplicationEvent(EventType.DELETED, entity);
+                // Publicar el evento de notificación de borrado.
+                AbstractBbTableMasterForm.this.publishApplicationEvent(EventType.DELETED, entity);
 
-		return entity;
-	    }
-	});
+                return entity;
+            }
+        });
     }
 
     /**
@@ -878,7 +876,7 @@ public abstract class AbstractBbTableMasterForm<T extends Object> extends Abstra
      */
     protected String getCancelCommandFaceDescriptorId() {
 
-	return this.getCommandName(AbstractBbTableMasterForm.CANCEL_COMMAND_ID);
+        return this.getCommandName(AbstractBbTableMasterForm.CANCEL_COMMAND_ID);
     }
 
     /**
@@ -889,11 +887,11 @@ public abstract class AbstractBbTableMasterForm<T extends Object> extends Abstra
     @Override
     protected final CommandGroup getCommandGroup() {
 
-	if (this.commandGroup == null) {
-	    this.commandGroup = this.createCommandGroup();
-	}
+        if (this.commandGroup == null) {
+            this.commandGroup = this.createCommandGroup();
+        }
 
-	return this.commandGroup;
+        return this.commandGroup;
     }
 
     /**
@@ -910,12 +908,12 @@ public abstract class AbstractBbTableMasterForm<T extends Object> extends Abstra
      */
     protected String getCommandName(String defaultCommandName) {
 
-	// (JAF), 20080105, este método se mantiene por compatibilidad mas ha
-	// sido reescrito en CommandUtil
+        // (JAF), 20080105, este método se mantiene por compatibilidad mas ha
+        // sido reescrito en CommandUtil
 
-	final String detailType = StringUtils.capitalize(ClassUtils.getShortName(this.getDetailType()));
+        final String detailType = StringUtils.capitalize(ClassUtils.getShortName(this.getDetailType()));
 
-	return CommandUtil.getCommandFaceDescriptorId(defaultCommandName, detailType);
+        return CommandUtil.getCommandFaceDescriptorId(defaultCommandName, detailType);
     }
 
     /**
@@ -928,7 +926,7 @@ public abstract class AbstractBbTableMasterForm<T extends Object> extends Abstra
     @Override
     protected String getCommitCommandFaceDescriptorId() {
 
-	return this.getCommandName(GlobalCommandIds.SAVE);
+        return this.getCommandName(GlobalCommandIds.SAVE);
     }
 
     /**
@@ -941,7 +939,7 @@ public abstract class AbstractBbTableMasterForm<T extends Object> extends Abstra
     @Override
     protected String getDeleteCommandId() {
 
-	return this.getCommandName(GlobalCommandIds.DELETE);
+        return this.getCommandName(GlobalCommandIds.DELETE);
     }
 
     /**
@@ -953,7 +951,7 @@ public abstract class AbstractBbTableMasterForm<T extends Object> extends Abstra
      */
     protected String getFilterCommandFaceDescriptorId() {
 
-	return this.getCommandName(AbstractBbTableMasterForm.FILTER_COMMAND_ID);
+        return this.getCommandName(AbstractBbTableMasterForm.FILTER_COMMAND_ID);
     }
 
     /**
@@ -966,7 +964,7 @@ public abstract class AbstractBbTableMasterForm<T extends Object> extends Abstra
     @Override
     protected String getNewFormObjectCommandId() {
 
-	return this.getCommandName(AbstractBbTableMasterForm.NEW_FORM_OBJECT_COMMAND_ID);
+        return this.getCommandName(AbstractBbTableMasterForm.NEW_FORM_OBJECT_COMMAND_ID);
     }
 
     /**
@@ -977,13 +975,13 @@ public abstract class AbstractBbTableMasterForm<T extends Object> extends Abstra
     @Override
     protected JPopupMenu getPopupMenu() {
 
-	if (this.popupMenu == null) {
-	    final CommandGroup group = this.createPopupMenu();
-	    group.setCommandRegistry(this.getApplicationWindow().getCommandManager());
+        if (this.popupMenu == null) {
+            final CommandGroup group = this.createPopupMenu();
+            group.setCommandRegistry(this.getApplicationWindow().getCommandManager());
 
-	    this.popupMenu = group.createPopupMenu();
-	}
-	return this.popupMenu;
+            this.popupMenu = group.createPopupMenu();
+        }
+        return this.popupMenu;
     }
 
     /**
@@ -995,7 +993,7 @@ public abstract class AbstractBbTableMasterForm<T extends Object> extends Abstra
      */
     protected String getRefreshCommandFaceDescriptorId() {
 
-	return this.getCommandName(GlobalCommandsAccessor.REFRESH);
+        return this.getCommandName(GlobalCommandsAccessor.REFRESH);
     }
 
     /**
@@ -1007,7 +1005,7 @@ public abstract class AbstractBbTableMasterForm<T extends Object> extends Abstra
      */
     protected String getRevertAllCommandFaceDescriptorId() {
 
-	return this.getCommandName(GlobalCommandsAccessor.REVERT_ALL);
+        return this.getCommandName(GlobalCommandsAccessor.REVERT_ALL);
     }
 
     /**
@@ -1020,7 +1018,7 @@ public abstract class AbstractBbTableMasterForm<T extends Object> extends Abstra
     @Override
     protected String getRevertCommandFaceDescriptorId() {
 
-	return this.getCommandName(GlobalCommandIds.UNDO);
+        return this.getCommandName(GlobalCommandIds.UNDO);
     }
 
     /**
@@ -1032,7 +1030,7 @@ public abstract class AbstractBbTableMasterForm<T extends Object> extends Abstra
      */
     protected String getSaveCommandFaceDescriptorId() {
 
-	return this.getCommandName(GlobalCommandIds.SAVE);
+        return this.getCommandName(GlobalCommandIds.SAVE);
     }
 
     /**
@@ -1044,7 +1042,7 @@ public abstract class AbstractBbTableMasterForm<T extends Object> extends Abstra
      */
     protected String getSelectAllCommandFaceDescriptorId() {
 
-	return this.getCommandName(GlobalCommandIds.SELECT_ALL);
+        return this.getCommandName(GlobalCommandIds.SELECT_ALL);
     }
 
     /**
@@ -1055,10 +1053,10 @@ public abstract class AbstractBbTableMasterForm<T extends Object> extends Abstra
     @Override
     protected final ListSelectionListener getSelectionHandler() {
 
-	if (this.listSelectionHandler == null) {
-	    this.listSelectionHandler = this.createSelectionHandler();
-	}
-	return this.listSelectionHandler;
+        if (this.listSelectionHandler == null) {
+            this.listSelectionHandler = this.createSelectionHandler();
+        }
+        return this.listSelectionHandler;
     }
 
     /**
@@ -1070,13 +1068,13 @@ public abstract class AbstractBbTableMasterForm<T extends Object> extends Abstra
     @Override
     protected void updateControlsForState() {
 
-	super.updateControlsForState();
+        super.updateControlsForState();
 
-	// v2.5.18: el comando se activa si hay alguna fila seleccionada
-	// final Boolean enabled = !this.getSelectedEntities().isEmpty();
-	// this.getRefreshCommand().setEnabled(enabled);
+        // v2.5.18: el comando se activa si hay alguna fila seleccionada
+        // final Boolean enabled = !this.getSelectedEntities().isEmpty();
+        // this.getRefreshCommand().setEnabled(enabled);
 
-	this.getRefreshCommand().setEnabled(this.getDeleteCommand().isEnabled());
+        this.getRefreshCommand().setEnabled(this.getDeleteCommand().isEnabled());
     }
 
     /**
@@ -1087,7 +1085,7 @@ public abstract class AbstractBbTableMasterForm<T extends Object> extends Abstra
     @SuppressWarnings("unchecked")
     BbDispatcherForm<T> getDispatcherForm() {
 
-	return (BbDispatcherForm<T>) super.getDetailForm();
+        return (BbDispatcherForm<T>) super.getDetailForm();
     }
 
     /**
@@ -1104,7 +1102,7 @@ public abstract class AbstractBbTableMasterForm<T extends Object> extends Abstra
      */
     private ActionCommand configureCommand(ActionCommand command, Boolean longRunningCommand) {
 
-	return CommandUtil.configureCommand(command, this.getFormModel(), longRunningCommand);
+        return CommandUtil.configureCommand(command, this.getFormModel(), longRunningCommand);
     }
 
     /**
@@ -1116,22 +1114,22 @@ public abstract class AbstractBbTableMasterForm<T extends Object> extends Abstra
     @SuppressWarnings("unchecked")
     private void doForEachSelectedItem(ListClosure<T> closure) {
 
-	// (JAF), 20080624, recordar los índices de los elementos seleccionados,
-	// de no hacerlo así la closure podría alterar el selection model.
-	final List<Integer> originalSelectedIdxs = FilterModelUtil.getOriginalSelectedIdxs(this.getMasterTable());
+        // (JAF), 20080624, recordar los índices de los elementos seleccionados,
+        // de no hacerlo así la closure podría alterar el selection model.
+        final List<Integer> originalSelectedIdxs = FilterModelUtil.getOriginalSelectedIdxs(this.getMasterTable());
 
-	// Iterar sobre los elementos seleccionados en orden inverso y ejecutar
-	// la closure
-	for (final Integer originalIdx : originalSelectedIdxs) {
-	    final T object = (T) this.getMasterEventList().get(originalIdx);
-	    if (closure.call(object, originalIdx) == null) {
-		// TODO, (JAF), 20080428, evaluar como gestionar un fallo
-		// de la closure en este punto.
-		if (AbstractBbTableMasterForm.LOGGER.isDebugEnabled()) {
-		    AbstractBbTableMasterForm.LOGGER.debug("Deleting " + object + "has failed");
-		}
-	    }
-	}
+        // Iterar sobre los elementos seleccionados en orden inverso y ejecutar
+        // la closure
+        for (final Integer originalIdx : originalSelectedIdxs) {
+            final T object = (T) this.getMasterEventList().get(originalIdx);
+            if (closure.call(object, originalIdx) == null) {
+                // TODO, (JAF), 20080428, evaluar como gestionar un fallo
+                // de la closure en este punto.
+                if (AbstractBbTableMasterForm.LOGGER.isDebugEnabled()) {
+                    AbstractBbTableMasterForm.LOGGER.debug("Deleting " + object + "has failed");
+                }
+            }
+        }
     }
 
     /**
@@ -1140,51 +1138,51 @@ public abstract class AbstractBbTableMasterForm<T extends Object> extends Abstra
      * @author <a href = "mailto:julio.arguello@gmail.com" >Julio Argüello (JAF)</a>
      */
     public static enum EventType {
-	/**
-	 * Tipo de evento para reflejar que se ha creado una entidad.
-	 */
-	CREATED(LifecycleApplicationEvent.CREATED),
-	/**
-	 * Tipo de evento para reflejar que se ha borrado una entidad.
-	 */
-	DELETED(LifecycleApplicationEvent.DELETED),
-	/**
-	 * Tipo de evento para reflejar que se ha modificado una entidad.
-	 */
-	MODIFIED(LifecycleApplicationEvent.MODIFIED),
-	/**
-	 * Tipo de evento para reflejar que se ha refrescado una entidad.
-	 */
-	REFRESHED("lifecycleEvent.refreshed");
+        /**
+         * Tipo de evento para reflejar que se ha creado una entidad.
+         */
+        CREATED(LifecycleApplicationEvent.CREATED),
+        /**
+         * Tipo de evento para reflejar que se ha borrado una entidad.
+         */
+        DELETED(LifecycleApplicationEvent.DELETED),
+        /**
+         * Tipo de evento para reflejar que se ha modificado una entidad.
+         */
+        MODIFIED(LifecycleApplicationEvent.MODIFIED),
+        /**
+         * Tipo de evento para reflejar que se ha refrescado una entidad.
+         */
+        REFRESHED("lifecycleEvent.refreshed");
 
-	/**
-	 * Cadena identificando el tipo del evento.
-	 */
-	private final String type;
+        /**
+         * Cadena identificando el tipo del evento.
+         */
+        private final String type;
 
-	/**
-	 * Obtiene el tipo del evento.
-	 * 
-	 * @param type
-	 *            el tipo del evento.
-	 */
-	private EventType(String type) {
+        /**
+         * Obtiene el tipo del evento.
+         * 
+         * @param type
+         *            el tipo del evento.
+         */
+        private EventType(String type) {
 
-	    this.type = type;
-	}
+            this.type = type;
+        }
 
-	/**
-	 * Imprime el tipo del evento.
-	 * 
-	 * @return el tipo del evento.
-	 * 
-	 * @see java.lang.Enum#toString()
-	 */
-	@Override
-	public String toString() {
+        /**
+         * Imprime el tipo del evento.
+         * 
+         * @return el tipo del evento.
+         * 
+         * @see java.lang.Enum#toString()
+         */
+        @Override
+        public String toString() {
 
-	    return this.type;
-	}
+            return this.type;
+        }
     }
 
     /**
@@ -1200,37 +1198,41 @@ public abstract class AbstractBbTableMasterForm<T extends Object> extends Abstra
      */
     public static class KeepAliveAfterFailureExceptionHandlerDelegate implements ExceptionHandlerDelegate {
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public boolean hasAppropriateHandler(Throwable thrownTrowable) {
+        /**
+         * {@inheritDoc}
+         */
+        public boolean hasAppropriateHandler(Throwable thrownTrowable) {
 
-	    // final ApplicationWindow window = Application.instance().getActiveWindow();
-	    // final ApplicationPage page = window != null ? window.getPage() //
-	    // : null;
+            // final ApplicationWindow window =
+            // Application.instance().getActiveWindow();
+            // final ApplicationPage page = window != null ? window.getPage() //
+            // : null;
 
-	    // TODO, 20090919, me da que haciendolo con hilos ya no habría estos problemas
+            // TODO, 20090919, me da que haciendolo con hilos ya no habría estos
+            // problemas
 
-	    // if (page != null && page instanceof BbVLDockingApplicationPage) {
-	    //
-	    // final BbVLDockingApplicationPage<Object> tPage = (BbVLDockingApplicationPage<Object>) page;
-	    // final AbstractBbTableMasterForm<Object> masterForm = tPage.getLastMasterForm();
-	    //
-	    // if (masterForm != null) {
-	    // masterForm.keepAliveAfterFailure();
-	    // }
-	    // }
+            // if (page != null && page instanceof BbVLDockingApplicationPage) {
+            //
+            // final BbVLDockingApplicationPage<Object> tPage =
+            // (BbVLDockingApplicationPage<Object>) page;
+            // final AbstractBbTableMasterForm<Object> masterForm =
+            // tPage.getLastMasterForm();
+            //
+            // if (masterForm != null) {
+            // masterForm.keepAliveAfterFailure();
+            // }
+            // }
 
-	    return Boolean.FALSE;
-	}
+            return Boolean.FALSE;
+        }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public void uncaughtException(Thread t, Throwable e) {
+        /**
+         * {@inheritDoc}
+         */
+        public void uncaughtException(Thread t, Throwable e) {
 
-	    // Nothing to do.
-	}
+            // Nothing to do.
+        }
     }
 
     /**
@@ -1242,20 +1244,20 @@ public abstract class AbstractBbTableMasterForm<T extends Object> extends Abstra
      */
     protected static class ReturnEmptyCollection {
 
-	/**
-	 * El nombre de la propiedad.
-	 */
-	public static final String PROPERTY_NAME = "emptyCollection";
+        /**
+         * El nombre de la propiedad.
+         */
+        public static final String PROPERTY_NAME = "emptyCollection";
 
-	/**
-	 * Devuelve una colección vacía.
-	 * 
-	 * @return una colección vacía.
-	 */
-	public Collection<Object> getEmptyCollection() {
+        /**
+         * Devuelve una colección vacía.
+         * 
+         * @return una colección vacía.
+         */
+        public Collection<Object> getEmptyCollection() {
 
-	    return Collections.emptySet();
-	}
+            return Collections.emptySet();
+        }
     }
 
     /**
@@ -1267,16 +1269,16 @@ public abstract class AbstractBbTableMasterForm<T extends Object> extends Abstra
      * @author <a href = "mailto:julio.arguello@gmail.com" >Julio Argüello (JAF)</a>
      */
     private interface ListClosure<T> {
-	/**
-	 * Ejecuta una función sobre un elemento de una lista.
-	 * 
-	 * @param item
-	 *            el elemento de la lista.
-	 * @param index
-	 *            el índice del elemento correlativo a la lista.
-	 * @return el <em>item</em> pasado como parámetro una vez ejecutada la <em>closure</em> o <code>null</code> en
-	 *         caso de fallo.
-	 */
-	T call(T item, int index);
+        /**
+         * Ejecuta una función sobre un elemento de una lista.
+         * 
+         * @param item
+         *            el elemento de la lista.
+         * @param index
+         *            el índice del elemento correlativo a la lista.
+         * @return el <em>item</em> pasado como parámetro una vez ejecutada la <em>closure</em> o <code>null</code> en
+         *         caso de fallo.
+         */
+        T call(T item, int index);
     }
 }

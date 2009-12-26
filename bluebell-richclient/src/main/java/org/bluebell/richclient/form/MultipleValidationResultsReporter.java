@@ -28,7 +28,8 @@ import org.springframework.util.Assert;
  */
 public class MultipleValidationResultsReporter extends SimpleValidationResultsReporter {
 
-    // TODO, no heredar de SimpleValidationResultsReporter, sino que copiar su código. La herencia obliga a un par de
+    // TODO, no heredar de SimpleValidationResultsReporter, sino que copiar su
+    // código. La herencia obliga a un par de
     // hacks...
 
     /**
@@ -36,17 +37,25 @@ public class MultipleValidationResultsReporter extends SimpleValidationResultsRe
      */
     private ValidatingFormModel formModel;
 
+    /**
+     * The message receiver.
+     */
     private Messagable messageReceiver;
 
     /**
      * Creates the reporter given the form model.
+     * 
+     * @param formModel
+     *            the form model.
+     * @param messageReceiver
+     *            the message receiver.
      */
     public MultipleValidationResultsReporter(ValidatingFormModel formModel, Messagable messageReceiver) {
 
-	super(formModel.getValidationResults(), messageReceiver);
+        super(formModel.getValidationResults(), messageReceiver);
 
-	this.setFormModel(formModel);
-	this.setMessageReceiver(messageReceiver);
+        this.setFormModel(formModel);
+        this.setMessageReceiver(messageReceiver);
     }
 
     /**
@@ -54,7 +63,7 @@ public class MultipleValidationResultsReporter extends SimpleValidationResultsRe
      */
     public ValidatingFormModel getFormModel() {
 
-	return this.formModel;
+        return this.formModel;
     }
 
     /**
@@ -64,7 +73,7 @@ public class MultipleValidationResultsReporter extends SimpleValidationResultsRe
      */
     public Messagable getMessageReceiver() {
 
-	return this.messageReceiver;
+        return this.messageReceiver;
     }
 
     /**
@@ -76,14 +85,15 @@ public class MultipleValidationResultsReporter extends SimpleValidationResultsRe
      */
     public Map<ValidatingFormModel, Collection<ValidationMessage>> getValidationMessages() {
 
-	final Map<ValidatingFormModel, Collection<ValidationMessage>> messages = new HashMap<ValidatingFormModel, Collection<ValidationMessage>>();
+        final Map<ValidatingFormModel, Collection<ValidationMessage>> messages = //
+        new HashMap<ValidatingFormModel, Collection<ValidationMessage>>();
 
-	if (this.getFormModel() != null) {
-	    // May be null during creation process
-	    this.getValidationMessages(this.getFormModel(), messages);
-	}
+        if (this.getFormModel() != null) {
+            // May be null during creation process
+            this.getValidationMessages(this.getFormModel(), messages);
+        }
 
-	return messages;
+        return messages;
     }
 
     /**
@@ -92,31 +102,33 @@ public class MultipleValidationResultsReporter extends SimpleValidationResultsRe
     @Override
     public void validationResultsChanged(ValidationResults results) {
 
-	if (this.getMessageReceiver() == null) {
-	    // This is the first invocation, message receiver is not set yet
-//	    super.validationResultsChanged(results);
-	    return;
-	}
+        if (this.getMessageReceiver() == null) {
+            // This is the first invocation, message receiver is not set yet
+            // super.validationResultsChanged(results);
+            return;
+        }
 
-	// Obtain validation messages
-	final Map<ValidatingFormModel, Collection<ValidationMessage>> allMessages = this.getValidationMessages();
+        // Obtain validation messages
+        final Map<ValidatingFormModel, Collection<ValidationMessage>> allMessages = this.getValidationMessages();
 
-	// Reset valition messages
-	this.getMessageReceiver().setMessage(null);
+        // Reset valition messages
+        this.getMessageReceiver().setMessage(null);
 
-	// Iterates between messages building new form model aware message instances and reporting the message receiver
-	for (final Map.Entry<ValidatingFormModel, Collection<ValidationMessage>> entry : allMessages.entrySet()) {
+        // Iterates between messages building new form model aware message
+        // instances and reporting the message receiver
+        for (final Map.Entry<ValidatingFormModel, Collection<ValidationMessage>> entry : allMessages.entrySet()) {
 
-	    final ValidatingFormModel formModel = entry.getKey();
-	    final Collection<ValidationMessage> formModelMessages = entry.getValue();
+            final ValidatingFormModel aFormModel = entry.getKey();
+            final Collection<ValidationMessage> formModelMessages = entry.getValue();
 
-	    // Since this is a multiple validation results reporter, message receiver is notified one time per message
-	    for (final ValidationMessage message : formModelMessages) {
+            // Since this is a multiple validation results reporter, message
+            // receiver is notified one time per message
+            for (final ValidationMessage aMessage : formModelMessages) {
 
-		final ValidationMessage messageToSet = BbValidationMessage.createValidationMessage(message, formModel);
-		this.getMessageReceiver().setMessage(messageToSet);
-	    }
-	}
+                final ValidationMessage theMessage = BbValidationMessage.createValidationMessage(aMessage, aFormModel);
+                this.getMessageReceiver().setMessage(theMessage);
+            }
+        }
     }
 
     /**
@@ -131,25 +143,25 @@ public class MultipleValidationResultsReporter extends SimpleValidationResultsRe
      */
     @SuppressWarnings("unchecked")
     private void getValidationMessages(FormModel formModel,
-	    Map<ValidatingFormModel, Collection<ValidationMessage>> messages) {
+            Map<ValidatingFormModel, Collection<ValidationMessage>> messages) {
 
-	final Boolean isHierarchical = ClassUtils.isAssignable(formModel.getClass(), HierarchicalFormModel.class);
-	final Boolean isLeaf = !isHierarchical || ArrayUtils.isEmpty(((HierarchicalFormModel) formModel).getChildren());
-	final Boolean isValidating = ClassUtils.isAssignable(formModel.getClass(), ValidatingFormModel.class);
+        final Boolean isHierarchical = ClassUtils.isAssignable(formModel.getClass(), HierarchicalFormModel.class);
+        final Boolean isLeaf = !isHierarchical || ArrayUtils.isEmpty(((HierarchicalFormModel) formModel).getChildren());
+        final Boolean isValidating = ClassUtils.isAssignable(formModel.getClass(), ValidatingFormModel.class);
 
-	// Base case
-	if (isLeaf && isValidating) {
-	    final ValidatingFormModel validatingFormModel = (ValidatingFormModel) formModel;
+        // Base case
+        if (isLeaf && isValidating) {
+            final ValidatingFormModel validatingFormModel = (ValidatingFormModel) formModel;
 
-	    messages.put(validatingFormModel, validatingFormModel.getValidationResults().getMessages());
-	}
+            messages.put(validatingFormModel, validatingFormModel.getValidationResults().getMessages());
+        }
 
-	// Recursive case: inspect every child form model
-	if (isHierarchical) {
-	    for (final FormModel childFormModel : ((HierarchicalFormModel) formModel).getChildren()) {
-		this.getValidationMessages(childFormModel, messages);
-	    }
-	}
+        // Recursive case: inspect every child form model
+        if (isHierarchical) {
+            for (final FormModel childFormModel : ((HierarchicalFormModel) formModel).getChildren()) {
+                this.getValidationMessages(childFormModel, messages);
+            }
+        }
     }
 
     /**
@@ -158,9 +170,9 @@ public class MultipleValidationResultsReporter extends SimpleValidationResultsRe
      */
     private void setFormModel(ValidatingFormModel formModel) {
 
-	Assert.notNull(formModel, "formModel");
+        Assert.notNull(formModel, "formModel");
 
-	this.formModel = formModel;
+        this.formModel = formModel;
     }
 
     /**
@@ -171,8 +183,8 @@ public class MultipleValidationResultsReporter extends SimpleValidationResultsRe
      */
     private void setMessageReceiver(Messagable messageReceiver) {
 
-	Assert.notNull(messageReceiver, "messageReceiver");
+        Assert.notNull(messageReceiver, "messageReceiver");
 
-	this.messageReceiver = messageReceiver;
+        this.messageReceiver = messageReceiver;
     }
 }

@@ -12,7 +12,8 @@ import org.springframework.util.Assert;
  * 
  * @author <a href = "mailto:julio.arguello@gmail.com" >Julio Argüello (JAF)</a>
  */
-// TODO, (JAF), 20090910, this feature is made with the intention of being moved to the original class
+// TODO, (JAF), 20090910, this feature is made with the intention of being moved
+// to the original class
 // ApplicationException.
 public class BbApplicationException extends ApplicationException implements ErrorCoded {
 
@@ -38,18 +39,18 @@ public class BbApplicationException extends ApplicationException implements Erro
      */
     public BbApplicationException() {
 
-	super();
+        super();
     }
 
     /**
-     * Creates a new {@code BbApplicationException} with the specified error code.
+     * Creates a new {@code BbApplicationException} with the specified message.
      * 
-     * @param errorCode
-     *            the error code.
+     * @param message
+     *            the message.
      */
     public BbApplicationException(String message) {
 
-	super(message);
+        super(message);
     }
 
     /**
@@ -62,8 +63,8 @@ public class BbApplicationException extends ApplicationException implements Erro
      */
     public BbApplicationException(String message, String errorCode) {
 
-	this(message);
-	this.setErrorCode(errorCode);
+        this(message);
+        this.setErrorCode(errorCode);
     }
 
     /**
@@ -76,7 +77,7 @@ public class BbApplicationException extends ApplicationException implements Erro
      */
     public BbApplicationException(String message, Throwable cause) {
 
-	super(message, cause);
+        super(message, cause);
     }
 
     /**
@@ -91,8 +92,8 @@ public class BbApplicationException extends ApplicationException implements Erro
      */
     public BbApplicationException(String message, Throwable cause, String errorCode) {
 
-	this(message, cause);
-	this.setErrorCode(errorCode);
+        this(message, cause);
+        this.setErrorCode(errorCode);
     }
 
     /**
@@ -103,7 +104,7 @@ public class BbApplicationException extends ApplicationException implements Erro
      */
     public BbApplicationException(Throwable cause) {
 
-	super(cause);
+        super(cause);
     }
 
     /**
@@ -116,8 +117,8 @@ public class BbApplicationException extends ApplicationException implements Erro
      */
     public BbApplicationException(Throwable cause, String errorCode) {
 
-	this(cause);
-	this.setErrorCode(errorCode);
+        this(cause);
+        this.setErrorCode(errorCode);
     }
 
     /**
@@ -125,11 +126,11 @@ public class BbApplicationException extends ApplicationException implements Erro
      */
     public String getErrorCode() {
 
-	if (this.errorCode == null) {
-	    this.setErrorCode(BbApplicationException.DEFAULT_ERROR_CODE);
-	}
+        if (this.errorCode == null) {
+            this.setErrorCode(BbApplicationException.DEFAULT_ERROR_CODE);
+        }
 
-	return this.errorCode;
+        return this.errorCode;
     }
 
     /**
@@ -138,8 +139,8 @@ public class BbApplicationException extends ApplicationException implements Erro
      */
     protected void setErrorCode(String errorCode) {
 
-	Assert.notNull(errorCode, "[Assertion failed] - \"errorCode\" is required; it must not be null");
+        Assert.notNull(errorCode, "[Assertion failed] - \"errorCode\" is required; it must not be null");
 
-	this.errorCode = errorCode;
+        this.errorCode = errorCode;
     }
 }

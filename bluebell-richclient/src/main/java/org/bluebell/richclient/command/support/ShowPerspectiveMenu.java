@@ -43,7 +43,7 @@ public class ShowPerspectiveMenu extends CommandGroup implements ApplicationWind
      */
     public ShowPerspectiveMenu() {
 
-	this(ShowPerspectiveMenu.ID);
+        this(ShowPerspectiveMenu.ID);
     }
 
     /**
@@ -54,7 +54,7 @@ public class ShowPerspectiveMenu extends CommandGroup implements ApplicationWind
      */
     public ShowPerspectiveMenu(String id) {
 
-	super(id);
+        super(id);
     }
 
     /**
@@ -63,8 +63,8 @@ public class ShowPerspectiveMenu extends CommandGroup implements ApplicationWind
     @Override
     public void afterPropertiesSet() {
 
-	super.afterPropertiesSet();
-	this.populate();
+        super.afterPropertiesSet();
+        this.populate();
     }
 
     /**
@@ -72,7 +72,7 @@ public class ShowPerspectiveMenu extends CommandGroup implements ApplicationWind
      */
     public void setApplicationWindow(ApplicationWindow window) {
 
-	this.window = window;
+        this.window = window;
     }
 
     /**
@@ -84,37 +84,38 @@ public class ShowPerspectiveMenu extends CommandGroup implements ApplicationWind
      */
     private CommandGroup createShowViewsCommand(MultiViewPageDescriptor pageDescriptor) {
 
-	// Los servicios "ViewDescriptorRegistry" y "CommandConfigurer".
-	final ViewDescriptorRegistry viewDescriptorRegistry = (ViewDescriptorRegistry) ApplicationServicesLocator
-		.services().getService(ViewDescriptorRegistry.class);
-	final CommandConfigurer commandConfigurer = (CommandConfigurer) ApplicationServicesLocator.services()
-		.getService(CommandConfigurer.class);
+        // Los servicios "ViewDescriptorRegistry" y "CommandConfigurer".
+        final ViewDescriptorRegistry viewDescriptorRegistry = (ViewDescriptorRegistry) ApplicationServicesLocator
+                .services().getService(ViewDescriptorRegistry.class);
+        final CommandConfigurer commandConfigurer = (CommandConfigurer) ApplicationServicesLocator.services()
+                .getService(CommandConfigurer.class);
 
-	// El grupo de comandos para las vistas de esta página.
-	final CommandGroup commandGroup = new CommandGroup(pageDescriptor.getId());
+        // El grupo de comandos para las vistas de esta página.
+        final CommandGroup commandGroup = new CommandGroup(pageDescriptor.getId());
 
-	// Añadir los comandos al command group
-	CollectionUtils.forAllDo(pageDescriptor.getViewDescriptors(), new Closure() {
-	    public void execute(Object viewDescriptorId) {
+        // Añadir los comandos al command group
+        CollectionUtils.forAllDo(pageDescriptor.getViewDescriptors(), new Closure() {
+            public void execute(Object viewDescriptorId) {
 
-		// El descriptor de la vista.
-		final ViewDescriptor viewDescriptor = viewDescriptorRegistry//
-			.getViewDescriptor((String) viewDescriptorId);
+                // El descriptor de la vista.
+                final ViewDescriptor viewDescriptor = viewDescriptorRegistry//
+                        .getViewDescriptor((String) viewDescriptorId);
 
-		if (viewDescriptor == null) {
-		    throw new BbApplicationException("No view descriptor found with name " + viewDescriptorId,
-			    ShowPerspectiveMenu.ERROR_CODE);
-		}
+                if (viewDescriptor == null) {
+                    throw new BbApplicationException("No view descriptor found with name " + viewDescriptorId,
+                            ShowPerspectiveMenu.ERROR_CODE);
+                }
 
-		// TODO, (JAF), 20080417, hacer que si la vista no está en la página añadirla
-		commandGroup.add(viewDescriptor.createShowViewCommand(ShowPerspectiveMenu.this.window));
-	    }
-	});
+                // TODO, (JAF), 20080417, hacer que si la vista no está
+                // en la página añadirla
+                commandGroup.add(viewDescriptor.createShowViewCommand(ShowPerspectiveMenu.this.window));
+            }
+        });
 
-	// Configurar el comando
-	commandConfigurer.configure(commandGroup);
+        // Configurar el comando
+        commandConfigurer.configure(commandGroup);
 
-	return commandGroup;
+        return commandGroup;
     }
 
     /**
@@ -122,20 +123,20 @@ public class ShowPerspectiveMenu extends CommandGroup implements ApplicationWind
      */
     private void populate() {
 
-	// El servicio "PageDescriptorRegistry"
-	final PageDescriptorRegistry pageDescriptorRegistry = (PageDescriptorRegistry) ApplicationServicesLocator
-		.services().getService(PageDescriptorRegistry.class);
+        // El servicio "PageDescriptorRegistry"
+        final PageDescriptorRegistry pageDescriptorRegistry = (PageDescriptorRegistry) ApplicationServicesLocator
+                .services().getService(PageDescriptorRegistry.class);
 
-	// Iterar sobre los descriptores de página y crear los menús
-	for (final PageDescriptor pageDescriptor : pageDescriptorRegistry.getPageDescriptors()) {
-	    if (pageDescriptor instanceof MultiViewPageDescriptor) {
-		// Menú con todas las vistas que componen la página.
-		this.addInternal(this.createShowViewsCommand(//
-			(MultiViewPageDescriptor) pageDescriptor));
-	    } else {
-		// Opción para mostrar la página.
-		this.addInternal(pageDescriptor.createShowPageCommand(this.window));
-	    }
-	}
+        // Iterar sobre los descriptores de página y crear los menús
+        for (final PageDescriptor pageDescriptor : pageDescriptorRegistry.getPageDescriptors()) {
+            if (pageDescriptor instanceof MultiViewPageDescriptor) {
+                // Menú con todas las vistas que componen la página.
+                this.addInternal(this.createShowViewsCommand(//
+                        (MultiViewPageDescriptor) pageDescriptor));
+            } else {
+                // Opción para mostrar la página.
+                this.addInternal(pageDescriptor.createShowPageCommand(this.window));
+            }
+        }
     }
 }

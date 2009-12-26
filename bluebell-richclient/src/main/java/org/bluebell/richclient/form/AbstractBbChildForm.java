@@ -58,13 +58,13 @@ public abstract class AbstractBbChildForm<T extends Object> extends ApplicationW
      */
     public AbstractBbChildForm(String formId) {
 
-	super(formId);
+        super(formId);
 
-	// Permanecer a la escucha de los cambios en la selección del usuario.
-	this.indexHolderPropertyChangeListener = new IndexHolderPropertyChangeListener();
+        // Permanecer a la escucha de los cambios en la selección del usuario.
+        this.indexHolderPropertyChangeListener = new IndexHolderPropertyChangeListener();
 
-	// Establecer el index holder donde consultar el elemento seleccionado.
-	this.setEditingFormObjectIndexHolder(new ValueHolder(new Integer(-1)));
+        // Establecer el index holder donde consultar el elemento seleccionado.
+        this.setEditingFormObjectIndexHolder(new ValueHolder(new Integer(-1)));
     }
 
     /**
@@ -74,7 +74,7 @@ public abstract class AbstractBbChildForm<T extends Object> extends ApplicationW
      */
     public AbstractBb2TableMasterForm<T> getMasterForm() {
 
-	return this.masterForm;
+        return this.masterForm;
     }
 
     /**
@@ -83,7 +83,7 @@ public abstract class AbstractBbChildForm<T extends Object> extends ApplicationW
     @Override
     public String toString() {
 
-	return new ToStringBuilder(this, ToStringStyle.SIMPLE_STYLE).append("id", this.getId()).toString();
+        return new ToStringBuilder(this, ToStringStyle.SIMPLE_STYLE).append("id", this.getId()).toString();
     }
 
     /**
@@ -102,7 +102,7 @@ public abstract class AbstractBbChildForm<T extends Object> extends ApplicationW
      */
     protected void afterSelectionChange(int selectedIndex, T selectedObject) {
 
-	// Nothing to do.
+        // Nothing to do.
     }
 
     /**
@@ -121,7 +121,7 @@ public abstract class AbstractBbChildForm<T extends Object> extends ApplicationW
      */
     protected void beforeSelectionChange(int selectedIndex, T selectedObject) {
 
-	// Nothing to do.
+        // Nothing to do.
     }
 
     /**
@@ -146,7 +146,7 @@ public abstract class AbstractBbChildForm<T extends Object> extends ApplicationW
     @Override
     protected String getRevertCommandFaceDescriptorId() {
 
-	return AbstractBbChildForm.REVERT_COMMAND_ID;
+        return AbstractBbChildForm.REVERT_COMMAND_ID;
     }
 
     /**
@@ -159,7 +159,7 @@ public abstract class AbstractBbChildForm<T extends Object> extends ApplicationW
      */
     protected AbstractBbChildForm<T> getSiblingForm(String formId) {
 
-	return this.detailForm.getChildForm(formId);
+        return this.detailForm.getChildForm(formId);
     }
 
     /**
@@ -170,7 +170,7 @@ public abstract class AbstractBbChildForm<T extends Object> extends ApplicationW
      */
     protected void onNoSelection() {
 
-	// Nothing to do.
+        // Nothing to do.
     }
 
     /**
@@ -189,7 +189,7 @@ public abstract class AbstractBbChildForm<T extends Object> extends ApplicationW
      */
     protected void onSelectionChange(int[] selectedIndexes, Object[] selectedObjects) {
 
-	// Nothing to do.
+        // Nothing to do.
     }
 
     /**
@@ -198,12 +198,12 @@ public abstract class AbstractBbChildForm<T extends Object> extends ApplicationW
      * @param editableFormObjects
      *            la lista de objetos editables.
      * 
-     * @see org.springframework.richclient.form.AbstractForm#setEditableFormObjects(org.springframework.binding.value.support.ObservableList)
+     * @see org.springframework.richclient.form.AbstractForm#setEditableFormObjects
      */
     void setEditableFormObjectFromDispatcherForm(ObservableList editableFormObjects) {
 
-	// TODO, (JAF), 20090927, eliminar este método
-	super.setEditableFormObjects(editableFormObjects);
+        // TODO, (JAF), 20090927, eliminar este método
+        super.setEditableFormObjects(editableFormObjects);
     }
 
     /**
@@ -216,9 +216,9 @@ public abstract class AbstractBbChildForm<T extends Object> extends ApplicationW
      */
     void setMasterForm(AbstractBb2TableMasterForm<T> masterForm) {
 
-	Assert.isNull(this.masterForm);
+        Assert.isNull(this.masterForm);
 
-	this.masterForm = masterForm;
+        this.masterForm = masterForm;
     }
 
     /**
@@ -236,17 +236,18 @@ public abstract class AbstractBbChildForm<T extends Object> extends ApplicationW
      */
     final void updateFormModelUsingParentForm(BbDispatcherForm<T> parentForm) {
 
-	// TODO revisar este método, sobre todo esta invocación
-	// Assert.isTrue(!this.isControlCreated(), "Cannot change form model if control is already created");
+        // TODO revisar este método, sobre todo esta invocación
+        // Assert.isTrue(!this.isControlCreated(),
+        // "Cannot change form model if control is already created");
 
-	this.setDetailForm(parentForm);
-	this.getParentForm().getEditingIndexHolder().addValueChangeListener(this.indexHolderPropertyChangeListener);
+        this.setDetailForm(parentForm);
+        this.getParentForm().getEditingIndexHolder().addValueChangeListener(this.indexHolderPropertyChangeListener);
 
-	// Crear el nuevo modelo, deshabilitarlo y desactivar las validaciones
-	// TODO cambiar y pensar la forma de crear los form models
-	// this.setFormModel(this.createFormModel(parentForm.getFormModel()));
-	this.getFormModel().setEnabled(Boolean.FALSE);
-	this.getFormModel().setValidating(Boolean.FALSE);
+        // Crear el nuevo modelo, deshabilitarlo y desactivar las validaciones
+        // TODO cambiar y pensar la forma de crear los form models
+        // this.setFormModel(this.createFormModel(parentForm.getFormModel()));
+        this.getFormModel().setEnabled(Boolean.FALSE);
+        this.getFormModel().setValidating(Boolean.FALSE);
     }
 
     /**
@@ -257,8 +258,8 @@ public abstract class AbstractBbChildForm<T extends Object> extends ApplicationW
     @SuppressWarnings("unchecked")
     private BbDispatcherForm getParentForm() {
 
-	// Se declará sin <T> para que funcione la ingeniería inversa
-	return this.detailForm;
+        // Se declará sin <T> para que funcione la ingeniería inversa
+        return this.detailForm;
     }
 
     /**
@@ -269,7 +270,7 @@ public abstract class AbstractBbChildForm<T extends Object> extends ApplicationW
      */
     private void setDetailForm(BbDispatcherForm<T> parentForm) {
 
-	this.detailForm = parentForm;
+        this.detailForm = parentForm;
     }
 
     /**
@@ -280,19 +281,19 @@ public abstract class AbstractBbChildForm<T extends Object> extends ApplicationW
      */
     private class IndexHolderPropertyChangeListener implements PropertyChangeListener {
 
-	/**
-	 * Establece de forma silenciosa el índice del elemento seleccionado.
-	 * 
-	 * @param evt
-	 *            el evento de cambio.
-	 */
-	public void propertyChange(PropertyChangeEvent evt) {
+        /**
+         * Establece de forma silenciosa el índice del elemento seleccionado.
+         * 
+         * @param evt
+         *            el evento de cambio.
+         */
+        public void propertyChange(PropertyChangeEvent evt) {
 
-	    final Integer newIndex = (Integer) evt.getNewValue();
+            final Integer newIndex = (Integer) evt.getNewValue();
 
-	    // Establecer el índice del elemento seleccionado en el formulario
-	    // hijo.
-	    AbstractBbChildForm.this.setEditingFormObjectIndexSilently(newIndex);
-	}
+            // Establecer el índice del elemento seleccionado en el formulario
+            // hijo.
+            AbstractBbChildForm.this.setEditingFormObjectIndexSilently(newIndex);
+        }
     }
 }

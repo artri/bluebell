@@ -32,15 +32,15 @@ public class ApplicationPageException extends BbApplicationException {
     /**
      * Creates a new {@code ApplicationPageException} with the specified message and page id.
      * 
-     * @param errorCode
-     *            the error code.
+     * @param message
+     *            the message.
      * @param pageId
      *            the page id.
      */
     public ApplicationPageException(String message, String pageId) {
 
-	super(message, ApplicationPageException.DEFAULT_ERROR_CODE);
-	this.setPageId(pageId);
+        super(message, ApplicationPageException.DEFAULT_ERROR_CODE);
+        this.setPageId(pageId);
     }
 
     /**
@@ -55,8 +55,8 @@ public class ApplicationPageException extends BbApplicationException {
      */
     public ApplicationPageException(String message, String errorCode, String pageId) {
 
-	super(message, errorCode);
-	this.setPageId(pageId);
+        super(message, errorCode);
+        this.setPageId(pageId);
     }
 
     /**
@@ -71,8 +71,8 @@ public class ApplicationPageException extends BbApplicationException {
      */
     public ApplicationPageException(String message, Throwable cause, String pageId) {
 
-	super(message, cause, ApplicationPageException.DEFAULT_ERROR_CODE);
-	this.setPageId(pageId);
+        super(message, cause, ApplicationPageException.DEFAULT_ERROR_CODE);
+        this.setPageId(pageId);
     }
 
     /**
@@ -90,8 +90,8 @@ public class ApplicationPageException extends BbApplicationException {
      */
     public ApplicationPageException(String message, Throwable cause, String errorCode, String pageId) {
 
-	super(message, cause, errorCode);
-	this.setPageId(pageId);
+        super(message, cause, errorCode);
+        this.setPageId(pageId);
     }
 
     /**
@@ -104,8 +104,8 @@ public class ApplicationPageException extends BbApplicationException {
      */
     public ApplicationPageException(Throwable cause, String pageId) {
 
-	super(cause, ApplicationPageException.DEFAULT_ERROR_CODE);
-	this.setPageId(pageId);
+        super(cause, ApplicationPageException.DEFAULT_ERROR_CODE);
+        this.setPageId(pageId);
     }
 
     /**
@@ -120,8 +120,8 @@ public class ApplicationPageException extends BbApplicationException {
      */
     public ApplicationPageException(Throwable cause, String errorCode, String pageId) {
 
-	super(cause, errorCode);
-	this.setPageId(pageId);
+        super(cause, errorCode);
+        this.setPageId(pageId);
     }
 
     /**
@@ -129,10 +129,10 @@ public class ApplicationPageException extends BbApplicationException {
      */
     public String getPageId() {
 
-	// Ensure the invariant is not broken
-	Assert.notNull(this.pageId, "[Assertion failed] - \"pageId\" is required; it must not be null");
+        // Ensure the invariant is not broken
+        Assert.notNull(this.pageId, "[Assertion failed] - \"pageId\" is required; it must not be null");
 
-	return this.pageId;
+        return this.pageId;
     }
 
     /**
@@ -141,8 +141,8 @@ public class ApplicationPageException extends BbApplicationException {
      */
     protected void setPageId(String pageId) {
 
-	Assert.notNull(pageId, "[Assertion failed] - \"pageId\" is required; it must not be null");
+        Assert.notNull(pageId, "[Assertion failed] - \"pageId\" is required; it must not be null");
 
-	this.pageId = pageId;
+        this.pageId = pageId;
     }
 }

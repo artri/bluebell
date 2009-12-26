@@ -18,13 +18,14 @@ public class BbApplicationObjectConfigurer extends DefaultApplicationObjectConfi
     @Override
     public void configure(Object object, String objectName) {
 
-	// Obtener los nombres ordenados por su prioridad
-	final String[] names = StringUtils.commaDelimitedListToStringArray(objectName);
+        // Obtener los nombres ordenados por su prioridad
+        final String[] names = StringUtils.commaDelimitedListToStringArray(objectName);
 
-	// Configurar los objetos con cada nombre en orden inverso a su prioridad
-	ArrayUtils.reverse(names);
-	for (final String name : names) {
-	    super.configure(object, name);
-	}
+        // Configurar los objetos con cada nombre en orden inverso a su
+        // prioridad
+        ArrayUtils.reverse(names);
+        for (final String name : names) {
+            super.configure(object, name);
+        }
     }
 }

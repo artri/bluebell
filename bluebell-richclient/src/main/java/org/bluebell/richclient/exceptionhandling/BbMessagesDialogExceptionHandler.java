@@ -22,7 +22,7 @@ import org.springframework.richclient.exceptionhandling.MessagesDialogExceptionH
  * Post del <em>foro</em> de <b>Spring</b> en el que se hace la sugerencia de incluir el tratamiento de excepciones de
  * tipo <code>ErrorCoded</code>: {@link http://forum.springframework.org/showthread.php?t=49277}.
  * 
- * Tarea Jira en el que se muestra la tarea: {@link http://jira.springframework.org/browse/RCP-534}.
+ * Tarea Jira en el que se muestra la tarea: {@link http ://jira.springframework.org/browse/RCP-534}.
  * 
  * @author <a href = "mailto:julio.arguello@gmail.com" >Julio Argüello (JAF)</a>
  * 
@@ -64,10 +64,10 @@ public class BbMessagesDialogExceptionHandler extends MessagesDialogExceptionHan
     @Override
     public Object createExceptionContent(Throwable throwable) {
 
-	final String[] messagesKeys = this.getMessagesKeys(throwable, ".description");
-	final String[] parameters = new String[] { this.formatMessage(throwable.getMessage()) };
-	return this.messageSourceAccessor.getMessage(new DefaultMessageSourceResolvable(messagesKeys, parameters,
-		messagesKeys[0]));
+        final String[] messagesKeys = this.getMessagesKeys(throwable, ".description");
+        final String[] parameters = new String[] { this.formatMessage(throwable.getMessage()) };
+        return this.messageSourceAccessor.getMessage(new DefaultMessageSourceResolvable(messagesKeys, parameters,
+                messagesKeys[0]));
     }
 
     /**
@@ -80,8 +80,8 @@ public class BbMessagesDialogExceptionHandler extends MessagesDialogExceptionHan
     @Override
     public String resolveExceptionCaption(Throwable throwable) {
 
-	final String[] messagesKeys = this.getMessagesKeys(throwable, ".caption");
-	return this.messageSourceAccessor.getMessage(new DefaultMessageSourceResolvable(messagesKeys, messagesKeys[0]));
+        final String[] messagesKeys = this.getMessagesKeys(throwable, ".caption");
+        return this.messageSourceAccessor.getMessage(new DefaultMessageSourceResolvable(messagesKeys, messagesKeys[0]));
     }
 
     /**
@@ -93,7 +93,7 @@ public class BbMessagesDialogExceptionHandler extends MessagesDialogExceptionHan
     @Override
     public void setIdentLength(int identLength) {
 
-	this.identLength = identLength;
+        this.identLength = identLength;
     }
 
     /**
@@ -107,7 +107,7 @@ public class BbMessagesDialogExceptionHandler extends MessagesDialogExceptionHan
     @Override
     public void setMessagesKey(String messagesKey) {
 
-	this.messagesKey = messagesKey;
+        this.messagesKey = messagesKey;
     }
 
     /**
@@ -119,7 +119,7 @@ public class BbMessagesDialogExceptionHandler extends MessagesDialogExceptionHan
     @Override
     public void setWrapLength(int wrapLength) {
 
-	this.wrapLength = wrapLength;
+        this.wrapLength = wrapLength;
     }
 
     /**
@@ -132,21 +132,21 @@ public class BbMessagesDialogExceptionHandler extends MessagesDialogExceptionHan
     @Override
     protected String formatMessage(String message) {
 
-	if (message == null) {
-	    return "";
-	}
-	final String identString = StringUtils.leftPad("", this.identLength);
-	final String newLineWithIdentString = "\n" + identString;
-	final StringBuilder formattedMessageBuilder = new StringBuilder(identString);
-	final StringTokenizer messageTokenizer = new StringTokenizer(message, "\n");
-	while (messageTokenizer.hasMoreTokens()) {
-	    final String messageToken = messageTokenizer.nextToken();
-	    formattedMessageBuilder.append(WordUtils.wrap(messageToken, this.wrapLength, newLineWithIdentString, true));
-	    if (messageTokenizer.hasMoreTokens()) {
-		formattedMessageBuilder.append(newLineWithIdentString);
-	    }
-	}
-	return formattedMessageBuilder.toString();
+        if (message == null) {
+            return "";
+        }
+        final String identString = StringUtils.leftPad("", this.identLength);
+        final String newLineWithIdentString = "\n" + identString;
+        final StringBuilder formattedMessageBuilder = new StringBuilder(identString);
+        final StringTokenizer messageTokenizer = new StringTokenizer(message, "\n");
+        while (messageTokenizer.hasMoreTokens()) {
+            final String messageToken = messageTokenizer.nextToken();
+            formattedMessageBuilder.append(WordUtils.wrap(messageToken, this.wrapLength, newLineWithIdentString, true));
+            if (messageTokenizer.hasMoreTokens()) {
+                formattedMessageBuilder.append(newLineWithIdentString);
+            }
+        }
+        return formattedMessageBuilder.toString();
     }
 
     /**
@@ -162,21 +162,21 @@ public class BbMessagesDialogExceptionHandler extends MessagesDialogExceptionHan
     @SuppressWarnings("unchecked")
     protected String[] getMessagesKeys(Throwable throwable, String keySuffix) {
 
-	if (this.messagesKey != null) {
-	    return new String[] { this.messagesKey };
-	}
-	final List<String> messageKeyList = new ArrayList<String>();
+        if (this.messagesKey != null) {
+            return new String[] { this.messagesKey };
+        }
+        final List<String> messageKeyList = new ArrayList<String>();
 
-	if (throwable instanceof ErrorCoded) {
-	    final ErrorCoded errorCoded = (ErrorCoded) throwable;
-	    messageKeyList.add(errorCoded.getErrorCode() + keySuffix);
-	}
+        if (throwable instanceof ErrorCoded) {
+            final ErrorCoded errorCoded = (ErrorCoded) throwable;
+            messageKeyList.add(errorCoded.getErrorCode() + keySuffix);
+        }
 
-	Class clazz = throwable.getClass();
-	while (clazz != Object.class) {
-	    messageKeyList.add(clazz.getName() + keySuffix);
-	    clazz = clazz.getSuperclass();
-	}
-	return messageKeyList.toArray(new String[messageKeyList.size()]);
+        Class clazz = throwable.getClass();
+        while (clazz != Object.class) {
+            messageKeyList.add(clazz.getName() + keySuffix);
+            clazz = clazz.getSuperclass();
+        }
+        return messageKeyList.toArray(new String[messageKeyList.size()]);
     }
 }

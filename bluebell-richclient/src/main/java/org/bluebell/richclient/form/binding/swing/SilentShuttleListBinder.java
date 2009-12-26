@@ -24,7 +24,7 @@ public class SilentShuttleListBinder extends ShuttleListBinder {
      */
     public SilentShuttleListBinder() {
 
-	super();
+        super();
     }
 
     /**
@@ -35,7 +35,7 @@ public class SilentShuttleListBinder extends ShuttleListBinder {
      */
     protected SilentShuttleListBinder(final String[] supportedContextKeys) {
 
-	super(supportedContextKeys);
+        super(supportedContextKeys);
     }
 
     /**
@@ -45,7 +45,7 @@ public class SilentShuttleListBinder extends ShuttleListBinder {
     @SuppressWarnings("unchecked")
     protected JComponent createControl(Map context) {
 
-	return new SilentShuttleListBinding.SilentShuttleList();
+        return new SilentShuttleListBinding.SilentShuttleList();
     }
 
     /**
@@ -55,12 +55,12 @@ public class SilentShuttleListBinder extends ShuttleListBinder {
     @SuppressWarnings("unchecked")
     protected Binding doBind(JComponent control, FormModel formModel, String formPropertyPath, Map context) {
 
-	Assert.isTrue(control instanceof SilentShuttleList, formPropertyPath);
+        Assert.isTrue(control instanceof SilentShuttleList, formPropertyPath);
 
-	final ShuttleListBinding binding = new SilentShuttleListBinding(//
-		(SilentShuttleList) control, formModel, formPropertyPath);
-	this.applyContext(binding, context);
+        final ShuttleListBinding binding = new SilentShuttleListBinding(//
+                (SilentShuttleList) control, formModel, formPropertyPath);
+        this.applyContext(binding, context);
 
-	return binding;
+        return binding;
     }
 }

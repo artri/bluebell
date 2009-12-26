@@ -19,6 +19,9 @@ import org.springframework.util.Assert;
  */
 public class SwingxStatusBar extends DefaultStatusBar {
 
+    /**
+     * The message label.
+     */
     private JLabel messageLabel;
 
     /**
@@ -28,7 +31,7 @@ public class SwingxStatusBar extends DefaultStatusBar {
      */
     public JLabel getMessageLabel() {
 
-	return this.messageLabel;
+        return this.messageLabel;
     }
 
     /**
@@ -37,27 +40,30 @@ public class SwingxStatusBar extends DefaultStatusBar {
     @Override
     protected final JLabel createMessageLabel() {
 
-	// Remember message label
-	final JLabel jLabel = super.createMessageLabel();
-	jLabel.setBorder(BorderFactory.createEmptyBorder());
-	this.setMessageLabel(jLabel);
+        // Remember message label
+        final JLabel jLabel = super.createMessageLabel();
+        jLabel.setBorder(BorderFactory.createEmptyBorder());
+        this.setMessageLabel(jLabel);
 
-	return jLabel;
+        return jLabel;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     protected JComponent createControl() {
 
-	super.createControl();
+        super.createControl();
 
-	final JXStatusBar jxStatusBar = new JXStatusBar();
-	jxStatusBar.putClientProperty(BasicStatusBarUI.AUTO_ADD_SEPARATOR, false);
-	jxStatusBar.add(this.getMessageLabel(), JXStatusBar.Constraint.ResizeBehavior.FILL);
-	// jxStatusBar.add(new JSeparator(JSeparator.VERTICAL));
-	jxStatusBar.add(new SubstanceSkinChooserComboBox().getControl());
-	jxStatusBar.add(test.check.statusbar.FontSizePanel.getPanel());
-	jxStatusBar.add(((StatusBarProgressMonitor) this.getProgressMonitor()).getControl());
+        final JXStatusBar jxStatusBar = new JXStatusBar();
+        jxStatusBar.putClientProperty(BasicStatusBarUI.AUTO_ADD_SEPARATOR, false);
+        jxStatusBar.add(this.getMessageLabel(), JXStatusBar.Constraint.ResizeBehavior.FILL);
+        // jxStatusBar.add(new JSeparator(JSeparator.VERTICAL));
+        jxStatusBar.add(new SubstanceSkinChooserComboBox().getControl());
+        jxStatusBar.add(test.check.statusbar.FontSizePanel.getPanel());
+        jxStatusBar.add(((StatusBarProgressMonitor) this.getProgressMonitor()).getControl());
 
-	return jxStatusBar;
+        return jxStatusBar;
     }
 
     /**
@@ -66,7 +72,7 @@ public class SwingxStatusBar extends DefaultStatusBar {
     @Override
     public void setVisible(boolean visible) {
 
-	this.getControl().setVisible(visible);
+        this.getControl().setVisible(visible);
 
     }
 
@@ -78,9 +84,9 @@ public class SwingxStatusBar extends DefaultStatusBar {
      */
     private void setMessageLabel(JLabel messageLabel) {
 
-	Assert.notNull(messageLabel, "messageLabel");
+        Assert.notNull(messageLabel, "messageLabel");
 
-	this.messageLabel = messageLabel;
+        this.messageLabel = messageLabel;
     }
 
 }

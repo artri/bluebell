@@ -42,7 +42,7 @@ public class UpdateStatusBarInterceptorFactory implements FormComponentIntercept
      */
     public FormComponentInterceptor getInterceptor(final FormModel formModel) {
 
-	return new UpdateStatusBarInterceptor(formModel);
+        return new UpdateStatusBarInterceptor(formModel);
     }
 
     /**
@@ -53,110 +53,110 @@ public class UpdateStatusBarInterceptorFactory implements FormComponentIntercept
      */
     public static class UpdateStatusBarInterceptor extends AbstractFormComponentInterceptor {
 
-	/**
-	 * Construye el interceptor a partir del modelo del formulario.
-	 * 
-	 * @param formModel
-	 *            el modelo del formulario.
-	 */
-	public UpdateStatusBarInterceptor(FormModel formModel) {
+        /**
+         * Construye el interceptor a partir del modelo del formulario.
+         * 
+         * @param formModel
+         *            el modelo del formulario.
+         */
+        public UpdateStatusBarInterceptor(FormModel formModel) {
 
-	    super(formModel);
-	}
+            super(formModel);
+        }
 
-	/**
-	 * Registra un <em>listener</em> contra el <code>ValueModel</code> de la propiedad dada para cambiar su mensaje.
-	 * 
-	 * @param propertyName
-	 *            la propiedad.
-	 * @param component
-	 *            el componente que representa la propiedad.
-	 */
-	@Override
-	public void processComponent(final String propertyName, final JComponent component) {
+        /**
+         * Registra un <em>listener</em> contra el <code>ValueModel</code> de la propiedad dada para cambiar su mensaje.
+         * 
+         * @param propertyName
+         *            la propiedad.
+         * @param component
+         *            el componente que representa la propiedad.
+         */
+        @Override
+        public void processComponent(final String propertyName, final JComponent component) {
 
-	    final ValueModel valueModel = this.getFormModel().getValueModel(propertyName);
+            final ValueModel valueModel = this.getFormModel().getValueModel(propertyName);
 
-	    // Actualizar la status bar cuando cambie un valor
-	    valueModel.addValueChangeListener(new PropertyChangeListener() {
-		public void propertyChange(PropertyChangeEvent evt) {
+            // Actualizar la status bar cuando cambie un valor
+            valueModel.addValueChangeListener(new PropertyChangeListener() {
+                public void propertyChange(PropertyChangeEvent evt) {
 
-		    UpdateStatusBarInterceptorFactory.//
-		    UpdateStatusBarInterceptor.//
-		    this.updateStatusBar(propertyName);
-		}
-	    });
+                    UpdateStatusBarInterceptorFactory.//
+                    UpdateStatusBarInterceptor.//
+                    this.updateStatusBar(propertyName);
+                }
+            });
 
-	    // Actualizar la status bar cuando cambie el componente seleccionado
-	    component.addFocusListener(new FocusListener() {
-		public void focusGained(FocusEvent e) {
+            // Actualizar la status bar cuando cambie el componente seleccionado
+            component.addFocusListener(new FocusListener() {
+                public void focusGained(FocusEvent e) {
 
-		    UpdateStatusBarInterceptorFactory.//
-		    UpdateStatusBarInterceptor.//
-		    this.updateStatusBar(propertyName);
-		}
+                    UpdateStatusBarInterceptorFactory.//
+                    UpdateStatusBarInterceptor.//
+                    this.updateStatusBar(propertyName);
+                }
 
-		public void focusLost(FocusEvent e) {
+                public void focusLost(FocusEvent e) {
 
-		    final ApplicationWindow window = Application.instance().getActiveWindow();
-		    final StatusBar statusBar = (window == null) ? null : window.getStatusBar();
+                    final ApplicationWindow window = Application.instance().getActiveWindow();
+                    final StatusBar statusBar = (window == null) ? null : window.getStatusBar();
 
-		    if (statusBar != null) {
-			statusBar.setErrorMessage((String) null);
-		    }
-		}
-	    });
-	}
+                    if (statusBar != null) {
+                        statusBar.setErrorMessage((String) null);
+                    }
+                }
+            });
+        }
 
-	/**
-	 * Obtiene el primer mensaje de validación asociado a la propiedad dada.
-	 * 
-	 * @param propertyName
-	 *            el nombre de la propiedad.
-	 * @return el mensaje de validación y <code>null</code> en caso de que no hubiera ningún error.
-	 */
-	@SuppressWarnings("unchecked")
-	private Message getValidationMessage(String propertyName) {
+        /**
+         * Obtiene el primer mensaje de validación asociado a la propiedad dada.
+         * 
+         * @param propertyName
+         *            el nombre de la propiedad.
+         * @return el mensaje de validación y <code>null</code> en caso de que no hubiera ningún error.
+         */
+        @SuppressWarnings("unchecked")
+        private Message getValidationMessage(String propertyName) {
 
-	    if (this.getFormModel() instanceof ValidatingFormModel) {
-		final ValidatingFormModel validatingFormModel = (ValidatingFormModel) this.getFormModel();
+            if (this.getFormModel() instanceof ValidatingFormModel) {
+                final ValidatingFormModel validatingFormModel = (ValidatingFormModel) this.getFormModel();
 
-		// Los mensajes de validación de la propiedad dada
-		final Set<ValidationMessage> messages = validatingFormModel.//
-			getValidationResults().getMessages(propertyName);
+                // Los mensajes de validación de la propiedad dada
+                final Set<ValidationMessage> messages = validatingFormModel.//
+                        getValidationResults().getMessages(propertyName);
 
-		if (!messages.isEmpty()) {
-		    return messages.iterator().next();
-		}
-	    }
+                if (!messages.isEmpty()) {
+                    return messages.iterator().next();
+                }
+            }
 
-	    return null;
-	}
+            return null;
+        }
 
-	/**
-	 * Actualiza la barra de estado de la ventana activa con información relativa a la propiedad dada.
-	 * 
-	 * @param propertyName
-	 *            el nombre de la propiedad.
-	 */
-	private void updateStatusBar(String propertyName) {
+        /**
+         * Actualiza la barra de estado de la ventana activa con información relativa a la propiedad dada.
+         * 
+         * @param propertyName
+         *            el nombre de la propiedad.
+         */
+        private void updateStatusBar(String propertyName) {
 
-	    final ApplicationWindow window = Application.instance().getActiveWindow();
-	    final StatusBar statusBar = (window == null) ? null : window.getStatusBar();
-	    final String displayName = this.getFormModel().getFieldFace(propertyName).getDisplayName();
-	    final String caption = this.getFormModel().getFieldFace(propertyName).getCaption();
+            final ApplicationWindow window = Application.instance().getActiveWindow();
+            final StatusBar statusBar = (window == null) ? null : window.getStatusBar();
+            final String displayName = this.getFormModel().getFieldFace(propertyName).getDisplayName();
+            final String caption = this.getFormModel().getFieldFace(propertyName).getCaption();
 
-	    if (statusBar != null) {
-		final Message validatingMessage = UpdateStatusBarInterceptorFactory.//
-		UpdateStatusBarInterceptor.//
-		this.getValidationMessage(propertyName);
+            if (statusBar != null) {
+                final Message validatingMessage = UpdateStatusBarInterceptorFactory.//
+                UpdateStatusBarInterceptor.//
+                this.getValidationMessage(propertyName);
 
-		statusBar.setErrorMessage(validatingMessage);
-		if (validatingMessage == null) {
-		    statusBar.setMessage(//
-			    (caption == null) ? displayName : caption);
-		}
-	    }
-	}
+                statusBar.setErrorMessage(validatingMessage);
+                if (validatingMessage == null) {
+                    statusBar.setMessage(//
+                            (caption == null) ? displayName : caption);
+                }
+            }
+        }
     }
 }

@@ -78,7 +78,7 @@ public class TableBinder extends AbstractBinder implements InitializingBean {
      */
     public TableBinder() {
 
-	this(null, new String[] {});
+        this(null, new String[] {});
     }
 
     /**
@@ -91,7 +91,7 @@ public class TableBinder extends AbstractBinder implements InitializingBean {
      */
     public TableBinder(Class<Object> requiredSourceClass, String[] supportedContextKeys) {
 
-	super(requiredSourceClass, supportedContextKeys);
+        super(requiredSourceClass, supportedContextKeys);
     }
 
     /**
@@ -102,8 +102,8 @@ public class TableBinder extends AbstractBinder implements InitializingBean {
      */
     public void afterPropertiesSet() throws Exception {
 
-	Assert.notEmpty(this.getColumnPropertyNames());
-	Assert.notNull(this.getDialogBackingForm());
+        Assert.notEmpty(this.getColumnPropertyNames());
+        Assert.notNull(this.getDialogBackingForm());
     }
 
     /**
@@ -113,7 +113,7 @@ public class TableBinder extends AbstractBinder implements InitializingBean {
      */
     public String[] getColumnPropertyNames() {
 
-	return this.columnPropertyNames;
+        return this.columnPropertyNames;
     }
 
     /**
@@ -124,7 +124,7 @@ public class TableBinder extends AbstractBinder implements InitializingBean {
      */
     public Form getDialogBackingForm() {
 
-	return this.dialogBackingForm;
+        return this.dialogBackingForm;
     }
 
     /**
@@ -134,7 +134,7 @@ public class TableBinder extends AbstractBinder implements InitializingBean {
      */
     public Integer getHeightDialog() {
 
-	return this.heightDialog;
+        return this.heightDialog;
     }
 
     /**
@@ -144,7 +144,7 @@ public class TableBinder extends AbstractBinder implements InitializingBean {
      */
     public Integer getWidthDialog() {
 
-	return this.widthDialog;
+        return this.widthDialog;
     }
 
     /**
@@ -155,7 +155,7 @@ public class TableBinder extends AbstractBinder implements InitializingBean {
      */
     public void setColumnPropertyNames(String[] columnPropertyNames) {
 
-	this.columnPropertyNames = columnPropertyNames;
+        this.columnPropertyNames = columnPropertyNames;
     }
 
     /**
@@ -167,7 +167,7 @@ public class TableBinder extends AbstractBinder implements InitializingBean {
      */
     public void setDialogBackingForm(Form dialogBackingForm) {
 
-	this.dialogBackingForm = dialogBackingForm;
+        this.dialogBackingForm = dialogBackingForm;
     }
 
     /**
@@ -178,10 +178,10 @@ public class TableBinder extends AbstractBinder implements InitializingBean {
      */
     public void setHeightDialog(Integer heightDialog) {
 
-	Assert.notNull(heightDialog);
-	Assert.isTrue(heightDialog > 0);
+        Assert.notNull(heightDialog);
+        Assert.isTrue(heightDialog > 0);
 
-	this.heightDialog = heightDialog;
+        this.heightDialog = heightDialog;
     }
 
     /**
@@ -192,10 +192,10 @@ public class TableBinder extends AbstractBinder implements InitializingBean {
      */
     public void setWidthDialog(Integer widthDialog) {
 
-	Assert.notNull(widthDialog);
-	Assert.isTrue(widthDialog > 0);
+        Assert.notNull(widthDialog);
+        Assert.isTrue(widthDialog > 0);
 
-	this.widthDialog = widthDialog;
+        this.widthDialog = widthDialog;
     }
 
     /**
@@ -205,7 +205,7 @@ public class TableBinder extends AbstractBinder implements InitializingBean {
     @Override
     protected JComponent createControl(Map context) {
 
-	return this.getComponentFactory().createTable();
+        return this.getComponentFactory().createTable();
     }
 
     /**
@@ -215,18 +215,18 @@ public class TableBinder extends AbstractBinder implements InitializingBean {
     @Override
     protected Binding doBind(JComponent control, FormModel formModel, String formPropertyPath, Map context) {
 
-	final TableBinding binding = new TableBinding((JTable) control, formModel, formPropertyPath);
-	binding.setColumnPropertyNames(this.getColumnPropertyNames());
-	binding.setDialogBackingForm(this.getDialogBackingForm());
+        final TableBinding binding = new TableBinding((JTable) control, formModel, formPropertyPath);
+        binding.setColumnPropertyNames(this.getColumnPropertyNames());
+        binding.setDialogBackingForm(this.getDialogBackingForm());
 
-	if (this.getWidthDialog() != null) {
-	    binding.setWidthDialog(this.getWidthDialog());
-	}
+        if (this.getWidthDialog() != null) {
+            binding.setWidthDialog(this.getWidthDialog());
+        }
 
-	if (this.getHeightDialog() != null) {
-	    binding.setHeightDialog(this.getHeightDialog());
-	}
+        if (this.getHeightDialog() != null) {
+            binding.setHeightDialog(this.getHeightDialog());
+        }
 
-	return binding;
+        return binding;
     }
 }

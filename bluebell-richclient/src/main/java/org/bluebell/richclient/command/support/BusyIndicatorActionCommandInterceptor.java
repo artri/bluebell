@@ -17,7 +17,8 @@ import org.springframework.richclient.progress.BusyIndicator;
 /**
  * Interceptor que muestra un indicador de ocupación mientras dure la ejecución del comando.
  * <p>
- * También es un <em>bean postprocessor</em> que se añade a si mismo a los comandos de tipo <code>ShowPageCommand</code>.
+ * También es un <em>bean post processor</em> que se añade a si mismo a los comandos de tipo
+ * <code>ShowPageCommand</code>.
  * <p>
  * <b>Importante</b>: los <em>command interceptor</em> sólo llevan a cabo su post-intercepción si el comando se ejecuta
  * correctamente, ante excepciones nunca se libera el indicador. Explicaciones complementarias en
@@ -44,7 +45,7 @@ public final class BusyIndicatorActionCommandInterceptor implements ActionComman
      */
     private BusyIndicatorActionCommandInterceptor() {
 
-	super();
+        super();
     }
 
     /**
@@ -55,8 +56,8 @@ public final class BusyIndicatorActionCommandInterceptor implements ActionComman
      */
     private BusyIndicatorActionCommandInterceptor(JComponent targetComponent) {
 
-	this();
-	this.setTargetComponent(targetComponent);
+        this();
+        this.setTargetComponent(targetComponent);
     }
 
     /**
@@ -66,7 +67,7 @@ public final class BusyIndicatorActionCommandInterceptor implements ActionComman
      */
     public JComponent getTargetComponent() {
 
-	return this.targetComponent;
+        return this.targetComponent;
     }
 
     /**
@@ -74,11 +75,11 @@ public final class BusyIndicatorActionCommandInterceptor implements ActionComman
      */
     public void postExecution(ActionCommand command) {
 
-	if (this.getTargetComponent() != null) {
-	    BusyIndicator.clearAt(this.getTargetComponent());
-	} else {
-	    BusyIndicatorActionCommandInterceptor.clearIndicator();
-	}
+        if (this.getTargetComponent() != null) {
+            BusyIndicator.clearAt(this.getTargetComponent());
+        } else {
+            BusyIndicatorActionCommandInterceptor.clearIndicator();
+        }
     }
 
     /**
@@ -86,20 +87,20 @@ public final class BusyIndicatorActionCommandInterceptor implements ActionComman
      */
     public Object postProcessAfterInitialization(Object bean, String beanName) {
 
-	// throws BeansException {
+        // throws BeansException {
 
-	// TODO, JAF, 20090413, quizás fuese preferible utilizar un
-	// CommandRegistryListener ya que con un bean post-processor no es
-	// posible interceptar por ejemplo ShowPageMenu, ni tampoco utilizar la
-	// instancia Singleton
+        // TODO, JAF, 20090413, quizás fuese preferible utilizar un
+        // CommandRegistryListener ya que con un bean post-processor no es
+        // posible interceptar por ejemplo ShowPageMenu, ni tampoco utilizar la
+        // instancia Singleton
 
-	if ((bean != null) && (bean instanceof ShowPageCommand)) {
-	    final ShowPageCommand command = (ShowPageCommand) bean;
+        if ((bean != null) && (bean instanceof ShowPageCommand)) {
+            final ShowPageCommand command = (ShowPageCommand) bean;
 
-	    command.addCommandInterceptor(BusyIndicatorActionCommandInterceptor.getInstance());
-	}
+            command.addCommandInterceptor(BusyIndicatorActionCommandInterceptor.getInstance());
+        }
 
-	return bean;
+        return bean;
     }
 
     /**
@@ -107,10 +108,10 @@ public final class BusyIndicatorActionCommandInterceptor implements ActionComman
      */
     public Object postProcessBeforeInitialization(Object bean, String beanName) {
 
-	// throws BeansException {
+        // throws BeansException {
 
-	// Nothing to do.
-	return bean;
+        // Nothing to do.
+        return bean;
     }
 
     /**
@@ -118,13 +119,13 @@ public final class BusyIndicatorActionCommandInterceptor implements ActionComman
      */
     public boolean preExecution(ActionCommand command) {
 
-	if (this.getTargetComponent() != null) {
-	    BusyIndicator.showAt(this.getTargetComponent());
-	} else {
-	    BusyIndicatorActionCommandInterceptor.showIndicator();
-	}
+        if (this.getTargetComponent() != null) {
+            BusyIndicator.showAt(this.getTargetComponent());
+        } else {
+            BusyIndicatorActionCommandInterceptor.showIndicator();
+        }
 
-	return Boolean.TRUE;
+        return Boolean.TRUE;
     }
 
     /**
@@ -135,7 +136,7 @@ public final class BusyIndicatorActionCommandInterceptor implements ActionComman
      */
     public void setTargetComponent(JComponent targetComponent) {
 
-	this.targetComponent = targetComponent;
+        this.targetComponent = targetComponent;
     }
 
     /**
@@ -143,7 +144,7 @@ public final class BusyIndicatorActionCommandInterceptor implements ActionComman
      */
     public static void clearIndicator() {
 
-	BusyIndicator.clearAt(BusyIndicatorActionCommandInterceptor.getWindowControl());
+        BusyIndicator.clearAt(BusyIndicatorActionCommandInterceptor.getWindowControl());
     }
 
     /**
@@ -153,7 +154,7 @@ public final class BusyIndicatorActionCommandInterceptor implements ActionComman
      */
     public static ActionCommandInterceptor getInstance() {
 
-	return BusyIndicatorActionCommandInterceptor.INSTANCE;
+        return BusyIndicatorActionCommandInterceptor.INSTANCE;
     }
 
     /**
@@ -181,7 +182,7 @@ public final class BusyIndicatorActionCommandInterceptor implements ActionComman
      */
     public static ActionCommandInterceptor getInstance(JComponent targetComponent) {
 
-	return new BusyIndicatorActionCommandInterceptor(targetComponent);
+        return new BusyIndicatorActionCommandInterceptor(targetComponent);
     }
 
     /**
@@ -189,8 +190,8 @@ public final class BusyIndicatorActionCommandInterceptor implements ActionComman
      */
     public static void showIndicator() {
 
-	BusyIndicator.showAt(//
-		BusyIndicatorActionCommandInterceptor.getWindowControl());
+        BusyIndicator.showAt(//
+                BusyIndicatorActionCommandInterceptor.getWindowControl());
 
     }
 
@@ -201,16 +202,15 @@ public final class BusyIndicatorActionCommandInterceptor implements ActionComman
      */
     private static Container getWindowControl() {
 
-	// (JAF), 20090711, es preferible retornar el control de la página, para
-	// permitir por ejemplo abrir una nueva ventana mientras se espera.
-	final ApplicationWindow window = Application.instance().getActiveWindow();
-	if(window != null) {
-		return window.getPage().getControl();	    
-	}
+        // (JAF), 20090711, es preferible retornar el control de la página, para
+        // permitir por ejemplo abrir una nueva ventana mientras se espera.
+        final ApplicationWindow window = Application.instance().getActiveWindow();
+        if (window != null) {
+            return window.getPage().getControl();
+        }
 
-
-	return null;
-	// return Application.instance().getActiveWindow().getControl();
+        return null;
+        // return Application.instance().getActiveWindow().getControl();
     }
 
     /**
@@ -226,8 +226,8 @@ public final class BusyIndicatorActionCommandInterceptor implements ActionComman
      * public final void execute() {
      * 
      *     if (onPreExecute()) {
-     * 	doExecuteCommand();
-     * 	onPostExecute();
+     *         doExecuteCommand();
+     *         onPostExecute();
      *     }
      *     parameters.clear();
      * }
@@ -240,13 +240,13 @@ public final class BusyIndicatorActionCommandInterceptor implements ActionComman
      * 
      *     if (onPreExecute()) {
      * 
-     * 	try {
-     * 	    doExecuteCommand();
-     * 	} catch (Exception e) {
-     * 	    // Relaunch de exception             
-     * 	} finally {
-     * 	    onPostExecute();
-     * 	}
+     *         try {
+     *             doExecuteCommand();
+     *         } catch (Exception e) {
+     *             // Relaunch de exception             
+     *         } finally {
+     *             onPostExecute();
+     *         }
      *     }
      *     parameters.clear();
      * }
@@ -261,26 +261,28 @@ public final class BusyIndicatorActionCommandInterceptor implements ActionComman
      */
     public static class ClearBusyIndicatorExceptionHandlerDelegate implements ExceptionHandlerDelegate {
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public boolean hasAppropriateHandler(Throwable thrownTrowable) {
+        /**
+         * {@inheritDoc}
+         */
+        public boolean hasAppropriateHandler(Throwable thrownTrowable) {
 
-	    // TODO, (JAF), 20090913, if page creation could not be accomplished this exception handler tries to create
-	    // it again due to window.getControl() invocation. This dependency should be removed
-	    if (!(thrownTrowable instanceof ApplicationPageException)) {
-		BusyIndicatorActionCommandInterceptor.clearIndicator();
-	    }
+            // TODO, (JAF), 20090913, if page creation could not be accomplished
+            // this exception handler tries to create
+            // it again due to window.getControl() invocation. This dependency
+            // should be removed
+            if (!(thrownTrowable instanceof ApplicationPageException)) {
+                BusyIndicatorActionCommandInterceptor.clearIndicator();
+            }
 
-	    return Boolean.FALSE;
-	}
+            return Boolean.FALSE;
+        }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public void uncaughtException(Thread t, Throwable e) {
+        /**
+         * {@inheritDoc}
+         */
+        public void uncaughtException(Thread t, Throwable e) {
 
-	    // Nothing to do.
-	}
+            // Nothing to do.
+        }
     }
 }

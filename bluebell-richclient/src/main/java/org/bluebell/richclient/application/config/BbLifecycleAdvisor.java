@@ -73,11 +73,11 @@ public class BbLifecycleAdvisor extends DefaultApplicationLifecycleAdvisor imple
 
     /**
      * Construye el <em>advisor</em> y establece la propiedad <code>windowCommandBarDefinitions</code> que por defecto
-     * es {@value org.bluebell.richclient.test.exceptionhandling.RcpMain#DEFAULT_COMMANDS_CONTEXT_PATH}.
+     * es {@value org.bluebell.richclient.test.exceptionhandling.RcpMain#DEFAULT_COMMANDS_CONTEXT_PATH} .
      */
     public BbLifecycleAdvisor() {
 
-	this.setWindowCommandBarDefinitions(RcpMain.DEFAULT_COMMANDS_CONTEXT_PATH);
+        this.setWindowCommandBarDefinitions(RcpMain.DEFAULT_COMMANDS_CONTEXT_PATH);
     }
 
     /**
@@ -86,9 +86,9 @@ public class BbLifecycleAdvisor extends DefaultApplicationLifecycleAdvisor imple
     @Override
     public void afterPropertiesSet() throws Exception {
 
-	// Validación de parámetros
-	super.afterPropertiesSet();
-	Assert.notNull(this.getMessageSource());
+        // Validación de parámetros
+        super.afterPropertiesSet();
+        Assert.notNull(this.getMessageSource());
     }
 
     /**
@@ -97,13 +97,13 @@ public class BbLifecycleAdvisor extends DefaultApplicationLifecycleAdvisor imple
     @Override
     public void onCommandsCreated(ApplicationWindow window) {
 
-	// Log del lifecycle aplicación
-	if (BbLifecycleAdvisor.LOGGER.isDebugEnabled()) {
-	    BbLifecycleAdvisor.LOGGER.debug("onCommandsCreated( windowNumber=" + window.getNumber() + " )");
-	}
+        // Log del lifecycle aplicación
+        if (BbLifecycleAdvisor.LOGGER.isDebugEnabled()) {
+            BbLifecycleAdvisor.LOGGER.debug("onCommandsCreated( windowNumber=" + window.getNumber() + " )");
+        }
 
-	// Realiza el login siempre y cuando sea necesario
-	this.doLoginIfNeeded(window);
+        // Realiza el login siempre y cuando sea necesario
+        this.doLoginIfNeeded(window);
     }
 
     /**
@@ -112,10 +112,10 @@ public class BbLifecycleAdvisor extends DefaultApplicationLifecycleAdvisor imple
     @Override
     public void onPostStartup() {
 
-	// Log del lifecycle aplicación
-	if (BbLifecycleAdvisor.LOGGER.isDebugEnabled()) {
-	    BbLifecycleAdvisor.LOGGER.debug("onPostStartup()");
-	}
+        // Log del lifecycle aplicación
+        if (BbLifecycleAdvisor.LOGGER.isDebugEnabled()) {
+            BbLifecycleAdvisor.LOGGER.debug("onPostStartup()");
+        }
     }
 
     /**
@@ -124,15 +124,15 @@ public class BbLifecycleAdvisor extends DefaultApplicationLifecycleAdvisor imple
     @Override
     public boolean onPreWindowClose(ApplicationWindow window) {
 
-	// Log del lifecycle aplicación
-	if (BbLifecycleAdvisor.LOGGER.isDebugEnabled()) {
-	    BbLifecycleAdvisor.LOGGER.debug("onPreWindowClose( windowNumber=" + window.getNumber() + " )");
-	}
+        // Log del lifecycle aplicación
+        if (BbLifecycleAdvisor.LOGGER.isDebugEnabled()) {
+            BbLifecycleAdvisor.LOGGER.debug("onPreWindowClose( windowNumber=" + window.getNumber() + " )");
+        }
 
-	// Desinstalar el listener a la escucha de cambios de página
-	window.removePageListener(this);
+        // Desinstalar el listener a la escucha de cambios de página
+        window.removePageListener(this);
 
-	return Boolean.TRUE;
+        return Boolean.TRUE;
     }
 
     /**
@@ -141,21 +141,21 @@ public class BbLifecycleAdvisor extends DefaultApplicationLifecycleAdvisor imple
     @Override
     public void onPreWindowOpen(ApplicationWindowConfigurer configurer) {
 
-	// Log del lifecycle aplicación
-	if (BbLifecycleAdvisor.LOGGER.isDebugEnabled()) {
-	    BbLifecycleAdvisor.LOGGER.debug("onPreWindowOpen( windowNumber=" + configurer.getWindow().getNumber()
-		    + " )");
-	}
+        // Log del lifecycle aplicación
+        if (BbLifecycleAdvisor.LOGGER.isDebugEnabled()) {
+            BbLifecycleAdvisor.LOGGER.debug("onPreWindowOpen( windowNumber=" + configurer.getWindow().getNumber()
+                    + " )");
+        }
 
-	// Invocar al método de la clase padre
-	super.onPreWindowOpen(configurer);
+        // Invocar al método de la clase padre
+        super.onPreWindowOpen(configurer);
 
-	// Instalar el listener a la escucha de cambios de página
-	configurer.getWindow().addPageListener(this);
+        // Instalar el listener a la escucha de cambios de página
+        configurer.getWindow().addPageListener(this);
 
-	// Cambiar el tamaño de la ventana
-	configurer.setInitialSize(new Dimension(BbLifecycleAdvisor.DEFAULT_WINDOW_WIDTH,
-		BbLifecycleAdvisor.DEFAULT_WINDOW_HEIGHT));
+        // Cambiar el tamaño de la ventana
+        configurer.setInitialSize(new Dimension(BbLifecycleAdvisor.DEFAULT_WINDOW_WIDTH,
+                BbLifecycleAdvisor.DEFAULT_WINDOW_HEIGHT));
     }
 
     /**
@@ -164,10 +164,10 @@ public class BbLifecycleAdvisor extends DefaultApplicationLifecycleAdvisor imple
     @Override
     public void onWindowCreated(ApplicationWindow window) {
 
-	// Log del lifecycle aplicación
-	if (BbLifecycleAdvisor.LOGGER.isDebugEnabled()) {
-	    BbLifecycleAdvisor.LOGGER.debug("onWindowCreated( windowNumber=" + window.getNumber() + " )");
-	}
+        // Log del lifecycle aplicación
+        if (BbLifecycleAdvisor.LOGGER.isDebugEnabled()) {
+            BbLifecycleAdvisor.LOGGER.debug("onWindowCreated( windowNumber=" + window.getNumber() + " )");
+        }
     }
 
     /**
@@ -176,10 +176,10 @@ public class BbLifecycleAdvisor extends DefaultApplicationLifecycleAdvisor imple
     @Override
     public void onWindowOpened(ApplicationWindow window) {
 
-	// Log del lifecycle aplicación
-	if (BbLifecycleAdvisor.LOGGER.isDebugEnabled()) {
-	    BbLifecycleAdvisor.LOGGER.debug("onWindowOpened( windowNumber=" + window.getNumber() + " )");
-	}
+        // Log del lifecycle aplicación
+        if (BbLifecycleAdvisor.LOGGER.isDebugEnabled()) {
+            BbLifecycleAdvisor.LOGGER.debug("onWindowOpened( windowNumber=" + window.getNumber() + " )");
+        }
     }
 
     /**
@@ -187,10 +187,10 @@ public class BbLifecycleAdvisor extends DefaultApplicationLifecycleAdvisor imple
      */
     public void pageClosed(ApplicationPage page) {
 
-	// Log del lifecycle aplicación
-	if (BbLifecycleAdvisor.LOGGER.isDebugEnabled()) {
-	    BbLifecycleAdvisor.LOGGER.debug("pageClosed( pageId=" + page.getId() + " )");
-	}
+        // Log del lifecycle aplicación
+        if (BbLifecycleAdvisor.LOGGER.isDebugEnabled()) {
+            BbLifecycleAdvisor.LOGGER.debug("pageClosed( pageId=" + page.getId() + " )");
+        }
     }
 
     /**
@@ -198,21 +198,21 @@ public class BbLifecycleAdvisor extends DefaultApplicationLifecycleAdvisor imple
      */
     public void pageOpened(ApplicationPage page) {
 
-	// Log del lifecycle aplicación
-	if (BbLifecycleAdvisor.LOGGER.isDebugEnabled()) {
-	    BbLifecycleAdvisor.LOGGER.debug("pageOpened( pageId=" + page.getId() + " )");
-	}
+        // Log del lifecycle aplicación
+        if (BbLifecycleAdvisor.LOGGER.isDebugEnabled()) {
+            BbLifecycleAdvisor.LOGGER.debug("pageOpened( pageId=" + page.getId() + " )");
+        }
 
-	// El título de la ventana se compone del nombre de la aplicación y del
-	// nombre de la página.
-	final String applicationName = this.getApplication().getName();
-	final String messageCode = page.getId() + BbLifecycleAdvisor.LABEL_SUFIX;
-	final String pageName = this.getMessageSource().getMessage(//
-		messageCode, null, messageCode, Locale.getDefault());
-	final String title = BbLifecycleAdvisor.FMT_WINDOW_TITLE.format(//
-		new String[] { applicationName, pageName });
+        // El título de la ventana se compone del nombre de la aplicación y del
+        // nombre de la página.
+        final String applicationName = this.getApplication().getName();
+        final String messageCode = page.getId() + BbLifecycleAdvisor.LABEL_SUFIX;
+        final String pageName = this.getMessageSource().getMessage(//
+                messageCode, null, messageCode, Locale.getDefault());
+        final String title = BbLifecycleAdvisor.FMT_WINDOW_TITLE.format(//
+                new String[] { applicationName, pageName });
 
-	page.getWindow().getControl().setTitle(title);
+        page.getWindow().getControl().setTitle(title);
     }
 
     /**
@@ -220,11 +220,11 @@ public class BbLifecycleAdvisor extends DefaultApplicationLifecycleAdvisor imple
      */
     @Override
     public StatusBar getStatusBar() {
-    
+
         if (statusBar == null) {
             this.setStatusBar(super.getStatusBar());
         }
-    
+
         return this.statusBar;
     }
 
@@ -235,9 +235,9 @@ public class BbLifecycleAdvisor extends DefaultApplicationLifecycleAdvisor imple
      *            the statusBar to set
      */
     public void setStatusBar(StatusBar statusBar) {
-    
+
         Assert.notNull(statusBar, "statusBar");
-    
+
         this.statusBar = statusBar;
     }
 
@@ -246,7 +246,7 @@ public class BbLifecycleAdvisor extends DefaultApplicationLifecycleAdvisor imple
      */
     public void setMessageSource(MessageSource messageSource) {
 
-	this.messageSource = messageSource;
+        this.messageSource = messageSource;
 
     }
 
@@ -256,7 +256,7 @@ public class BbLifecycleAdvisor extends DefaultApplicationLifecycleAdvisor imple
      * @return la fuente para la obtención de mensajes.
      */
     protected MessageSource getMessageSource() {
-    
+
         return this.messageSource;
     }
 
@@ -268,19 +268,23 @@ public class BbLifecycleAdvisor extends DefaultApplicationLifecycleAdvisor imple
      */
     private void doLoginIfNeeded(ApplicationWindow window) {
 
-	// (JAF), 20090720, comprobación añadida para poder crear contextos de
-	// aplicación stateless con Spring RCP
-	// final Boolean isAuthenticationManagerDefined = Application.instance().getApplicationContext().containsBean(
-	// "authenticationManager");
+        // (JAF), 20090720, comprobación añadida para poder crear contextos de
+        // aplicación stateless con Spring RCP
+        // final Boolean isAuthenticationManagerDefined =
+        // Application.instance().getApplicationContext().containsBean(
+        // "authenticationManager");
 
-	// final LoginCommand loginCommand = (LoginCommand) window.getCommandManager().getCommand(
-	// BbLifecycleAdvisor.LOGIN_COMMAND_NAME);
+        // final LoginCommand loginCommand = (LoginCommand)
+        // window.getCommandManager().getCommand(
+        // BbLifecycleAdvisor.LOGIN_COMMAND_NAME);
 
-	// if (loginCommand != null && SecurityContextHolder.getContext().getAuthentication() == null
-	// && isAuthenticationManagerDefined) {
-	// TODO, (JAF), 20090910, the login command automatic execution should be only in the case the global rich
-	// client application context is loaded
-	// loginCommand.execute();
-	// }
+        // if (loginCommand != null &&
+        // SecurityContextHolder.getContext().getAuthentication() == null
+        // && isAuthenticationManagerDefined) {
+        // TODO, (JAF), 20090910, the login command automatic execution should
+        // be only in the case the global rich
+        // client application context is loaded
+        // loginCommand.execute();
+        // }
     }
 }

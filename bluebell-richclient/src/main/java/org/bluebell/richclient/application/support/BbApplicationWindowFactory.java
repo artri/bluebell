@@ -40,9 +40,9 @@ public class BbApplicationWindowFactory implements ApplicationWindowFactory {
      */
     public ApplicationWindow createApplicationWindow() {
 
-	BbApplicationWindowFactory.LOGGER.info("Creating new DefaultApplicationWindow");
+        BbApplicationWindowFactory.LOGGER.info("Creating new DefaultApplicationWindow");
 
-	return new TabbedApplicationWindow();
+        return new TabbedApplicationWindow();
     }
 
     /**
@@ -52,158 +52,158 @@ public class BbApplicationWindowFactory implements ApplicationWindowFactory {
      */
     public static class TabbedApplicationWindow extends DefaultApplicationWindow {
 
-	/**
-	 * Registro de las páginas mostradas en este panel.
-	 */
-	private final List<String> pageIds = new ArrayList<String>();
+        /**
+         * Registro de las páginas mostradas en este panel.
+         */
+        private final List<String> pageIds = new ArrayList<String>();
 
-	/**
-	 * El panel con las pestañas.
-	 */
-	private JTabbedPane tabbedPane;
+        /**
+         * El panel con las pestañas.
+         */
+        private JTabbedPane tabbedPane;
 
-	/**
-	 * Obtiene el registro de las páginas mostradas en este panel.
-	 * 
-	 * @return el registro.
-	 */
-	public List<String> getPageIds() {
+        /**
+         * Obtiene el registro de las páginas mostradas en este panel.
+         * 
+         * @return el registro.
+         */
+        public List<String> getPageIds() {
 
-	    return this.pageIds;
-	}
+            return this.pageIds;
+        }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected JComponent createToolBarControl() {
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        protected JComponent createToolBarControl() {
 
-	    // Improve tool bar usability
-	    final JToolBar toolBar = (JToolBar) super.createToolBarControl();
-	    toolBar.setFloatable(Boolean.TRUE);
-	    toolBar.setEnabled(Boolean.TRUE);
+            // Improve tool bar usability
+            final JToolBar toolBar = (JToolBar) super.createToolBarControl();
+            toolBar.setFloatable(Boolean.TRUE);
+            toolBar.setEnabled(Boolean.TRUE);
 
-	    return toolBar;
-	}
+            return toolBar;
+        }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected JComponent createWindowContentPane() {
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        protected JComponent createWindowContentPane() {
 
-	    // final JComponent windowContentPane = this.getTabbedPane();
-	    final JComponent windowContentPane = super.createWindowContentPane();	  
-	    
-	    return windowContentPane;
-	}
+            // final JComponent windowContentPane = this.getTabbedPane();
+            final JComponent windowContentPane = super.createWindowContentPane();
 
-	/**
-	 * Obtiene el panel con las pestañas y si no existe lo crea.
-	 * 
-	 * @return el panel.
-	 */
-	protected JTabbedPane getTabbedPane() {
+            return windowContentPane;
+        }
 
-	    if (this.tabbedPane == null) {
-		final ComponentFactory componentFactory = (ComponentFactory) //
-		this.getServices().getService(ComponentFactory.class);
+        /**
+         * Obtiene el panel con las pestañas y si no existe lo crea.
+         * 
+         * @return el panel.
+         */
+        protected JTabbedPane getTabbedPane() {
 
-		final JTabbedPane tabbedPane = componentFactory.createTabbedPane();
-		tabbedPane.setTabPlacement(SwingConstants.TOP);
-		tabbedPane.getModel().addChangeListener(new TrackPageChangesListener());
+            if (this.tabbedPane == null) {
+                final ComponentFactory componentFactory = (ComponentFactory) //
+                this.getServices().getService(ComponentFactory.class);
 
-		this.setTabbedPane(tabbedPane);
-	    }
+                final JTabbedPane pane = componentFactory.createTabbedPane();
+                pane.setTabPlacement(SwingConstants.TOP);
+                pane.getModel().addChangeListener(new TrackPageChangesListener());
 
-	    return this.tabbedPane;
-	}
+                this.setTabbedPane(pane);
+            }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	// @Override
-	protected void setActivePage2(ApplicationPage page) {
+            return this.tabbedPane;
+        }
 
-	    final JComponent control = page.getControl();
-	    final int selectedIndex = this.getTabbedPane().getSelectedIndex();
+        /**
+         * {@inheritDoc}
+         */
+        // @Override
+        protected void setActivePage2(ApplicationPage page) {
 
-	    int index = ArrayUtils.indexOf(//
-		    this.getTabbedPane().getComponents(), control);
+            final JComponent control = page.getControl();
+            final int selectedIndex = this.getTabbedPane().getSelectedIndex();
 
-	    if ((selectedIndex == index) && (index != -1)) {
-		// Evitar invocaciones recursivas
-		return;
-	    }
+            int index = ArrayUtils.indexOf(//
+                    this.getTabbedPane().getComponents(), control);
 
-	    // Añadir el tab
-	    if (index == -1) {
-		index = this.getTabbedPane().getTabCount();
-		this.getPageIds().add(index, page.getId());
-		this.insertTab(page);
-	    }
+            if ((selectedIndex == index) && (index != -1)) {
+                // Evitar invocaciones recursivas
+                return;
+            }
 
-	    // Seleccionar y refrescar el tab
-	    this.getTabbedPane().setSelectedIndex(index);
-	    this.getTabbedPane().validate();
-	}
+            // Añadir el tab
+            if (index == -1) {
+                index = this.getTabbedPane().getTabCount();
+                this.getPageIds().add(index, page.getId());
+                this.insertTab(page);
+            }
 
-	/**
-	 * Inserta una nueva página en la ventana.
-	 * 
-	 * @param page
-	 *            la página.
-	 */
-	private void insertTab(ApplicationPage page) {
+            // Seleccionar y refrescar el tab
+            this.getTabbedPane().setSelectedIndex(index);
+            this.getTabbedPane().validate();
+        }
 
-	    final PageDescriptor pageDescriptor = this.getPageDescriptor(page.getId());
+        /**
+         * Inserta una nueva página en la ventana.
+         * 
+         * @param page
+         *            la página.
+         */
+        private void insertTab(ApplicationPage page) {
 
-	    this.getTabbedPane().insertTab(//
-		    pageDescriptor.getDisplayName(), //
-		    pageDescriptor.getIcon(), //
-		    page.getControl(), //
-		    pageDescriptor.getDescription(), //
-		    this.getTabbedPane().getTabCount());
-	}
+            final PageDescriptor pageDescriptor = this.getPageDescriptor(page.getId());
 
-	/**
-	 * Establece el panel con las pestañas.
-	 * 
-	 * @param tabbedPane
-	 *            el panel con las pestañas.
-	 * @return el panel con las pestañas.
-	 */
-	private JTabbedPane setTabbedPane(JTabbedPane tabbedPane) {
+            this.getTabbedPane().insertTab(//
+                    pageDescriptor.getDisplayName(), //
+                    pageDescriptor.getIcon(), //
+                    page.getControl(), //
+                    pageDescriptor.getDescription(), //
+                    this.getTabbedPane().getTabCount());
+        }
 
-	    this.tabbedPane = tabbedPane;
+        /**
+         * Establece el panel con las pestañas.
+         * 
+         * @param tabbedPane
+         *            el panel con las pestañas.
+         * @return el panel con las pestañas.
+         */
+        private JTabbedPane setTabbedPane(JTabbedPane tabbedPane) {
 
-	    return this.tabbedPane;
-	}
+            this.tabbedPane = tabbedPane;
 
-	/**
-	 * <em>Listener</em> que gestiona los cambios en la página seleccionada.
-	 * 
-	 * @author <a href = "mailto:julio.arguello@gmail.com" >Julio Argüello (JAF)</a>
-	 */
-	private class TrackPageChangesListener implements ChangeListener {
+            return this.tabbedPane;
+        }
 
-	    /**
-	     * Notifica a la ventana cada vez que cambie la página seleccionada.
-	     * 
-	     * @param e
-	     *            el evento de cambio.
-	     */
-	    public void stateChanged(ChangeEvent e) {
+        /**
+         * <em>Listener</em> que gestiona los cambios en la página seleccionada.
+         * 
+         * @author <a href = "mailto:julio.arguello@gmail.com" >Julio Argüello (JAF)</a>
+         */
+        private class TrackPageChangesListener implements ChangeListener {
 
-		final int size = BbApplicationWindowFactory.TabbedApplicationWindow.this.getPageIds().size();
-		final int idx = BbApplicationWindowFactory.TabbedApplicationWindow.this.//
-			getTabbedPane().getSelectedIndex();
+            /**
+             * Notifica a la ventana cada vez que cambie la página seleccionada.
+             * 
+             * @param e
+             *            el evento de cambio.
+             */
+            public void stateChanged(ChangeEvent e) {
 
-		if (size > idx) {
-		    final String pageId = BbApplicationWindowFactory.TabbedApplicationWindow.this.getPageIds().get(idx);
-		    BbApplicationWindowFactory.TabbedApplicationWindow.this.showPage(pageId);
-		}
-	    }
-	}
+                final int size = BbApplicationWindowFactory.TabbedApplicationWindow.this.getPageIds().size();
+                final int idx = BbApplicationWindowFactory.TabbedApplicationWindow.this.//
+                        getTabbedPane().getSelectedIndex();
+
+                if (size > idx) {
+                    final String pageId = BbApplicationWindowFactory.TabbedApplicationWindow.this.getPageIds().get(idx);
+                    BbApplicationWindowFactory.TabbedApplicationWindow.this.showPage(pageId);
+                }
+            }
+        }
     }
 }

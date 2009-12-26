@@ -68,9 +68,9 @@ public abstract class Main {
      */
     protected ApplicationContext createApplicationContext(String[] configLocations, String[] baseDirs) {
 
-	// Cargar el contexto de aplicación de Spring necesario
-	return new ClassPathXmlApplicationContext(//
-		this.getContextConfigLocations(configLocations, baseDirs));
+        // Cargar el contexto de aplicación de Spring necesario
+        return new ClassPathXmlApplicationContext(//
+                this.getContextConfigLocations(configLocations, baseDirs));
     }
 
     /**
@@ -82,7 +82,7 @@ public abstract class Main {
      */
     protected String[] getConfigLocations() {
 
-	return ArrayUtils.EMPTY_STRING_ARRAY;
+        return ArrayUtils.EMPTY_STRING_ARRAY;
     }
 
     /**
@@ -97,15 +97,15 @@ public abstract class Main {
      */
     protected String[] getContextConfigLocations(String[] configLocations, String[] baseDirs) {
 
-	// Obtener las ubicaciones del contexto de aplicación de Spring.
-	final Collection<String> envLocations = new HashSet<String>();
-	CollectionUtils.addAll(envLocations, configLocations);
-	// for (String baseDir : baseDirs) {
-	// envLocations.add(//
-	// EnvironmentUtils.getEnvironmentConfigLocations(baseDir));
-	// }
+        // Obtener las ubicaciones del contexto de aplicación de Spring.
+        final Collection<String> envLocations = new HashSet<String>();
+        CollectionUtils.addAll(envLocations, configLocations);
+        // for (String baseDir : baseDirs) {
+        // envLocations.add(//
+        // EnvironmentUtils.getEnvironmentConfigLocations(baseDir));
+        // }
 
-	return envLocations.toArray(new String[envLocations.size()]);
+        return envLocations.toArray(new String[envLocations.size()]);
     }
 
     /**
@@ -119,7 +119,7 @@ public abstract class Main {
      */
     protected String[] getEnvironmentBaseDirs() {
 
-	return new String[] {};
+        return new String[] {};
     }
 
     /**
@@ -153,49 +153,49 @@ public abstract class Main {
      */
     public static void main(String[] args) {
 
-	String className = Main.class.getName();
-	String[] baseDirs = null;
-	String[] configLocations = null;
+        String className = Main.class.getName();
+        String[] baseDirs = null;
+        String[] configLocations = null;
 
-	// Parsear los parámetros del Main
-	for (int i = 0; i < args.length - 1; ++i) {
-	    if (args[i].equals(Main.CLASS_ARG)) {
-		className = args[i + 1];
-	    } else if (args[i].equals(Main.BASE_DIR_ARG)) {
-		baseDirs = StringUtils.split(args[i + 1], //
-			Main.SEPARATOR);
-	    } else if (args[i].equals(Main.CTX_ARG)) {
-		configLocations = StringUtils.split(args[i + 1], //
-			Main.SEPARATOR);
-	    }
-	}
+        // Parsear los parámetros del Main
+        for (int i = 0; i < args.length - 1; ++i) {
+            if (args[i].equals(Main.CLASS_ARG)) {
+                className = args[i + 1];
+            } else if (args[i].equals(Main.BASE_DIR_ARG)) {
+                baseDirs = StringUtils.split(args[i + 1], //
+                        Main.SEPARATOR);
+            } else if (args[i].equals(Main.CTX_ARG)) {
+                configLocations = StringUtils.split(args[i + 1], //
+                        Main.SEPARATOR);
+            }
+        }
 
-	// Instanciar el launcher de la aplicación
-	Main main = null;
-	try {
-	    main = (Main) Class.forName(className).newInstance();
-	} catch (final ClassNotFoundException e) {
-	    Main.LOGGER.error(e.getMessage(), e);
-	} catch (final InstantiationException e) {
-	    Main.LOGGER.error(e.getMessage(), e);
-	} catch (final IllegalAccessException e) {
-	    Main.LOGGER.error(e.getMessage(), e);
-	}
+        // Instanciar el launcher de la aplicación
+        Main main = null;
+        try {
+            main = (Main) Class.forName(className).newInstance();
+        } catch (final ClassNotFoundException e) {
+            Main.LOGGER.error(e.getMessage(), e);
+        } catch (final InstantiationException e) {
+            Main.LOGGER.error(e.getMessage(), e);
+        } catch (final IllegalAccessException e) {
+            Main.LOGGER.error(e.getMessage(), e);
+        }
 
-	// Si no se han especificado las ubicaciones con la configuración
-	// entonces utilizar las definidas programáticamente.
-	if (configLocations == null) {
-	    configLocations = main.getConfigLocations();
-	}
+        // Si no se han especificado las ubicaciones con la configuración
+        // entonces utilizar las definidas programáticamente.
+        if (configLocations == null) {
+            configLocations = main.getConfigLocations();
+        }
 
-	// Si no se han especificado los directorios base con la configuración
-	// específica del entorno entonces utilizar las definidas
-	// programáticamente.
-	if (baseDirs == null) {
-	    baseDirs = main.getEnvironmentBaseDirs();
-	}
+        // Si no se han especificado los directorios base con la configuración
+        // específica del entorno entonces utilizar las definidas
+        // programáticamente.
+        if (baseDirs == null) {
+            baseDirs = main.getEnvironmentBaseDirs();
+        }
 
-	// Ejecutar la carga de las autoridades
-	main.launch(main, args, configLocations, baseDirs);
+        // Ejecutar la carga de las autoridades
+        main.launch(main, args, configLocations, baseDirs);
     }
 }

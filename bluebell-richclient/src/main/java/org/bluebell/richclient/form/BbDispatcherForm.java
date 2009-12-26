@@ -43,7 +43,7 @@ import org.springframework.util.Assert;
  * <li>Casos especiales:
  * <ul>
  * <li>{@link org.springframework.richclient.form.AbstractForm#commit()}: provoca un <em>commit</em> en el modelo
- * compuesto {@link DispatcherFormModel}. La operación <code>postCommit</code> se redirige al formulario maestro
+ * compuesto {@link DispatcherFormModel} . La operación <code>postCommit</code> se redirige al formulario maestro
  * distinguiendo entre inserciones y actualizaciones.
  * <li>
  * {@link org.springframework.richclient.form.AbstractDetailForm#setMasterList}: este método es protegido y no es
@@ -51,9 +51,9 @@ import org.springframework.util.Assert;
  * {@link org.springframework.richclient.form.AbstractForm#setEditableFormObjects(ObservableList)} que establece la
  * lista de objetos editables también en los formularios hijos.
  * <li>
- * {@link org.springframework.richclient.form.AbstractDetailForm#addPropertyChangeListener(java.beans.PropertyChangeListener)}
- * : No es necesario hacer nada. Anteriormente se le añadía un <em>property change listener</em> inmediatamente después
- * de crear un formulario detalle, simulando el comportamiento de
+ * {@link org.springframework.richclient.form.AbstractDetailForm#addPropertyChangeListener} : No es necesario hacer
+ * nada. Anteriormente se le añadía un <em>property change listener</em> inmediatamente después de crear un formulario
+ * detalle, simulando el comportamiento de
  * {@link org.springframework.richclient.form.AbstractMasterForm.EditStateMonitor}.
  * </ul>
  * </ol>
@@ -73,7 +73,7 @@ public class BbDispatcherForm<T> extends AbstractBbDetailForm<T> {
     private static final String FORM_ID = "compositeDetailForm";
 
     /**
-     * Importante que sea ordenada
+     * Importante que sea ordenada.
      */
     private final List<AbstractBbChildForm<T>> childForms = new ArrayList<AbstractBbChildForm<T>>();
 
@@ -90,10 +90,10 @@ public class BbDispatcherForm<T> extends AbstractBbDetailForm<T> {
      */
     public BbDispatcherForm(AbstractBb2TableMasterForm<T> masterForm, ValueModel valueModel) {
 
-	super(masterForm, BbDispatcherForm.FORM_ID, valueModel);
+        super(masterForm, BbDispatcherForm.FORM_ID, valueModel);
 
-	// Establecer el nuevo form model.
-	this.setFormModel(new DispatcherFormModel(valueModel));
+        // Establecer el nuevo form model.
+        this.setFormModel(new DispatcherFormModel(valueModel));
     }
 
     /**
@@ -115,16 +115,16 @@ public class BbDispatcherForm<T> extends AbstractBbDetailForm<T> {
     @SuppressWarnings("unchecked")
     public void addChildForm(Form form) {
 
-	Assert.notNull(form);
-	Assert.isInstanceOf(AbstractBbChildForm.class, form);
-	Assert.isNull(this.getChildForm(form.getId()), "this.getChildForm(form.getId())");
+        Assert.notNull(form);
+        Assert.isInstanceOf(AbstractBbChildForm.class, form);
+        Assert.isNull(this.getChildForm(form.getId()), "this.getChildForm(form.getId())");
 
-	super.addChildForm(form);
+        super.addChildForm(form);
 
-	// Añadir el formulario hijo e indicarle cual es su maestro
-	final AbstractBbChildForm<T> childForm = (AbstractBbChildForm<T>) form;
-	childForm.updateFormModelUsingParentForm(this);
-	this.childForms.add(childForm);
+        // Añadir el formulario hijo e indicarle cual es su maestro
+        final AbstractBbChildForm<T> childForm = (AbstractBbChildForm<T>) form;
+        childForm.updateFormModelUsingParentForm(this);
+        this.childForms.add(childForm);
 
     }
 
@@ -135,7 +135,7 @@ public class BbDispatcherForm<T> extends AbstractBbDetailForm<T> {
      */
     public List<AbstractBbChildForm<T>> getChildForms() {
 
-	return Collections.unmodifiableList(this.childForms);
+        return Collections.unmodifiableList(this.childForms);
     }
 
     /**
@@ -144,13 +144,13 @@ public class BbDispatcherForm<T> extends AbstractBbDetailForm<T> {
     @Override
     public boolean isDirty() {
 
-	for (final AbstractForm childForm : this.childForms) {
-	    if (childForm.isDirty()) {
-		return Boolean.TRUE;
-	    }
-	}
+        for (final AbstractForm childForm : this.childForms) {
+            if (childForm.isDirty()) {
+                return Boolean.TRUE;
+            }
+        }
 
-	return Boolean.FALSE;
+        return Boolean.FALSE;
     }
 
     /**
@@ -164,13 +164,13 @@ public class BbDispatcherForm<T> extends AbstractBbDetailForm<T> {
     @Override
     public void removeChildForm(Form form) {
 
-	Assert.isTrue(this.childForms.contains(form), "The form to remove must be a children of this form");
+        Assert.isTrue(this.childForms.contains(form), "The form to remove must be a children of this form");
 
-	// Eliminar el formulario hijo.
-	super.removeChildForm(form);
+        // Eliminar el formulario hijo.
+        super.removeChildForm(form);
 
-	// Eliminar el formulario hijo de la colección.
-	this.childForms.remove(form.getId());
+        // Eliminar el formulario hijo de la colección.
+        this.childForms.remove(form.getId());
     }
 
     /**
@@ -181,11 +181,13 @@ public class BbDispatcherForm<T> extends AbstractBbDetailForm<T> {
     @Override
     public void reset() {
 
-	// for (Form childForm : this.formsById.values()) { childForm.reset(); }
+        // for (Form childForm : this.formsById.values()) { childForm.reset(); }
 
-	// (JAF), 20080914, AbstractFormModel#reset internally executes #setFormObject(null) over this form and its
-	// children. To avoid redundant calls its better to make a single invocation
-	((DispatcherFormModel) this.getFormModel()).doInternalReset();
+        // (JAF), 20080914, AbstractFormModel#reset internally executes
+        // #setFormObject(null) over this form and its
+        // children. To avoid redundant calls its better to make a single
+        // invocation
+        ((DispatcherFormModel) this.getFormModel()).doInternalReset();
     }
 
     /**
@@ -196,11 +198,11 @@ public class BbDispatcherForm<T> extends AbstractBbDetailForm<T> {
     @Override
     public void revert() {
 
-	for (final Form childForm : this.childForms) {
-	    childForm.revert();
-	}
+        for (final Form childForm : this.childForms) {
+            childForm.revert();
+        }
 
-	((DispatcherFormModel) this.getFormModel()).doInternalRevert();
+        ((DispatcherFormModel) this.getFormModel()).doInternalRevert();
     }
 
     /**
@@ -211,10 +213,10 @@ public class BbDispatcherForm<T> extends AbstractBbDetailForm<T> {
     @Override
     public void setEnabled(boolean enabled) {
 
-	for (final AbstractForm childForm : this.childForms) {
-	    childForm.setEnabled(enabled);
-	}
-	((DispatcherFormModel) this.getFormModel()).doInternalSetEnabled(enabled);
+        for (final AbstractForm childForm : this.childForms) {
+            childForm.setEnabled(enabled);
+        }
+        ((DispatcherFormModel) this.getFormModel()).doInternalSetEnabled(enabled);
     }
 
     /**
@@ -225,9 +227,9 @@ public class BbDispatcherForm<T> extends AbstractBbDetailForm<T> {
     @Override
     public void setFormObject(Object formObject) {
 
-	for (final AbstractForm childForm : this.childForms) {
-	    childForm.setFormObject(formObject);
-	}
+        for (final AbstractForm childForm : this.childForms) {
+            childForm.setFormObject(formObject);
+        }
     }
 
     /**
@@ -242,7 +244,7 @@ public class BbDispatcherForm<T> extends AbstractBbDetailForm<T> {
     @Override
     protected JComponent createFormControl() {
 
-	return this.createButtonBar();
+        return this.createButtonBar();
     }
 
     /**
@@ -256,13 +258,13 @@ public class BbDispatcherForm<T> extends AbstractBbDetailForm<T> {
     @Override
     protected AbstractBbChildForm<T> getChildForm(String formId) {
 
-	for (final AbstractBbChildForm<T> childForm : this.childForms) {
-	    if (formId.equals(childForm.getId())) {
-		return childForm;
-	    }
-	}
+        for (final AbstractBbChildForm<T> childForm : this.childForms) {
+            if (formId.equals(childForm.getId())) {
+                return childForm;
+            }
+        }
 
-	return null;
+        return null;
     }
 
     /**
@@ -278,13 +280,13 @@ public class BbDispatcherForm<T> extends AbstractBbDetailForm<T> {
     @Override
     protected void setEditableFormObjects(ObservableList editableFormObjects) {
 
-	if (this.isControlCreated()) {
-	    for (final AbstractBbChildForm<T> childForm : this.childForms) {
-		childForm.setEditableFormObjectFromDispatcherForm(editableFormObjects);
-	    }
-	}
+        if (this.isControlCreated()) {
+            for (final AbstractBbChildForm<T> childForm : this.childForms) {
+                childForm.setEditableFormObjectFromDispatcherForm(editableFormObjects);
+            }
+        }
 
-	super.setEditableFormObjects(editableFormObjects);
+        super.setEditableFormObjects(editableFormObjects);
     }
 
     /**
@@ -313,7 +315,7 @@ public class BbDispatcherForm<T> extends AbstractBbDetailForm<T> {
      * Invokers call directly form model method:
      * 
      * <pre>
-     * 	    Invoker        Form Model        Form         Child Form
+     *             Invoker        Form Model        Form         Child Form
      *                |               |               |               | 
      *                |--------------&gt;|               |               |
      *                |               |--------------&gt;|               |
@@ -329,7 +331,7 @@ public class BbDispatcherForm<T> extends AbstractBbDetailForm<T> {
      * Invokers call form method:
      * 
      * <pre>
-     * 	    Invoker        Form Model        Form         Child Form
+     *             Invoker        Form Model        Form         Child Form
      *                |               |               |               | 
      *                |------------------------------&gt;|               |
      *                |               |               |--------------&gt;|
@@ -339,13 +341,15 @@ public class BbDispatcherForm<T> extends AbstractBbDetailForm<T> {
      *                |               |               |               |
      * </pre>
      * 
-     * <p>
-     * The chosen approach is to introduce <code>doInternalXXX</code> methods responsible for executing the intended
-     * form model logic (calls to <code>super</code>). Original methods are delegated to dispatcher form that invokes
-     * later <code>formModel#doInternalXXX</code> method.
+     * 
+     * 
+     * &lt;p&gt; The chosen approach is to introduce &lt;code&gt;doInternalXXX&lt;/code&gt; methods responsible for
+     * executing the intended form model logic (calls to &lt;code&gt;super&lt;/code&gt;). Original methods are delegated
+     * to dispatcher form that invokes later &lt;code&gt;formModel#doInternalXXX&lt;/code&gt; method.
      * <p>
      * Note that child form invocations are made to form method, on this way we ensure child forms override methods are
      * deal correctly.
+     * 
      * </li>
      * </ol>
      * 
@@ -353,140 +357,151 @@ public class BbDispatcherForm<T> extends AbstractBbDetailForm<T> {
      */
     public class DispatcherFormModel extends BbDefaultFormModel {
 
-	/**
-	 * El identificador del modelo.
-	 */
-	private static final String FORM_MODEL_ID = "delegateFormModel";
+        /**
+         * El identificador del modelo.
+         */
+        private static final String FORM_MODEL_ID = "delegateFormModel";
 
-	/**
-	 * Construye el modelo a partir del formulario delegado.
-	 * 
-	 * @param valueModel
-	 *            el <em>value model</em> sobre el que construir el modelo.
-	 * @param delegateForm
-	 *            el formulario delegado.
-	 * 
-	 * @see AbstractForm(ValueModel)
-	 */
-	public DispatcherFormModel(ValueModel valueModel) {
+        /**
+         * Construye el modelo a partir del value model sobre el que construir el modelo.
+         * 
+         * @param valueModel
+         *            el <em>value model</em> sobre el que construir el modelo.
+         * 
+         * @see AbstractForm(ValueModel)
+         */
+        public DispatcherFormModel(ValueModel valueModel) {
 
-	    super(valueModel);
+            super(valueModel);
 
-	    this.setId(DispatcherFormModel.FORM_MODEL_ID);
-	}
+            this.setId(DispatcherFormModel.FORM_MODEL_ID);
+        }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public boolean isDirty() {
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public boolean isDirty() {
 
-	    // (JAF), 20080914, BbDispatcherForm.this.isDirty() executes ValidatingFormModel#isDirty() for every child
-	    return BbDispatcherForm.this.isDirty();
-	}
+            // (JAF), 20080914, BbDispatcherForm.this.isDirty() executes
+            // ValidatingFormModel#isDirty() for every child
+            return BbDispatcherForm.this.isDirty();
+        }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void reset() {
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public void reset() {
 
-	    // (JAF), 20080914, BbDispatcherForm.this.reset() executes this.doInternalReset()
-	    BbDispatcherForm.this.reset();
-	}
+            // (JAF), 20080914, BbDispatcherForm.this.reset() executes
+            // this.doInternalReset()
+            BbDispatcherForm.this.reset();
+        }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void revert() {
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public void revert() {
 
-	    // (JAF), 20080914, BbDispatcherForm.this.revert() executes this.doInternalRevert();
-	    BbDispatcherForm.this.revert();
-	}
+            // (JAF), 20080914, BbDispatcherForm.this.revert() executes
+            // this.doInternalRevert();
+            BbDispatcherForm.this.revert();
+        }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void setEnabled(boolean enabled) {
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public void setEnabled(boolean enabled) {
 
-	    // (JAF), 20080914, BbDispatcherForm.this.setEnabled() executes this.doInternalSetEnabled(Boolean);
-	    BbDispatcherForm.this.setEnabled(enabled);
-	}
+            // (JAF), 20080914, BbDispatcherForm.this.setEnabled() executes
+            // this.doInternalSetEnabled(Boolean);
+            BbDispatcherForm.this.setEnabled(enabled);
+        }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void setFormObject(Object formObject) {
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public void setFormObject(Object formObject) {
 
-	    // (JAF), 20080914, delegateForm#setFormObject() executes this.doInternalSetFormObject(Object);
-	    BbDispatcherForm.this.setFormObject(formObject);
-	}
+            // (JAF), 20080914, delegateForm#setFormObject() executes
+            // this.doInternalSetFormObject(Object);
+            BbDispatcherForm.this.setFormObject(formObject);
+        }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void setValidating(boolean validating) {
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public void setValidating(boolean validating) {
 
-	    // Child form models checks parent form model validating state at first
-	    super.setValidating(validating);
+            // Child form models checks parent form model validating state at
+            // first
+            super.setValidating(validating);
 
-	    for (final FormModel childFormModel : this.getChildren()) {
-		if (childFormModel instanceof ValidatingFormModel) {
-		    ((ValidatingFormModel) childFormModel).setValidating(validating);
-		}
-	    }
-	}
+            for (final FormModel childFormModel : this.getChildren()) {
+                if (childFormModel instanceof ValidatingFormModel) {
+                    ((ValidatingFormModel) childFormModel).setValidating(validating);
+                }
+            }
+        }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void validate() {
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public void validate() {
 
-	    // (JAF), 20090914, this call is not needed anymore: delegate form model should not validate itself, it's
-	    // just a dispatcher to the child form models
-	    // super.validate();
-	    for (final FormModel childFormModel : this.getChildren()) {
-		if (childFormModel instanceof ValidatingFormModel) {
-		    ((ValidatingFormModel) childFormModel).validate();
-		}
-	    }
-	}
+            // (JAF), 20090914, this call is not needed anymore: delegate form
+            // model should not validate itself, it's
+            // just a dispatcher to the child form models
+            // super.validate();
+            for (final FormModel childFormModel : this.getChildren()) {
+                if (childFormModel instanceof ValidatingFormModel) {
+                    ((ValidatingFormModel) childFormModel).validate();
+                }
+            }
+        }
 
-	/**
-	 * Executes {@link org.springframework.binding.form.support.AbstractFormModel#reset()}.
-	 */
-	protected final void doInternalReset() {
+        /**
+         * Executes {@link org.springframework.binding.form.support.AbstractFormModel#reset()} .
+         */
+        protected final void doInternalReset() {
 
-	    super.reset();
-	}
+            super.reset();
+        }
 
-	/**
-	 * Executes {@link org.springframework.binding.form.support.AbstractFormModel#revert()}.
-	 */
-	protected final void doInternalRevert() {
+        /**
+         * Executes {@link org.springframework.binding.form.support.AbstractFormModel#revert()} .
+         */
+        protected final void doInternalRevert() {
 
-	    super.revert();
-	}
+            super.revert();
+        }
 
-	/**
-	 * Executes {@link org.springframework.binding.form.support.AbstractFormModel#setEnabled(boolean)}.
-	 */
-	protected final void doInternalSetEnabled(boolean enabled) {
+        /**
+         * Executes {@link org.springframework.binding.form.support.AbstractFormModel#setEnabled(boolean)} .
+         * 
+         * @param enabled
+         *            the value to apply.
+         */
+        protected final void doInternalSetEnabled(boolean enabled) {
 
-	    super.setEnabled(enabled);
-	}
+            super.setEnabled(enabled);
+        }
 
-	/**
-	 * Executes {@link org.springframework.binding.form.support.AbstractFormModel#setFormObject(Object)}.
-	 */
-	protected final void doInternalSetFormObject(Object formObject) {
+        /**
+         * Executes {@link org.springframework.binding.form.support.AbstractFormModel#setFormObject(Object)} .
+         * 
+         * @param formObject
+         *            the value to apply.
+         */
+        protected final void doInternalSetFormObject(Object formObject) {
 
-	    super.setFormObject(formObject);
-	}
+            super.setFormObject(formObject);
+        }
     }
 }

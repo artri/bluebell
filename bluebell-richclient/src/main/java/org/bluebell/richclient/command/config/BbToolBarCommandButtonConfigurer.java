@@ -30,7 +30,7 @@ public class BbToolBarCommandButtonConfigurer extends ToolBarCommandButtonConfig
      */
     public BbToolBarCommandButtonConfigurer() {
 
-	super();
+        super();
     }
 
     /**
@@ -38,13 +38,13 @@ public class BbToolBarCommandButtonConfigurer extends ToolBarCommandButtonConfig
      */
     public void configure(AbstractButton button, AbstractCommand command, CommandFaceDescriptor faceDescriptor) {
 
-	super.configure(button, command, faceDescriptor);
-	faceDescriptor.configureIconInfo(button, this.getUseLargeIcons());
+        super.configure(button, command, faceDescriptor);
+        faceDescriptor.configureIconInfo(button, this.getUseLargeIcons());
 
-	if (this.isTextBelowIcon() && this.isShowText()) {
-	    final Insets margin = button.getMargin();
-	    button.setMargin(new Insets(margin.top, 0, margin.bottom, 0));
-	}
+        if (this.isTextBelowIcon() && this.isShowText()) {
+            final Insets margin = button.getMargin();
+            button.setMargin(new Insets(margin.top, 0, margin.bottom, 0));
+        }
     }
 
     /**
@@ -54,11 +54,11 @@ public class BbToolBarCommandButtonConfigurer extends ToolBarCommandButtonConfig
      */
     public Boolean getUseLargeIcons() {
 
-	if (this.useLargeIcons == null) {
-	    this.setUseLargeIcons(Boolean.TRUE);
-	}
+        if (this.useLargeIcons == null) {
+            this.setUseLargeIcons(Boolean.TRUE);
+        }
 
-	return this.useLargeIcons;
+        return this.useLargeIcons;
     }
 
     /**
@@ -69,8 +69,8 @@ public class BbToolBarCommandButtonConfigurer extends ToolBarCommandButtonConfig
      */
     public void setUseLargeIcons(Boolean useLargeIcons) {
 
-	Assert.notNull(useLargeIcons, "useLargeIcons");
+        Assert.notNull(useLargeIcons, "useLargeIcons");
 
-	this.useLargeIcons = useLargeIcons;
+        this.useLargeIcons = useLargeIcons;
     }
 }

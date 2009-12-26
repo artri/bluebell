@@ -45,7 +45,7 @@ public final class CommandUtil extends ApplicationServicesAccessor {
      */
     public static ActionCommand configureCommand(ActionCommand command, ValidatingFormModel formModel) {
 
-	return CommandUtil.configureCommand(command, formModel, Boolean.FALSE);
+        return CommandUtil.configureCommand(command, formModel, Boolean.FALSE);
     }
 
     /**
@@ -66,27 +66,27 @@ public final class CommandUtil extends ApplicationServicesAccessor {
      * @see BusyIndicatorActionCommandInterceptor
      */
     public static ActionCommand configureCommand(ActionCommand command, ValidatingFormModel formModel,
-	    Boolean busyIndicated) {
+            Boolean busyIndicated) {
 
-	Assert.notNull(command);
-	Assert.notNull(busyIndicated);
+        Assert.notNull(command);
+        Assert.notNull(busyIndicated);
 
-	// Securizar el comando
-	final String scid = CommandUtil.constructSecurityControllerId(//
-		command.getId(), formModel);
-	command.setSecurityControllerId(scid);
+        // Securizar el comando
+        final String scid = CommandUtil.constructSecurityControllerId(//
+                command.getId(), formModel);
+        command.setSecurityControllerId(scid);
 
-	// Configurar el comando
-	final CommandConfigurer commandConfigurer = (CommandConfigurer) //
-	ApplicationServicesLocator.services().getService(CommandConfigurer.class);
+        // Configurar el comando
+        final CommandConfigurer commandConfigurer = (CommandConfigurer) //
+        ApplicationServicesLocator.services().getService(CommandConfigurer.class);
 
-	// Añade al comando un interceptor indicador de ocupación
-	if (busyIndicated) {
-	    command.addCommandInterceptor(//
-		    BusyIndicatorActionCommandInterceptor.getInstance());
-	}
+        // Añade al comando un interceptor indicador de ocupación
+        if (busyIndicated) {
+            command.addCommandInterceptor(//
+                    BusyIndicatorActionCommandInterceptor.getInstance());
+        }
 
-	return (ActionCommand) commandConfigurer.configure(command);
+        return (ActionCommand) commandConfigurer.configure(command);
     }
 
     /**
@@ -106,19 +106,19 @@ public final class CommandUtil extends ApplicationServicesAccessor {
      * @see #configureCommand(ActionCommand, ValidatingFormModel, Boolean)
      */
     public static ActionCommand configureCommand(ActionCommand command, ValidatingFormModel formModel,
-	    JComponent targetComponent) {
+            JComponent targetComponent) {
 
-	Assert.notNull(targetComponent);
+        Assert.notNull(targetComponent);
 
-	final ActionCommand configuredCommand = //
-	CommandUtil.configureCommand(command, formModel, Boolean.FALSE);
+        final ActionCommand configuredCommand = //
+        CommandUtil.configureCommand(command, formModel, Boolean.FALSE);
 
-	// Añade al comando un interceptor indicador de ocupación
-	configuredCommand.addCommandInterceptor(//
-		BusyIndicatorActionCommandInterceptor.getInstance(//
-			targetComponent));
+        // Añade al comando un interceptor indicador de ocupación
+        configuredCommand.addCommandInterceptor(//
+                BusyIndicatorActionCommandInterceptor.getInstance(//
+                        targetComponent));
 
-	return configuredCommand;
+        return configuredCommand;
     }
 
     /**
@@ -143,21 +143,21 @@ public final class CommandUtil extends ApplicationServicesAccessor {
      */
     public static String constructSecurityControllerId(String commandFaceId, ValidatingFormModel formModel) {
 
-	Assert.notNull(commandFaceId);
+        Assert.notNull(commandFaceId);
 
-	String id = null;
+        String id = null;
 
-	final String[] ids = StringUtils.commaDelimitedListToStringArray(commandFaceId);
-	final String formModelId = formModel.getId();
+        final String[] ids = StringUtils.commaDelimitedListToStringArray(commandFaceId);
+        final String formModelId = formModel.getId();
 
-	if (ids[0] != null) {
-	    id = (formModelId != null) ? //
-	    formModelId + CommandUtil.DOT + ids[0]
-		    : //
-		    ids[0];
-	}
+        if (ids[0] != null) {
+            id = (formModelId != null) ? //
+            formModelId + CommandUtil.DOT + ids[0]
+                    : //
+                    ids[0];
+        }
 
-	return id;
+        return id;
     }
 
     /**
@@ -174,14 +174,14 @@ public final class CommandUtil extends ApplicationServicesAccessor {
      */
     public static String getCommandFaceDescriptorId(String defaultCommandFaceDescriptorId, String innerString) {
 
-	Assert.notNull(defaultCommandFaceDescriptorId);
-	Assert.notNull(innerString);
+        Assert.notNull(defaultCommandFaceDescriptorId);
+        Assert.notNull(innerString);
 
-	final String capitalizedInnerString = StringUtils.capitalize(innerString);
-	final String specializedCommandName = StringUtils.replace(defaultCommandFaceDescriptorId,
-		CommandUtil.COMMAND_SUFIX, //
-		capitalizedInnerString + CommandUtil.COMMAND_SUFIX);
+        final String capitalizedInnerString = StringUtils.capitalize(innerString);
+        final String specializedCommandName = StringUtils.replace(defaultCommandFaceDescriptorId,
+                CommandUtil.COMMAND_SUFIX, //
+                capitalizedInnerString + CommandUtil.COMMAND_SUFIX);
 
-	return specializedCommandName + CommandUtil.COMMA + defaultCommandFaceDescriptorId;
+        return specializedCommandName + CommandUtil.COMMA + defaultCommandFaceDescriptorId;
     }
 }

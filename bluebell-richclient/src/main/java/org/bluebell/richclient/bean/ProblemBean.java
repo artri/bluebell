@@ -17,10 +17,10 @@ public class ProblemBean extends ApplicationServicesAccessor {
      */
     private final Problem problem;
 
-//    /**
-//     * Manejador de recursos empleado para recuperar la ruta de los iconos.
-//     */
-//    private ResourceBundle resources;
+    // /**
+    // * Manejador de recursos empleado para recuperar la ruta de los iconos.
+    // */
+    // private ResourceBundle resources;
 
     /**
      * Icono asociado al problema.
@@ -32,7 +32,7 @@ public class ProblemBean extends ApplicationServicesAccessor {
      */
     public ProblemBean() {
 
-	this.problem = new Problem();
+        this.problem = new Problem();
     }
 
     /**
@@ -41,26 +41,31 @@ public class ProblemBean extends ApplicationServicesAccessor {
      * @param poblem
      *            objeto <code>Problem</code> envuelto.
      */
+    @SuppressWarnings("deprecation")
     public ProblemBean(Problem poblem) {
 
-	this.problem = poblem;
-	// this.resources = ResourceBundle.getBundle("org.bluebell.richclient.test.images.bluebell");
+        this.problem = poblem;
+        // this.resources =
+        // ResourceBundle.getBundle("org.bluebell.richclient.test.images.bluebell");
 
-	// final String problemsFormErrorIcon = null;
-	// String description = null;
+        // final String problemsFormErrorIcon = null;
+        // String description = null;
 
-	// Se recupera el icono en función del tipo de error.
-	if (Severity.ERROR.equals(this.problem.getSeverity())) {
-	    // problemsFormErrorIcon =
-	    // this.resources.getString("problemsForm.error.icon");
-//	    description = "Error";
-	} else if (Severity.WARNING.equals(this.problem.getSeverity())) {
-	    // problemsFormErrorIcon =
-	    // this.resources.getString("problemsForm.warning.icon");
-//	    description = "Advertencia";
-	}
+        // Se recupera el icono en función del tipo de error.
+        if (Severity.ERROR.equals(this.problem.getSeverity())) {
+            new String("Avoid CS warnings");
+            // problemsFormErrorIcon =
+            // this.resources.getString("problemsForm.error.icon");
+            // description = "Error";
+        } else if (Severity.WARNING.equals(this.problem.getSeverity())) {
+            // problemsFormErrorIcon =
+            // this.resources.getString("problemsForm.warning.icon");
+            // description = "Advertencia";
+            new String("Avoid CS warnings");
+        }
 
-	// this.tipeProblemIcon = this.createImageIcon(problemsFormErrorIcon, description);
+        // this.tipeProblemIcon = this.createImageIcon(problemsFormErrorIcon,
+        // description);
     }
 
     /**
@@ -75,7 +80,7 @@ public class ProblemBean extends ApplicationServicesAccessor {
      */
     public ProblemBean(Severity severity, int code, String message) {
 
-	this(new Problem(severity, code, message));
+        this(new Problem(severity, code, message));
     }
 
     /**
@@ -85,7 +90,7 @@ public class ProblemBean extends ApplicationServicesAccessor {
      */
     public String getDescription() {
 
-	return this.problem.getDescription();
+        return this.problem.getDescription();
     }
 
     /**
@@ -95,26 +100,26 @@ public class ProblemBean extends ApplicationServicesAccessor {
      */
     public ImageIcon getTipeProblemIcon() {
 
-	return this.tipeProblemIcon;
+        return this.tipeProblemIcon;
     }
 
-//    /**
-//     * Retorna un icono, o null si el path es inválido.
-//     * 
-//     * @param path
-//     *            el <em>path</em>.
-//     * @param description
-//     *            la descripción.
-//     * @return el icono.
-//     */
-//    private ImageIcon createImageIcon(String path, String description) {
-//
-//	final java.net.URL imgURL = this.getClass().getResource(path);
-//	if (imgURL != null) {
-//	    return new ImageIcon(imgURL, description);
-//	} else {
-//	    this.logger.warn("Couldn't find file: " + path);
-//	    return null;
-//	}
-//    }
+    // /**
+    // * Retorna un icono, o null si el path es inválido.
+    // *
+    // * @param path
+    // * el <em>path</em>.
+    // * @param description
+    // * la descripción.
+    // * @return el icono.
+    // */
+    // private ImageIcon createImageIcon(String path, String description) {
+    //
+    // final java.net.URL imgURL = this.getClass().getResource(path);
+    // if (imgURL != null) {
+    // return new ImageIcon(imgURL, description);
+    // } else {
+    // this.logger.warn("Couldn't find file: " + path);
+    // return null;
+    // }
+    // }
 }

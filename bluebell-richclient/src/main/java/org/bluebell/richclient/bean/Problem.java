@@ -39,7 +39,7 @@ public class Problem implements Serializable {
      */
     public Problem() {
 
-	this.severity = Severity.ERROR;
+        this.severity = Severity.ERROR;
     }
 
     /**
@@ -54,10 +54,10 @@ public class Problem implements Serializable {
      */
     public Problem(final Severity severity, final int code, final String description) {
 
-	super();
-	this.severity = severity;
-	this.code = code;
-	this.description = description;
+        super();
+        this.severity = severity;
+        this.code = code;
+        this.description = description;
     }
 
     /**
@@ -67,7 +67,7 @@ public class Problem implements Serializable {
      */
     public final String getDescription() {
 
-	return this.description;
+        return this.description;
     }
 
     /**
@@ -77,7 +77,7 @@ public class Problem implements Serializable {
      */
     public final int getErrorCode() {
 
-	return this.code;
+        return this.code;
     }
 
     /**
@@ -87,6 +87,6 @@ public class Problem implements Serializable {
      */
     public final Severity getSeverity() {
 
-	return this.severity;
+        return this.severity;
     }
 }

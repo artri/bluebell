@@ -25,7 +25,7 @@ public class FormInstantiationException extends BbApplicationException {
      * Constructs the default message for this kind of exception.
      */
     private static final MessageFormat DEFAULT_MESSAGE_FMT = new MessageFormat(
-	    "Error instantiating form with id \"{0}\"");
+            "Error instantiating form with id \"{0}\"");
 
     /**
      * Es una clase <em>serializable</em>.
@@ -45,23 +45,23 @@ public class FormInstantiationException extends BbApplicationException {
      */
     public FormInstantiationException(String formId) {
 
-	super(FormInstantiationException.DEFAULT_MESSAGE_FMT.format(new String[] { formId }),
-		FormInstantiationException.DEFAULT_ERROR_CODE);
-	this.setFormId(formId);
+        super(FormInstantiationException.DEFAULT_MESSAGE_FMT.format(new String[] { formId }),
+                FormInstantiationException.DEFAULT_ERROR_CODE);
+        this.setFormId(formId);
     }
 
     /**
      * Creates a new {@code PageCreationException} with the specified message and form id.
      * 
-     * @param errorCode
-     *            the error code.
+     * @param message
+     *            the message.
      * @param formId
      *            the form id.
      */
     public FormInstantiationException(String message, String formId) {
 
-	super(message, FormInstantiationException.DEFAULT_ERROR_CODE);
-	this.setFormId(formId);
+        super(message, FormInstantiationException.DEFAULT_ERROR_CODE);
+        this.setFormId(formId);
     }
 
     /**
@@ -76,8 +76,8 @@ public class FormInstantiationException extends BbApplicationException {
      */
     public FormInstantiationException(String message, String errorCode, String formId) {
 
-	super(message, errorCode);
-	this.setFormId(formId);
+        super(message, errorCode);
+        this.setFormId(formId);
     }
 
     /**
@@ -92,8 +92,8 @@ public class FormInstantiationException extends BbApplicationException {
      */
     public FormInstantiationException(String message, Throwable cause, String formId) {
 
-	super(message, cause, FormInstantiationException.DEFAULT_ERROR_CODE);
-	this.setFormId(formId);
+        super(message, cause, FormInstantiationException.DEFAULT_ERROR_CODE);
+        this.setFormId(formId);
     }
 
     /**
@@ -110,8 +110,8 @@ public class FormInstantiationException extends BbApplicationException {
      */
     public FormInstantiationException(String message, Throwable cause, String errorCode, String formId) {
 
-	super(message, cause, errorCode);
-	this.setFormId(formId);
+        super(message, cause, errorCode);
+        this.setFormId(formId);
     }
 
     /**
@@ -124,8 +124,8 @@ public class FormInstantiationException extends BbApplicationException {
      */
     public FormInstantiationException(Throwable cause, String formId) {
 
-	super(cause, FormInstantiationException.DEFAULT_ERROR_CODE);
-	this.setFormId(formId);
+        super(cause, FormInstantiationException.DEFAULT_ERROR_CODE);
+        this.setFormId(formId);
     }
 
     /**
@@ -140,8 +140,8 @@ public class FormInstantiationException extends BbApplicationException {
      */
     public FormInstantiationException(Throwable cause, String errorCode, String formId) {
 
-	super(cause, errorCode);
-	this.setFormId(formId);
+        super(cause, errorCode);
+        this.setFormId(formId);
     }
 
     /**
@@ -149,10 +149,10 @@ public class FormInstantiationException extends BbApplicationException {
      */
     public String getFormId() {
 
-	// Ensure the invariant is not broken
-	Assert.notNull(this.formId, "[Assertion failed] - \"formId\" is required; it must not be null");
+        // Ensure the invariant is not broken
+        Assert.notNull(this.formId, "[Assertion failed] - \"formId\" is required; it must not be null");
 
-	return this.formId;
+        return this.formId;
     }
 
     /**
@@ -161,8 +161,8 @@ public class FormInstantiationException extends BbApplicationException {
      */
     protected void setFormId(String formId) {
 
-	Assert.notNull(formId, "[Assertion failed] - \"formId\" is required; it must not be null");
+        Assert.notNull(formId, "[Assertion failed] - \"formId\" is required; it must not be null");
 
-	this.formId = formId;
+        this.formId = formId;
     }
 }

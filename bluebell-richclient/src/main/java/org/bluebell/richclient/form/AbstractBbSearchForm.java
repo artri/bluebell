@@ -140,12 +140,13 @@ public abstract class AbstractBbSearchForm<T extends Object, U extends Object> e
      */
     public AbstractBbSearchForm(String formId) {
 
-	super(formId);
-	this.setClearFormOnCommit(Boolean.FALSE);
+        super(formId);
+        this.setClearFormOnCommit(Boolean.FALSE);
 
-	// TODO (JAF), 20080713, quizás sea mejor recuperar el interceptor de otro modo...
-	this.dirtyIndicatorInterceptorFactory = (ConfigurableFormComponentInterceptorFactory) //
-	this.getApplicationContext().getBean("dirtyIndicatorInterceptorFactory");
+        // TODO (JAF), 20080713, quizás sea mejor recuperar el interceptor de
+        // otro modo...
+        this.dirtyIndicatorInterceptorFactory = (ConfigurableFormComponentInterceptorFactory) //
+        this.getApplicationContext().getBean("dirtyIndicatorInterceptorFactory");
     }
 
     /**
@@ -157,10 +158,10 @@ public abstract class AbstractBbSearchForm<T extends Object, U extends Object> e
      */
     public final ActionCommand getAttachResultsCommand() {
 
-	if (this.attachResultsCommand == null) {
-	    this.attachResultsCommand = this.createAttachResultsCommand();
-	}
-	return this.attachResultsCommand;
+        if (this.attachResultsCommand == null) {
+            this.attachResultsCommand = this.createAttachResultsCommand();
+        }
+        return this.attachResultsCommand;
     }
 
     /**
@@ -170,7 +171,7 @@ public abstract class AbstractBbSearchForm<T extends Object, U extends Object> e
      */
     public final AbstractBb2TableMasterForm<T> getMasterForm() {
 
-	return this.masterForm;
+        return this.masterForm;
     }
 
     /**
@@ -182,10 +183,10 @@ public abstract class AbstractBbSearchForm<T extends Object, U extends Object> e
      */
     public final ActionCommand getRefreshLastSearchCommand() {
 
-	if (this.refreshLastSearchCommand == null) {
-	    this.refreshLastSearchCommand = this.createRefreshLastSearchCommand();
-	}
-	return this.refreshLastSearchCommand;
+        if (this.refreshLastSearchCommand == null) {
+            this.refreshLastSearchCommand = this.createRefreshLastSearchCommand();
+        }
+        return this.refreshLastSearchCommand;
     }
 
     /**
@@ -197,10 +198,10 @@ public abstract class AbstractBbSearchForm<T extends Object, U extends Object> e
      */
     public final ActionCommand getResetCommand() {
 
-	if (this.resetCommand == null) {
-	    this.resetCommand = this.createResetCommand();
-	}
-	return this.resetCommand;
+        if (this.resetCommand == null) {
+            this.resetCommand = this.createResetCommand();
+        }
+        return this.resetCommand;
     }
 
     /**
@@ -212,10 +213,10 @@ public abstract class AbstractBbSearchForm<T extends Object, U extends Object> e
      */
     public final ActionCommand getSearchCommand() {
 
-	if (this.searchCommand == null) {
-	    this.searchCommand = this.createSearchCommand();
-	}
-	return this.searchCommand;
+        if (this.searchCommand == null) {
+            this.searchCommand = this.createSearchCommand();
+        }
+        return this.searchCommand;
     }
 
     /**
@@ -229,7 +230,7 @@ public abstract class AbstractBbSearchForm<T extends Object, U extends Object> e
     @Override
     public void postCommit(FormModel formModel) {
 
-	this.getRefreshLastSearchCommand().setEnabled(Boolean.TRUE);
+        this.getRefreshLastSearchCommand().setEnabled(Boolean.TRUE);
     }
 
     /**
@@ -241,9 +242,9 @@ public abstract class AbstractBbSearchForm<T extends Object, U extends Object> e
     @Override
     public void reset() {
 
-	super.reset();
-	this.getMasterForm().setVisibleEntities(CollectionUtils.EMPTY_COLLECTION);
-	this.getRefreshLastSearchCommand().setEnabled(Boolean.FALSE);
+        super.reset();
+        this.getMasterForm().setVisibleEntities(CollectionUtils.EMPTY_COLLECTION);
+        this.getRefreshLastSearchCommand().setEnabled(Boolean.FALSE);
     }
 
     /**
@@ -254,7 +255,7 @@ public abstract class AbstractBbSearchForm<T extends Object, U extends Object> e
      */
     public void setMasterForm(AbstractBb2TableMasterForm<T> masterForm) {
 
-	this.masterForm = masterForm;
+        this.masterForm = masterForm;
     }
 
     /**
@@ -263,7 +264,7 @@ public abstract class AbstractBbSearchForm<T extends Object, U extends Object> e
     @Override
     public String toString() {
 
-	return new ToStringBuilder(this, ToStringStyle.SIMPLE_STYLE).append("id", this.getId()).toString();
+        return new ToStringBuilder(this, ToStringStyle.SIMPLE_STYLE).append("id", this.getId()).toString();
     }
 
     /**
@@ -276,9 +277,9 @@ public abstract class AbstractBbSearchForm<T extends Object, U extends Object> e
      */
     protected JComponent createButtonBar() {
 
-	final JComponent buttonBar = this.getCommandGroup().createButtonBar();
-	GuiStandardUtils.attachDialogBorder(buttonBar);
-	return buttonBar;
+        final JComponent buttonBar = this.getCommandGroup().createButtonBar();
+        GuiStandardUtils.attachDialogBorder(buttonBar);
+        return buttonBar;
     }
 
     /**
@@ -309,39 +310,38 @@ public abstract class AbstractBbSearchForm<T extends Object, U extends Object> e
     @Deprecated
     protected JComponent createFormControl() {
 
-	final int preferredWidth = 400;
-	final int preferredHeight = 10;
+        final int preferredWidth = 400;
+        final int preferredHeight = 10;
 
-	// TODO (JAF), 20081015: en realidad no está deprecado, el objetivo es
-	// hacer esto método final. De momento se mantiene así por respetar la
-	// compatibilidad. ESTE MISMO COMENTARIO ESTÁ EN LA ETIQUETA @deprecated
-	// (quitarlos todos una vez declarado final el método).
+        // TODO (JAF), 20081015: en realidad no está deprecado, el objetivo es
+        // hacer esto método final. De momento se mantiene así por respetar la
+        // compatibilidad. ESTE MISMO COMENTARIO ESTÁ EN LA ETIQUETA @deprecated
+        // (quitarlos todos una vez declarado final el método).
 
-	// Hacer que los resultados de validación se muestren en el titlePane
-	new SimpleValidationResultsReporter(//
-		this.getFormModel().getValidationResults(), this.getTitlePane());
+        // Hacer que los resultados de validación se muestren en el titlePane
+        new SimpleValidationResultsReporter(//
+                this.getFormModel().getValidationResults(), this.getTitlePane());
 
-	// Crear el control donde introducir los parámetros de búsqueda.
-	final JComponent searchParamsControl = this.createSearchParamsControl();
-	searchParamsControl.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder()));
+        // Crear el control donde introducir los parámetros de búsqueda.
+        final JComponent searchParamsControl = this.createSearchParamsControl();
+        searchParamsControl.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder()));
 
-	// Crear el control del formulario
-	final JPanel pageControl = new JPanel(new BorderLayout());
-	pageControl.add(this.titlePane.getControl(), BorderLayout.NORTH);
-	pageControl.add(searchParamsControl, BorderLayout.CENTER);
-	pageControl.add(this.createButtonBar(), BorderLayout.SOUTH);
+        // Crear el control del formulario
+        final JPanel pageControl = new JPanel(new BorderLayout());
+        pageControl.add(this.titlePane.getControl(), BorderLayout.NORTH);
+        pageControl.add(searchParamsControl, BorderLayout.CENTER);
+        pageControl.add(this.createButtonBar(), BorderLayout.SOUTH);
 
-	// HACK, (SHT), 20081027, establecer la dimensión para que el formulario
-	// no se adapte al tamaño del mensaje de validación.
-	pageControl.setPreferredSize(//
-		new Dimension(preferredWidth, preferredHeight));
+        // HACK, (SHT), 20081027, establecer la dimensión para que el formulario
+        // no se adapte al tamaño del mensaje de validación.
+        pageControl.setPreferredSize(new Dimension(preferredWidth, preferredHeight));
 
-	// HACK, (SHT), 20081027, si no se pone esta línea entonces no saca el
-	// icono correcto en caso de que el formulario tenga activada la
-	// validación.
-	this.getFormModel().validate();
+        // HACK, (SHT), 20081027, si no se pone esta línea entonces no saca el
+        // icono correcto en caso de que el formulario tenga activada la
+        // validación.
+        this.getFormModel().validate();
 
-	return pageControl;
+        return pageControl;
     }
 
     /**
@@ -356,7 +356,7 @@ public abstract class AbstractBbSearchForm<T extends Object, U extends Object> e
      */
     protected JComponent createSearchParamsControl() {
 
-	return new JPanel();
+        return new JPanel();
     }
 
     /**
@@ -378,7 +378,7 @@ public abstract class AbstractBbSearchForm<T extends Object, U extends Object> e
      */
     protected String getAttachResultsCommandFaceDescriptorId() {
 
-	return AbstractBbSearchForm.ATTACH_RESULTS_COMMAND_ID;
+        return AbstractBbSearchForm.ATTACH_RESULTS_COMMAND_ID;
     }
 
     /**
@@ -388,13 +388,13 @@ public abstract class AbstractBbSearchForm<T extends Object, U extends Object> e
      */
     protected CommandGroup getCommandGroup() {
 
-	if (this.commandGroup == null) {
-	    this.commandGroup = CommandGroup.createCommandGroup(AbstractBbSearchForm.COMMAND_GROUP_ID, new Object[] {
-		    this.getAttachResultsCommand(), this.getSearchCommand(), this.getRefreshLastSearchCommand(),
-		    this.getResetCommand() });
-	}
+        if (this.commandGroup == null) {
+            this.commandGroup = CommandGroup.createCommandGroup(AbstractBbSearchForm.COMMAND_GROUP_ID, new Object[] {
+                    this.getAttachResultsCommand(), this.getSearchCommand(), this.getRefreshLastSearchCommand(),
+                    this.getResetCommand() });
+        }
 
-	return this.commandGroup;
+        return this.commandGroup;
     }
 
     /**
@@ -407,7 +407,7 @@ public abstract class AbstractBbSearchForm<T extends Object, U extends Object> e
      */
     protected String getRefreshLastSearchCommandFaceDescriptorId() {
 
-	return AbstractBbSearchForm.REFRESH_LAST_SEARCH_COMMAND_ID;
+        return AbstractBbSearchForm.REFRESH_LAST_SEARCH_COMMAND_ID;
     }
 
     /**
@@ -420,7 +420,7 @@ public abstract class AbstractBbSearchForm<T extends Object, U extends Object> e
      */
     protected String getResetCommandFaceDescriptorId() {
 
-	return AbstractBbSearchForm.RESET_COMMAND_ID;
+        return AbstractBbSearchForm.RESET_COMMAND_ID;
     }
 
     /**
@@ -433,7 +433,7 @@ public abstract class AbstractBbSearchForm<T extends Object, U extends Object> e
      */
     protected String getSearchCommandFaceDescriptorId() {
 
-	return AbstractBbSearchForm.SEARCH_COMMAND_ID;
+        return AbstractBbSearchForm.SEARCH_COMMAND_ID;
     }
 
     /**
@@ -446,12 +446,12 @@ public abstract class AbstractBbSearchForm<T extends Object, U extends Object> e
     @Override
     protected void setFormModel(ValidatingFormModel formModel) {
 
-	super.setFormModel(formModel);
-	formModel.setValidating(Boolean.FALSE);
+        super.setFormModel(formModel);
+        formModel.setValidating(Boolean.FALSE);
 
-	final String[] excludedFormModelIds = this.dirtyIndicatorInterceptorFactory.getExcludedFormModelIds();
-	this.dirtyIndicatorInterceptorFactory.setExcludedFormModelIds(//
-		(String[]) ArrayUtils.add(excludedFormModelIds, formModel.getId()));
+        final String[] excludedFormModelIds = this.dirtyIndicatorInterceptorFactory.getExcludedFormModelIds();
+        this.dirtyIndicatorInterceptorFactory.setExcludedFormModelIds(//
+                (String[]) ArrayUtils.add(excludedFormModelIds, formModel.getId()));
     }
 
     /**
@@ -459,46 +459,45 @@ public abstract class AbstractBbSearchForm<T extends Object, U extends Object> e
      * 
      * @return el comando para añadir o no resultados.
      * 
-     * @see org.springframework.richclient.command.config.CommandConfigurer#configure(org.springframework.richclient.command.AbstractCommand)
+     * @see org.springframework.richclient.command.config.CommandConfigurer#configure
      */
     private ActionCommand createAttachResultsCommand() {
 
-	final String commandId = this.getAttachResultsCommandFaceDescriptorId();
-	if (!StringUtils.hasText(commandId)) {
-	    return null;
-	}
+        final String commandId = this.getAttachResultsCommandFaceDescriptorId();
+        if (!StringUtils.hasText(commandId)) {
+            return null;
+        }
 
-	final ToggleCommand attachResultsCmd = new ToggleCommand(commandId) {
-	    /**
-	     * Establece que se han de descartar los resultados anteriores.
-	     * 
-	     * @see AbstractBbSearchForm#setAttachResults(boolean)
-	     */
-	    @Override
-	    protected void onDeselection() {
+        final ToggleCommand attachResultsCmd = new ToggleCommand(commandId) {
+            /**
+             * Establece que se han de descartar los resultados anteriores.
+             * 
+             * @see AbstractBbSearchForm#setAttachResults(boolean)
+             */
+            @Override
+            protected void onDeselection() {
 
-		AbstractBbSearchForm.this.setAttachResults(Boolean.FALSE);
-	    }
+                AbstractBbSearchForm.this.setAttachResults(Boolean.FALSE);
+            }
 
-	    /**
-	     * Establece que se han de mantener los resultados anteriores.
-	     * 
-	     * @see AbstractBbSearchForm#setAttachResults(boolean)
-	     */
-	    @Override
-	    protected void onSelection() {
+            /**
+             * Establece que se han de mantener los resultados anteriores.
+             * 
+             * @see AbstractBbSearchForm#setAttachResults(boolean)
+             */
+            @Override
+            protected void onSelection() {
 
-		AbstractBbSearchForm.this.setAttachResults(Boolean.TRUE);
-	    }
-	};
+                AbstractBbSearchForm.this.setAttachResults(Boolean.TRUE);
+            }
+        };
 
-	// Securizar el comando
-	final String scid = this.constructSecurityControllerId(commandId);
-	attachResultsCmd.setSecurityControllerId(scid);
+        // Securizar el comando
+        final String scid = this.constructSecurityControllerId(commandId);
+        attachResultsCmd.setSecurityControllerId(scid);
 
-	// Configurar el comando
-	return CommandUtil.configureCommand(//
-		attachResultsCmd, this.getFormModel());
+        // Configurar el comando
+        return CommandUtil.configureCommand(attachResultsCmd, this.getFormModel());
     }
 
     /**
@@ -508,47 +507,45 @@ public abstract class AbstractBbSearchForm<T extends Object, U extends Object> e
      * 
      * @return el comando de refresco.
      * 
-     * @see org.springframework.richclient.command.config.CommandConfigurer#configure(org.springframework.richclient.command.AbstractCommand)
+     * @see org.springframework.richclient.command.config.CommandConfigurer#configure
      */
     private ActionCommand createRefreshLastSearchCommand() {
 
-	final String commandId = this.getRefreshLastSearchCommandFaceDescriptorId();
-	if (!StringUtils.hasText(commandId)) {
-	    return null;
-	}
+        final String commandId = this.getRefreshLastSearchCommandFaceDescriptorId();
+        if (!StringUtils.hasText(commandId)) {
+            return null;
+        }
 
-	final ActionCommand refreshLastSearchCmd = new ActionCommand(commandId) {
+        final ActionCommand refreshLastSearchCmd = new ActionCommand(commandId) {
 
-	    @Override
-	    protected void doExecuteCommand() {
+            @Override
+            protected void doExecuteCommand() {
 
-		// Los últimos parámetros de búsqueda.
-		final U searchParams = AbstractBbSearchForm.this.getLastSearchParams();
+                // Los últimos parámetros de búsqueda.
+                final U searchParams = AbstractBbSearchForm.this.getLastSearchParams();
 
-		// Obtener los resultados de la búsqueda.
-		final Collection<T> searchResults = AbstractBbSearchForm.this.doSearch(searchParams);
+                // Obtener los resultados de la búsqueda.
+                final Collection<T> searchResults = AbstractBbSearchForm.this.doSearch(searchParams);
 
-		// Notificar el número de resultados devuelto
-		AbstractBbSearchForm.this.showNumberOfResults(//
-			searchResults.size());
+                // Notificar el número de resultados devuelto
+                AbstractBbSearchForm.this.showNumberOfResults(searchResults.size());
 
-		// Establecer los resultados de la búsqueda en el formulario
-		// maestro.
-		AbstractBbSearchForm.this.getMasterForm().setVisibleEntities(searchResults,
-			AbstractBbSearchForm.this.isAttachResults());
-	    }
-	};
+                // Establecer los resultados de la búsqueda en el formulario
+                // maestro.
+                AbstractBbSearchForm.this.getMasterForm().setVisibleEntities(//
+                        searchResults, AbstractBbSearchForm.this.isAttachResults());
+            }
+        };
 
-	// El comando por defecto está deshabilitado.
-	refreshLastSearchCmd.setEnabled(Boolean.FALSE);
+        // El comando por defecto está deshabilitado.
+        refreshLastSearchCmd.setEnabled(Boolean.FALSE);
 
-	// Securizar el comando
-	final String scid = this.constructSecurityControllerId(commandId);
-	refreshLastSearchCmd.setSecurityControllerId(scid);
+        // Securizar el comando
+        final String scid = this.constructSecurityControllerId(commandId);
+        refreshLastSearchCmd.setSecurityControllerId(scid);
 
-	// Configurar el comando
-	return CommandUtil.configureCommand(//
-		refreshLastSearchCmd, this.getFormModel(), Boolean.TRUE);
+        // Configurar el comando
+        return CommandUtil.configureCommand(refreshLastSearchCmd, this.getFormModel(), Boolean.TRUE);
     }
 
     /**
@@ -556,39 +553,38 @@ public abstract class AbstractBbSearchForm<T extends Object, U extends Object> e
      * 
      * @return el comando para resetear.
      * 
-     * @see org.springframework.richclient.command.config.CommandConfigurer#configure(org.springframework.richclient.command.AbstractCommand)
+     * @see org.springframework.richclient.command.config.CommandConfigurer#configure
      */
     private ActionCommand createResetCommand() {
 
-	final String commandId = this.getResetCommandFaceDescriptorId();
-	if (!StringUtils.hasText(commandId)) {
-	    return null;
-	}
+        final String commandId = this.getResetCommandFaceDescriptorId();
+        if (!StringUtils.hasText(commandId)) {
+            return null;
+        }
 
-	final ActionCommand resetCmd = new ActionCommand(commandId) {
+        final ActionCommand resetCmd = new ActionCommand(commandId) {
 
-	    /**
-	     * Resetea el formModel del formulario.
-	     */
-	    @Override
-	    protected void doExecuteCommand() {
+            /**
+             * Resetea el formModel del formulario.
+             */
+            @Override
+            protected void doExecuteCommand() {
 
-		AbstractBbSearchForm.this.reset();
-		AbstractBbSearchForm.this.setEnabled(Boolean.TRUE);
-	    }
-	};
+                AbstractBbSearchForm.this.reset();
+                AbstractBbSearchForm.this.setEnabled(Boolean.TRUE);
+            }
+        };
 
-	// Añadirle una guardia al comando
-	final FormGuard formGuard = new FormGuard(//
-		AbstractBbSearchForm.this.getFormModel());
-	formGuard.addGuarded(resetCmd, FormGuard.ON_ENABLED);
+        // Añadirle una guardia al comando
+        final FormGuard formGuard = new FormGuard(AbstractBbSearchForm.this.getFormModel());
+        formGuard.addGuarded(resetCmd, FormGuard.ON_ENABLED);
 
-	// Securizar el comando
-	final String scid = this.constructSecurityControllerId(commandId);
-	resetCmd.setSecurityControllerId(scid);
+        // Securizar el comando
+        final String scid = this.constructSecurityControllerId(commandId);
+        resetCmd.setSecurityControllerId(scid);
 
-	// Configurar el comando
-	return CommandUtil.configureCommand(resetCmd, this.getFormModel());
+        // Configurar el comando
+        return CommandUtil.configureCommand(resetCmd, this.getFormModel());
     }
 
     /**
@@ -596,52 +592,49 @@ public abstract class AbstractBbSearchForm<T extends Object, U extends Object> e
      * 
      * @return el comando de búsqueda.
      * 
-     * @see org.springframework.richclient.command.config.CommandConfigurer#configure(org.springframework.richclient.command.AbstractCommand)
+     * @see org.springframework.richclient.command.config.CommandConfigurer#configure
      */
     private ActionCommand createSearchCommand() {
 
-	final String commandId = this.getSearchCommandFaceDescriptorId();
-	if (!StringUtils.hasText(commandId)) {
-	    return null;
-	}
-	final ActionCommand searchCmd = new ActionCommand(commandId) {
-	    @Override
-	    @SuppressWarnings("unchecked")
-	    protected void doExecuteCommand() {
+        final String commandId = this.getSearchCommandFaceDescriptorId();
+        if (!StringUtils.hasText(commandId)) {
+            return null;
+        }
+        final ActionCommand searchCmd = new ActionCommand(commandId) {
+            @Override
+            @SuppressWarnings("unchecked")
+            protected void doExecuteCommand() {
 
-		// Commitear el formulario
-		AbstractBbSearchForm.this.commit();
+                // Commitear el formulario
+                AbstractBbSearchForm.this.commit();
 
-		// Obtener y almacenar los parámetros de la búsqueda
-		final U formObject = (U) AbstractBbSearchForm.this.getFormObject();
-		AbstractBbSearchForm.this.setLastSearchParams(formObject);
+                // Obtener y almacenar los parámetros de la búsqueda
+                final U formObject = (U) AbstractBbSearchForm.this.getFormObject();
+                AbstractBbSearchForm.this.setLastSearchParams(formObject);
 
-		// Obtener los resultados de la búsqueda.
-		final Collection<T> searchResults = AbstractBbSearchForm.this.doSearch(formObject);
+                // Obtener los resultados de la búsqueda.
+                final Collection<T> searchResults = AbstractBbSearchForm.this.doSearch(formObject);
 
-		// Notificar el número de resultados devuelto
-		AbstractBbSearchForm.this.showNumberOfResults(//
-			searchResults.size());
+                // Notificar el número de resultados devuelto
+                AbstractBbSearchForm.this.showNumberOfResults(searchResults.size());
 
-		// Establecer los resultados de la búsqueda en el formulario
-		// maestro.
-		AbstractBbSearchForm.this.getMasterForm().setVisibleEntities(searchResults,
-			AbstractBbSearchForm.this.isAttachResults());
-	    }
-	};
+                // Establecer los resultados de la búsqueda en el formulario maestro.
+                AbstractBbSearchForm.this.getMasterForm().setVisibleEntities(//
+                        searchResults, AbstractBbSearchForm.this.isAttachResults());
+            }
+        };
 
-	// Añadirle una guardia al comando
-	final FormGuard formGuard = new FormGuard(//
-		AbstractBbSearchForm.this.getFormModel());
-	formGuard.addGuarded(searchCmd, FormGuard.ON_NOERRORS);
+        // Añadirle una guardia al comando
+        final FormGuard formGuard = new FormGuard(AbstractBbSearchForm.this.getFormModel());
+        formGuard.addGuarded(searchCmd, FormGuard.ON_NOERRORS);
 
-	// Securizar el comando
-	final String scid = this.constructSecurityControllerId(commandId);
-	searchCmd.setSecurityControllerId(scid);
+        // Securizar el comando
+        final String scid = this.constructSecurityControllerId(commandId);
+        searchCmd.setSecurityControllerId(scid);
 
-	// Configurar el comando
-	return CommandUtil.configureCommand(//
-		searchCmd, this.getFormModel(), Boolean.TRUE);
+        // Configurar el comando
+        return CommandUtil.configureCommand(//
+                searchCmd, this.getFormModel(), Boolean.TRUE);
     }
 
     /**
@@ -651,7 +644,7 @@ public abstract class AbstractBbSearchForm<T extends Object, U extends Object> e
      */
     private U getLastSearchParams() {
 
-	return this.lastSearchParams;
+        return this.lastSearchParams;
     }
 
     /**
@@ -661,17 +654,17 @@ public abstract class AbstractBbSearchForm<T extends Object, U extends Object> e
      */
     private TitlePane getTitlePane() {
 
-	if (this.titlePane == null) {
-	    final String id = AbstractBbSearchForm.SEARCH_FORM_ID;
-	    final String title = AbstractBbSearchForm.this.getMessage(//
-		    id + ".title");
+        if (this.titlePane == null) {
+            final String id = AbstractBbSearchForm.SEARCH_FORM_ID;
+            final String title = AbstractBbSearchForm.this.getMessage(//
+                    id + ".title");
 
-	    final int lines = 3;
-	    this.titlePane = new TitlePane(lines);
-	    this.titlePane.setTitle(title);
-	}
+            final int lines = 3;
+            this.titlePane = new TitlePane(lines);
+            this.titlePane.setTitle(title);
+        }
 
-	return this.titlePane;
+        return this.titlePane;
     }
 
     /**
@@ -682,7 +675,7 @@ public abstract class AbstractBbSearchForm<T extends Object, U extends Object> e
      */
     private boolean isAttachResults() {
 
-	return this.attachResults;
+        return this.attachResults;
     }
 
     /**
@@ -694,7 +687,7 @@ public abstract class AbstractBbSearchForm<T extends Object, U extends Object> e
      */
     private void setAttachResults(boolean attachResults) {
 
-	this.attachResults = attachResults;
+        this.attachResults = attachResults;
     }
 
     /**
@@ -705,7 +698,7 @@ public abstract class AbstractBbSearchForm<T extends Object, U extends Object> e
      */
     private void setLastSearchParams(U lastSearchParams) {
 
-	this.lastSearchParams = lastSearchParams;
+        this.lastSearchParams = lastSearchParams;
     }
 
     /**
@@ -719,26 +712,26 @@ public abstract class AbstractBbSearchForm<T extends Object, U extends Object> e
      */
     private void showNumberOfResults(int number) {
 
-	final String id = AbstractBbSearchForm.SEARCH_FORM_ID;
+        final String id = AbstractBbSearchForm.SEARCH_FORM_ID;
 
-	// Construir de forma perezosa el diálogo que informa que no hay
-	// resultados para la búsqueda.
-	if (this.noResultsMessageDialog == null) {
-	    final String title = AbstractBbSearchForm.this.getMessage(//
-		    id + ".noResultsDialog.title");
-	    final String message = AbstractBbSearchForm.this.getMessage(//
-		    id + ".noResultsDialog.message");
-	    this.noResultsMessageDialog = new MessageDialog(title, message);
-	}
+        // Construir de forma perezosa el diálogo que informa que no hay
+        // resultados para la búsqueda.
+        if (this.noResultsMessageDialog == null) {
+            final String title = AbstractBbSearchForm.this.getMessage(//
+                    id + ".noResultsDialog.title");
+            final String message = AbstractBbSearchForm.this.getMessage(//
+                    id + ".noResultsDialog.message");
+            this.noResultsMessageDialog = new MessageDialog(title, message);
+        }
 
-	// Si la búsqueda no arroja resultados notificarlo
-	if (number == 0) {
-	    this.noResultsMessageDialog.showDialog();
-	}
+        // Si la búsqueda no arroja resultados notificarlo
+        if (number == 0) {
+            this.noResultsMessageDialog.showDialog();
+        }
 
-	// Modificar el mensaje del titlePane mostrando el número de resultados
-	final String text = AbstractBbSearchForm.this.getMessage(//
-		id + ".numberOfResults.caption", new Integer[] { number });
-	this.getTitlePane().setMessage(new DefaultMessage(text, Severity.INFO));
+        // Modificar el mensaje del titlePane mostrando el número de resultados
+        final String text = AbstractBbSearchForm.this.getMessage(//
+                id + ".numberOfResults.caption", new Integer[] { number });
+        this.getTitlePane().setMessage(new DefaultMessage(text, Severity.INFO));
     }
 }

@@ -55,7 +55,7 @@ public class FormBackedView<T extends Form> extends AbstractView {
      */
     public FormBackedView() {
 
-	super();
+        super();
     }
 
     /**
@@ -65,7 +65,7 @@ public class FormBackedView<T extends Form> extends AbstractView {
      */
     public T getBackingForm() {
 
-	return this.backingForm;
+        return this.backingForm;
     }
 
     /**
@@ -75,12 +75,12 @@ public class FormBackedView<T extends Form> extends AbstractView {
      */
     public Border getBorder() {
 
-	// TODO, (JAF), study if this method should be configurable (UIManager)
-	if (this.border == null) {
-	    this.setBorder(FormBackedView.EMPTY_BORDER_WITH_GAPS);
-	}
+        // TODO, (JAF), study if this method should be configurable (UIManager)
+        if (this.border == null) {
+            this.setBorder(FormBackedView.EMPTY_BORDER_WITH_GAPS);
+        }
 
-	return this.border;
+        return this.border;
     }
 
     /**
@@ -90,7 +90,7 @@ public class FormBackedView<T extends Form> extends AbstractView {
      */
     public GlobalCommandsAccessor getGlobalCommandsAccessor() {
 
-	return this.globalCommandsAccessor;
+        return this.globalCommandsAccessor;
     }
 
     /**
@@ -101,7 +101,7 @@ public class FormBackedView<T extends Form> extends AbstractView {
      */
     public void setBackingForm(T backingForm) {
 
-	this.backingForm = backingForm;
+        this.backingForm = backingForm;
     }
 
     /**
@@ -112,7 +112,7 @@ public class FormBackedView<T extends Form> extends AbstractView {
      */
     public void setBorder(Border border) {
 
-	this.border = border;
+        this.border = border;
     }
 
     /**
@@ -121,17 +121,17 @@ public class FormBackedView<T extends Form> extends AbstractView {
      * Además comprueba que en el momento de la invocación se haya establecido el contexto de la página, en caso
      * contrario elevará una excepción.
      * 
-     * @param globalCommandsAccesor
+     * @param globalCommandsAccessor
      *            el <em>accesor</em>.
      */
     public void setGlobalCommandsAccessor(GlobalCommandsAccessor globalCommandsAccessor) {
 
-	Assert.notNull(globalCommandsAccessor, "globalCommandsAccessor");
-	Assert.notNull(this.getContext(), "this.getContext()");
+        Assert.notNull(globalCommandsAccessor, "globalCommandsAccessor");
+        Assert.notNull(this.getContext(), "this.getContext()");
 
-	this.globalCommandsAccessor = globalCommandsAccessor;
+        this.globalCommandsAccessor = globalCommandsAccessor;
 
-	this.registerLocalCommandExecutors(this.getContext());
+        this.registerLocalCommandExecutors(this.getContext());
     }
 
     /**
@@ -140,7 +140,7 @@ public class FormBackedView<T extends Form> extends AbstractView {
     @Override
     public String toString() {
 
-	return new ToStringBuilder(this, ToStringStyle.SIMPLE_STYLE).append("id", this.getId()).toString();
+        return new ToStringBuilder(this, ToStringStyle.SIMPLE_STYLE).append("id", this.getId()).toString();
     }
 
     /**
@@ -153,23 +153,24 @@ public class FormBackedView<T extends Form> extends AbstractView {
     @Override
     protected JComponent createControl() {
 
-	Assert.notNull(this.getBackingForm());
-	// this.registerLocalCommandExecutors(this.getContext());
+        Assert.notNull(this.getBackingForm());
+        // this.registerLocalCommandExecutors(this.getContext());
 
-	// Envolver el control en un JScrollPane
-	final JComponent control = this.getBackingForm().getControl();
-	final JScrollPane scrollPane = new JScrollPane(control);
+        // Envolver el control en un JScrollPane
+        final JComponent control = this.getBackingForm().getControl();
+        final JScrollPane scrollPane = new JScrollPane(control);
 
-	// TODO, this code is substance dependent!!
-	scrollPane.putClientProperty("substancelaf.componentFlat", Boolean.TRUE);
-	control.putClientProperty("substancelaf.componentFlat", Boolean.FALSE);
+        // TODO, this code is substance dependent!!
+        scrollPane.putClientProperty("substancelaf.componentFlat", Boolean.TRUE);
+        control.putClientProperty("substancelaf.componentFlat", Boolean.FALSE);
 
-	// Añadir los bordes
-	// FIXME, (JAF), with substance this border can take a different color from form one.
-	control.setBorder(this.getBorder());
-	scrollPane.setBorder(this.getBorder());
+        // Añadir los bordes
+        // FIXME, (JAF), with substance this border can take a different color
+        // from form one.
+        control.setBorder(this.getBorder());
+        scrollPane.setBorder(this.getBorder());
 
-	return scrollPane;
+        return scrollPane;
     }
 
     /**
@@ -186,32 +187,35 @@ public class FormBackedView<T extends Form> extends AbstractView {
     @Override
     protected void registerLocalCommandExecutors(PageComponentContext context) {
 
-	// FIXME, no tengo claro que el registro de comandos globales funcione sólo con esto, aunque puede que sí!!
+        // FIXME, no tengo claro que el registro de comandos globales funcione
+        // sólo con esto, aunque puede que sí!!
 
-	// TODO, (JAF), 20090919, esto debería de ir a la nueva clase que sincroniza los componentes de la página.
-	// Eso no está claro!!!!
-	if (this.getGlobalCommandsAccessor() != null) {
-	    context.register(GlobalCommandIds.PROPERTIES, this.getGlobalCommandsAccessor().getNewFormObjectCommand());
-	    context.register(GlobalCommandIds.SAVE, this.getGlobalCommandsAccessor().getSaveCommand());
-	    context.register(GlobalCommandsAccessor.CANCEL, this.getGlobalCommandsAccessor().getCancelCommand());
-	    context.register(GlobalCommandIds.DELETE, this.getGlobalCommandsAccessor().getDeleteCommand());
-	    context.register(GlobalCommandsAccessor.REFRESH, this.getGlobalCommandsAccessor().getRefreshCommand());
-	    context.register(GlobalCommandsAccessor.REVERT, this.getRevertCommand(this.getBackingForm()));
-	    context.register(GlobalCommandsAccessor.REVERT_ALL, this.getGlobalCommandsAccessor().getRevertAllCommand());
+        // TODO, (JAF), 20090919, esto debería de ir a la nueva clase que
+        // sincroniza los componentes de la página.
+        // Eso no está claro!!!!
+        if (this.getGlobalCommandsAccessor() != null) {
+            context.register(GlobalCommandIds.PROPERTIES, this.getGlobalCommandsAccessor().getNewFormObjectCommand());
+            context.register(GlobalCommandIds.SAVE, this.getGlobalCommandsAccessor().getSaveCommand());
+            context.register(GlobalCommandsAccessor.CANCEL, this.getGlobalCommandsAccessor().getCancelCommand());
+            context.register(GlobalCommandIds.DELETE, this.getGlobalCommandsAccessor().getDeleteCommand());
+            context.register(GlobalCommandsAccessor.REFRESH, this.getGlobalCommandsAccessor().getRefreshCommand());
+            context.register(GlobalCommandsAccessor.REVERT, this.getRevertCommand(this.getBackingForm()));
+            context.register(GlobalCommandsAccessor.REVERT_ALL, this.getGlobalCommandsAccessor().getRevertAllCommand());
 
-	    // (JAF), 20090630, este comando se deshabilita ya que puede causar
-	    // más problemas que beneficios...
-	    // context.register(GlobalCommandsAccesor.SELECT_ALL_ENTITIES, //
-	    // this.globalCommandsAccesor.getSelectAllCommand());
+            // (JAF), 20090630, este comando se deshabilita ya que puede causar
+            // más problemas que beneficios...
+            // context.register(GlobalCommandsAccesor.SELECT_ALL_ENTITIES, //
+            // this.globalCommandsAccesor.getSelectAllCommand());
 
-	    // (JAF), 20090113, "TextComponentPopup" registra sus propios global command executors
-	    context.register(GlobalCommandIds.CUT, null);
-	    context.register(GlobalCommandIds.COPY, null);
-	    context.register(GlobalCommandIds.PASTE, null);
-	    context.register(GlobalCommandIds.UNDO, null);
-	    context.register(GlobalCommandIds.REDO, null);
-	    // context.register(GlobalCommandIds.SELECT_ALL, null);
-	}
+            // (JAF), 20090113, "TextComponentPopup" registra sus propios global
+            // command executors
+            context.register(GlobalCommandIds.CUT, null);
+            context.register(GlobalCommandIds.COPY, null);
+            context.register(GlobalCommandIds.PASTE, null);
+            context.register(GlobalCommandIds.UNDO, null);
+            context.register(GlobalCommandIds.REDO, null);
+            // context.register(GlobalCommandIds.SELECT_ALL, null);
+        }
     }
 
     /**
@@ -224,12 +228,12 @@ public class FormBackedView<T extends Form> extends AbstractView {
      */
     private ActionCommand getRevertCommand(Form backingForm) {
 
-	if (backingForm instanceof AbstractMasterForm) {
-	    return null;
-	} else if (backingForm instanceof AbstractForm) {
-	    return ((AbstractForm) backingForm).getRevertCommand();
-	}
+        if (backingForm instanceof AbstractMasterForm) {
+            return null;
+        } else if (backingForm instanceof AbstractForm) {
+            return ((AbstractForm) backingForm).getRevertCommand();
+        }
 
-	return null;
+        return null;
     }
 }

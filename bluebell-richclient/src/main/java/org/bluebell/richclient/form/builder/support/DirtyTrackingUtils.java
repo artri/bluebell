@@ -42,12 +42,13 @@ public final class DirtyTrackingUtils {
      * Mensaje para instancias de <code>FormModel</code>.
      */
     private static final MessageFormat ABSTRACT_FORM_MODEL_DIRTY_FMT = new MessageFormat(
-	    "Abstract form model dirty value and form models are {0}");
+            "Abstract form model dirty value and form models are {0}");
 
     /**
      * El identificador del <em>form model</em> y el nombre de la propiedad <em>dirty</em>.
      */
     private static final MessageFormat DIRTY_PROPERTY_FMT = new MessageFormat("{0}:{1}");
+
     /**
      * Mensaje para instancias de <code>FieldMetadata</code>.
      */
@@ -73,10 +74,10 @@ public final class DirtyTrackingUtils {
      */
     private static Transformer stringArrayToStringTransformer = new Transformer() {
 
-	public Object transform(Object input) {
+        public Object transform(Object input) {
 
-	    return StringUtils.join((String[]) input, ":");
-	}
+            return StringUtils.join((String[]) input, ":");
+        }
     };
 
     /**
@@ -84,10 +85,10 @@ public final class DirtyTrackingUtils {
      */
     private static Transformer stringToStringArrayTransformer = new Transformer() {
 
-	public Object transform(Object input) {
+        public Object transform(Object input) {
 
-	    return StringUtils.split((String) input, ":");
-	}
+            return StringUtils.split((String) input, ":");
+        }
     };
 
     /**
@@ -99,13 +100,14 @@ public final class DirtyTrackingUtils {
      * Mensaje para instancias de <code>DirtyTrackingValueModel</code>.
      */
     private static final MessageFormat VALUE_MODEL_DIRTY_FMT = new MessageFormat(
-	    "Value model is {0} dirty, new value is {1}");
+            "Value model is {0} dirty, new value is {1}");
 
     static {
-	DirtyTrackingUtils.trackDirtyField = ReflectionUtils.findField(//
-		FormModelMediatingValueModel.class, "trackDirty", boolean.class);
+        DirtyTrackingUtils.trackDirtyField = ReflectionUtils.findField(
+        //
+                FormModelMediatingValueModel.class, "trackDirty", boolean.class);
 
-	ReflectionUtils.makeAccessible(DirtyTrackingUtils.trackDirtyField);
+        ReflectionUtils.makeAccessible(DirtyTrackingUtils.trackDirtyField);
 
     }
 
@@ -125,23 +127,23 @@ public final class DirtyTrackingUtils {
     @SuppressWarnings("unchecked")
     public static void clearDirty(FormModel formModel) {
 
-	// Limpiar los formularios hijos si es que los tuviera
-	if (formModel instanceof HierarchicalFormModel) {
-	    final HierarchicalFormModel parentFormModel = (HierarchicalFormModel) formModel;
+        // Limpiar los formularios hijos si es que los tuviera
+        if (formModel instanceof HierarchicalFormModel) {
+            final HierarchicalFormModel parentFormModel = (HierarchicalFormModel) formModel;
 
-	    for (final FormModel childFormModel : parentFormModel.getChildren()) {
-		DirtyTrackingUtils.clearDirty(childFormModel);
-	    }
-	}
+            for (final FormModel childFormModel : parentFormModel.getChildren()) {
+                DirtyTrackingUtils.clearDirty(childFormModel);
+            }
+        }
 
-	// Limpiar los value model del form model
-	final Set<String> fieldNames = formModel.getFieldNames();
-	for (final String fieldName : fieldNames) {
-	    final ValueModel valueModel = formModel.getValueModel(fieldName);
-	    if (valueModel != null) {
-		DirtyTrackingUtils.clearDirty(valueModel);
-	    }
-	}
+        // Limpiar los value model del form model
+        final Set<String> fieldNames = formModel.getFieldNames();
+        for (final String fieldName : fieldNames) {
+            final ValueModel valueModel = formModel.getValueModel(fieldName);
+            if (valueModel != null) {
+                DirtyTrackingUtils.clearDirty(valueModel);
+            }
+        }
     }
 
     /**
@@ -154,24 +156,24 @@ public final class DirtyTrackingUtils {
      */
     public static Boolean clearDirty(ValueModel valueModel) {
 
-	if (valueModel instanceof DirtyTrackingValueModel) {
+        if (valueModel instanceof DirtyTrackingValueModel) {
 
-	    // Si el valueModel es DirtyTrackingValueModel entonces limpiarlo
-	    final DirtyTrackingValueModel dirtyTrackingValueModel = (DirtyTrackingValueModel) valueModel;
-	    dirtyTrackingValueModel.clearDirty();
+            // Si el valueModel es DirtyTrackingValueModel entonces limpiarlo
+            final DirtyTrackingValueModel dirtyTrackingValueModel = (DirtyTrackingValueModel) valueModel;
+            dirtyTrackingValueModel.clearDirty();
 
-	    return Boolean.TRUE;
+            return Boolean.TRUE;
 
-	} else if (valueModel instanceof ValueModelWrapper) {
+        } else if (valueModel instanceof ValueModelWrapper) {
 
-	    // Sino si es un ValueModelWrapper reinvocar recursivamente
-	    final ValueModelWrapper valueModelWrapper = (ValueModelWrapper) valueModel;
+            // Sino si es un ValueModelWrapper reinvocar recursivamente
+            final ValueModelWrapper valueModelWrapper = (ValueModelWrapper) valueModel;
 
-	    return DirtyTrackingUtils.clearDirty(//
-		    valueModelWrapper.getWrappedValueModel());
-	}
+            return DirtyTrackingUtils.clearDirty(//
+                    valueModelWrapper.getWrappedValueModel());
+        }
 
-	return Boolean.FALSE;
+        return Boolean.FALSE;
     }
 
     /**
@@ -188,14 +190,15 @@ public final class DirtyTrackingUtils {
     @SuppressWarnings("unchecked")
     public static Collection<String[]> getDirtyProperties(FormModel formModel) {
 
-	final Set<String> dirtyProperties = new HashSet<String>();
+        final Set<String> dirtyProperties = new HashSet<String>();
 
-	// Obtener las propiedades dirty
-	DirtyTrackingUtils.getDirtyProperties(formModel, dirtyProperties);
+        // Obtener las propiedades dirty
+        DirtyTrackingUtils.getDirtyProperties(formModel, dirtyProperties);
 
-	// Ordenar las propiedades dirty
-	return CollectionUtils.collect(//
-		dirtyProperties, DirtyTrackingUtils.stringToStringArrayTransformer);
+        // Ordenar las propiedades dirty
+        return CollectionUtils.collect(
+        //
+                dirtyProperties, DirtyTrackingUtils.stringToStringArrayTransformer);
     }
 
     /**
@@ -210,24 +213,24 @@ public final class DirtyTrackingUtils {
      */
     public static Set<String[]> getI18nDirtyProperties(FormModel formModel) {
 
-	final Collection<String[]> dirtyProperties = DirtyTrackingUtils.getDirtyProperties(formModel);
-	final Set<String[]> i18nDirtyProperties = new HashSet<String[]>();
+        final Collection<String[]> dirtyProperties = DirtyTrackingUtils.getDirtyProperties(formModel);
+        final Set<String[]> i18nDirtyProperties = new HashSet<String[]>();
 
-	for (final String[] dirtyProperty : dirtyProperties) {
+        for (final String[] dirtyProperty : dirtyProperties) {
 
-	    final String formModelKey = dirtyProperty[0] + ".caption";
-	    final String valueModelKey = dirtyProperty[0] + "." + dirtyProperty[1] + ".label";
+            final String formModelKey = dirtyProperty[0] + ".caption";
+            final String valueModelKey = dirtyProperty[0] + "." + dirtyProperty[1] + ".label";
 
-	    final String formModelMessage = Application.instance().getApplicationContext().getMessage(formModelKey,
-		    null, formModelKey, Locale.getDefault());
-	    final String valueModelMessage = Application.instance().getApplicationContext().getMessage(valueModelKey,
-		    null, valueModelKey, Locale.getDefault());
+            final String formModelMessage = Application.instance().getApplicationContext().getMessage(formModelKey,
+                    null, formModelKey, Locale.getDefault());
+            final String valueModelMessage = Application.instance().getApplicationContext().getMessage(valueModelKey,
+                    null, valueModelKey, Locale.getDefault());
 
-	    i18nDirtyProperties.add(//
-		    new String[] { formModelMessage, valueModelMessage });
-	}
+            i18nDirtyProperties.add(//
+                    new String[] { formModelMessage, valueModelMessage });
+        }
 
-	return i18nDirtyProperties;
+        return i18nDirtyProperties;
     }
 
     /**
@@ -242,36 +245,36 @@ public final class DirtyTrackingUtils {
     @SuppressWarnings("unchecked")
     public static String getI18nDirtyPropertiesHtmlString(FormModel formModel) {
 
-	final String lineSeparator = System.getProperty("line.separator");
+        final String lineSeparator = System.getProperty("line.separator");
 
-	// Obtener las propiedades dirty
-	Collection<String[]> dirtyProperties = DirtyTrackingUtils.getI18nDirtyProperties(formModel);
+        // Obtener las propiedades dirty
+        Collection<String[]> dirtyProperties = DirtyTrackingUtils.getI18nDirtyProperties(formModel);
 
-	// Ordenarlas
-	final List<String> orderedDirtyProperties = new ArrayList<String>(//
-		CollectionUtils.collect(dirtyProperties, //
-			DirtyTrackingUtils.stringArrayToStringTransformer));
-	Collections.sort(orderedDirtyProperties);
-	dirtyProperties = CollectionUtils.collect(orderedDirtyProperties, //
-		DirtyTrackingUtils.stringToStringArrayTransformer);
+        // Ordenarlas
+        final List<String> orderedDirtyProperties = new ArrayList<String>(//
+                CollectionUtils.collect(dirtyProperties, //
+                        DirtyTrackingUtils.stringArrayToStringTransformer));
+        Collections.sort(orderedDirtyProperties);
+        dirtyProperties = CollectionUtils.collect(orderedDirtyProperties, //
+                DirtyTrackingUtils.stringToStringArrayTransformer);
 
-	// Construir la cadena HTML
-	final StringBuffer sb = new StringBuffer("<ul>");
-	sb.append(lineSeparator);
-	for (final String[] dirtyProperty : dirtyProperties) {
-	    final String formModelMessage = dirtyProperty[0];
-	    final String valueModelMessage = dirtyProperty[1];
+        // Construir la cadena HTML
+        final StringBuffer sb = new StringBuffer("<ul>");
+        sb.append(lineSeparator);
+        for (final String[] dirtyProperty : dirtyProperties) {
+            final String formModelMessage = dirtyProperty[0];
+            final String valueModelMessage = dirtyProperty[1];
 
-	    sb.append("<li>");
-	    sb.append(formModelMessage);
-	    sb.append(": ");
-	    sb.append(valueModelMessage);
-	    sb.append("</li>");
-	    sb.append(lineSeparator);
-	}
-	sb.append("</ul>");
+            sb.append("<li>");
+            sb.append(formModelMessage);
+            sb.append(": ");
+            sb.append(valueModelMessage);
+            sb.append("</li>");
+            sb.append(lineSeparator);
+        }
+        sb.append("</ul>");
 
-	return sb.toString();
+        return sb.toString();
     }
 
     /**
@@ -283,11 +286,11 @@ public final class DirtyTrackingUtils {
      */
     public static void handle(PropertyChangeEvent evt) {
 
-	final String propertyName = evt.getPropertyName();
+        final String propertyName = evt.getPropertyName();
 
-	if (FormModel.DIRTY_PROPERTY.equals(propertyName)) {
-	    DirtyTrackingUtils.handleIfDebugEnabled(evt.getSource());
-	}
+        if (FormModel.DIRTY_PROPERTY.equals(propertyName)) {
+            DirtyTrackingUtils.handleIfDebugEnabled(evt.getSource());
+        }
     }
 
     /**
@@ -301,22 +304,22 @@ public final class DirtyTrackingUtils {
      */
     public static Boolean mustTrackDirty(ValueModel valueModel, Boolean enable) {
 
-	final DirtyTrackingValueModel dirtyTrackingValueModel = DirtyTrackingUtils
-		.unwrapDirtyTrackingValueModel(valueModel);
+        final DirtyTrackingValueModel dirtyTrackingValueModel = DirtyTrackingUtils
+                .unwrapDirtyTrackingValueModel(valueModel);
 
-	Boolean success = Boolean.FALSE;
-	if (dirtyTrackingValueModel != null) {
-	    try {
-		DirtyTrackingUtils.trackDirtyField.set(//
-			dirtyTrackingValueModel, enable);
+        Boolean success = Boolean.FALSE;
+        if (dirtyTrackingValueModel != null) {
+            try {
+                DirtyTrackingUtils.trackDirtyField.set(//
+                        dirtyTrackingValueModel, enable);
 
-		success = Boolean.TRUE;
-	    } catch (final Exception e) {
-		RcpMain.handleException(e);
-	    }
-	}
+                success = Boolean.TRUE;
+            } catch (final Exception e) {
+                RcpMain.handleException(e);
+            }
+        }
 
-	return success;
+        return success;
     }
 
     /**
@@ -331,11 +334,11 @@ public final class DirtyTrackingUtils {
      */
     public static Boolean setValueWithoutTrackDirty(ValueModel valueModel, Object newValue) {
 
-	// Establecer el valor
-	valueModel.setValue(newValue);
+        // Establecer el valor
+        valueModel.setValue(newValue);
 
-	// Limpiar el dirty
-	return DirtyTrackingUtils.clearDirty(valueModel);
+        // Limpiar el dirty
+        return DirtyTrackingUtils.clearDirty(valueModel);
     }
 
     /**
@@ -348,19 +351,19 @@ public final class DirtyTrackingUtils {
      */
     public static DirtyTrackingValueModel unwrapDirtyTrackingValueModel(ValueModel valueModel) {
 
-	DirtyTrackingValueModel dirtyTrackingValueModel = null;
+        DirtyTrackingValueModel dirtyTrackingValueModel = null;
 
-	if (valueModel instanceof DirtyTrackingValueModel) {
-	    // Si es un DTVM entonces retornarlo
-	    dirtyTrackingValueModel = (DirtyTrackingValueModel) valueModel;
-	} else if (valueModel instanceof ValueModelWrapper) {
-	    // Sino si es un envoltorio invocar recursivamente
-	    final ValueModelWrapper wrapper = (ValueModelWrapper) valueModel;
-	    dirtyTrackingValueModel = DirtyTrackingUtils.//
-		    unwrapDirtyTrackingValueModel(wrapper.getWrappedValueModel());
-	}
+        if (valueModel instanceof DirtyTrackingValueModel) {
+            // Si es un DTVM entonces retornarlo
+            dirtyTrackingValueModel = (DirtyTrackingValueModel) valueModel;
+        } else if (valueModel instanceof ValueModelWrapper) {
+            // Sino si es un envoltorio invocar recursivamente
+            final ValueModelWrapper wrapper = (ValueModelWrapper) valueModel;
+            dirtyTrackingValueModel = DirtyTrackingUtils.//
+                    unwrapDirtyTrackingValueModel(wrapper.getWrappedValueModel());
+        }
 
-	return dirtyTrackingValueModel;
+        return dirtyTrackingValueModel;
     }
 
     /**
@@ -375,31 +378,31 @@ public final class DirtyTrackingUtils {
     @SuppressWarnings("unchecked")
     private static void getDirtyProperties(FormModel formModel, Set<String> dirtyProperties) {
 
-	Assert.notNull(formModel);
-	Assert.notNull(dirtyProperties);
+        Assert.notNull(formModel);
+        Assert.notNull(dirtyProperties);
 
-	// Si es un form model jerárquico consultar a los hijos
-	if (formModel instanceof HierarchicalFormModel) {
-	    final FormModel[] childrenFormModels = ((HierarchicalFormModel) formModel).getChildren();
-	    for (final FormModel childFormModel : childrenFormModels) {
-		DirtyTrackingUtils.getDirtyProperties(//
-			childFormModel, dirtyProperties);
-	    }
-	}
+        // Si es un form model jerárquico consultar a los hijos
+        if (formModel instanceof HierarchicalFormModel) {
+            final FormModel[] childrenFormModels = ((HierarchicalFormModel) formModel).getChildren();
+            for (final FormModel childFormModel : childrenFormModels) {
+                DirtyTrackingUtils.getDirtyProperties(//
+                        childFormModel, dirtyProperties);
+            }
+        }
 
-	// Consultar los value models para ver si alguno está sucio
-	final Set<String> propertyNames = formModel.getFieldNames();
-	for (final String propertyName : propertyNames) {
-	    final ValueModel vm = formModel.getValueModel(propertyName);
-	    final DirtyTrackingValueModel dirtyTrackingValueModel = DirtyTrackingUtils
-		    .unwrapDirtyTrackingValueModel(vm);
+        // Consultar los value models para ver si alguno está sucio
+        final Set<String> propertyNames = formModel.getFieldNames();
+        for (final String propertyName : propertyNames) {
+            final ValueModel vm = formModel.getValueModel(propertyName);
+            final DirtyTrackingValueModel dirtyTrackingValueModel = DirtyTrackingUtils
+                    .unwrapDirtyTrackingValueModel(vm);
 
-	    if ((dirtyTrackingValueModel != null) && dirtyTrackingValueModel.isDirty()) {
-		final String dirtyProperty = DirtyTrackingUtils.DIRTY_PROPERTY_FMT.format(//
-			new String[] { formModel.getId(), propertyName });
-		dirtyProperties.add(dirtyProperty);
-	    }
-	}
+            if ((dirtyTrackingValueModel != null) && dirtyTrackingValueModel.isDirty()) {
+                final String dirtyProperty = DirtyTrackingUtils.DIRTY_PROPERTY_FMT.format(//
+                        new String[] { formModel.getId(), propertyName });
+                dirtyProperties.add(dirtyProperty);
+            }
+        }
     }
 
     /**
@@ -419,27 +422,27 @@ public final class DirtyTrackingUtils {
     @SuppressWarnings("unchecked")
     private static <T> T getValue(Object target, String propertyName, Class<T> type) {
 
-	// TODO, (JAF), 20080912, probablemente haya demasiados métodos
-	// repartidos por el FW de acceder a campos por reflectividad,
-	// uniformalos en una clase de utilidad.
+        // TODO, (JAF), 20080912, probablemente haya demasiados métodos
+        // repartidos por el FW de acceder a campos por reflectividad,
+        // uniformalos en una clase de utilidad.
 
-	Assert.notNull(propertyName, "[Assertion failed] - name is required; it must not be null");
-	Assert.notNull(type, "[Assertion failed] - type is required; it must not be null");
-	Assert.notNull(target, "[Assertion failed] - target is required; it must not be null");
+        Assert.notNull(propertyName, "[Assertion failed] - name is required; it must not be null");
+        Assert.notNull(type, "[Assertion failed] - type is required; it must not be null");
+        Assert.notNull(target, "[Assertion failed] - target is required; it must not be null");
 
-	final Field field = ReflectionUtils.findField(target.getClass(), propertyName, type);
-	try {
-	    if (field != null) {
-		ReflectionUtils.makeAccessible(field);
-		return (T) field.get(target);
-	    }
-	} catch (final IllegalArgumentException e) {
-	    return null;
-	} catch (final IllegalAccessException e) {
-	    return null;
-	}
+        final Field field = ReflectionUtils.findField(target.getClass(), propertyName, type);
+        try {
+            if (field != null) {
+                ReflectionUtils.makeAccessible(field);
+                return (T) field.get(target);
+            }
+        } catch (final IllegalArgumentException e) {
+            return null;
+        } catch (final IllegalAccessException e) {
+            return null;
+        }
 
-	return null;
+        return null;
     }
 
     /**
@@ -451,24 +454,24 @@ public final class DirtyTrackingUtils {
     @SuppressWarnings("unchecked")
     private static void handle(AbstractFormModel formModel) {
 
-	Assert.notNull(formModel);
+        Assert.notNull(formModel);
 
-	final StringBuffer sb = new StringBuffer();
-	final Set dirtyValueAndFormModels = DirtyTrackingUtils.getValue(//
-		formModel, "dirtyValueAndFormModels", Set.class);
-	for (final Object object : dirtyValueAndFormModels) {
-	    if (object instanceof ValueModel) {
-		sb.append("Value model: " + ((ValueModel) object).getValue());
-		sb.append("\n");
-	    } else if (object instanceof FormModel) {
-		sb.append("Form model with id " + ((FormModel) object).getId());
-		sb.append("\n");
-	    }
-	}
+        final StringBuffer sb = new StringBuffer();
+        final Set dirtyValueAndFormModels = DirtyTrackingUtils.getValue(//
+                formModel, "dirtyValueAndFormModels", Set.class);
+        for (final Object object : dirtyValueAndFormModels) {
+            if (object instanceof ValueModel) {
+                sb.append("Value model: " + ((ValueModel) object).getValue());
+                sb.append("\n");
+            } else if (object instanceof FormModel) {
+                sb.append("Form model with id " + ((FormModel) object).getId());
+                sb.append("\n");
+            }
+        }
 
-	DirtyTrackingUtils.LOGGER.debug(//
-		DirtyTrackingUtils.ABSTRACT_FORM_MODEL_DIRTY_FMT.format(//
-			new String[] { sb.toString() }));
+        DirtyTrackingUtils.LOGGER.debug(//
+                DirtyTrackingUtils.ABSTRACT_FORM_MODEL_DIRTY_FMT.format(//
+                        new String[] { sb.toString() }));
 
     }
 
@@ -480,19 +483,19 @@ public final class DirtyTrackingUtils {
      */
     private static void handle(DefaultFieldMetadata fieldMetadata) {
 
-	Assert.notNull(fieldMetadata);
+        Assert.notNull(fieldMetadata);
 
-	final DirtyTrackingValueModel valueModel = DirtyTrackingUtils.getValue(//
-		fieldMetadata, "valueModel", DirtyTrackingValueModel.class);
-	final DefaultFormModel formModel = (DefaultFormModel) DirtyTrackingUtils.getValue(fieldMetadata, "formModel",
-		FormModel.class);
+        final DirtyTrackingValueModel valueModel = DirtyTrackingUtils.getValue(//
+                fieldMetadata, "valueModel", DirtyTrackingValueModel.class);
+        final DefaultFormModel formModel = (DefaultFormModel) DirtyTrackingUtils.getValue(fieldMetadata, "formModel",
+                FormModel.class);
 
-	if (valueModel != null) {
-	    DirtyTrackingUtils.handleIfDebugEnabled(valueModel);
-	}
-	if (formModel != null) {
-	    DirtyTrackingUtils.handleIfDebugEnabled(formModel);
-	}
+        if (valueModel != null) {
+            DirtyTrackingUtils.handleIfDebugEnabled(valueModel);
+        }
+        if (formModel != null) {
+            DirtyTrackingUtils.handleIfDebugEnabled(formModel);
+        }
     }
 
     /**
@@ -503,18 +506,18 @@ public final class DirtyTrackingUtils {
      */
     private static void handle(DirtyTrackingValueModel valueModel) {
 
-	Assert.notNull(valueModel);
+        Assert.notNull(valueModel);
 
-	final Object value = valueModel.getValue();
-	if (valueModel.isDirty()) {
-	    DirtyTrackingUtils.LOGGER.debug(//
-		    DirtyTrackingUtils.VALUE_MODEL_DIRTY_FMT.format(//
-			    new Object[] { StringUtils.EMPTY, value }));
-	} else {
-	    DirtyTrackingUtils.LOGGER.debug(//
-		    DirtyTrackingUtils.VALUE_MODEL_DIRTY_FMT.format(//
-			    new Object[] { DirtyTrackingUtils.NOT, value }));
-	}
+        final Object value = valueModel.getValue();
+        if (valueModel.isDirty()) {
+            DirtyTrackingUtils.LOGGER.debug(//
+                    DirtyTrackingUtils.VALUE_MODEL_DIRTY_FMT.format(//
+                            new Object[] { StringUtils.EMPTY, value }));
+        } else {
+            DirtyTrackingUtils.LOGGER.debug(//
+                    DirtyTrackingUtils.VALUE_MODEL_DIRTY_FMT.format(//
+                            new Object[] { DirtyTrackingUtils.NOT, value }));
+        }
     }
 
     /**
@@ -525,17 +528,17 @@ public final class DirtyTrackingUtils {
      */
     private static void handle(FieldMetadata fieldMetadata) {
 
-	Assert.notNull(fieldMetadata);
+        Assert.notNull(fieldMetadata);
 
-	if (fieldMetadata.isDirty()) {
-	    DirtyTrackingUtils.LOGGER.debug(//
-		    DirtyTrackingUtils.FIELD_METADATA_DIRTY_FMT.format(//
-			    new String[] { StringUtils.EMPTY }));
-	} else {
-	    DirtyTrackingUtils.LOGGER.debug(//
-		    DirtyTrackingUtils.FIELD_METADATA_DIRTY_FMT.format(//
-			    new String[] { DirtyTrackingUtils.NOT }));
-	}
+        if (fieldMetadata.isDirty()) {
+            DirtyTrackingUtils.LOGGER.debug(//
+                    DirtyTrackingUtils.FIELD_METADATA_DIRTY_FMT.format(//
+                            new String[] { StringUtils.EMPTY }));
+        } else {
+            DirtyTrackingUtils.LOGGER.debug(//
+                    DirtyTrackingUtils.FIELD_METADATA_DIRTY_FMT.format(//
+                            new String[] { DirtyTrackingUtils.NOT }));
+        }
     }
 
     /**
@@ -546,18 +549,18 @@ public final class DirtyTrackingUtils {
      */
     private static void handle(FormModel formModel) {
 
-	Assert.notNull(formModel);
+        Assert.notNull(formModel);
 
-	final String formId = formModel.getId();
-	if (formModel.isDirty()) {
-	    DirtyTrackingUtils.LOGGER.debug(//
-		    DirtyTrackingUtils.FORM_MODEL_DIRTY_FMT.format(//
-			    new String[] { formId, StringUtils.EMPTY }));
-	} else {
-	    DirtyTrackingUtils.LOGGER.debug(//
-		    DirtyTrackingUtils.FORM_MODEL_DIRTY_FMT.format(//
-			    new String[] { formId, DirtyTrackingUtils.NOT }));
-	}
+        final String formId = formModel.getId();
+        if (formModel.isDirty()) {
+            DirtyTrackingUtils.LOGGER.debug(//
+                    DirtyTrackingUtils.FORM_MODEL_DIRTY_FMT.format(//
+                            new String[] { formId, StringUtils.EMPTY }));
+        } else {
+            DirtyTrackingUtils.LOGGER.debug(//
+                    DirtyTrackingUtils.FORM_MODEL_DIRTY_FMT.format(//
+                            new String[] { formId, DirtyTrackingUtils.NOT }));
+        }
     }
 
     /**
@@ -569,29 +572,29 @@ public final class DirtyTrackingUtils {
      */
     private static void handleIfDebugEnabled(Object source) {
 
-	Assert.notNull(source);
+        Assert.notNull(source);
 
-	if (DirtyTrackingUtils.LOGGER.isDebugEnabled()) {
-	    // Form models
-	    if (source instanceof FormModel) {
-		DirtyTrackingUtils.handle((FormModel) source);
-	    }
-	    if (source instanceof AbstractFormModel) {
-		DirtyTrackingUtils.handle((AbstractFormModel) source);
-	    }
+        if (DirtyTrackingUtils.LOGGER.isDebugEnabled()) {
+            // Form models
+            if (source instanceof FormModel) {
+                DirtyTrackingUtils.handle((FormModel) source);
+            }
+            if (source instanceof AbstractFormModel) {
+                DirtyTrackingUtils.handle((AbstractFormModel) source);
+            }
 
-	    // Value models
-	    if (source instanceof DirtyTrackingValueModel) {
-		DirtyTrackingUtils.handle((DirtyTrackingValueModel) source);
-	    }
+            // Value models
+            if (source instanceof DirtyTrackingValueModel) {
+                DirtyTrackingUtils.handle((DirtyTrackingValueModel) source);
+            }
 
-	    // Field metadata
-	    if (source instanceof FieldMetadata) {
-		DirtyTrackingUtils.handle((FieldMetadata) source);
-	    }
-	    if (source instanceof DefaultFieldMetadata) {
-		DirtyTrackingUtils.handle((DefaultFieldMetadata) source);
-	    }
-	}
+            // Field metadata
+            if (source instanceof FieldMetadata) {
+                DirtyTrackingUtils.handle((FieldMetadata) source);
+            }
+            if (source instanceof DefaultFieldMetadata) {
+                DirtyTrackingUtils.handle((DefaultFieldMetadata) source);
+            }
+        }
     }
 }

@@ -37,7 +37,7 @@ public class ShowCustomViewMenu extends CommandGroup implements ApplicationWindo
      */
     public ShowCustomViewMenu() {
 
-	this(ShowCustomViewMenu.ID);
+        this(ShowCustomViewMenu.ID);
     }
 
     /**
@@ -48,8 +48,8 @@ public class ShowCustomViewMenu extends CommandGroup implements ApplicationWindo
      */
     public ShowCustomViewMenu(String id) {
 
-	super(id);
-	this.viewDescriptors = new String[0];
+        super(id);
+        this.viewDescriptors = new String[0];
     }
 
     /**
@@ -58,8 +58,8 @@ public class ShowCustomViewMenu extends CommandGroup implements ApplicationWindo
     @Override
     public void afterPropertiesSet() {
 
-	super.afterPropertiesSet();
-	this.populate();
+        super.afterPropertiesSet();
+        this.populate();
     }
 
     /**
@@ -69,7 +69,7 @@ public class ShowCustomViewMenu extends CommandGroup implements ApplicationWindo
      */
     public String[] getViewDescriptors() {
 
-	return this.viewDescriptors;
+        return this.viewDescriptors;
     }
 
     /**
@@ -77,7 +77,7 @@ public class ShowCustomViewMenu extends CommandGroup implements ApplicationWindo
      */
     public void setApplicationWindow(ApplicationWindow window) {
 
-	this.window = window;
+        this.window = window;
     }
 
     /**
@@ -88,7 +88,7 @@ public class ShowCustomViewMenu extends CommandGroup implements ApplicationWindo
      */
     public void setViewDescriptors(String[] viewDescriptors) {
 
-	this.viewDescriptors = viewDescriptors;
+        this.viewDescriptors = viewDescriptors;
     }
 
     /**
@@ -96,17 +96,17 @@ public class ShowCustomViewMenu extends CommandGroup implements ApplicationWindo
      */
     private void populate() {
 
-	// El servicio "ViewDescriptorRegistry"
-	final ViewDescriptorRegistry viewDescriptorRegistry = (ViewDescriptorRegistry) ApplicationServicesLocator
-		.services().getService(ViewDescriptorRegistry.class);
+        // El servicio "ViewDescriptorRegistry"
+        final ViewDescriptorRegistry viewDescriptorRegistry = (ViewDescriptorRegistry) ApplicationServicesLocator
+                .services().getService(ViewDescriptorRegistry.class);
 
-	// Iterar sobre los descriptores y añadir los comandos al menú
-	for (final String viewDescriptorId : this.getViewDescriptors()) {
-	    if ((viewDescriptorId != null) && (!viewDescriptorId.equals(StringUtils.EMPTY))) {
-		final ViewDescriptor viewDescriptor = viewDescriptorRegistry.//
-			getViewDescriptor(viewDescriptorId.trim());
-		this.addInternal(viewDescriptor.createShowViewCommand(this.window));
-	    }
-	}
+        // Iterar sobre los descriptores y añadir los comandos al menú
+        for (final String viewDescriptorId : this.getViewDescriptors()) {
+            if ((viewDescriptorId != null) && (!viewDescriptorId.equals(StringUtils.EMPTY))) {
+                final ViewDescriptor viewDescriptor = viewDescriptorRegistry.//
+                        getViewDescriptor(viewDescriptorId.trim());
+                this.addInternal(viewDescriptor.createShowViewCommand(this.window));
+            }
+        }
     }
 }
