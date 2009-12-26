@@ -25,7 +25,7 @@ public class ConvertStringToSerializable extends AbstractFormattingConverter {
      */
     public ConvertStringToSerializable() {
 
-	this(new SimpleFormatterFactory(), true);
+        this(new SimpleFormatterFactory(), true);
     }
 
     /**
@@ -38,8 +38,8 @@ public class ConvertStringToSerializable extends AbstractFormattingConverter {
      */
     protected ConvertStringToSerializable(final FormatterFactory formatterLocator, final boolean allowEmpty) {
 
-	super(formatterLocator);
-	this.allowEmpty = allowEmpty;
+        super(formatterLocator);
+        this.allowEmpty = allowEmpty;
     }
 
     /**
@@ -50,7 +50,7 @@ public class ConvertStringToSerializable extends AbstractFormattingConverter {
     @SuppressWarnings("unchecked")
     public Class[] getSourceClasses() {
 
-	return new Class[] { String.class };
+        return new Class[] { String.class };
     }
 
     /**
@@ -61,7 +61,7 @@ public class ConvertStringToSerializable extends AbstractFormattingConverter {
     @SuppressWarnings("unchecked")
     public Class[] getTargetClasses() {
 
-	return new Class[] { Serializable.class };
+        return new Class[] { Serializable.class };
     }
 
     /**
@@ -80,8 +80,8 @@ public class ConvertStringToSerializable extends AbstractFormattingConverter {
     @Override
     @SuppressWarnings("unchecked")
     protected Object doConvert(final Object sourceINYOURCLASS, final Class targetClass, final ConversionContext context)
-	    throws Exception {
+            throws Exception {
 
-	return (!this.allowEmpty || (sourceINYOURCLASS != null)) ? sourceINYOURCLASS.toString() : null;
+        return (!this.allowEmpty || (sourceINYOURCLASS != null)) ? sourceINYOURCLASS.toString() : null;
     }
 }

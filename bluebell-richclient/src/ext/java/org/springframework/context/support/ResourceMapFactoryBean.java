@@ -65,10 +65,13 @@ public class ResourceMapFactoryBean extends PropertiesFactoryBean implements Res
      * Set a base path to prepend to each resource location value in the properties file.
      * <p>
      * E.g.: resourceBasePath="/images", value="/test.gif" -> location="/images/test.gif"
+     * 
+     * @param resourceBasePath
+     *            the base path.
      */
     public void setResourceBasePath(String resourceBasePath) {
 
-	this.resourceBasePath = (resourceBasePath != null ? resourceBasePath : "");
+        this.resourceBasePath = (resourceBasePath != null ? resourceBasePath : "");
     }
 
     /**
@@ -77,7 +80,7 @@ public class ResourceMapFactoryBean extends PropertiesFactoryBean implements Res
     @Override
     public void setResourceLoader(ResourceLoader resourceLoader) {
 
-	this.resourceLoader = (resourceLoader != null) ? resourceLoader : new DefaultResourceLoader();
+        this.resourceLoader = (resourceLoader != null) ? resourceLoader : new DefaultResourceLoader();
     }
 
     /**
@@ -86,7 +89,7 @@ public class ResourceMapFactoryBean extends PropertiesFactoryBean implements Res
     @Override
     public Class<Properties> getObjectType() {
 
-	return Properties.class;
+        return Properties.class;
     }
 
     /**
@@ -99,18 +102,22 @@ public class ResourceMapFactoryBean extends PropertiesFactoryBean implements Res
      */
     @Override
     public Object transform(Object location) {
-    
+
         return this.resourceLoader.getResource(this.resourceBasePath + location);
     }
 
     /**
-     * Create the Map instance, populated with keys and Resource values.
+     * Create the <code>Properties</code> instance, populated with keys and resource values.
+     * 
+     * @return the properties.
+     * @throws IOException
+     *             in case of error.
      */
     @Override
     protected Properties mergeProperties() throws IOException {
 
-	return MapUtils.toProperties(//
-		TransformedMap.decorateTransform(super.mergeProperties(), NOPTransformer.getInstance(), this));
+        return MapUtils.toProperties(//
+                TransformedMap.decorateTransform(super.mergeProperties(), NOPTransformer.getInstance(), this));
 
     }
 }

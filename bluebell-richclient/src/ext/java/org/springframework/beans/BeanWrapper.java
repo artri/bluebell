@@ -91,9 +91,8 @@ public interface BeanWrapper extends ConfigurablePropertyAccessor {
      * @param propertyName
      *            the property to obtain the descriptor for (may be a nested path, but no indexed/mapped property)
      * @return the property descriptor for the specified property
-     * @throws InvalidPropertyException
-     *             if there is no such property
      */
-    PropertyDescriptor getPropertyDescriptor(String propertyName) throws BeansException;
+    PropertyDescriptor getPropertyDescriptor(String propertyName);
+    // throws BeansException;
 
 }

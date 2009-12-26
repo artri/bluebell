@@ -38,16 +38,16 @@ public class DirtyTrackingDCBCVM<T> extends DeepCopyBufferedCollectionValueModel
      * El campo con el <em>bufferedListModel</em>.
      */
     private static final Field BUFFERED_LIST_MODEL_FIELD = ReflectionUtils.findField(//
-	    BufferedCollectionValueModel.class, "bufferedListModel", //
-	    ObservableList.class);
+            BufferedCollectionValueModel.class, "bufferedListModel", //
+            ObservableList.class);
 
     /**
      * Log para la clase {@link DirtyTrackingDCBCVM}.
      */
     private static final Logger LOGGER = LoggerFactory.getLogger(DirtyTrackingDCBCVM.class);
     static {
-	ReflectionUtils.makeAccessible(//
-		DirtyTrackingDCBCVM.BUFFERED_LIST_MODEL_FIELD);
+        ReflectionUtils.makeAccessible(//
+                DirtyTrackingDCBCVM.BUFFERED_LIST_MODEL_FIELD);
     }
 
     /**
@@ -94,9 +94,9 @@ public class DirtyTrackingDCBCVM<T> extends DeepCopyBufferedCollectionValueModel
      *            el nombre de la propiedad del <em>bean</em> con la colección.
      */
     public DirtyTrackingDCBCVM(ValueModel wrappedModel, Class<T> wrappedType, Class<Object> beanClass,
-	    String beanPropertyName) {
+            String beanPropertyName) {
 
-	this(wrappedModel, wrappedType, beanClass, beanPropertyName, Boolean.TRUE);
+        this(wrappedModel, wrappedType, beanClass, beanPropertyName, Boolean.TRUE);
     }
 
     /**
@@ -114,15 +114,15 @@ public class DirtyTrackingDCBCVM<T> extends DeepCopyBufferedCollectionValueModel
      *            indica si se ha de utilizar copia en profundidad para recordar el valor original.
      */
     public DirtyTrackingDCBCVM(ValueModel wrappedModel, Class<T> wrappedType, Class<Object> beanClass,
-	    String beanPropertyName, Boolean deepCopyEnabled) {
+            String beanPropertyName, Boolean deepCopyEnabled) {
 
-	super(wrappedModel, wrappedType);
-	this.setDirty(Boolean.FALSE);
-	this.setBeanClass(beanClass);
-	this.setBeanPropertyName(beanPropertyName);
-	this.setDeepCopyEnabled(deepCopyEnabled);
+        super(wrappedModel, wrappedType);
+        this.setDirty(Boolean.FALSE);
+        this.setBeanClass(beanClass);
+        this.setBeanPropertyName(beanPropertyName);
+        this.setDeepCopyEnabled(deepCopyEnabled);
 
-	this.clearDirty();
+        this.clearDirty();
     }
 
     /**
@@ -130,8 +130,8 @@ public class DirtyTrackingDCBCVM<T> extends DeepCopyBufferedCollectionValueModel
      */
     public void clearDirty() {
 
-	this.setDirty(Boolean.FALSE);
-	this.valueUpdated();
+        this.setDirty(Boolean.FALSE);
+        this.valueUpdated();
     }
 
     /**
@@ -141,7 +141,7 @@ public class DirtyTrackingDCBCVM<T> extends DeepCopyBufferedCollectionValueModel
      */
     public boolean isDirty() {
 
-	return this.dirty;
+        return this.dirty;
     }
 
     /**
@@ -149,7 +149,7 @@ public class DirtyTrackingDCBCVM<T> extends DeepCopyBufferedCollectionValueModel
      */
     public void revertToOriginal() {
 
-	this.revert();
+        this.revert();
     }
 
     /**
@@ -163,32 +163,32 @@ public class DirtyTrackingDCBCVM<T> extends DeepCopyBufferedCollectionValueModel
     @SuppressWarnings("unchecked")
     public void setValue(Object value) {
 
-	final Collection<T> valueToSet = this.getValueToSet(value);
-	final Collection<T> wrappedCollection = (Collection<T>) //
-	this.getWrappedValueModel().getValue();
+        final Collection<T> valueToSet = this.getValueToSet(value);
+        final Collection<T> wrappedCollection = (Collection<T>) //
+        this.getWrappedValueModel().getValue();
 
-	// 1) Establecer el valor apropiado sólo si es necesario
-	this.setValueIfChanged(valueToSet);
+        // 1) Establecer el valor apropiado sólo si es necesario
+        this.setValueIfChanged(valueToSet);
 
-	// 2) Si es el primer cambio recordar el valor original.
-	final Boolean isFirstChange = !this.isDirty();
-	if (isFirstChange) {
-	    this.validateCollection(wrappedCollection);
+        // 2) Si es el primer cambio recordar el valor original.
+        final Boolean isFirstChange = !this.isDirty();
+        if (isFirstChange) {
+            this.validateCollection(wrappedCollection);
 
-	    // (JAF), 20090610, en este punto el bufferedListModel es una
-	    // deep copy del valor pasado como parámetro.
-	    this.rememberOriginalValue();
-	}
+            // (JAF), 20090610, en este punto el bufferedListModel es una
+            // deep copy del valor pasado como parámetro.
+            this.rememberOriginalValue();
+        }
 
-	// 3) Si el nuevo valor es igual que el recordado entonces el
-	// formulario no está dirty (probablemente se trate de un revert)
-	final Boolean maybeReverting = !this.getValueChangeDetector().//
-		hasValueChanged(valueToSet, wrappedCollection);
-	if (maybeReverting) {
-	    // (JAF), 20080929, no se utiliza "this.hasValueChanged" ya que
-	    // hace comprobaciones adicionales que hacen romper el algoritmo
-	    this.clearDirty();
-	}
+        // 3) Si el nuevo valor es igual que el recordado entonces el
+        // formulario no está dirty (probablemente se trate de un revert)
+        final Boolean maybeReverting = !this.getValueChangeDetector().//
+                hasValueChanged(valueToSet, wrappedCollection);
+        if (maybeReverting) {
+            // (JAF), 20080929, no se utiliza "this.hasValueChanged" ya que
+            // hace comprobaciones adicionales que hacen romper el algoritmo
+            this.clearDirty();
+        }
     }
 
     /**
@@ -201,7 +201,7 @@ public class DirtyTrackingDCBCVM<T> extends DeepCopyBufferedCollectionValueModel
     @SuppressWarnings("unchecked")
     protected ObservableList createBufferedListModel() {
 
-	return new ObservableEventList(new BasicEventList());
+        return new ObservableEventList(new BasicEventList());
     }
 
     /**
@@ -210,12 +210,12 @@ public class DirtyTrackingDCBCVM<T> extends DeepCopyBufferedCollectionValueModel
     @Override
     protected void fireListModelChanged() {
 
-	super.fireListModelChanged();
+        super.fireListModelChanged();
 
-	// Comprobar si ha cambiado el valor de la propiedad dirty
-	final Object newValue = this.getValue();
-	this.setDirty(this.hasValueChanged(this.getOriginalValue(), newValue));
-	this.valueUpdated();
+        // Comprobar si ha cambiado el valor de la propiedad dirty
+        final Object newValue = this.getValue();
+        this.setDirty(this.hasValueChanged(this.getOriginalValue(), newValue));
+        this.valueUpdated();
     }
 
     /**
@@ -231,15 +231,15 @@ public class DirtyTrackingDCBCVM<T> extends DeepCopyBufferedCollectionValueModel
     @SuppressWarnings("unchecked")
     protected Collection<T> getValueToSet(Object value) {
 
-	final Boolean valueIsOfBeanClass = ((value != null) && value.getClass().equals(this.getBeanClass()));
+        final Boolean valueIsOfBeanClass = ((value != null) && value.getClass().equals(this.getBeanClass()));
 
-	Object valueToSet = value;
-	if (valueIsOfBeanClass) {
-	    final BeanWrapper beanWrapper = new BeanWrapperImpl(value);
-	    valueToSet = beanWrapper.getPropertyValue(this.getBeanPropertyName());
-	}
+        Object valueToSet = value;
+        if (valueIsOfBeanClass) {
+            final BeanWrapper beanWrapper = new BeanWrapperImpl(value);
+            valueToSet = beanWrapper.getPropertyValue(this.getBeanPropertyName());
+        }
 
-	return (Collection<T>) valueToSet;
+        return (Collection<T>) valueToSet;
     }
 
     /**
@@ -266,18 +266,18 @@ public class DirtyTrackingDCBCVM<T> extends DeepCopyBufferedCollectionValueModel
     @Override
     protected boolean hasValueChanged(Object oldValue, Object newValue) {
 
-	// HACK, 20090127, (JAF), esto es claramente un hack por las razones
-	// aducidas en el Javadoc. El caso es que el
-	// BufferedCollectionValueModel no detectaba cambio alguno y por
-	// tanto el revert no hacía su labor.
-	if ((oldValue != null) && (newValue != null) //
-		&& (EventList.class.isAssignableFrom(oldValue.getClass()) //
-		|| EventList.class.isAssignableFrom(newValue.getClass()))) {
+        // HACK, 20090127, (JAF), esto es claramente un hack por las razones
+        // aducidas en el Javadoc. El caso es que el
+        // BufferedCollectionValueModel no detectaba cambio alguno y por
+        // tanto el revert no hacía su labor.
+        if ((oldValue != null) && (newValue != null) //
+                && (EventList.class.isAssignableFrom(oldValue.getClass()) //
+                || EventList.class.isAssignableFrom(newValue.getClass()))) {
 
-	    return Boolean.TRUE;
-	}
+            return Boolean.TRUE;
+        }
 
-	return super.hasValueChanged(oldValue, newValue);
+        return super.hasValueChanged(oldValue, newValue);
     }
 
     /**
@@ -289,10 +289,10 @@ public class DirtyTrackingDCBCVM<T> extends DeepCopyBufferedCollectionValueModel
     @SuppressWarnings("unchecked")
     protected void rememberOriginalValue() {
 
-	// (JAF), 20081003, originalValue es una copia del valor original, de
-	// no hacerlo así las colecciones actual y original compartirían
-	// referencias por lo que no sería posible compararlas
-	this.setOriginalValue(this.getBufferedListModel());
+        // (JAF), 20081003, originalValue es una copia del valor original, de
+        // no hacerlo así las colecciones actual y original compartirían
+        // referencias por lo que no sería posible compararlas
+        this.setOriginalValue(this.getBufferedListModel());
     }
 
     /**
@@ -304,20 +304,20 @@ public class DirtyTrackingDCBCVM<T> extends DeepCopyBufferedCollectionValueModel
      */
     protected Boolean setValueIfChanged(Collection<T> valueToSet) {
 
-	// (JAF), 20090614, esta comprobación se hace necesario ya que el método
-	// hasValueChanged de la clase padre devuelve true aún a pesar de que
-	// sean colecciones equivalentes.
+        // (JAF), 20090614, esta comprobación se hace necesario ya que el método
+        // hasValueChanged de la clase padre devuelve true aún a pesar de que
+        // sean colecciones equivalentes.
 
-	// (JAF), 20090614, no se utiliza "this.hasValueChanged" ya que
-	// hace comprobaciones adicionales que hacen romper el algoritmo
-	final Boolean hasValueChanged = this.getValueChangeDetector().//
-		hasValueChanged(this.getOriginalValue(), valueToSet);
+        // (JAF), 20090614, no se utiliza "this.hasValueChanged" ya que
+        // hace comprobaciones adicionales que hacen romper el algoritmo
+        final Boolean hasValueChanged = this.getValueChangeDetector().//
+                hasValueChanged(this.getOriginalValue(), valueToSet);
 
-	if (hasValueChanged) {
-	    super.setValue(valueToSet);
-	}
+        if (hasValueChanged) {
+            super.setValue(valueToSet);
+        }
 
-	return hasValueChanged;
+        return hasValueChanged;
     }
 
     /**
@@ -329,15 +329,15 @@ public class DirtyTrackingDCBCVM<T> extends DeepCopyBufferedCollectionValueModel
      */
     protected void validateCollection(Collection<T> collection) {
 
-	// (JAF), 20080107, si deepCopy está habilitado entonces
-	// todos los elementos de la colección deberían de ser
-	// serializables, de no ser así la copia provocará una
-	// excepción silenciosa
-	if (this.isDeepCopyEnabled() && (collection != null)) {
+        // (JAF), 20080107, si deepCopy está habilitado entonces
+        // todos los elementos de la colección deberían de ser
+        // serializables, de no ser así la copia provocará una
+        // excepción silenciosa
+        if (this.isDeepCopyEnabled() && (collection != null)) {
 
-	    CollectionUtils.predicatedCollection(collection, //
-		    InstanceofPredicate.getInstance(Serializable.class));
-	}
+            CollectionUtils.predicatedCollection(collection, //
+                    InstanceofPredicate.getInstance(Serializable.class));
+        }
     }
 
     /**
@@ -345,11 +345,11 @@ public class DirtyTrackingDCBCVM<T> extends DeepCopyBufferedCollectionValueModel
      */
     protected void valueUpdated() {
 
-	final boolean dirty = this.isDirty();
-	if (this.getOldDirty() != dirty) {
-	    this.setOldDirty(dirty);
-	    this.firePropertyChange(DirtyTrackingValueModel.DIRTY_PROPERTY, !dirty, dirty);
-	}
+        final boolean currentDirty = this.isDirty();
+        if (this.getOldDirty() != currentDirty) {
+            this.setOldDirty(currentDirty);
+            this.firePropertyChange(DirtyTrackingValueModel.DIRTY_PROPERTY, !currentDirty, currentDirty);
+        }
     }
 
     /**
@@ -359,7 +359,7 @@ public class DirtyTrackingDCBCVM<T> extends DeepCopyBufferedCollectionValueModel
      */
     private Class<Object> getBeanClass() {
 
-	return this.beanClass;
+        return this.beanClass;
     }
 
     /**
@@ -369,7 +369,7 @@ public class DirtyTrackingDCBCVM<T> extends DeepCopyBufferedCollectionValueModel
      */
     private String getBeanPropertyName() {
 
-	return this.beanPropertyName;
+        return this.beanPropertyName;
     }
 
     /**
@@ -379,13 +379,13 @@ public class DirtyTrackingDCBCVM<T> extends DeepCopyBufferedCollectionValueModel
      */
     private ObservableList getBufferedListModel() {
 
-	try {
-	    return (ObservableList) //
-	    DirtyTrackingDCBCVM.BUFFERED_LIST_MODEL_FIELD.get(this);
-	} catch (final Exception e) {
-	    DirtyTrackingDCBCVM.LOGGER.info(e.getMessage());
-	    return null;
-	}
+        try {
+            return (ObservableList) //
+            DirtyTrackingDCBCVM.BUFFERED_LIST_MODEL_FIELD.get(this);
+        } catch (final Exception e) {
+            DirtyTrackingDCBCVM.LOGGER.info(e.getMessage());
+            return null;
+        }
     }
 
     /**
@@ -395,7 +395,7 @@ public class DirtyTrackingDCBCVM<T> extends DeepCopyBufferedCollectionValueModel
      */
     private boolean getOldDirty() {
 
-	return this.oldDirty;
+        return this.oldDirty;
     }
 
     /**
@@ -405,11 +405,11 @@ public class DirtyTrackingDCBCVM<T> extends DeepCopyBufferedCollectionValueModel
      */
     private Collection<T> getOriginalValue() {
 
-	if (this.originalValue == null) {
-	    this.originalValue = new ArrayList<T>();
-	}
+        if (this.originalValue == null) {
+            this.originalValue = new ArrayList<T>();
+        }
 
-	return this.originalValue;
+        return this.originalValue;
     }
 
     /**
@@ -419,7 +419,7 @@ public class DirtyTrackingDCBCVM<T> extends DeepCopyBufferedCollectionValueModel
      */
     private boolean isDeepCopyEnabled() {
 
-	return this.deepCopyEnabled;
+        return this.deepCopyEnabled;
     }
 
     /**
@@ -430,7 +430,7 @@ public class DirtyTrackingDCBCVM<T> extends DeepCopyBufferedCollectionValueModel
      */
     private void setBeanClass(Class<Object> beanClass) {
 
-	this.beanClass = beanClass;
+        this.beanClass = beanClass;
     }
 
     /**
@@ -441,7 +441,7 @@ public class DirtyTrackingDCBCVM<T> extends DeepCopyBufferedCollectionValueModel
      */
     private void setBeanPropertyName(String beanPropertyName) {
 
-	this.beanPropertyName = beanPropertyName;
+        this.beanPropertyName = beanPropertyName;
     }
 
     /**
@@ -452,7 +452,7 @@ public class DirtyTrackingDCBCVM<T> extends DeepCopyBufferedCollectionValueModel
      */
     private void setDeepCopyEnabled(boolean deepCopyEnabled) {
 
-	this.deepCopyEnabled = deepCopyEnabled;
+        this.deepCopyEnabled = deepCopyEnabled;
     }
 
     /**
@@ -463,7 +463,7 @@ public class DirtyTrackingDCBCVM<T> extends DeepCopyBufferedCollectionValueModel
      */
     private void setDirty(boolean dirty) {
 
-	this.dirty = dirty;
+        this.dirty = dirty;
     }
 
     /**
@@ -474,7 +474,7 @@ public class DirtyTrackingDCBCVM<T> extends DeepCopyBufferedCollectionValueModel
      */
     private void setOldDirty(boolean oldDirty) {
 
-	this.oldDirty = oldDirty;
+        this.oldDirty = oldDirty;
     }
 
     /**
@@ -485,6 +485,6 @@ public class DirtyTrackingDCBCVM<T> extends DeepCopyBufferedCollectionValueModel
      */
     private void setOriginalValue(Collection<T> originalValue) {
 
-	this.originalValue = originalValue;
+        this.originalValue = originalValue;
     }
 }

@@ -24,57 +24,77 @@ public class BbValidationMessage extends DefaultValidationMessage {
      */
     private static final long serialVersionUID = -1733996868494711018L;
 
+    /**
+     * The validating form model.
+     */
     private ValidatingFormModel formModel;
 
     /**
+     * Creates a validation message.
+     * 
      * @param property
+     *            the property this message applies to.
      * @param severity
+     *            the severity.
      * @param message
+     *            the message.
+     * @param formModel
+     *            the form model.
      */
     public BbValidationMessage(String property, Severity severity, String message, ValidatingFormModel formModel) {
 
-	super(property, severity, message);
-	this.setFormModel(formModel);
+        super(property, severity, message);
+        this.setFormModel(formModel);
     }
 
     /**
      * Gets the source.
      * 
-     * @return the source
+     * @return the source.
      */
     public String getSource() {
 
-	final MessageSource messageSource = Application.instance().getApplicationContext();
-	final String code = this.getFormModel().getId() + ".caption";
+        final MessageSource messageSource = Application.instance().getApplicationContext();
+        final String code = this.getFormModel().getId() + ".caption";
 
-	return messageSource.getMessage(code, new String[0], this.getFormModel().getId(), Locale.getDefault());
+        return messageSource.getMessage(code, new String[0], this.getFormModel().getId(), Locale.getDefault());
     }
 
     /**
      * Gets the formModel.
      * 
-     * @return the formModel
+     * @return the formModel.
      */
     public ValidatingFormModel getFormModel() {
 
-	return this.formModel;
+        return this.formModel;
     }
 
     /**
      * Sets the formModel.
      * 
      * @param formModel
-     *            the formModel to set
+     *            the formModel to set.
      */
     public void setFormModel(ValidatingFormModel formModel) {
 
-	Assert.notNull(formModel, "formModel");
+        Assert.notNull(formModel, "formModel");
 
-	this.formModel = formModel;
+        this.formModel = formModel;
     }
 
-    public static BbValidationMessage createValidationMessage(ValidationMessage copyFrom, ValidatingFormModel formModel) {
+    /**
+     * Creates a validation message copied from other.
+     * 
+     * @param from
+     *            the original validation message.
+     * @param formModel
+     *            the form model this message applies to.
+     * @return the created validation message.
+     */
+    public static BbValidationMessage createValidationMessage(//
+            ValidationMessage from, ValidatingFormModel formModel) {
 
-	return new BbValidationMessage(copyFrom.getProperty(), copyFrom.getSeverity(), copyFrom.getMessage(), formModel);
+        return new BbValidationMessage(from.getProperty(), from.getSeverity(), from.getMessage(), formModel);
     }
 }

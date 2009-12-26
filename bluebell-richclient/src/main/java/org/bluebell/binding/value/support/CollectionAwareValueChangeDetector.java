@@ -35,21 +35,21 @@ public class CollectionAwareValueChangeDetector extends DefaultValueChangeDetect
     @SuppressWarnings("unchecked")
     public boolean hasValueChanged(Object oldValue, Object newValue) {
 
-	if (oldValue == newValue) {
-	    // (JAF), 20081002, esta comprobación no se hacía y con colecciones
-	    // no se puede asumir eso.
-	    return Boolean.FALSE;
-	} else if ((oldValue != null) && (newValue != null) && Collection.class.isAssignableFrom(oldValue.getClass())
-		&& Collection.class.isAssignableFrom(newValue.getClass())) {
+        if (oldValue == newValue) {
+            // (JAF), 20081002, esta comprobación no se hacía y con colecciones
+            // no se puede asumir eso.
+            return Boolean.FALSE;
+        } else if ((oldValue != null) && (newValue != null) && Collection.class.isAssignableFrom(oldValue.getClass())
+                && Collection.class.isAssignableFrom(newValue.getClass())) {
 
-	    // Los dos parámetros son colecciones.
-	    return !CollectionUtils.isEqualCollection((Collection) (oldValue), (Collection) newValue);
-	}
+            // Los dos parámetros son colecciones.
+            return !CollectionUtils.isEqualCollection((Collection) (oldValue), (Collection) newValue);
+        }
 
-	// (JAF), 20090612, sería mejor utilizar la igualdad a nivel de objeto y
-	// no de identidad: sería más pesado y rompe parte del código actual.
-	// return !ObjectUtils.equals(oldValue, newValue);
+        // (JAF), 20090612, sería mejor utilizar la igualdad a nivel de objeto y
+        // no de identidad: sería más pesado y rompe parte del código actual.
+        // return !ObjectUtils.equals(oldValue, newValue);
 
-	return super.hasValueChanged(oldValue, newValue);
+        return super.hasValueChanged(oldValue, newValue);
     }
 }
