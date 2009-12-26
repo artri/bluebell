@@ -17,6 +17,7 @@ import org.bluebell.richclient.form.BbPageComponentsConfigurer;
 import org.bluebell.richclient.form.BbValidationForm;
 import org.bluebell.richclient.samples.simple.bean.Person;
 import org.bluebell.richclient.test.AbstractBbSamplesTests;
+import org.junit.Test;
 import org.springframework.richclient.application.PageDescriptor;
 import org.springframework.richclient.application.support.MultiViewPageDescriptor;
 
@@ -30,6 +31,7 @@ public class TestBbPageComponentsConfigurer extends AbstractBbSamplesTests {
     /**
      * Case that tests pages with a single master view descriptor.
      */
+    @Test
     public void testMasterViewDescriptor() {
 
 	this.initTest(new String[] { AbstractBbSamplesTests.MASTER_VIEW_DESCRIPTOR_BEAN_NAME });
@@ -40,6 +42,7 @@ public class TestBbPageComponentsConfigurer extends AbstractBbSamplesTests {
     /**
      * Case that tests pages with a single detail view descriptor.
      */
+    @Test
     public void testDetailViewDescriptor() {
 
 	this.initTest(new String[] { AbstractBbSamplesTests.DETAIL_VIEW_DESCRIPTOR_BEAN_NAME });
@@ -50,6 +53,7 @@ public class TestBbPageComponentsConfigurer extends AbstractBbSamplesTests {
     /**
      * Case that tests pages with a single search view descriptor.
      */
+    @Test
     public void testSearchViewDescriptor() {
 
 	this.initTest(new String[] { AbstractBbSamplesTests.SEARCH_VIEW_DESCRIPTOR_BEAN_NAME });
@@ -60,6 +64,7 @@ public class TestBbPageComponentsConfigurer extends AbstractBbSamplesTests {
     /**
      * Case that tests pages with a single validation view descriptor.
      */
+    @Test
     public void testValidationViewDescriptor() {
 
 	this.initTest(new String[] { AbstractBbSamplesTests.VALIDATION_VIEW_DESCRIPTOR_BEAN_NAME });
@@ -70,6 +75,7 @@ public class TestBbPageComponentsConfigurer extends AbstractBbSamplesTests {
     /**
      * Case that tests pages with a master view descriptor and a detail view descriptor.
      */
+    @Test
     public void testMasterAndDetailViewDescriptors() {
 
 	this.initTest(new String[] { AbstractBbSamplesTests.MASTER_VIEW_DESCRIPTOR_BEAN_NAME,
@@ -81,6 +87,7 @@ public class TestBbPageComponentsConfigurer extends AbstractBbSamplesTests {
     /**
      * The same test as {@link #testMasterAndDetailViewDescriptors()} but with inverse view descriptors order.
      */
+    @Test
     public void testMasterAndDetailViewDescriptorsReverse() {
 
 	this.initTest(new String[] { AbstractBbSamplesTests.DETAIL_VIEW_DESCRIPTOR_BEAN_NAME,
@@ -92,6 +99,7 @@ public class TestBbPageComponentsConfigurer extends AbstractBbSamplesTests {
     /**
      * Case that tests pages with a master view descriptor and a search view descriptor.
      */
+    @Test
     public void testMasterAndSearchViewDescriptors() {
 
 	this.initTest(new String[] { AbstractBbSamplesTests.MASTER_VIEW_DESCRIPTOR_BEAN_NAME,
@@ -103,6 +111,7 @@ public class TestBbPageComponentsConfigurer extends AbstractBbSamplesTests {
     /**
      * The same test as {@link #testMasterAndSearchViewDescriptors()} but with inverse view descriptors order.
      */
+    @Test
     public void testMasterAndSearchViewDescriptorsReverse() {
 
 	this.initTest(new String[] { AbstractBbSamplesTests.SEARCH_VIEW_DESCRIPTOR_BEAN_NAME,
@@ -114,6 +123,7 @@ public class TestBbPageComponentsConfigurer extends AbstractBbSamplesTests {
     /**
      * Case that tests pages with a view descriptor per type.
      */
+    @Test
     public void testFullPage() {
 
 	final List<?> viewDescriptors = this.personPageDescriptor.getViewDescriptors();
@@ -126,6 +136,7 @@ public class TestBbPageComponentsConfigurer extends AbstractBbSamplesTests {
     /**
      * The same test as {@link #testFullPage()} but with inverse view descriptors order.
      */
+    @Test
     public void testFullPageReverse() {
 
 	final List<?> viewDescriptors = this.personPageDescriptor.getViewDescriptors();
@@ -136,6 +147,7 @@ public class TestBbPageComponentsConfigurer extends AbstractBbSamplesTests {
 	this.assertViewDescriptors(Boolean.FALSE, Boolean.FALSE, Boolean.FALSE, Boolean.FALSE);
     }
 
+    @Test
     public void testMultipleInvocations() {
 
 	this.testFullPageReverse();

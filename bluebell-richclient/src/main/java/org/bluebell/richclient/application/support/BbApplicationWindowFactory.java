@@ -11,8 +11,8 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 import org.apache.commons.lang.ArrayUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.richclient.application.ApplicationPage;
 import org.springframework.richclient.application.ApplicationWindow;
 import org.springframework.richclient.application.ApplicationWindowFactory;
@@ -33,7 +33,7 @@ public class BbApplicationWindowFactory implements ApplicationWindowFactory {
     /**
      * El <em>logger</em>.
      */
-    private static final Log LOGGER = LogFactory.getLog(BbApplicationWindowFactory.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(BbApplicationWindowFactory.class);
 
     /**
      * {@inheritDoc}

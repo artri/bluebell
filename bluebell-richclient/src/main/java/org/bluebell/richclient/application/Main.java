@@ -6,8 +6,8 @@ import java.util.HashSet;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
@@ -52,7 +52,7 @@ public abstract class Main {
     /**
      * El <em>logger</em>.
      */
-    private static final Log LOGGER = LogFactory.getLog(Main.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(Main.class);
 
     /**
      * Crea un contexto de aplicación con los ficheros específicos del entorno además de las ubicaciones de
@@ -175,11 +175,11 @@ public abstract class Main {
 	try {
 	    main = (Main) Class.forName(className).newInstance();
 	} catch (final ClassNotFoundException e) {
-	    Main.LOGGER.error(e);
+	    Main.LOGGER.error(e.getMessage(), e);
 	} catch (final InstantiationException e) {
-	    Main.LOGGER.error(e);
+	    Main.LOGGER.error(e.getMessage(), e);
 	} catch (final IllegalAccessException e) {
-	    Main.LOGGER.error(e);
+	    Main.LOGGER.error(e.getMessage(), e);
 	}
 
 	// Si no se han especificado las ubicaciones con la configuración

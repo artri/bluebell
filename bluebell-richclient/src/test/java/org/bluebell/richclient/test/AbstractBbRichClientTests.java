@@ -1,36 +1,37 @@
 package org.bluebell.richclient.test;
 
-import org.bluebell.richclient.application.RcpMain;
-import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.richclient.application.Application;
 import org.springframework.richclient.application.ApplicationLauncher;
-import org.springframework.test.AbstractDependencyInjectionSpringContextTests;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
+import org.springframework.util.Assert;
 
 /**
- * Base class for creating spring rich client tests in a headless environment.
+ * Base class for creating Spring Richclient tests in a headless environment.
  * 
  * @author <a href = "mailto:julio.arguello@gmail.com" >Julio Argüello (JAF)</a>
  */
-public abstract class AbstractBbRichClientTests extends AbstractDependencyInjectionSpringContextTests {
+@ContextConfiguration
+public abstract class AbstractBbRichClientTests extends AbstractJUnit4SpringContextTests implements InitializingBean {
+
+    /**
+     * The global application instance.
+     */
+    @Autowired
+    protected Application application;
 
     /**
      * {@inheritDoc}
      */
     @Override
-    protected ConfigurableApplicationContext createApplicationContext(String[] locations) {
+    public void afterPropertiesSet() throws Exception {
 
-	final ConfigurableApplicationContext applicationContext = super.createApplicationContext(locations);
+	// org.springframework.util.Assert is preferred (i.e.: over junit.framework.Assert)to avoid get binded to a
+	// specific test framework
+	Assert.notNull(this.applicationContext, "this.applicationContext");
 
-	new ApplicationLauncher(applicationContext);
-
-	return applicationContext;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected String[] getConfigLocations() {
-
-	return new String[] { RcpMain.MAIN_APPLICATION_CONTEXT_PATH, RcpMain.DEFAULT_APPLICATION_CONTEXT_PATH };
+	new ApplicationLauncher(this.applicationContext);
     }
 }

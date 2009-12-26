@@ -7,8 +7,8 @@ import java.util.Collection;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.functors.InstanceofPredicate;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeanWrapperImpl;
 import org.springframework.binding.value.ValueModel;
@@ -44,7 +44,7 @@ public class DirtyTrackingDCBCVM<T> extends DeepCopyBufferedCollectionValueModel
     /**
      * Log para la clase {@link DirtyTrackingDCBCVM}.
      */
-    private static final Log LOGGER = LogFactory.getLog(DirtyTrackingDCBCVM.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(DirtyTrackingDCBCVM.class);
     static {
 	ReflectionUtils.makeAccessible(//
 		DirtyTrackingDCBCVM.BUFFERED_LIST_MODEL_FIELD);

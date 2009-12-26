@@ -51,8 +51,7 @@ public class FormBackedVLDockingViewDescriptor<T extends AbstractForm> extends V
     /**
      * Mensaje asociado a la excepción que se produce si no es posible establecer alguna propiedad.
      */
-    private static final String PROPERTY_ERROR_MESSAGE = //
-    "Cannot stablish property";
+    private static final String PROPERTY_ERROR_MESSAGE = "Cannot stablish property";
 
     /**
      * <code>ApplicationEventMulticaster</code> para el registro de los eventos.
@@ -89,9 +88,8 @@ public class FormBackedVLDockingViewDescriptor<T extends AbstractForm> extends V
 	this.setViewClass(FormBackedView.class);
 
 	// HACK method para obtener el application event multicaster
-	this.applicationEventMulticaster = (ApplicationEventMulticaster) this//
-		.getApplicationContext().getBean(AbstractApplicationContext.//
-			APPLICATION_EVENT_MULTICASTER_BEAN_NAME);
+	this.applicationEventMulticaster = (ApplicationEventMulticaster) //
+	this.getApplicationContext().getBean(AbstractApplicationContext.APPLICATION_EVENT_MULTICASTER_BEAN_NAME);
     }
 
     /**
@@ -299,7 +297,7 @@ public class FormBackedVLDockingViewDescriptor<T extends AbstractForm> extends V
     /**
      * Instancia un formulario de tipo <code>T</code> dados los tipos de los parámetros de su constructor y sus valores.
      * <p>
-     * En caso de producirse una excepción la envuelve y eleva utilizando una {@link PageCreationException} con el
+     * En caso de producirse una excepción la envuelve y eleva utilizando una {@link FormInstantiationException} con el
      * mensaje apropiado.
      * 
      * @param clazz

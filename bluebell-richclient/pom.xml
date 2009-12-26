@@ -98,6 +98,19 @@
 					</commandlineArgs>
 				</configuration>
 			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<version>2.4.2</version>
+				<configuration>
+					<!-- (JAF) 20091226: Employ the following artifact -->
+					<junitArtifactName>org.junit:com.springsource.org.junit</junitArtifactName>
+					<!--
+						(JAF) 20091226: Run test classes in different VM since Spring RCP only allows one application instance per VM
+					-->
+					<forkMode>always</forkMode>
+				</configuration>
+			</plugin>
 		</plugins>
 	</build>
 
@@ -109,7 +122,8 @@
 		</repository>
 		<repository>
 			<id>com.springsource.repository.bundles.release</id>
-			<name>SpringSource Enterprise Bundle Repository - SpringSource Bundle Releases</name>
+			<name>SpringSource Enterprise Bundle Repository - SpringSource Bundle
+				Releases</name>
 			<url>http://repository.springsource.com/maven/bundles/release </url>
 			<snapshots>
 				<enabled>false</enabled>
@@ -117,7 +131,8 @@
 		</repository>
 		<repository>
 			<id>com.springsource.repository.bundles.external</id>
-			<name>SpringSource Enterprise Bundle Repository - External Bundle Releases</name>
+			<name>SpringSource Enterprise Bundle Repository - External Bundle
+				Releases</name>
 			<url>http://repository.springsource.com/maven/bundles/external</url>
 			<snapshots>
 				<enabled>false</enabled>
@@ -144,6 +159,12 @@
 				<groupId>org.springframework</groupId>
 				<artifactId>org.springframework.context</artifactId>
 				<version>${spring-version}</version>
+				<exclusions>
+					<exclusion>
+						<groupId>commons-logging</groupId>
+						<artifactId>commons-logging</artifactId>
+					</exclusion>
+				</exclusions>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework</groupId>
@@ -207,11 +228,6 @@
 				<artifactId>com.springsource.org.apache.commons.collections
 				</artifactId>
 				<version>3.2.1</version>
-			</dependency>
-			<dependency>
-				<groupId>org.apache.commons</groupId>
-				<artifactId>com.springsource.org.apache.commons.logging</artifactId>
-				<version>1.1.1</version>
 			</dependency>
 			<dependency>
 				<groupId>org.apache.commons</groupId>
@@ -355,6 +371,28 @@
 				<version>5.0-SNAPSHOT</version>
 			</dependency>
 
+			<!--
+				Logging 
+			 -->
+			<dependency>
+				<groupId>org.slf4j</groupId>
+				<artifactId>com.springsource.slf4j.api</artifactId>
+				<version>${slf4j-version}</version>
+				<scope>compile</scope>
+			</dependency>
+			<dependency>
+				<groupId>org.slf4j</groupId>
+				<artifactId>com.springsource.slf4j.org.apache.commons.logging
+				</artifactId>
+				<version>${slf4j-version}</version>
+				<scope>runtime</scope>
+			</dependency>
+			<dependency>
+				<groupId>org.slf4j</groupId>
+				<artifactId>com.springsource.slf4j.log4j</artifactId>
+				<version>${slf4j-version}</version>
+				<scope>runtime</scope>
+			</dependency>
 
 			<!-- 
 				Others
@@ -380,7 +418,8 @@
 			</dependency>
 			<dependency>
 				<groupId>org.easymock</groupId>
-				<artifactId>com.springsource.org.easymock.classextension</artifactId>
+				<artifactId>com.springsource.org.easymock.classextension
+				</artifactId>
 				<version>2.3.0</version>
 			</dependency>
 		</dependencies>
@@ -427,11 +466,8 @@
 		 -->
 		<dependency>
 			<groupId>org.apache.commons</groupId>
-			<artifactId>com.springsource.org.apache.commons.collections</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.commons</groupId>
-			<artifactId>com.springsource.org.apache.commons.logging</artifactId>
+			<artifactId>com.springsource.org.apache.commons.collections
+			</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.commons</groupId>
@@ -483,7 +519,7 @@
 		<dependency>
 			<groupId>net.java.dev.glazedlists</groupId>
 			<artifactId>glazedlists_java15</artifactId>
-			<version>1.7.0</version>
+			<version>1.8.0</version>
 		</dependency>
 		<dependency>
 			<groupId>com.dryicons</groupId>
@@ -518,6 +554,23 @@
 			<version>3.0.0</version>
 		</dependency>
 
+		<!--
+			Logging 
+		-->
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>com.springsource.slf4j.api</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>com.springsource.slf4j.org.apache.commons.logging
+			</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>com.springsource.slf4j.log4j</artifactId>
+		</dependency>
+
 		<!-- 
 			Others
 		 -->
@@ -544,6 +597,7 @@
 	<properties>
 		<spring-version>3.0.0.RELEASE</spring-version>
 		<spring-richclient-version>1.1.1-SNAPSHOT</spring-richclient-version>
+		<slf4j-version>1.5.10</slf4j-version>
 		<aspectj-version>1.6.3.RELEASE</aspectj-version>
 		<subtance-version>6.0-SNAPSHOT</subtance-version>
 	</properties>

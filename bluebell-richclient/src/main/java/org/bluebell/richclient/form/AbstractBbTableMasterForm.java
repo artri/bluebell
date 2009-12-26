@@ -21,6 +21,8 @@ import org.bluebell.richclient.command.support.CommandUtil;
 import org.bluebell.richclient.form.support.FilterModelAwareListSelectionHandler;
 import org.bluebell.richclient.form.util.BbFormModelHelper;
 import org.bluebell.richclient.table.support.FilterModelUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.binding.form.ConfigurableFormModel;
 import org.springframework.binding.form.HierarchicalFormModel;
 import org.springframework.context.ApplicationEvent;
@@ -97,6 +99,11 @@ public abstract class AbstractBbTableMasterForm<T extends Object> extends Abstra
      * El identificador por defecto del comando para crear una nueva entidad.
      */
     private static final String NEW_FORM_OBJECT_COMMAND_ID = "newCommand";
+
+    /**
+     * The logger.
+     */
+    private static final Logger LOGGER = LoggerFactory.getLogger(BbPageComponentsConfigurer.class);
 
     /**
      * <em>Flag</em> indicando si se ha de refrescar siempre una entidad ante una llamada a
@@ -1120,8 +1127,8 @@ public abstract class AbstractBbTableMasterForm<T extends Object> extends Abstra
 	    if (closure.call(object, originalIdx) == null) {
 		// TODO, (JAF), 20080428, evaluar como gestionar un fallo
 		// de la closure en este punto.
-		if (this.logger.isDebugEnabled()) {
-		    this.logger.debug("Deleting " + object + "has failed");
+		if (AbstractBbTableMasterForm.LOGGER.isDebugEnabled()) {
+		    AbstractBbTableMasterForm.LOGGER.debug("Deleting " + object + "has failed");
 		}
 	    }
 	}
@@ -1198,9 +1205,9 @@ public abstract class AbstractBbTableMasterForm<T extends Object> extends Abstra
 	 */
 	public boolean hasAppropriateHandler(Throwable thrownTrowable) {
 
-//	    final ApplicationWindow window = Application.instance().getActiveWindow();
-//	    final ApplicationPage page = window != null ? window.getPage() //
-//		    : null;
+	    // final ApplicationWindow window = Application.instance().getActiveWindow();
+	    // final ApplicationPage page = window != null ? window.getPage() //
+	    // : null;
 
 	    // TODO, 20090919, me da que haciendolo con hilos ya no habría estos problemas
 

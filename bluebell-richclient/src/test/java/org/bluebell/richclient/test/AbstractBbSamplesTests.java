@@ -3,6 +3,9 @@
  */
 package org.bluebell.richclient.test;
 
+import java.awt.EventQueue;
+import java.lang.reflect.InvocationTargetException;
+
 import junit.framework.TestCase;
 
 import org.bluebell.richclient.application.support.FormBackedView;
@@ -12,6 +15,7 @@ import org.bluebell.richclient.form.AbstractBbSearchForm;
 import org.bluebell.richclient.form.BbPageComponentsConfigurer;
 import org.bluebell.richclient.form.BbValidationForm;
 import org.bluebell.richclient.samples.simple.bean.Person;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.binding.form.ValidatingFormModel;
 import org.springframework.richclient.application.Application;
 import org.springframework.richclient.application.ApplicationPage;
@@ -75,13 +79,9 @@ public abstract class AbstractBbSamplesTests extends AbstractBbRichClientTests {
     protected static final String VALIDATION_VIEW_DESCRIPTOR_BEAN_NAME = "validationViewDescriptor";
 
     /**
-     * The global application instance.
-     */
-    protected Application application;
-
-    /**
      * The page descriptor to be populated.
      */
+    @Autowired
     protected MultiViewPageDescriptor personPageDescriptor;
 
     /**
@@ -124,8 +124,6 @@ public abstract class AbstractBbSamplesTests extends AbstractBbRichClientTests {
      */
     protected AbstractBbSamplesTests() {
 
-	this.setPopulateProtectedVariables(Boolean.TRUE);
-
 	System.setProperty("richclient.startingPageId", "personPageDescriptor");
     }
 
@@ -134,11 +132,10 @@ public abstract class AbstractBbSamplesTests extends AbstractBbRichClientTests {
      */
     public void testDependencyInjection() {
 
-	this.initializeVariables(this.personPageDescriptor);
-
 	// Populated variables
-	TestCase.assertNotNull(this.application);
 	TestCase.assertNotNull(this.personPageDescriptor);
+
+	this.initializeVariables(this.personPageDescriptor);
 
 	// Initialized variables
 	TestCase.assertNotNull(this.applicationPageFactory);
@@ -151,14 +148,14 @@ public abstract class AbstractBbSamplesTests extends AbstractBbRichClientTests {
     }
 
     /**
-     * Initialize other local variables different from those populated by prepareTestInstance.
+     * Initialize other local variables different from those populated by Spring.
      * <p>
      * Call this method at the beginning of every test case.
      * 
      * @throws Exception
      *             in case of error.
      */
-    protected void initializeVariables(PageDescriptor pageDescriptor) {
+    public void initializeVariables(PageDescriptor pageDescriptor) {
 
 	// Retrieve application page factory
 	this.applicationPageFactory = this.getService(ApplicationPageFactory.class);
@@ -169,9 +166,24 @@ public abstract class AbstractBbSamplesTests extends AbstractBbRichClientTests {
 	// Create related page
 	this.applicationPage = this.applicationPageFactory.createApplicationPage(this.activeWindow, pageDescriptor);
 
-	// Fire page components creation and show the new page	
+	try {
+	    EventQueue.invokeAndWait(new Runnable() {
+
+		@Override
+		public void run() {
+
+		    // Nothing to do, just waiting for page creation to be completed
+		}
+	    });
+	} catch (InterruptedException e) {
+	    TestCase.fail(e.getMessage());
+	} catch (InvocationTargetException e) {
+	    TestCase.fail(e.getMessage());
+	}
+
+	// Fire page components creation and show the new page
 	this.activeWindow.showPage(this.applicationPage);
-	
+
 	// Retrieve page components
 	this.masterView = this.applicationPage.getView(AbstractBbSamplesTests.MASTER_VIEW_DESCRIPTOR_BEAN_NAME);
 	this.searchView = this.applicationPage.getView(AbstractBbSamplesTests.SEARCH_VIEW_DESCRIPTOR_BEAN_NAME);

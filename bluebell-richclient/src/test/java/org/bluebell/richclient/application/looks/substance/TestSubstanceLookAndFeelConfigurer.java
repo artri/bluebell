@@ -3,6 +3,8 @@
  */
 package org.bluebell.richclient.application.looks.substance;
 
+import org.junit.Test;
+
 /**
  * @author julio.arguello
  * 
@@ -10,4 +12,9 @@ package org.bluebell.richclient.application.looks.substance;
  */
 public class TestSubstanceLookAndFeelConfigurer {
 
+    
+    @Test
+    public void todo() {
+	
+    }
 }

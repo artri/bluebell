@@ -20,9 +20,8 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.LinkedList;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.util.Assert;
 import org.springframework.util.CachingMapDecorator;
 import org.springframework.util.ReflectionUtils;
@@ -61,7 +60,7 @@ public class ReflectiveVisitorHelper {
 
     private static final String VISIT_NULL = "visitNull";
 
-    private static final Log logger = LogFactory.getLog(ReflectiveVisitorHelper.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ReflectiveVisitorHelper.class);
 
     private final CachingMapDecorator<Class<?>, ClassVisitMethods> visitorClassVisitMethods = new CachingMapDecorator<Class<?>, ClassVisitMethods>() {
 	/**
@@ -92,8 +91,8 @@ public class ReflectiveVisitorHelper {
 	// Perform call back on the visitor through reflection.
 	Method method = getMethod(visitor.getClass(), argument);
 	if (method == null) {
-	    if (logger.isWarnEnabled()) {
-		logger.warn("No method found by reflection for visitor class [" + visitor.getClass().getName()
+	    if (LOGGER.isWarnEnabled()) {
+		LOGGER.warn("No method found by reflection for visitor class [" + visitor.getClass().getName()
 			+ "] and argument of type [" + (argument != null ? argument.getClass().getName() : "") + "]");
 	    }
 	    return null;
@@ -173,8 +172,8 @@ public class ReflectiveVisitorHelper {
 		} catch (NoSuchMethodException ex) {
 		}
 	    }
-	    if (logger.isWarnEnabled()) {
-		logger.warn("No default '" + VISIT_METHOD + "' method found. Returning <null>.");
+	    if (LOGGER.isWarnEnabled()) {
+		LOGGER.warn("No default '" + VISIT_METHOD + "' method found. Returning <null>.");
 	    }
 	    return null;
 	}
@@ -203,8 +202,8 @@ public class ReflectiveVisitorHelper {
 		// Check for a visit method on the visitor class matching this
 		// argument type.
 		try {
-		    if (logger.isTraceEnabled()) {
-			logger.trace("Looking for method " + VISIT_METHOD + "(" + argumentType + ")");
+		    if (LOGGER.isTraceEnabled()) {
+			LOGGER.trace("Looking for method " + VISIT_METHOD + "(" + argumentType + ")");
 		    }
 		    return findVisitMethod(this.visitorClass, argumentType);
 		} catch (NoSuchMethodException e) {

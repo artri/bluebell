@@ -14,13 +14,13 @@ import java.util.Set;
 
 import javax.swing.SwingUtilities;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.aspectj.lang.annotation.AfterReturning;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.annotation.Pointcut;
 import org.bluebell.richclient.application.support.FormBackedView;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.binding.form.FormModel;
 import org.springframework.richclient.application.ApplicationPage;
 import org.springframework.richclient.application.ApplicationWindow;
@@ -64,7 +64,7 @@ public class BbPageComponentsConfigurer<T> {
     /**
      * The logger.
      */
-    private static final Log LOGGER = LogFactory.getLog(BbPageComponentsConfigurer.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(BbPageComponentsConfigurer.class);
 
     /**
      * Message format required for debug information.

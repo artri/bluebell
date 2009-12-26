@@ -4,9 +4,9 @@ import java.awt.Dimension;
 import java.text.MessageFormat;
 import java.util.Locale;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.bluebell.richclient.application.RcpMain;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.MessageSource;
 import org.springframework.context.MessageSourceAware;
 import org.springframework.richclient.application.ApplicationPage;
@@ -52,7 +52,7 @@ public class BbLifecycleAdvisor extends DefaultApplicationLifecycleAdvisor imple
     /**
      * El <em>logger</em>.
      */
-    private static final Log LOGGER = LogFactory.getLog(BbLifecycleAdvisor.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(BbLifecycleAdvisor.class);
 
     /**
      * El nombre del comando de <em>login</em>.

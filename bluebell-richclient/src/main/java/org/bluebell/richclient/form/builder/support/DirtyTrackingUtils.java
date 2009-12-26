@@ -14,9 +14,9 @@ import java.util.Set;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Transformer;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.bluebell.richclient.application.RcpMain;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.binding.form.FieldMetadata;
 import org.springframework.binding.form.FormModel;
 import org.springframework.binding.form.HierarchicalFormModel;
@@ -61,7 +61,7 @@ public final class DirtyTrackingUtils {
     /**
      * Log para la clase {@link DirtyTrackingUtils}.
      */
-    private static final Log LOGGER = LogFactory.getLog(DirtyTrackingUtils.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(DirtyTrackingUtils.class);
 
     /**
      * La cadena {@value #NOT}.

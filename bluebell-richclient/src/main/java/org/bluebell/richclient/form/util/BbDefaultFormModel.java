@@ -8,9 +8,9 @@ import java.util.Set;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.bluebell.richclient.form.builder.support.DirtyTrackingUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.binding.MutablePropertyAccessStrategy;
 import org.springframework.binding.form.FieldMetadata;
 import org.springframework.binding.form.support.AbstractFormModel;
@@ -68,7 +68,7 @@ public class BbDefaultFormModel extends DefaultFormModel {
     /**
      * Log para la clase {@link BbFormModelHelper}.
      */
-    private static final Log LOGGER = LogFactory.getLog(BbDefaultFormModel.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(BbDefaultFormModel.class);
 
     /**
      * Crea un <em>form model</em> especificando la estrategia para el acceso a las propiedades.

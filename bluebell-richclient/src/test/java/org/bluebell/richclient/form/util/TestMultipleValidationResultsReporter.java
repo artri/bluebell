@@ -13,7 +13,9 @@ import org.bluebell.binding.validation.support.BbValidationMessage;
 import org.bluebell.richclient.form.MultipleValidationResultsReporter;
 import org.bluebell.richclient.samples.simple.form.PersonChildForm;
 import org.bluebell.richclient.test.AbstractBbSamplesTests;
+import org.junit.After;
 import org.junit.Assert;
+import org.junit.Test;
 import org.springframework.binding.form.ValidatingFormModel;
 import org.springframework.binding.validation.ValidationMessage;
 import org.springframework.richclient.application.PageDescriptor;
@@ -42,9 +44,24 @@ public class TestMultipleValidationResultsReporter extends AbstractBbSamplesTest
     private ValidatingFormModel masterFormModel;
 
     /**
+     * {@inheritDoc}
+     */
+    @Override
+    @Test
+    public void testDependencyInjection() {
+
+	super.testDependencyInjection();
+
+	Assert.assertNotNull(this.masterFormModel);
+	Assert.assertNotNull(this.dispatcherFormModel);
+	Assert.assertNotNull(this.detailFormModel);
+    }
+
+    /**
      * Tests the correct behaviour of validation and binding errors reporting mechanism according to <a
      * href="http://forum.springsource.org/showthread.php?t=78508">this post</a>.
      */
+    @Test
     public void testBindingErrors() {
 
 	final PersonChildForm form = new PersonChildForm();
@@ -68,20 +85,9 @@ public class TestMultipleValidationResultsReporter extends AbstractBbSamplesTest
     }
 
     /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void testDependencyInjection() {
-
-	super.testDependencyInjection();
-	Assert.assertNotNull(this.masterFormModel);
-	Assert.assertNotNull(this.dispatcherFormModel);
-	Assert.assertNotNull(this.detailFormModel);
-    }
-
-    /**
      * Tests that validation messages are correctly retrieved after forcing an error on a form.
      */
+    @Test
     public void testSimplestValidationCase() {
 
 	this.initializeVariables(this.personPageDescriptor);
@@ -103,6 +109,7 @@ public class TestMultipleValidationResultsReporter extends AbstractBbSamplesTest
     /**
      * Tests if validation feature is correctly enabled/disabled in each form.
      */
+    @Test
     public void testValidatingState() {
 
 	this.initializeVariables(this.personPageDescriptor);
@@ -130,6 +137,7 @@ public class TestMultipleValidationResultsReporter extends AbstractBbSamplesTest
     /**
      * Tests if validation messages are correctly retrieved after forcing an error on a sibling form.
      */
+    @Test
     public void testValidationWithSiblingForm() {
 
 	this.initializeVariables(this.personPageDescriptor);
@@ -158,12 +166,17 @@ public class TestMultipleValidationResultsReporter extends AbstractBbSamplesTest
 	Assert.assertEquals(1, siblingForm.getFormModel().getValidationResults().getMessageCount());
 
 	// Test validation messages are the expected
+	Assert.assertEquals(2, this.getValidationMessages().size());
 	final BbValidationMessage firstValidationMessage = (BbValidationMessage) this.getValidationMessages().get(0);
 	final BbValidationMessage secondValidationMessage = (BbValidationMessage) this.getValidationMessages().get(1);
-	junit.framework.Assert.assertEquals("age", firstValidationMessage.getProperty());
-	junit.framework.Assert.assertEquals("age", secondValidationMessage.getProperty());
-	junit.framework.Assert.assertEquals("siblingForm", firstValidationMessage.getFormModel().getId());
-	junit.framework.Assert.assertEquals("personDetailForm", secondValidationMessage.getFormModel().getId());
+	Assert.assertEquals("age", firstValidationMessage.getProperty());
+	Assert.assertEquals("age", secondValidationMessage.getProperty());
+
+	final Boolean b1 = "siblingForm".equals(firstValidationMessage.getFormModel().getId());
+	final Boolean b2 = "personDetailForm".equals(secondValidationMessage.getFormModel().getId());
+	final Boolean b3 = "personDetailForm".equals(firstValidationMessage.getFormModel().getId());
+	final Boolean b4 = "siblingForm".equals(secondValidationMessage.getFormModel().getId());
+	Assert.assertTrue(b1 && b2 || b3 && b4);
 
 	// Execute the cancel command and the count backs to 0
 	this.getBackingForm(this.masterView).getCancelCommand().execute();
@@ -177,7 +190,7 @@ public class TestMultipleValidationResultsReporter extends AbstractBbSamplesTest
      * {@inheritDoc}
      */
     @Override
-    protected void initializeVariables(PageDescriptor pageDescriptor) {
+    public void initializeVariables(PageDescriptor pageDescriptor) {
 
 	super.initializeVariables(pageDescriptor);
 
@@ -192,10 +205,8 @@ public class TestMultipleValidationResultsReporter extends AbstractBbSamplesTest
     /**
      * {@inheritDoc}
      */
-    @Override
-    protected void onTearDown() throws Exception {
-
-	super.onTearDown();
+    @After
+    public void cancel() throws Exception {
 
 	if (this.masterView != null) {
 	    this.getBackingForm(this.masterView).getCancelCommand().execute();

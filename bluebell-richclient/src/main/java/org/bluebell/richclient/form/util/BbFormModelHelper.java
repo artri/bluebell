@@ -10,10 +10,10 @@ import java.util.Set;
 
 import javax.swing.table.TableModel;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.bluebell.binding.value.support.DirtyTrackingDCBCVM;
 import org.bluebell.richclient.exceptionhandling.BbApplicationException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.binding.MutablePropertyAccessStrategy;
 import org.springframework.binding.PropertyMetadataAccessStrategy;
 import org.springframework.binding.form.ConfigurableFormModel;
@@ -57,7 +57,7 @@ public class BbFormModelHelper extends FormModelHelper {
     /**
      * Log para la clase {@link BbFormModelHelper}.
      */
-   private static final Log LOGGER = LogFactory.getLog(BbFormModelHelper.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(BbFormModelHelper.class);
 
     /**
      * El mensaje a mostrar cuando no es posible instanciar una colección usando su constructor por defecto.
@@ -351,13 +351,12 @@ public class BbFormModelHelper extends FormModelHelper {
 	    @Override
 	    protected void handleSetNullFormObject() {
 
-		if (this.logger.isInfoEnabled()) {
-		    this.logger.info("New form object value is null; resetting "
+		if (BbFormModelHelper.LOGGER.isDebugEnabled()) {
+		    BbFormModelHelper.LOGGER.debug("New form object value is null; resetting "
 			    + "to a new collection and disabling form");
 		}
 		try {
-		    final Class class2Create = BufferedCollectionValueModel //
-			    .getConcreteCollectionType(collectionClazz);
+		    final Class class2Create = BufferedCollectionValueModel.getConcreteCollectionType(collectionClazz);
 		    this.getFormObjectHolder().setValue(class2Create.newInstance());
 		    this.setEnabled(Boolean.FALSE);
 		} catch (final InstantiationException e) {

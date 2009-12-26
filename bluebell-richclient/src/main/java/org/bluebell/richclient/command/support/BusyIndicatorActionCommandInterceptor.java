@@ -4,7 +4,7 @@ import java.awt.Container;
 
 import javax.swing.JComponent;
 
-import org.bluebell.richclient.application.docking.vldocking.PageCreationException;
+import org.bluebell.richclient.application.ApplicationPageException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.richclient.application.Application;
 import org.springframework.richclient.application.ApplicationWindow;
@@ -268,7 +268,7 @@ public final class BusyIndicatorActionCommandInterceptor implements ActionComman
 
 	    // TODO, (JAF), 20090913, if page creation could not be accomplished this exception handler tries to create
 	    // it again due to window.getControl() invocation. This dependency should be removed
-	    if (!(thrownTrowable instanceof PageCreationException)) {
+	    if (!(thrownTrowable instanceof ApplicationPageException)) {
 		BusyIndicatorActionCommandInterceptor.clearIndicator();
 	    }
 

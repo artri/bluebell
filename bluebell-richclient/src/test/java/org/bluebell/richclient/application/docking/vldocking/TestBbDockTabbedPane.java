@@ -19,34 +19,34 @@ import com.vlsolutions.swing.docking.Dockable;
 import com.vlsolutions.swing.docking.DockablePanel;
 
 /**
- * Clase que prueba el correcto funcionamiento de {@link BbDockTabbedPane} .
+ * Class that test the correct behaviour of {@link BbDockTabbedPane}.
  * 
  *@author <a href = "mailto:julio.arguello@gmail.com" >Julio Argüello (JAF)</a>
  */
 public class TestBbDockTabbedPane extends TestCase {
 
     /**
-     * El número original de pestañas de {@link #tabs}.
+     * The initial number of tabs.
      */
     private static final int SIZE = 5;
 
     static {
-	// Esta propiedad es requerida para la prueba
+	// Required property for this tests
 	UIManager.put("TabbedDockableContainer.tabPlacement", 1);
     }
 
     /**
-     * El panel contenedor de pestañas objeto de la prueba.
+     * The container pane for tabs.
      */
     private BbDockTabbedPane tabbedPane;
 
     /**
-     * Las pestañas de {@link #tabs}.
+     * The tabs.
      */
     private final Dockable[] tabs = new Dockable[TestBbDockTabbedPane.SIZE];
 
     /**
-     * Caso que prueba el correcto funcionamiento de la inserción de pestañas en su forma más básica.
+     * Tests the correct behaviour of basic tabs insertion.
      * 
      * <ul>
      * <li>[]
@@ -59,8 +59,8 @@ public class TestBbDockTabbedPane extends TestCase {
     }
 
     /**
-     * Caso que prueba que después de haber eliminado en orden ascendente todas las pestañas el sistema es capaz de
-     * insertarlas en orden ascendente recuperando su posición original.
+     * Tests that after havind removed tabs in ascendant order the system is able to add them again in ascendant order
+     * keeping the original position.
      * 
      * <ul>
      * <li>[]
@@ -79,25 +79,24 @@ public class TestBbDockTabbedPane extends TestCase {
      */
     public void testTabRemovalAndInsertingForeward() {
 
-	// Eliminar las pestañas en orden ascendente
+	// Remove tabs in ascendant order
 	for (int i = 0; i < TestBbDockTabbedPane.SIZE; ++i) {
 	    this.tabbedPane.remove(0);
 	}
 
-	// Insertar las pestañas en orden ascendente
+	// Add tabs in ascendant order
 	for (int i = 0; i < TestBbDockTabbedPane.SIZE; ++i) {
 
 	    TestCase.assertEquals(i, this.getIndexForDockable(i));
 	    this.insertTab(this.tabs[i], this.getIndexForDockable(i));
 	}
 
-	// Comprobar que se ha recuperado la situación inicial
 	this.checkCorrectness();
     }
 
     /**
-     * Caso que prueba que después de haber eliminado en orden descendente todas las pestañas el sistema es capaz de
-     * insertarlas en orden descendente recuperando su posición original.
+     * Tests that after havind removed tabs in descendant order the system is able to add them again in descendant order
+     * keeping the original position.
      * 
      * <ul>
      * <li>[]
@@ -116,24 +115,23 @@ public class TestBbDockTabbedPane extends TestCase {
      */
     public void testTabRemovalAndInsertingBackward() {
 
-	// Eliminar las pestañas en orden descendente
+	// Remove tabs in descendant order
 	for (int i = 0; i < TestBbDockTabbedPane.SIZE; ++i) {
 	    this.tabbedPane.remove(this.tabbedPane.getTabCount() - 1);
 	}
 
-	// Insertar las pestañas en orden descendente
+	// Add tabs in descendant order
 	for (int i = TestBbDockTabbedPane.SIZE - 1; i >= 0; --i) {
 	    TestCase.assertEquals(0, this.getIndexForDockable(i));
 	    this.insertTab(this.tabs[i], this.getIndexForDockable(i));
 	}
 
-	// Comprobar que se ha recuperado la situación inicial
 	this.checkCorrectness();
     }
 
     /**
-     * Caso que prueba que después de haber eliminado en orden ascendente todas las pestañas el sistema es capaz de
-     * insertar pestañas adicionales antes de reinsertarlas en orden ascendente.
+     * Tests that after havind removed tabs in ascendant order the system is able to attach new tabas before adding
+     * originals again in ascendant order keeping the original position.
      * 
      * <ul>
      * <li>[]
@@ -157,42 +155,39 @@ public class TestBbDockTabbedPane extends TestCase {
      */
     public void testAditionalInsertion() {
 
-	// Las pestañas adicionales
+	// The attached tabs
 	final Dockable[] aditionalTabs = new Dockable[TestBbDockTabbedPane.SIZE];
 	for (int i = 0; i < TestBbDockTabbedPane.SIZE; ++i) {
 	    aditionalTabs[i] = this.createDockable(i + "bis");
 	}
 
-	// Eliminar las pestañas en orden ascendente
+	// Remove tabs in ascendant order
 	for (int i = 0; i < TestBbDockTabbedPane.SIZE; ++i) {
 	    this.tabbedPane.remove(0);
 	}
 
-	// Insertar las pestañas adicionales en orden ascendente
+	// Add tabs in ascendant order
 	for (int i = 0; i < TestBbDockTabbedPane.SIZE; ++i) {
 	    this.insertTab(aditionalTabs[i], i);
 	}
 
-	// Insertar las pestañas en orden ascendente
+	// Attach tabs in ascendant order
 	for (int i = 0; i < TestBbDockTabbedPane.SIZE; ++i) {
-	    TestCase.assertEquals(i + TestBbDockTabbedPane.SIZE, //
-		    this.getIndexForDockable(i));
+	    TestCase.assertEquals(i + TestBbDockTabbedPane.SIZE, this.getIndexForDockable(i));
 	    this.insertTab(this.tabs[i], this.getIndexForDockable(i));
 	}
 
-	// Comprobar que todas las pestañas estén en su posición correcta.
 	for (int i = 0; i < TestBbDockTabbedPane.SIZE; ++i) {
-	    TestCase.assertEquals(aditionalTabs[i], //
-		    this.tabbedPane.getComponentAt(i));
+	    TestCase.assertEquals(aditionalTabs[i], this.tabbedPane.getComponentAt(i));
 
-	    TestCase.assertEquals(this.tabs[i], //
-		    this.tabbedPane.getComponentAt(//
-			    i + TestBbDockTabbedPane.SIZE));
+	    TestCase.assertEquals(this.tabs[i], this.tabbedPane.getComponentAt(i + TestBbDockTabbedPane.SIZE));
 	}
     }
 
     /**
-     * Caso que prueba múltiples borrados e inserciones desordenados.
+     * Tests multiple removals and additions randomly.
+     * 
+     * @see #doTestTabRemovalAndInsertingRandom()
      */
     public void testTabRemovalAndInsertingRandom() {
 
@@ -203,43 +198,36 @@ public class TestBbDockTabbedPane extends TestCase {
     }
 
     /**
-     * Caso que prueba borrados e inserciones desordenados.
+     * Single test operation with tabs removed and added randomly.
      */
     protected void doTestTabRemovalAndInsertingRandom() {
 
 	final List<Integer> removalOrder = new ArrayList<Integer>();
 	final List<Integer> insertionOrder = Arrays.asList(new Integer[] { 0, 1, 2, 3, 4 });
 
-	// Eliminar las pestañas en orden aleatorio
+	// Remove tabs randomly
 	for (int i = 0; i < TestBbDockTabbedPane.SIZE; ++i) {
 	    final int maxValue = TestBbDockTabbedPane.SIZE - i;
-	    removalOrder.add(i, maxValue != 0 ? RandomUtils.nextInt(maxValue) //
-		    : 0);
+	    removalOrder.add(i, maxValue != 0 ? RandomUtils.nextInt(maxValue) : 0);
 	    this.tabbedPane.remove(removalOrder.get(i));
 	}
 
-	// Insertar las pestañas en orden aleatorio
+	// Add tabs randomly
 	Collections.shuffle(insertionOrder);
 	for (int i = 0; i < TestBbDockTabbedPane.SIZE; ++i) {
-	    this.insertTab(this.tabs[insertionOrder.get(i)], //
-		    this.getIndexForDockable(insertionOrder.get(i)));
+	    this.insertTab(this.tabs[insertionOrder.get(i)], this.getIndexForDockable(insertionOrder.get(i)));
 	}
 
-	// System.out.println(removalOrder);
-	// System.out.println(insertionOrder);
-
-	// Comprobar que se ha recuperado la situación inicial
 	this.checkCorrectness();
     }
 
     /**
-     * Crea un nuevo panel contenedor de pestañas antes de cada test.
+     * Creates a new tab container pane before each test.
      * <p>
-     * El panel contiene {@value #SIZE} pestañas, cada una de las cuales es una <code>JLabel</code> con texto su
-     * posición inicial (partiendo de 0).
+     * The pane contains {@value #SIZE} tabs, consisting on a <code>JLabel</code> with text..
      * 
      * @throws Exception
-     *             en caso de error.
+     *             if error.
      */
     @Override
     protected void setUp() throws Exception {
@@ -253,40 +241,34 @@ public class TestBbDockTabbedPane extends TestCase {
     }
 
     /**
-     * Obtiene el índice más apropiado donde insertar la pestaña i-esima (relativa a {@link #tabs}).
+     * Gets the more suitable index for inserting a tab.
      * 
      * @param i
-     *            el índice relativo a <code>tabs</code>.
-     * @return el índice relativo al panel.
+     *            the index (<code>tabs</code> relative) of the target tab.
+     * @return the panel relative index.
      */
     private int getIndexForDockable(int i) {
 
 	final int indexForDockable = this.tabbedPane.getIndexForDockable(this.tabs[i]);
 
-	return indexForDockable != -1 ? indexForDockable //
-		: 0;
+	return indexForDockable != -1 ? indexForDockable : 0;
     }
 
     /**
-     * Inserta una pestaña en {@link #tabbedPane} en una posición dada.
+     * Adds a tab into {@link #tabbedPane} given its position.
      * 
      * @param tab
-     *            la pestaña.
+     *            the tab.
      * @param position
-     *            la posición.
+     *            the position.
      */
     private void insertTab(Dockable tab, int position) {
 
-	this.tabbedPane.insertTab(//
-		tab.getDockKey().getName(), //
-		null, //
-		tab.getComponent(), //
-		StringUtils.EMPTY, //
-		position);
+	this.tabbedPane.insertTab(tab.getDockKey().getName(), null, tab.getComponent(), StringUtils.EMPTY, position);
     }
 
     /**
-     * Prueba que todas las pestañas estén en su posición correcta.
+     * Checks that every tab is in the correct position.
      */
     private void checkCorrectness() {
 
@@ -296,11 +278,11 @@ public class TestBbDockTabbedPane extends TestCase {
     }
 
     /**
-     * Crea un <code>Dockable</code> dado su nombre.
+     * Creates a <code>Dockable</code> given its name.
      * 
      * @param name
-     *            el nombre del <code>Dockable</code>.
-     * @return el <code>Dockable</code>.
+     *            the <code>Dockable</code> name.
+     * @return the <code>Dockable</code>.
      */
     private Dockable createDockable(String name) {
 

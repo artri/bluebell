@@ -1,7 +1,7 @@
 package org.bluebell.richclient.application;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.richclient.application.Application;
 import org.springframework.richclient.application.ApplicationLauncher;
 import org.springframework.util.Assert;
@@ -37,7 +37,7 @@ public class RcpMain extends Main {
     /**
      * El <em>logger</em>.
      */
-    private static final Log LOGGER = LogFactory.getLog(RcpMain.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(RcpMain.class);
 
     /**
      * {@inheritDoc}
@@ -142,7 +142,7 @@ public class RcpMain extends Main {
 	// TODO, (JAF), 20080610, quizás haya que tratar esta excepción de una
 	// forma diferente.
 	RcpMain.LOGGER.info("Rcp Application will exit");
-	RcpMain.LOGGER.error(e);
+	RcpMain.LOGGER.error(e.getMessage(), e);
 
 	System.exit(1);
     }
