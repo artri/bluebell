@@ -132,6 +132,7 @@
 					<excludes>
 						<exclude>src/etc/**</exclude>
 						<exclude>src/ext/**</exclude>
+						<exclude>lib/**</exclude>
 					</excludes>
 				</configuration>
 				<executions>
