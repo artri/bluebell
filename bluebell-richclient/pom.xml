@@ -12,6 +12,7 @@
 	<description>Desktop module</description>
 	<version>0.1</version>
 	<url>http://code.google.com/p/bluebell/</url>
+	<inceptionYear>2009</inceptionYear>
 	<organization>
 		<name>Bluebell.org</name>
 	</organization>
@@ -110,6 +111,38 @@
 					-->
 					<forkMode>always</forkMode>
 				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>com.mycila.maven-license-plugin</groupId>
+				<artifactId>maven-license-plugin</artifactId>
+				<version>1.5.0</version>
+				<configuration>
+					<header>src/etc/license.txt</header>
+					<quiet>true</quiet>
+					<failIfMissing>true</failIfMissing>
+					<aggregate>true</aggregate>
+					<encoding>UTF-8</encoding>
+					
+					<properties>
+						<name>${project.name}</name>
+						<owner>Julio Argüello</owner>
+						<year>${project.inceptionYear}</year>
+						<email>julio.arguello@gmail.com</email>
+					</properties>
+					<excludes>
+						<exclude>src/etc/**</exclude>
+						<exclude>src/ext/**</exclude>
+					</excludes>
+				</configuration>
+				<executions>
+					<execution>
+						<id>format-headers</id>
+						<phase>verify</phase>
+						<goals>
+							<goal>format</goal>
+						</goals>
+					</execution>
+				</executions>
 			</plugin>
 		</plugins>
 	</build>
