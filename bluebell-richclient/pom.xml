@@ -17,7 +17,50 @@
 		<name>Bluebell.org</name>
 	</organization>
 
+
+	<!--svn checkout https://bluebell.googlecode.com/svn/trunk/ bluebell username julioarguello-->
+	<distributionManagement>
+		<site>
+			<id>Site test</id>
+			<url>svn:https://bluebell.googlecode.com/svn/trunk/www/${pom.version}</url>
+		</site>
+	</distributionManagement>
+
+	<repositories>
+		<repository>
+			<id>org.bluebell.repository.external</id>
+			<name>Fake repository useful to integrate non mavenized artifacts</name>
+			<url>file://${basedir}/lib</url>
+		</repository>
+		<repository>
+			<id>com.springsource.repository.bundles.release</id>
+			<name>SpringSource Enterprise Bundle Repository - SpringSource Bundle Releases</name>
+			<url>http://repository.springsource.com/maven/bundles/release </url>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+		</repository>
+		<repository>
+			<id>com.springsource.repository.bundles.external</id>
+			<name>SpringSource Enterprise Bundle Repository - External Bundle Releases</name>
+			<url>http://repository.springsource.com/maven/bundles/external</url>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+		</repository>
+	</repositories>
+
 	<build>
+		<extensions>
+			<extension>				
+				<!--
+					(JAF) 20091228: TODO: http://maven.apache.org/settings.html#Servers 
+				 -->
+				<groupId>org.jvnet.wagon-svn</groupId>
+				<artifactId>org.bluebell.wagon-svn</artifactId>
+				<version>1.11-SNAPSHOT</version>
+			</extension>
+		</extensions>
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -122,11 +165,11 @@
 					<failIfMissing>true</failIfMissing>
 					<aggregate>true</aggregate>
 					<encoding>UTF-8</encoding>
-					
+
 					<properties>
 						<name>${project.name}</name>
-						<owner>Julio Argüello</owner>
 						<year>${project.inceptionYear}</year>
+						<owner>Julio Argüello</owner>
 						<email>julio.arguello@gmail.com</email>
 					</properties>
 					<excludes>
@@ -147,32 +190,6 @@
 			</plugin>
 		</plugins>
 	</build>
-
-	<repositories>
-		<repository>
-			<id>org.bluebell.repository.external</id>
-			<name>Fake repository useful to integrate non mavenized artifacts</name>
-			<url>file://${basedir}/lib</url>
-		</repository>
-		<repository>
-			<id>com.springsource.repository.bundles.release</id>
-			<name>SpringSource Enterprise Bundle Repository - SpringSource Bundle
-				Releases</name>
-			<url>http://repository.springsource.com/maven/bundles/release </url>
-			<snapshots>
-				<enabled>false</enabled>
-			</snapshots>
-		</repository>
-		<repository>
-			<id>com.springsource.repository.bundles.external</id>
-			<name>SpringSource Enterprise Bundle Repository - External Bundle
-				Releases</name>
-			<url>http://repository.springsource.com/maven/bundles/external</url>
-			<snapshots>
-				<enabled>false</enabled>
-			</snapshots>
-		</repository>
-	</repositories>
 
 	<dependencyManagement>
 		<dependencies>
@@ -259,8 +276,7 @@
 			 -->
 			<dependency>
 				<groupId>org.apache.commons</groupId>
-				<artifactId>com.springsource.org.apache.commons.collections
-				</artifactId>
+				<artifactId>com.springsource.org.apache.commons.collections</artifactId>
 				<version>3.2.1</version>
 			</dependency>
 			<dependency>

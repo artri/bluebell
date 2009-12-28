@@ -1,0 +1,19 @@
+Index: SubversionWagon.java
+===================================================================
+--- SubversionWagon.java	(revision 112)
++++ SubversionWagon.java	(working copy)
+@@ -312,6 +312,14 @@
+                 // add file
+                 editor.addFile(filePath,null,-1);
+ 
++            // (JAF), 20091228, minimal MIME type support
++            if (filePath.endsWith(".html")) {
++                editor.changeFileProperty(filePath, "svn:mime-type", "text/html");
++            } else if (filePath.endsWith(".css")) {
++                editor.changeFileProperty(filePath, "svn:mime-type", "text/css");
++            }
++            // END OF: (JAF), 20091228, minimal MIME type support
++            
+             editor.applyTextDelta(filePath,null);
+ 
+             SVNDeltaGenerator dg = new SVNDeltaGenerator();
