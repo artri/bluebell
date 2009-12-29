@@ -18,6 +18,28 @@
 	<name>Bluebell Rich Client</name>
 	<description>Desktop module</description>
 
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>exec-maven-plugin</artifactId>
+				<configuration>
+					<mainClass>org.bluebell.richclient.application.RcpMain</mainClass>
+					<classpathScope>test</classpathScope>
+					<systemProperties>
+						<systemProperty>
+							<key>richclient.startingPageId</key>
+							<value>personPageDescriptor</value>
+						</systemProperty>
+					</systemProperties>
+					<commandlineArgs>
+						-class org.bluebell.richclient.application.RcpMain
+					</commandlineArgs>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+
 	<dependencies>
 		<!-- 
 			Spring Framework
