@@ -30,6 +30,7 @@ import org.springframework.richclient.core.Severity;
  */
 public class ProblemBean extends ApplicationServicesAccessor {
 
+    // TODO, (JAF), 20091229, to be removed
     /**
      * Objeto de tipo <code>Problem</code> envuelto.
      */

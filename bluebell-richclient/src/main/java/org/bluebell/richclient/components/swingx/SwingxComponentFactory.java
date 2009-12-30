@@ -37,7 +37,7 @@ import org.springframework.richclient.factory.DefaultComponentFactory;
 public class SwingxComponentFactory extends DefaultComponentFactory {
 
     /**
-     * 7 Creates a table.
+     * Creates a table.
      * 
      * @return the table.
      * 

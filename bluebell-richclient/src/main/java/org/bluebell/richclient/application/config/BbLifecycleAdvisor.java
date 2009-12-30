@@ -55,6 +55,7 @@ public class BbLifecycleAdvisor extends DefaultApplicationLifecycleAdvisor imple
     /**
      * El ancho por defecto de la ventana.
      */
+    // TODO, (JAF) 20091229, externalize default resolution (1024*768)
     private static final Integer DEFAULT_WINDOW_WIDTH = 800;
 
     /**
