@@ -28,6 +28,10 @@ package org.bluebell.richclient.samples.simple.bean;
  */
 public class Person {
 
+    private enum Sex {
+        MALE, FEMALE
+    };
+
     /**
      * The person name.
      */
@@ -37,6 +41,16 @@ public class Person {
      * The person age.
      */
     private Long age;
+
+    /**
+     * The person sex.
+     */
+    private Sex sex;
+
+    /**
+     * The person address.
+     */
+    private String address;
 
     /**
      * Constructs the person.
@@ -85,5 +99,47 @@ public class Person {
     public void setAge(Long age) {
 
         this.age = age;
+    }
+
+    /**
+     * Gets the sex.
+     * 
+     * @return the sex.
+     */
+    public Sex getSex() {
+
+        return this.sex;
+    }
+
+    /**
+     * Sets the sex.
+     * 
+     * @param sex
+     *            the sex to set.
+     */
+    public void setSex(Sex sex) {
+
+        this.sex = sex;
+    }
+
+    /**
+     * Gets the address.
+     * 
+     * @return the address.
+     */
+    public String getAddress() {
+
+        return this.address;
+    }
+
+    /**
+     * Sets the address.
+     * 
+     * @param address
+     *            the address to set.
+     */
+    public void setAddress(String address) {
+
+        this.address = address;
     }
 }

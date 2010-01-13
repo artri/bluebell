@@ -26,22 +26,43 @@ import javax.swing.JTable;
 import javax.swing.JToolBar;
 import javax.swing.table.TableModel;
 
+import org.bluebell.richclient.factory.ComponentFactoryDecorator;
 import org.jdesktop.swingx.JXTable;
-import org.springframework.richclient.factory.DefaultComponentFactory;
+import org.springframework.richclient.factory.ComponentFactory;
 
 /**
- * Swingx based component factory implementation.
+ * SwingX based component factory implementation.
+ * 
+ * @see <a href="https://swingx.dev.java.net/">SwingX</a>
  * 
  * @author <a href = "mailto:julio.arguello@gmail.com" >Julio Argüello (JAF)</a>
  */
-public class SwingxComponentFactory extends DefaultComponentFactory {
+public class SwingxComponentFactory extends ComponentFactoryDecorator {
+
+    /**
+     * Creates de SwingX component factory.
+     */
+    public SwingxComponentFactory() {
+
+        super();
+    }
+
+    /**
+     * Creates the SwingX component factory decorator given the decorated component.
+     * 
+     * @param decoratedComponentFactory
+     *            the decorated component factory.
+     */
+    public SwingxComponentFactory(ComponentFactory decoratedComponentFactory) {
+
+        super(decoratedComponentFactory);
+    }
 
     /**
      * Creates a table.
      * 
      * @return the table.
      * 
-     * @see org.springframework.richclient.factory.ComponentFactory#createTable()
      * @see JXTable
      */
     @Override
@@ -64,7 +85,6 @@ public class SwingxComponentFactory extends DefaultComponentFactory {
      *            the table model.
      * @return the table.
      * 
-     * @see org.springframework.richclient.factory.ComponentFactory#createTable(TableModel)
      * @see #createTable()
      * @see JXTable
      */
@@ -83,7 +103,7 @@ public class SwingxComponentFactory extends DefaultComponentFactory {
     @Override
     public JComponent createToolBar() {
 
-        final JToolBar toolBar = (JToolBar) super.createToolBar();
+        final JToolBar toolBar = (JToolBar) this.getDecoratedComponentFactory().createToolBar();
         toolBar.setFloatable(Boolean.TRUE);
         toolBar.setEnabled(Boolean.TRUE);
 

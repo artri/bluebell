@@ -93,6 +93,11 @@ public class PersonChildForm extends AbstractBbChildForm<Person> {
         formBuilder.row();
         formBuilder.add("age");
         formBuilder.row();
+        formBuilder.addTextArea("address");
+        formBuilder.row();
+        // TODO bind combobox
+        // formBuilder.add(bindingFactory.createBoundComboBox("sex"));
+        // TODO bind checkbox
 
         return formBuilder.getForm();
     }

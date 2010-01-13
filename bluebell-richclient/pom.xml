@@ -130,6 +130,11 @@
 			<version>1.8.0</version>
 		</dependency>
 		<dependency>
+			<groupId>com.jidesoft</groupId>
+			<artifactId>jide-oss</artifactId>
+			<version>2.4.8</version>
+		</dependency>
+		<dependency>
 			<groupId>com.dryicons</groupId>
 			<artifactId>coquette</artifactId>
 			<version>1.0</version>
