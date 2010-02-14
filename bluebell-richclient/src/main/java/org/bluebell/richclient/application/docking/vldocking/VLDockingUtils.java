@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (C) 2009 Julio Argüello <julio.arguello@gmail.com>
  *
  * This file is part of Bluebell Rich Client.
@@ -35,7 +35,7 @@ import org.springframework.richclient.util.Assert;
  * 
  * @author <a href = "mailto:julio.arguello@gmail.com" >Julio Argüello (JAF)</a>
  */
-public final class VLDockingUtil {
+public final class VLDockingUtils {
 
     /**
      * The activation infix for <em>active</em> UI property names.
@@ -55,7 +55,7 @@ public final class VLDockingUtil {
     /**
      * Utility classes should not have a public or default constructor.
      */
-    private VLDockingUtil() {
+    private VLDockingUtils() {
 
     }
 
@@ -73,8 +73,8 @@ public final class VLDockingUtil {
         Assert.notNull(key, "key");
         Assert.notNull(active, "active");
 
-        final int index = StringUtils.lastIndexOf(key, VLDockingUtil.DOT);
-        final String overlay = active ? VLDockingUtil.ACTIVE_INFIX : VLDockingUtil.INACTIVE_INFIX;
+        final int index = StringUtils.lastIndexOf(key, VLDockingUtils.DOT);
+        final String overlay = active ? VLDockingUtils.ACTIVE_INFIX : VLDockingUtils.INACTIVE_INFIX;
 
         return StringUtils.overlay(key, overlay, index, index);
     }

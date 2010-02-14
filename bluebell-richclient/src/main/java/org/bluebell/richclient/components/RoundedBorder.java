@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (C) 2009 Julio Argüello <julio.arguello@gmail.com>
  *
  * This file is part of Bluebell Rich Client.
@@ -37,6 +37,9 @@ import javax.swing.border.Border;
 
 /**
  * A rounded border implementation copied from <code>com.publicobject.misc.swing</code>.
+ * <p/>
+ * This is a replacement for {@link com.jidesoft.swing.PartialLineBorder} because this class does not look ok.
+ * 
  * 
  * @author <a href = "mailto:julio.arguello@gmail.com" >Julio Argüello (JAF)</a>
  */

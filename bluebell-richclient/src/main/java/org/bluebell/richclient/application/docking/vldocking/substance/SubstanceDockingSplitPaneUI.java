@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (C) 2009 Julio Argüello <julio.arguello@gmail.com>
  *
  * This file is part of Bluebell Rich Client.
@@ -31,7 +31,7 @@ import javax.swing.border.Border;
 import javax.swing.plaf.ComponentUI;
 import javax.swing.plaf.basic.BasicSplitPaneDivider;
 
-import org.bluebell.richclient.application.docking.vldocking.VLDockingUtil.DockingColor;
+import org.bluebell.richclient.application.docking.vldocking.VLDockingUtils.DockingColor;
 
 import com.vlsolutions.swing.docking.ui.DockingSplitPaneUI;
 

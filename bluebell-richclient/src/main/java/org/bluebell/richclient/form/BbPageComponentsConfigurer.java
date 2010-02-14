@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (C) 2009 Julio Argüello <julio.arguello@gmail.com>
  *
  * This file is part of Bluebell Rich Client.
@@ -376,7 +376,7 @@ public class BbPageComponentsConfigurer<T> {
 
         final Form form = view.getBackingForm();
 
-        if (form instanceof AbstractBbTableMasterForm<?>) {
+        if (form instanceof AbstractBb1TableMasterForm<?>) {
             this.processMasterView((FormBackedView<AbstractBb2TableMasterForm<T>>) view);
         } else if (form instanceof BbValidationForm) {
             this.processValidatingView((FormBackedView<BbValidationForm<T>>) view);
@@ -499,9 +499,10 @@ public class BbPageComponentsConfigurer<T> {
         // Validation checks
         Assert.notNull(searchView, "searchView");
 
-        final AbstractBbTableMasterForm<T> masterForm = BbPageComponentsConfigurer.getBackingForm(this.getMasterView());
+        final AbstractBb1TableMasterForm<T> masterForm = //
+        BbPageComponentsConfigurer.getBackingForm(this.getMasterView());
         final AbstractBbSearchForm<T, ?> targetSearchForm = BbPageComponentsConfigurer.getBackingForm(searchView);
-        final AbstractBbTableMasterForm<T> targetMasterForm = targetSearchForm.getMasterForm();
+        final AbstractBb1TableMasterForm<T> targetMasterForm = targetSearchForm.getMasterForm();
 
         BbPageComponentsConfigurer.assertNotAlreadySet(targetMasterForm, masterForm);
 
@@ -543,10 +544,11 @@ public class BbPageComponentsConfigurer<T> {
         // Validation checks
         Assert.notNull(validationView, "validationView");
 
-        final AbstractBbTableMasterForm<T> masterForm = BbPageComponentsConfigurer.getBackingForm(this.getMasterView());
+        final AbstractBb1TableMasterForm<T> masterForm = BbPageComponentsConfigurer
+                .getBackingForm(this.getMasterView());
         final BbDispatcherForm<T> theDispatcherForm = this.getDispatcherForm();
         final BbValidationForm<T> targetValidationForm = BbPageComponentsConfigurer.getBackingForm(validationView);
-        final AbstractBbTableMasterForm<T> targetMasterForm = targetValidationForm.getMasterForm();
+        final AbstractBb1TableMasterForm<T> targetMasterForm = targetValidationForm.getMasterForm();
 
         BbPageComponentsConfigurer.assertNotAlreadySet(targetMasterForm, masterForm);
 

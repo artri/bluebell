@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (C) 2009 Julio Argüello <julio.arguello@gmail.com>
  *
  * This file is part of Bluebell Rich Client.
@@ -22,7 +22,6 @@
 package org.bluebell.richclient.samples.simple.form;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 import javax.swing.JComponent;
@@ -50,19 +49,16 @@ public class PersonSearchForm extends AbstractBbSearchForm<Person, Person> {
      * {@inheritDoc}
      */
     @Override
-    protected Collection<Person> doSearch(Person searchParams) {
+    protected List<Person> doSearch(Person searchParams) {
 
         final List<Person> searchResults = new ArrayList<Person>();
-        searchResults.add(searchParams);
-        searchParams.setName(searchParams.getName().concat("foo"));
-        searchResults.add(searchParams);
-        searchParams.setName(searchParams.getName().concat("foo"));
-        searchResults.add(searchParams);
-        searchParams.setName(searchParams.getName().concat("foo"));
-        searchResults.add(searchParams);
-        searchParams.setName(searchParams.getName().concat("foo"));
-        searchResults.add(searchParams);
-        searchParams.setName(searchParams.getName().concat("foo"));
+
+        searchResults.add(new Person("foo1"));
+        searchResults.add(new Person("foo2"));
+        searchResults.add(new Person("foo3"));
+        searchResults.add(new Person("foo4"));
+        searchResults.add(new Person("foo5"));
+        searchResults.add(new Person("foo6"));
 
         return searchResults;
     }

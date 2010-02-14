@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (C) 2009 Julio Argüello <julio.arguello@gmail.com>
  *
  * This file is part of Bluebell Rich Client.
@@ -470,7 +470,7 @@ public class DirtyIndicatorInterceptor extends AbstractFormComponentInterceptor 
 
         /**
          * A la hora de recordar el valor anterior es importante diferenciar el caso de los <em>value model</em> de tipo
-         * {@link org.bluebell.richclient.form.util.BbFormModelHelper.DirtyTrackingDCBCVM}.
+         * {@link org.bluebell.richclient.form.BbFormModelHelper.DirtyTrackingDCBCVM}.
          * <p>
          * A tal efecto se crea este método que encapsula su tratamiento.
          * 

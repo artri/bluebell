@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (C) 2009 Julio Argüello <julio.arguello@gmail.com>
  *
  * This file is part of Bluebell Rich Client.
@@ -21,15 +21,32 @@
  */
 package org.bluebell.richclient.samples.simple.bean;
 
+import org.apache.commons.lang.builder.EqualsBuilder;
+import org.apache.commons.lang.builder.HashCodeBuilder;
+import org.apache.commons.lang.builder.ToStringBuilder;
+import org.apache.commons.lang.builder.ToStringStyle;
+
 /**
  * A simple entity.
  * 
  * @author <a href = "mailto:julio.arguello@gmail.com" >Julio Argüello (JAF)</a>
  */
-public class Person {
+public class Person implements Comparable<Person> {
 
+    /**
+     * The sex.
+     * 
+     * @author <a href = "mailto:julio.arguello@gmail.com" >Julio Argüello (JAF)</a>
+     */
     private enum Sex {
-        MALE, FEMALE
+        /**
+         * Male.
+         */
+        MALE,
+        /**
+         * Female.
+         */
+        FEMALE
     };
 
     /**
@@ -57,6 +74,17 @@ public class Person {
      */
     public Person() {
 
+    }
+
+    /**
+     * Constructs the person given its name.
+     * 
+     * @param name
+     *            the name.
+     */
+    public Person(String name) {
+
+        this.setName(name);
     }
 
     /**
@@ -142,4 +170,48 @@ public class Person {
 
         this.address = address;
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    public boolean equals(Object object) {
+
+        if (!(object instanceof Person)) {
+            return Boolean.FALSE;
+        }
+        final Person person = (Person) object;
+
+        return new EqualsBuilder().append(this.getName(), person.getName()).isEquals();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public int hashCode() {
+
+        final int hashCode1 = -1337536253;
+        final int hashCode2 = -2021982281;
+
+        return new HashCodeBuilder(hashCode1, hashCode2).append(this.getName()).toHashCode();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String toString() {
+
+        return new ToStringBuilder(this, ToStringStyle.SIMPLE_STYLE).append("name", this.getName()).toString();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public int compareTo(Person o) {
+
+        return this.getName().compareTo(o.getName());
+    }
+
 }

@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (C) 2009 Julio Argüello <julio.arguello@gmail.com>
  *
  * This file is part of Bluebell Rich Client.
@@ -18,9 +18,10 @@
 
 package org.bluebell.richclient.form;
 
+import java.util.Arrays;
+
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
-import org.bluebell.richclient.form.AbstractBbTableMasterForm.EventType;
 import org.springframework.binding.form.FormModel;
 import org.springframework.binding.value.ValueModel;
 import org.springframework.binding.value.support.ObservableList;
@@ -47,7 +48,7 @@ abstract class AbstractBbDetailForm<T> extends AbstractDetailForm {
     /**
      * El formulario maestro.
      */
-    private AbstractBbTableMasterForm<T> masterForm;
+    private AbstractBb1TableMasterForm<T> masterForm;
 
     /**
      * Crea el formulario detalle a partir del formulario maestro, el identificador y un <em>value model</em>.
@@ -59,7 +60,7 @@ abstract class AbstractBbDetailForm<T> extends AbstractDetailForm {
      * @param valueModel
      *            <em>value model</em> a partir del cual crear el modelo de este formulario.
      */
-    public AbstractBbDetailForm(AbstractBbTableMasterForm<T> masterForm, String formId, ValueModel valueModel) {
+    public AbstractBbDetailForm(AbstractBb1TableMasterForm<T> masterForm, String formId, ValueModel valueModel) {
 
         super(masterForm.getFormModel(), formId, valueModel, masterForm.getMasterEventList());
 
@@ -78,7 +79,7 @@ abstract class AbstractBbDetailForm<T> extends AbstractDetailForm {
      * @param editableItemList
      *            la lista observable de entidades editables.
      */
-    protected AbstractBbDetailForm(AbstractBbTableMasterForm<T> masterForm, FormModel formModel, String formId,
+    protected AbstractBbDetailForm(AbstractBb1TableMasterForm<T> masterForm, FormModel formModel, String formId,
             ObservableList editableItemList) {
 
         super(formModel, formId, editableItemList);
@@ -91,7 +92,7 @@ abstract class AbstractBbDetailForm<T> extends AbstractDetailForm {
      * 
      * @return el formulario maestro.
      */
-    public AbstractBbTableMasterForm<T> getMasterForm() {
+    public AbstractBb1TableMasterForm<T> getMasterForm() {
 
         return this.masterForm;
     }
@@ -137,7 +138,6 @@ abstract class AbstractBbDetailForm<T> extends AbstractDetailForm {
 
         this.setCommiting(Boolean.TRUE);
         super.preCommit(formModel);
-
     }
 
     /**
@@ -150,8 +150,8 @@ abstract class AbstractBbDetailForm<T> extends AbstractDetailForm {
     }
 
     /**
-     * Redirige el <em>post commit</em> al método {@link AbstractBbTableMasterForm#doInsert(Object)} o
-     * {@link AbstractBbTableMasterForm#doUpdate(Object)} en función de {@link #isEditingNewFormObject()}.
+     * Redirige el <em>post commit</em> al método {@link AbstractBb1TableMasterForm#doInsert(Object)} o
+     * {@link AbstractBb1TableMasterForm#doUpdate(Object)} en función de {@link #isEditingNewFormObject()}.
      * <p>
      * Además en caso de éxito publica un evento notificando que se ha insertado o actualizado una entidad.
      * 
@@ -176,22 +176,17 @@ abstract class AbstractBbDetailForm<T> extends AbstractDetailForm {
         // En caso de éxito actualizar la vista y publicar un evento.
         final boolean success = entity != null;
         if (success) {
-            // (JAF), 20090323, está línea es innecesaria e ineficiente ya que
-            // dispara múltiples eventos prescindibles
+            // (JAF), 20090323, está línea es innecesaria e ineficiente ya que dispara múltiples eventos prescindibles
             // formModel.getFormObjectHolder().setValue(entity);
 
-            // Ejecutar la lógica original de commit y seleccionar la fila
-            // apropiada.
+            // Ejecutar la lógica original de commit y seleccionar la fila apropiada.
             super.postCommit(formModel);
-            this.getMasterForm().setSelectedEntity(entity);
+            this.getMasterForm().changeSelection(Arrays.asList(entity));
 
             // Publicar el evento
-            // TODO, (JAF), 20080428, la publicación de eventos debería de ser
-            // un método privada del formulario maestro. Los tipos de eventos
-            // también deberían ser un tipo de dato privado.
-            this.getMasterForm().publishApplicationEvent(isInserting ? EventType.CREATED //
-                    : EventType.MODIFIED, //
-                    entity);
+            // TODO, (JAF), 20080428, la publicación de eventos debería de ser un método privada del formulario maestro.
+            // Los tipos de eventos también deberían ser un tipo de dato privado.
+            this.getMasterForm().publishApplicationEvent(isInserting ? EventType.CREATED : EventType.MODIFIED, entity);
         }
     }
 
@@ -212,7 +207,7 @@ abstract class AbstractBbDetailForm<T> extends AbstractDetailForm {
      * @param masterForm
      *            el formulario maestro.
      */
-    private void setMasterForm(AbstractBbTableMasterForm<T> masterForm) {
+    private void setMasterForm(AbstractBb1TableMasterForm<T> masterForm) {
 
         this.masterForm = masterForm;
     }

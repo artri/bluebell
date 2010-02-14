@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (C) 2009 Julio Argüello <julio.arguello@gmail.com>
  *
  * This file is part of Bluebell Rich Client.
@@ -23,9 +23,11 @@ package org.bluebell.richclient.test;
 
 import java.awt.EventQueue;
 import java.lang.reflect.InvocationTargetException;
+import java.util.Arrays;
 
 import junit.framework.TestCase;
 
+import org.apache.commons.lang.StringUtils;
 import org.bluebell.richclient.application.support.FormBackedView;
 import org.bluebell.richclient.form.AbstractBb2TableMasterForm;
 import org.bluebell.richclient.form.AbstractBbChildForm;
@@ -167,6 +169,35 @@ public abstract class AbstractBbSamplesTests extends AbstractBbRichClientTests {
     }
 
     /**
+     * Creates a page with the given view descriptors and show it in the active window.
+     * 
+     * @param viewDescriptorIds
+     *            the view descriptors.
+     * @return the resultant page descriptor.
+     */
+    public PageDescriptor initTest(String[] viewDescriptorIds) {
+
+        // Create the page descriptor (use diferent id each time)
+        final MultiViewPageDescriptor multiViewPageDescriptor = new MultiViewPageDescriptor();
+        multiViewPageDescriptor.setId(StringUtils.join(viewDescriptorIds));
+        multiViewPageDescriptor.setViewDescriptors(Arrays.asList(viewDescriptorIds));
+
+        // Initialize test variables
+        this.initializeVariables(multiViewPageDescriptor);
+
+        return multiViewPageDescriptor;
+    }
+    
+    /**
+     * Terminates the test.
+     */
+    public void terminateTest() {
+        
+        this.getActiveWindow().getControl().dispose();
+    }
+    
+
+    /**
      * Initialize other local variables different from those populated by Spring.
      * <p>
      * Call this method at the beginning of every test case.
@@ -194,7 +225,7 @@ public abstract class AbstractBbSamplesTests extends AbstractBbRichClientTests {
                 public void run() {
 
                     // Nothing to do, just waiting for page creation to be completed
-                    new String("Avoid CS warning");
+                    new String("Avoid Checkstyle warning");
                 }
             });
         } catch (InterruptedException e) {

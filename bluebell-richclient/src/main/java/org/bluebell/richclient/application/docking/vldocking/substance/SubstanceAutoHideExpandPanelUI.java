@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (C) 2009 Julio Argüello <julio.arguello@gmail.com>
  *
  * This file is part of Bluebell Rich Client.
@@ -31,7 +31,7 @@ import javax.swing.event.AncestorEvent;
 import javax.swing.event.AncestorListener;
 import javax.swing.plaf.ComponentUI;
 
-import org.bluebell.richclient.application.docking.vldocking.VLDockingUtil;
+import org.bluebell.richclient.application.docking.vldocking.VLDockingUtils;
 import org.bluebell.richclient.application.docking.vldocking.DockingPreferencesWidgetExtension.ActivationAware;
 import org.springframework.util.Assert;
 import org.springframework.util.ReflectionUtils;
@@ -151,19 +151,19 @@ public class SubstanceAutoHideExpandPanelUI extends AutoHideExpandPanelUI implem
             switch (zone) {
                 case DockingConstants.INT_HIDE_TOP:
                     border = UIManager.getBorder(//
-                            VLDockingUtil.activationKey("AutoHideExpandPanel.expandFromTopBorder", active));
+                            VLDockingUtils.activationKey("AutoHideExpandPanel.expandFromTopBorder", active));
                     break;
                 case DockingConstants.INT_HIDE_LEFT:
                     border = UIManager.getBorder(//
-                            VLDockingUtil.activationKey("AutoHideExpandPanel.expandFromLeftBorder", active));
+                            VLDockingUtils.activationKey("AutoHideExpandPanel.expandFromLeftBorder", active));
                     break;
                 case DockingConstants.INT_HIDE_BOTTOM:
                     border = UIManager.getBorder(//
-                            VLDockingUtil.activationKey("AutoHideExpandPanel.expandFromBottomBorder", active));
+                            VLDockingUtils.activationKey("AutoHideExpandPanel.expandFromBottomBorder", active));
                     break;
                 case DockingConstants.INT_HIDE_RIGHT:
                     border = UIManager.getBorder(//
-                            VLDockingUtil.activationKey("AutoHideExpandPanel.expandFromRightBorder", active));
+                            VLDockingUtils.activationKey("AutoHideExpandPanel.expandFromRightBorder", active));
                     break;
                 default:
                     throw new IllegalArgumentException("Illegal zone: \"" + zone + "\"");

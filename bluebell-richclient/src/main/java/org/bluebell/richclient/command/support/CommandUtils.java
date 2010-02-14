@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (C) 2009 Julio Argüello <julio.arguello@gmail.com>
  *
  * This file is part of Bluebell Rich Client.
@@ -33,7 +33,7 @@ import org.springframework.util.StringUtils;
  * 
  * @author <a href = "mailto:julio.arguello@gmail.com" >Julio Argüello (JAF)</a>
  */
-public final class CommandUtil extends ApplicationServicesAccessor {
+public final class CommandUtils extends ApplicationServicesAccessor {
 
     /**
      * Una cadena con una coma ({@value COMMA}).
@@ -63,7 +63,7 @@ public final class CommandUtil extends ApplicationServicesAccessor {
      */
     public static ActionCommand configureCommand(ActionCommand command, ValidatingFormModel formModel) {
 
-        return CommandUtil.configureCommand(command, formModel, Boolean.FALSE);
+        return CommandUtils.configureCommand(command, formModel, Boolean.FALSE);
     }
 
     /**
@@ -90,7 +90,7 @@ public final class CommandUtil extends ApplicationServicesAccessor {
         Assert.notNull(busyIndicated);
 
         // Securizar el comando
-        final String scid = CommandUtil.constructSecurityControllerId(//
+        final String scid = CommandUtils.constructSecurityControllerId(//
                 command.getId(), formModel);
         command.setSecurityControllerId(scid);
 
@@ -129,7 +129,7 @@ public final class CommandUtil extends ApplicationServicesAccessor {
         Assert.notNull(targetComponent);
 
         final ActionCommand configuredCommand = //
-        CommandUtil.configureCommand(command, formModel, Boolean.FALSE);
+        CommandUtils.configureCommand(command, formModel, Boolean.FALSE);
 
         // Añade al comando un interceptor indicador de ocupación
         configuredCommand.addCommandInterceptor(//
@@ -170,7 +170,7 @@ public final class CommandUtil extends ApplicationServicesAccessor {
 
         if (ids[0] != null) {
             id = (formModelId != null) ? //
-            formModelId + CommandUtil.DOT + ids[0]
+            formModelId + CommandUtils.DOT + ids[0]
                     : //
                     ids[0];
         }
@@ -197,9 +197,9 @@ public final class CommandUtil extends ApplicationServicesAccessor {
 
         final String capitalizedInnerString = StringUtils.capitalize(innerString);
         final String specializedCommandName = StringUtils.replace(defaultCommandFaceDescriptorId,
-                CommandUtil.COMMAND_SUFIX, //
-                capitalizedInnerString + CommandUtil.COMMAND_SUFIX);
+                CommandUtils.COMMAND_SUFIX, //
+                capitalizedInnerString + CommandUtils.COMMAND_SUFIX);
 
-        return specializedCommandName + CommandUtil.COMMA + defaultCommandFaceDescriptorId;
+        return specializedCommandName + CommandUtils.COMMA + defaultCommandFaceDescriptorId;
     }
 }

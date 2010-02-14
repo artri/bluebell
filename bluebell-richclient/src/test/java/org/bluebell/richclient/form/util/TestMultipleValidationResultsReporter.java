@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (C) 2009 Julio Argüello <julio.arguello@gmail.com>
  *
  * This file is part of Bluebell Rich Client.
@@ -21,8 +21,6 @@
  */
 package org.bluebell.richclient.form.util;
 
-import java.awt.Component;
-import java.awt.Container;
 import java.util.List;
 
 import javax.swing.JTextField;
@@ -36,7 +34,6 @@ import org.junit.Test;
 import org.springframework.binding.form.ValidatingFormModel;
 import org.springframework.binding.validation.ValidationMessage;
 import org.springframework.richclient.application.PageDescriptor;
-import org.springframework.richclient.form.Form;
 
 /**
  * Tests the correct behaviour of {@link org.bluebell.richclient.form.MultipleValidationResultsReporter}.
@@ -234,20 +231,6 @@ public class TestMultipleValidationResultsReporter extends AbstractBbSamplesTest
     }
 
     /**
-     * Gets the component with the given name.
-     * 
-     * @param form
-     *            the form containing the component.
-     * @param name
-     *            the name of the component.
-     * @return the control, may be <code>null</code> if not found.
-     */
-    private Component getComponentNamed(Form form, String name) {
-
-        return TestMultipleValidationResultsReporter.getDescendantNamed(name, form.getControl());
-    }
-
-    /**
      * Gets the validation messages reported by the validation view.
      * 
      * @return the validation messages.
@@ -255,53 +238,5 @@ public class TestMultipleValidationResultsReporter extends AbstractBbSamplesTest
     private List<ValidationMessage> getValidationMessages() {
 
         return this.getBackingForm(this.getValidationView()).getValidationMessages();
-    }
-
-    /**
-     * Simulate an user action changing the text value of a component.
-     * 
-     * @param form
-     *            the form containing the text control.
-     * @param property
-     *            the property represented by the text control.
-     * @param value
-     *            the new text value to set.
-     */
-    private void userAction(Form form, String property, String value) {
-
-        ((JTextField) this.getComponentNamed(form, property)).replaceSelection(value);
-    }
-
-    /**
-     * Does a pre-order search of a component with a given name.
-     * 
-     * @param name
-     *            the name.
-     * @param parent
-     *            the root component in hierarchy.
-     * @return the found component (may be null).
-     */
-    public static Component getDescendantNamed(String name, Component parent) {
-
-        // TODO, (JAF), mover esto de aquí.
-
-        org.springframework.util.Assert.notNull(name, "name");
-        org.springframework.util.Assert.notNull(parent, "parent");
-
-        if (name.equals(parent.getName())) { // Base case
-            return parent;
-        } else if (parent instanceof Container) { // Recursive case
-            for (final Component component : ((Container) parent).getComponents()) {
-
-                final Component foundComponent = //
-                TestMultipleValidationResultsReporter.getDescendantNamed(name, component);
-
-                if (foundComponent != null) {
-                    return foundComponent;
-                }
-            }
-        }
-
-        return null;
     }
 }

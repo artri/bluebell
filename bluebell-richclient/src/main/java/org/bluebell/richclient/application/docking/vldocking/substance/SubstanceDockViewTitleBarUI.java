@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (C) 2009 Julio Argüello <julio.arguello@gmail.com>
  *
  * This file is part of Bluebell Rich Client.
@@ -26,7 +26,7 @@ import javax.swing.JComponent;
 import javax.swing.UIManager;
 import javax.swing.plaf.ComponentUI;
 
-import org.bluebell.richclient.application.docking.vldocking.VLDockingUtil;
+import org.bluebell.richclient.application.docking.vldocking.VLDockingUtils;
 import org.bluebell.richclient.application.docking.vldocking.DockingPreferencesWidgetExtension.ActivationAware;
 import org.pushingpixels.substance.api.DecorationAreaType;
 import org.pushingpixels.substance.api.SubstanceLookAndFeel;
@@ -135,9 +135,9 @@ public class SubstanceDockViewTitleBarUI extends DockViewTitleBarUI implements A
 
             final Color color;
             if (active) {
-                color = VLDockingUtil.DockingColor.ACTIVE_WIDGET.getColor();
+                color = VLDockingUtils.DockingColor.ACTIVE_WIDGET.getColor();
             } else {
-                color = VLDockingUtil.DockingColor.INACTIVE_WIDGET.getColor();
+                color = VLDockingUtils.DockingColor.INACTIVE_WIDGET.getColor();
             }
             dockViewTitleBar.setBackground(color);
         }

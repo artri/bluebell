@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (C) 2009 Julio Argüello <julio.arguello@gmail.com>
  *
  * This file is part of Bluebell Rich Client.
@@ -53,6 +53,7 @@ import org.springframework.binding.value.support.ValueHolder;
 import org.springframework.richclient.form.FormModelHelper;
 import org.springframework.richclient.table.support.GlazedTableModel;
 import org.springframework.rules.RulesSource;
+import org.springframework.util.Assert;
 import org.springframework.util.ReflectionUtils;
 
 import ca.odell.glazedlists.EventList;
@@ -187,7 +188,7 @@ public class BbFormModelHelper extends FormModelHelper {
     public static DirtyTrackingValueModel addCollectionValueModel(ValidatingFormModel formModel, String propertyName,
             Boolean deepCopyEnabled) {
 
-        org.springframework.util.Assert.isInstanceOf(BbDefaultFormModel.class, formModel);
+        Assert.isInstanceOf(BbDefaultFormModel.class, formModel);
 
         final PropertyMetadataAccessStrategy pmas = ((AbstractFormModel) formModel).getPropertyAccessStrategy()
                 .getMetadataAccessStrategy();
@@ -196,8 +197,7 @@ public class BbFormModelHelper extends FormModelHelper {
         // 1. Crear un value model para la propiedad
         final ValueModel propertyVm = pas.getPropertyValueModel(propertyName);
 
-        // 2. Crear un BufferedCollectionValueModel envolviendo el value model
-        // del punto 1.
+        // 2. Crear un BufferedCollectionValueModel envolviendo el value model del punto 1.
         final DirtyTrackingDCBCVM collectionVm = new DirtyTrackingDCBCVM(//
                 propertyVm, //
                 pmas.getPropertyType(propertyName), //
@@ -213,12 +213,10 @@ public class BbFormModelHelper extends FormModelHelper {
                 !pmas.isWriteable(propertyName), //
                 pmas.getAllUserMetadata(propertyName));
 
-        // 4. Añadir el value model al form model para que se le registre un
-        // commit trigger.
+        // 4. Añadir el value model al form model para que se le registre un commit trigger.
         formModel.add(propertyName, collectionVm);
 
-        // 5. Re-añadir el value model al form model para que este permanezca a
-        // la escucha de los cambios sobre el mismo.
+        // 5. Re-añadir el value model al form model para que este permanezca a la escucha de cambios sobre él
         formModel.add(propertyName, collectionVm, collectionVmMetadata);
 
         return collectionVm;
@@ -263,9 +261,7 @@ public class BbFormModelHelper extends FormModelHelper {
     @SuppressWarnings("unchecked")
     public static TableModel createTableModel(EventList eventList, String[] columnPropertyNames, String id) {
 
-        final GlazedTableModel tableModel = new GlazedTableModel(eventList, columnPropertyNames, id);
-
-        return tableModel;
+        return new GlazedTableModel(eventList, columnPropertyNames, id);
     }
 
     /**

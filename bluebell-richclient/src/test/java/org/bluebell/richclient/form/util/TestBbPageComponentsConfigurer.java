@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (C) 2009 Julio Argüello <julio.arguello@gmail.com>
  *
  * This file is part of Bluebell Rich Client.
@@ -21,13 +21,11 @@
  */
 package org.bluebell.richclient.form.util;
 
-import java.util.Arrays;
 import java.util.List;
 
 import junit.framework.TestCase;
 
 import org.apache.commons.lang.ArrayUtils;
-import org.apache.commons.lang.StringUtils;
 import org.bluebell.richclient.form.AbstractBb2TableMasterForm;
 import org.bluebell.richclient.form.AbstractBbChildForm;
 import org.bluebell.richclient.form.AbstractBbSearchForm;
@@ -36,8 +34,6 @@ import org.bluebell.richclient.form.BbValidationForm;
 import org.bluebell.richclient.samples.simple.bean.Person;
 import org.bluebell.richclient.test.AbstractBbSamplesTests;
 import org.junit.Test;
-import org.springframework.richclient.application.PageDescriptor;
-import org.springframework.richclient.application.support.MultiViewPageDescriptor;
 
 /**
  * Tests the correct behaviour of {@link BbPageComponentsConfigurer}.
@@ -179,26 +175,6 @@ public class TestBbPageComponentsConfigurer extends AbstractBbSamplesTests {
 
         new BbPageComponentsConfigurer<Object>().configureApplicationPage(this.getApplicationPage());
         this.assertViewDescriptors(Boolean.FALSE, Boolean.FALSE, Boolean.FALSE, Boolean.FALSE);
-    }
-
-    /**
-     * Creates a page with the given view descriptors and show it in the active window.
-     * 
-     * @param viewDescriptorIds
-     *            the view descriptors.
-     * @return the resultant page descriptor.
-     */
-    private PageDescriptor initTest(String[] viewDescriptorIds) {
-
-        // Create the page descriptor (use diferent id each time)
-        final MultiViewPageDescriptor multiViewPageDescriptor = new MultiViewPageDescriptor();
-        multiViewPageDescriptor.setId(StringUtils.join(viewDescriptorIds));
-        multiViewPageDescriptor.setViewDescriptors(Arrays.asList(viewDescriptorIds));
-
-        // Initialize test variables
-        super.initializeVariables(multiViewPageDescriptor);
-
-        return multiViewPageDescriptor;
     }
 
     /**

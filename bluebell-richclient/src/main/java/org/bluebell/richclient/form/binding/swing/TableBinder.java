@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (C) 2009 Julio Argüello <julio.arguello@gmail.com>
  *
  * This file is part of Bluebell Rich Client.
@@ -80,18 +80,6 @@ public class TableBinder extends AbstractBinder implements InitializingBean {
     private Form dialogBackingForm;
 
     /**
-     * El tamaño de alto del diálogo.
-     */
-    // TODO, (JAF), 20090513, esta variable debería denominarse dialogHeight.
-    private Integer heightDialog;
-
-    /**
-     * El tamaño de ancho del diálogo.
-     */
-    // TODO, (JAF), 20090513, esta variable debería denominarse dialogWidth.
-    private Integer widthDialog;
-
-    /**
      * El constructor por defecto del <em>binder</em>.
      */
     public TableBinder() {
@@ -146,26 +134,6 @@ public class TableBinder extends AbstractBinder implements InitializingBean {
     }
 
     /**
-     * Obtiene el alto del diálogo.
-     * 
-     * @return el alto del diálogo.
-     */
-    public Integer getHeightDialog() {
-
-        return this.heightDialog;
-    }
-
-    /**
-     * Obtiene el ancho del diálogo.
-     * 
-     * @return el ancho del diálogo.
-     */
-    public Integer getWidthDialog() {
-
-        return this.widthDialog;
-    }
-
-    /**
      * Establece los nombres de las columnas de la tabla creada por este <em>binding</em>.
      * 
      * @param columnPropertyNames
@@ -189,34 +157,6 @@ public class TableBinder extends AbstractBinder implements InitializingBean {
     }
 
     /**
-     * Establece el alto del diálogo.
-     * 
-     * @param heightDialog
-     *            el alto del diálogo.
-     */
-    public void setHeightDialog(Integer heightDialog) {
-
-        Assert.notNull(heightDialog);
-        Assert.isTrue(heightDialog > 0);
-
-        this.heightDialog = heightDialog;
-    }
-
-    /**
-     * Establece el ancho del diálogo.
-     * 
-     * @param widthDialog
-     *            el ancho del diálogo.
-     */
-    public void setWidthDialog(Integer widthDialog) {
-
-        Assert.notNull(widthDialog);
-        Assert.isTrue(widthDialog > 0);
-
-        this.widthDialog = widthDialog;
-    }
-
-    /**
      * {@inheritDoc}
      */
     @SuppressWarnings("unchecked")
@@ -236,14 +176,6 @@ public class TableBinder extends AbstractBinder implements InitializingBean {
         final TableBinding binding = new TableBinding((JTable) control, formModel, formPropertyPath);
         binding.setColumnPropertyNames(this.getColumnPropertyNames());
         binding.setDialogBackingForm(this.getDialogBackingForm());
-
-        if (this.getWidthDialog() != null) {
-            binding.setWidthDialog(this.getWidthDialog());
-        }
-
-        if (this.getHeightDialog() != null) {
-            binding.setHeightDialog(this.getHeightDialog());
-        }
 
         return binding;
     }

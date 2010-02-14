@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (C) 2009 Julio Argüello <julio.arguello@gmail.com>
  *
  * This file is part of Bluebell Rich Client.
@@ -21,20 +21,19 @@
  */
 package org.bluebell.richclient.application.docking.vldocking.substance;
 
-import java.awt.EventQueue;
 import java.util.Map;
 
 import javax.swing.ImageIcon;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JTabbedPane;
-import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
+import org.bluebell.richclient.swing.util.SwingUtils;
 import org.pushingpixels.lafwidget.LafWidget;
 import org.pushingpixels.lafwidget.animation.FadeConfigurationManager;
 import org.pushingpixels.lafwidget.animation.FadeKind;
@@ -125,16 +124,12 @@ public class SubstanceLookAndFeelConfigurer extends UIManagerConfigurer implemen
     @Override
     public void setLookAndFeel(final String className) {
 
-        if (SwingUtilities.isEventDispatchThread()) {
-            super.setLookAndFeel(className);
-        } else {
-            EventQueue.invokeLater(new Runnable() {
-                public void run() {
+        SwingUtils.runInEventDispatcherThread(new Runnable() {
+            public void run() {
 
-                    SubstanceLookAndFeelConfigurer.super.setLookAndFeel(className);
-                }
-            });
-        }
+                SubstanceLookAndFeelConfigurer.super.setLookAndFeel(className);
+            }
+        });
     }
 
     /**
@@ -143,16 +138,12 @@ public class SubstanceLookAndFeelConfigurer extends UIManagerConfigurer implemen
     @Override
     public void setLookAndFeelWithName(final String lookAndFeelName) {
 
-        if (SwingUtilities.isEventDispatchThread()) {
-            super.setLookAndFeelWithName(lookAndFeelName);
-        } else {
-            EventQueue.invokeLater(new Runnable() {
-                public void run() {
+        SwingUtils.runInEventDispatcherThread(new Runnable() {
+            public void run() {
 
-                    SubstanceLookAndFeelConfigurer.super.setLookAndFeelWithName(lookAndFeelName);
-                }
-            });
-        }
+                SubstanceLookAndFeelConfigurer.super.setLookAndFeelWithName(lookAndFeelName);
+            }
+        });
     }
 
     /**
@@ -255,20 +246,16 @@ public class SubstanceLookAndFeelConfigurer extends UIManagerConfigurer implemen
         final Object[] returnValue = new Object[1];
         final Throwable[] throwable = new Throwable[1];
 
-        if (SwingUtilities.isEventDispatchThread()) {
-            returnValue[0] = pjp.proceed();
-        } else {
-            EventQueue.invokeAndWait(new Runnable() {
-                public void run() {
+        SwingUtils.runInEventDispatcherThread(new Runnable() {
+            public void run() {
 
-                    try {
-                        returnValue[0] = pjp.proceed();
-                    } catch (final Throwable e) {
-                        throwable[0] = e;
-                    }
+                try {
+                    returnValue[0] = pjp.proceed();
+                } catch (final Throwable e) {
+                    throwable[0] = e;
                 }
-            });
-        }
+            }
+        });
 
         // Re-throw throwable
         if (throwable[0] != null) {

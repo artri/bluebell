@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (C) 2009 Julio Argüello <julio.arguello@gmail.com>
  *
  * This file is part of Bluebell Rich Client.
@@ -19,11 +19,12 @@
 package org.bluebell.richclient.form.binding.swing;
 
 import java.awt.BorderLayout;
-import java.awt.Dimension;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.io.Serializable;
 import java.text.MessageFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
@@ -36,9 +37,9 @@ import javax.swing.event.ListSelectionListener;
 import javax.swing.table.TableModel;
 
 import org.bluebell.richclient.application.config.FilterCommand;
-import org.bluebell.richclient.command.support.CommandUtil;
+import org.bluebell.richclient.command.support.CommandUtils;
 import org.bluebell.richclient.form.util.BbFormModelHelper;
-import org.bluebell.richclient.table.support.FilterModelUtil;
+import org.bluebell.richclient.table.support.TableUtils;
 import org.springframework.binding.form.FieldMetadata;
 import org.springframework.binding.form.FormModel;
 import org.springframework.binding.form.ValidatingFormModel;
@@ -51,27 +52,24 @@ import org.springframework.richclient.dialog.TitledPageApplicationDialog;
 import org.springframework.richclient.form.Form;
 import org.springframework.richclient.form.FormGuard;
 import org.springframework.richclient.form.binding.support.CustomBinding;
+import org.springframework.richclient.table.support.GlazedTableModel;
 import org.springframework.util.Assert;
 
 import ca.odell.glazedlists.EventList;
 
 /**
- * Vincula una propiedad de tipo colección con una tabla con posibilidades para
- * la adición, modificación, borrado y búsqueda de elementos.
+ * Binds a property of type <code>Collection</code> with a table capable of being edited 
+ * (add, modify, remove and search).
  * <p>
- * El control consta de una tabla en la parte izquierda y una botonera vertical
- * en la derecha.
+ * The control includes a table, a button stack and searchable bar.
  * <p>
- * Es necesario especificar los nombres de las propiedades a mostrar como
- * columnas en la tabla y el formulario a utilizar para crear y modificar las
- * entidades representadas por cada fila.
+ * You need to specify the names of the properties to be binded as columns and the backing form responsible for editing 
+ * table rows.
  * <p>
- * Es posible configurar el componente devuelto utilizando las siguientes claves
- * (donde xxx es el nombre de la propiedad):
+ * Also it's possible to configure the returned component using the following keys (xxx is the property name):
  * <dl>
  * <dt>xxx.yyy
- * <dd>Donde yyy es el nombre de una propiedad de las entidades representadas
- * por cada fila.
+ * <dd>yyy is the name of a property from the entity represented by rows.
  * <dd>Precede a cualquier de los sufijos utilizados para configurar las
  * columnas de una tabla.
  * <dt>filterXxxCommand
@@ -124,9 +122,9 @@ public class TableBinding extends CustomBinding {
     private static final String REMOVE_COMMAND_ID = "removeCommand";
 
     /**
-     * El comando que permite añadir un nuevo elemento a la tabla.
+     * El componente tabla creado por este <em>binding</em>.
      */
-    private ActionCommand addCommand;
+    private JTable table;
 
     /**
      * Los nombres de las columnas de la tabla creada por este <em>binding</em>.
@@ -134,9 +132,34 @@ public class TableBinding extends CustomBinding {
     private String[] columnPropertyNames;
 
     /**
+     * El comando que permite añadir un nuevo elemento a la tabla.
+     */
+    private ActionCommand addCommand;
+
+    /**
+     * El comando que permite añadir un nuevo elemento a la tabla.
+     */
+    private ActionCommand modifyCommand;
+
+    /**
+     * El comando que permite eliminar un elemento de la tabla.
+     */
+    private ActionCommand removeCommand;
+
+    /**
+     * El comando de filtrado de la tabla.
+     */
+    private ActionCommand filterCommand;
+
+    /**
      * El grupo de comandos asociados a la tabla.
      */
     private CommandGroup commandGroup;
+
+    /**
+     * El menú <em>popup</em> asociado a la tabla.
+     */
+    private CommandGroup popupMenu;
 
     /**
      * El diálogo a mostrar para añadir o editar una entidad de la tabla.
@@ -147,43 +170,6 @@ public class TableBinding extends CustomBinding {
      * El formulario a utilizar en el diálogo que permite añadir o editar una entidad de la tabla.
      */
     private Form dialogBackingForm;
-
-    /**
-     * El comando de filtrado de la tabla.
-     */
-    private ActionCommand filterCommand;
-
-    /**
-     * El tamaño de alto del diálogo.
-     */
-    // TODO, (JAF), 20090513, esta variable debería denominarse dialogHeight.
-    private Integer heightDialog;
-
-    /**
-     * El comando que permite añadir un nuevo elemento a la tabla.
-     */
-    private ActionCommand modifyCommand;
-
-    /**
-     * El menú <em>popup</em> asociado a la tabla.
-     */
-    private CommandGroup popupMenu;
-
-    /**
-     * El comando que permite eliminar un elemento de la tabla.
-     */
-    private ActionCommand removeCommand;
-
-    /**
-     * El componente tabla creado por este <em>binding</em>.
-     */
-    private JTable table;
-
-    /**
-     * El tamaño de ancho del diálogo.
-     */
-    // TODO, (JAF), 20090513, esta variable debería denominarse dialogWidth.
-    private Integer widthDialog;
 
     /**
      * Construye el <em>binding</em> a partir del modelo del formulario, la propiedad a la que hace referencia y los
@@ -224,17 +210,13 @@ public class TableBinding extends CustomBinding {
     }
 
     /**
-     * Obtiene el comando que permite añadir un nuevo elemento a la tabla y si no existe lo crea.
+     * Obtiene el componente tabla creado por este <em>binding</em>.
      * 
-     * @return el comando que permite añadir un nuevo elemento a la tabla.
+     * @return el componente tabla creado por este <em>binding</em>.
      */
-    public ActionCommand getAddCommand() {
+    public JTable getTable() {
 
-        if (this.addCommand == null) {
-            this.addCommand = this.createAddCommand();
-        }
-
-        return this.addCommand;
+        return this.table;
     }
 
     /**
@@ -248,27 +230,28 @@ public class TableBinding extends CustomBinding {
     }
 
     /**
-     * Obtiene el formulario a utilizar en el diálogo que permite añadir o editar una entidad de la tabla.
+     * Establece los nombres de las columnas de la tabla creada por este <em>binding</em>.
      * 
-     * @return el formulario.
+     * @param columnPropertyNames
+     *            los nombres de las columnas de la tabla creada por este <em>binding</em>.
      */
-    public Form getDialogBackingForm() {
+    public void setColumnPropertyNames(String[] columnPropertyNames) {
 
-        return this.dialogBackingForm;
+        this.columnPropertyNames = columnPropertyNames;
     }
 
     /**
-     * Obtiene el comando de filtrado de la tabla.
+     * Obtiene el comando que permite añadir un nuevo elemento a la tabla y si no existe lo crea.
      * 
-     * @return el comando de filtrado.
+     * @return el comando que permite añadir un nuevo elemento a la tabla.
      */
-    public ActionCommand getFilterCommand() {
+    public ActionCommand getAddCommand() {
 
-        if (this.filterCommand == null) {
-            this.filterCommand = this.createFilterCommand();
+        if (this.addCommand == null) {
+            this.addCommand = this.createAddCommand();
         }
 
-        return this.filterCommand;
+        return this.addCommand;
     }
 
     /**
@@ -300,24 +283,46 @@ public class TableBinding extends CustomBinding {
     }
 
     /**
-     * Obtiene el componente tabla creado por este <em>binding</em>.
+     * Obtiene el comando de filtrado de la tabla.
      * 
-     * @return el componente tabla creado por este <em>binding</em>.
+     * @return el comando de filtrado.
      */
-    public JTable getTable() {
+    public ActionCommand getFilterCommand() {
 
-        return this.table;
+        if (this.filterCommand == null) {
+            this.filterCommand = this.createFilterCommand();
+        }
+
+        return this.filterCommand;
     }
 
     /**
-     * Establece los nombres de las columnas de la tabla creada por este <em>binding</em>.
+     * Obtiene el diálogo a mostrar para añadir o editar una entidad de la tabla, y si no existe lo crea a partir del
+     * formulario ( {@link #dialogBackingForm}).
      * 
-     * @param columnPropertyNames
-     *            los nombres de las columnas de la tabla creada por este <em>binding</em>.
+     * @return el diálogo.
      */
-    public void setColumnPropertyNames(String[] columnPropertyNames) {
+    public EditingDialog getDialog() {
 
-        this.columnPropertyNames = columnPropertyNames;
+        if (this.dialog == null) {
+            this.setDialog(new EditingDialog());
+
+            // FormGuard para que no se habilite el comando Aceptar cuando el formulario tiene errores.
+            final FormGuard formGuard = new FormGuard(this.getDialogBackingForm().getFormModel());
+            formGuard.addGuarded(this.getDialog(), FormGuard.ON_NOERRORS);
+        }
+
+        return this.dialog;
+    }
+
+    /**
+     * Obtiene el formulario a utilizar en el diálogo que permite añadir o editar una entidad de la tabla.
+     * 
+     * @return el formulario.
+     */
+    public Form getDialogBackingForm() {
+
+        return this.dialogBackingForm;
     }
 
     /**
@@ -332,31 +337,67 @@ public class TableBinding extends CustomBinding {
     }
 
     /**
-     * Establece el alto del diálogo.
-     * 
-     * @param heightDialog
-     *            el alto del diálogo.
+     * {@inheritDoc}
      */
-    public void setHeightDialog(Integer heightDialog) {
+    @Override
+    protected JComponent doBindControl() {
 
-        Assert.notNull(heightDialog);
-        Assert.isTrue(heightDialog > 0);
+        // Comprobaciones de parámetros
+        Assert.notNull(this.getColumnPropertyNames());
+        // Assert.notNull(this.getDialogBackingForm());
 
-        this.heightDialog = heightDialog;
+        // Configurar la tabla
+        this.configureTable();
+
+        // Construir el control del binding
+        final JScrollPane scroolPane = new JScrollPane(this.getTable());
+        final JComponent buttonStack = this.getCommandGroup().createButtonStack();
+
+        // La tabla a la izquierda y los botones a la derecha
+        final JPanel jPanel = new JPanel();
+        jPanel.setLayout(new BorderLayout());
+        jPanel.add(scroolPane, BorderLayout.CENTER);
+        jPanel.add(buttonStack, BorderLayout.EAST);
+
+        return jPanel;
     }
 
     /**
-     * Establece el ancho del diálogo.
-     * 
-     * @param widthDialog
-     *            el ancho del diálogo.
+     * {@inheritDoc}
      */
-    public void setWidthDialog(Integer widthDialog) {
+    @Override
+    protected void enabledChanged() {
 
-        Assert.notNull(widthDialog);
-        Assert.isTrue(widthDialog > 0);
+        this.updateControlForState();
+    }
 
-        this.widthDialog = widthDialog;
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void readOnlyChanged() {
+
+        this.updateControlForState();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void valueModelChanged(Object newValue) {
+
+        // Since value model and GlazedTableModel share event list no action is needed
+    }
+
+    /**
+     * Establece el componente tabla creado por este <em>binding</em>.
+     * 
+     * @param table
+     *            el componente tabla creado por este <em>binding</em>.
+     */
+    protected void setTable(JTable table) {
+
+        this.table = table;
     }
 
     /**
@@ -420,162 +461,6 @@ public class TableBinding extends CustomBinding {
     }
 
     /**
-     * Crea y configura el comando que permite añadir un nuevo elemento a la tabla.
-     * 
-     * @return el comando de agregado.
-     */
-    protected ActionCommand createAddCommand() {
-
-        // Obtener los identificadores del comando, separados por comas y
-        // ordenados según prioridad
-        final String commandId = this.getAddCommandFaceDescriptorId();
-
-        // Crear el comando
-        final ActionCommand command = new AddCommand(commandId);
-
-        // Configurar el comando
-        return CommandUtil.configureCommand(command, (ValidatingFormModel) this.getFormModel());
-    }
-
-    /**
-     * Crea el grupo de comandos asociados a la tabla.
-     * 
-     * @return el grupo de comandos.
-     */
-    protected CommandGroup createCommandGroup() {
-
-        final CommandGroup group = CommandGroup.createCommandGroup(new Object[] { this.getFilterCommand(), //
-                CommandGroupFactoryBean.SEPARATOR_MEMBER_CODE, //
-                this.getAddCommand(), //
-                this.getModifyCommand(), //
-                this.getRemoveCommand() });
-
-        group.setCommandRegistry(//
-                this.getActiveWindow().getCommandManager());
-
-        return group;
-    }
-
-    /**
-     * Crea el comando de filtrado de la tabla.
-     * 
-     * @return el comando de filtrado.
-     */
-    protected ActionCommand createFilterCommand() {
-
-        // Obtener los identificadores del comando, separados por comas y
-        // ordenados según prioridad
-        final String commandId = this.getFilterCommandFaceDescriptorId();
-
-        // Crear el comando
-        final ActionCommand command = new FilterCommand(commandId, this.getTable());
-
-        // Configurar el comando
-        return CommandUtil.configureCommand(command, (ValidatingFormModel) this.getFormModel());
-    }
-
-    /**
-     * Crea y configura el comando que permite modificar un elemento de la tabla.
-     * 
-     * @return el comando de modificación.
-     */
-    protected ActionCommand createModifyCommand() {
-
-        // Obtener los identificadores del comando, separados por comas y
-        // ordenados según prioridad
-        final String commandId = this.getModifyCommandFaceDescriptorId();
-
-        // Crear el comando
-        final ActionCommand command = new ModifyCommand(commandId);
-
-        // Configurar el comando
-        return CommandUtil.configureCommand(command, (ValidatingFormModel) this.getFormModel());
-    }
-
-    /**
-     * Crea el menú popup de la tabla.
-     * 
-     * @return el menú popup.
-     */
-    protected CommandGroup createPopupMenu() {
-
-        final CommandGroup group = CommandGroup.createCommandGroup(new Object[] { this.getAddCommand(), //
-                this.getModifyCommand(), //
-                this.getRemoveCommand() });
-
-        group.setCommandRegistry(//
-                this.getActiveWindow().getCommandManager());
-
-        return group;
-    }
-
-    /**
-     * Crea y configura el comando que permite eliminar un elemento de la tabla.
-     * 
-     * @return el comando de eliminación.
-     */
-    protected ActionCommand createRemoveCommand() {
-
-        // Obtener los identificadores del comando, separados por comas y
-        // ordenados según prioridad
-        final String commandId = this.getRemoveCommandFaceDescriptorId();
-
-        // Crear el comando
-        final ActionCommand command = new RemoveCommand(commandId);
-
-        // Configurar el comando
-        return CommandUtil.configureCommand(command, (ValidatingFormModel) this.getFormModel());
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected JComponent doBindControl() {
-
-        // Comprobaciones de parámetros
-        Assert.notNull(this.getColumnPropertyNames());
-        Assert.notNull(this.getDialogBackingForm());
-
-        // Configurar la tabla
-        this.configureTable();
-
-        // Construir el control del binding
-        final JScrollPane scroolPane = new JScrollPane(this.getTable());
-        final JComponent buttonStack = this.getCommandGroup().createButtonStack();
-
-        // La tabla a la izquierda y los botones a la derecha
-        final JPanel jPanel = new JPanel();
-        jPanel.setLayout(new BorderLayout());
-        jPanel.add(scroolPane, BorderLayout.CENTER);
-        jPanel.add(buttonStack, BorderLayout.EAST);
-
-        return jPanel;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected void enabledChanged() {
-
-        this.updateControlForState();
-    }
-
-    /**
-     * Obtiene el identificador del comando que permite añadir un nuevo elemento a la tabla.
-     * 
-     * @return el identificador.
-     * 
-     * @see CommandUtil#getCommandFaceDescriptorId(String, String)
-     */
-    protected String getAddCommandFaceDescriptorId() {
-
-        return CommandUtil.getCommandFaceDescriptorId(//
-                TableBinding.ADD_COMMAND_ID, this.getProperty());
-    }
-
-    /**
      * Obtiene el grupo de comandos asociados a la tabla.
      * 
      * @return el grupo de comandos.
@@ -590,59 +475,22 @@ public class TableBinding extends CustomBinding {
     }
 
     /**
-     * Obtiene el diálogo a mostrar para añadir o editar una entidad de la tabla, y si no existe lo crea a partir del
-     * formulario ( {@link #dialogBackingForm}).
+     * Crea el grupo de comandos asociados a la tabla.
      * 
-     * @return el diálogo.
+     * @return el grupo de comandos.
      */
-    protected EditingDialog getDialog() {
+    protected CommandGroup createCommandGroup() {
 
-        if (this.dialog == null) {
-            this.setDialog(new EditingDialog());
+        final CommandGroup group = CommandGroup.createCommandGroup(new Object[] {//
+                this.getFilterCommand(), //
+                        CommandGroupFactoryBean.SEPARATOR_MEMBER_CODE, //
+                        this.getAddCommand(), //
+                        this.getModifyCommand(), //
+                        this.getRemoveCommand() });
 
-            // FormGuard para que no se habilite el comando Aceptar
-            // cuando el formulario tiene errores.
-            final FormGuard formGuard = new FormGuard(this.getDialogBackingForm().getFormModel());
-            formGuard.addGuarded(this.getDialog(), FormGuard.ON_NOERRORS);
-        }
+        group.setCommandRegistry(this.getActiveWindow().getCommandManager());
 
-        return this.dialog;
-    }
-
-    /**
-     * Obtiene el identificador del comando de filtrado de la tabla.
-     * 
-     * @return el identificador.
-     * 
-     * @see CommandUtil#getCommandFaceDescriptorId(String, String)
-     */
-    protected String getFilterCommandFaceDescriptorId() {
-
-        return CommandUtil.getCommandFaceDescriptorId(//
-                TableBinding.FILTER_COMMAND_ID, this.getProperty());
-    }
-
-    /**
-     * Obtiene el alto del diálogo.
-     * 
-     * @return el alto del diálogo.
-     */
-    protected Integer getHeightDialog() {
-
-        return this.heightDialog;
-    }
-
-    /**
-     * Obtiene el identificador del comando que permite modificar un elemento de la tabla.
-     * 
-     * @return el identificador.
-     * 
-     * @see CommandUtil#getCommandFaceDescriptorId(String, String)
-     */
-    protected String getModifyCommandFaceDescriptorId() {
-
-        return CommandUtil.getCommandFaceDescriptorId(//
-                TableBinding.MODIFY_COMMAND_ID, this.getProperty());
+        return group;
     }
 
     /**
@@ -660,35 +508,138 @@ public class TableBinding extends CustomBinding {
     }
 
     /**
+     * Crea el menú popup de la tabla.
+     * 
+     * @return el menú popup.
+     */
+    protected CommandGroup createPopupMenu() {
+
+        final CommandGroup group = CommandGroup.createCommandGroup(new Object[] { this.getAddCommand(), //
+                this.getModifyCommand(), //
+                this.getRemoveCommand() });
+
+        group.setCommandRegistry(this.getActiveWindow().getCommandManager());
+
+        return group;
+    }
+
+    /**
+     * Crea y configura el comando que permite añadir un nuevo elemento a la tabla.
+     * 
+     * @return el comando de agregado.
+     */
+    protected ActionCommand createAddCommand() {
+
+        // Obtener los identificadores del comando, separados por comas y
+        // ordenados según prioridad
+        final String commandId = this.getAddCommandFaceDescriptorId();
+
+        // Crear el comando
+        final ActionCommand command = new AddCommand(commandId);
+
+        // Configurar el comando
+        return CommandUtils.configureCommand(command, (ValidatingFormModel) this.getFormModel());
+    }
+
+    /**
+     * Crea y configura el comando que permite modificar un elemento de la tabla.
+     * 
+     * @return el comando de modificación.
+     */
+    protected ActionCommand createModifyCommand() {
+
+        // Obtener los identificadores del comando, separados por comas y ordenados según prioridad
+        final String commandId = this.getModifyCommandFaceDescriptorId();
+
+        // Crear el comando
+        final ActionCommand command = new ModifyCommand(commandId);
+
+        // Configurar el comando
+        return CommandUtils.configureCommand(command, (ValidatingFormModel) this.getFormModel());
+    }
+
+    /**
+     * Crea y configura el comando que permite eliminar un elemento de la tabla.
+     * 
+     * @return el comando de eliminación.
+     */
+    protected ActionCommand createRemoveCommand() {
+
+        // Obtener los identificadores del comando, separados por comas y
+        // ordenados según prioridad
+        final String commandId = this.getRemoveCommandFaceDescriptorId();
+
+        // Crear el comando
+        final ActionCommand command = new RemoveCommand(commandId);
+
+        // Configurar el comando
+        return CommandUtils.configureCommand(command, (ValidatingFormModel) this.getFormModel());
+    }
+
+    /**
+     * Crea el comando de filtrado de la tabla.
+     * 
+     * @return el comando de filtrado.
+     */
+    protected ActionCommand createFilterCommand() {
+
+        // Obtener los identificadores del comando, separados por comas y
+        // ordenados según prioridad
+        final String commandId = this.getFilterCommandFaceDescriptorId();
+
+        // Crear el comando
+        final ActionCommand command = new FilterCommand(commandId, this.getTable());
+
+        // Configurar el comando
+        return CommandUtils.configureCommand(command, (ValidatingFormModel) this.getFormModel());
+    }
+
+    /**
+     * Obtiene el identificador del comando que permite añadir un nuevo elemento a la tabla.
+     * 
+     * @return el identificador.
+     * 
+     * @see CommandUtils#getCommandFaceDescriptorId(String, String)
+     */
+    protected String getAddCommandFaceDescriptorId() {
+
+        return CommandUtils.getCommandFaceDescriptorId(TableBinding.ADD_COMMAND_ID, this.getProperty());
+    }
+
+    /**
+     * Obtiene el identificador del comando que permite modificar un elemento de la tabla.
+     * 
+     * @return el identificador.
+     * 
+     * @see CommandUtils#getCommandFaceDescriptorId(String, String)
+     */
+    protected String getModifyCommandFaceDescriptorId() {
+
+        return CommandUtils.getCommandFaceDescriptorId(TableBinding.MODIFY_COMMAND_ID, this.getProperty());
+    }
+
+    /**
      * Obtiene el identificador del comando que permite eliminar un elemento de la tabla.
      * 
      * @return el identificador.
      * 
-     * @see CommandUtil#getCommandFaceDescriptorId(String, String)
+     * @see CommandUtils#getCommandFaceDescriptorId(String, String)
      */
     protected String getRemoveCommandFaceDescriptorId() {
 
-        return CommandUtil.getCommandFaceDescriptorId(//
-                TableBinding.REMOVE_COMMAND_ID, this.getProperty());
+        return CommandUtils.getCommandFaceDescriptorId(TableBinding.REMOVE_COMMAND_ID, this.getProperty());
     }
 
     /**
-     * Obtiene el ancho del diálogo.
+     * Obtiene el identificador del comando de filtrado de la tabla.
      * 
-     * @return el ancho del diálogo.
+     * @return el identificador.
+     * 
+     * @see CommandUtils#getCommandFaceDescriptorId(String, String)
      */
-    protected Integer getWidthDialog() {
+    protected String getFilterCommandFaceDescriptorId() {
 
-        return this.widthDialog;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected void readOnlyChanged() {
-
-        this.updateControlForState();
+        return CommandUtils.getCommandFaceDescriptorId(TableBinding.FILTER_COMMAND_ID, this.getProperty());
     }
 
     /**
@@ -703,27 +654,6 @@ public class TableBinding extends CustomBinding {
     }
 
     /**
-     * Establece el componente tabla creado por este <em>binding</em>.
-     * 
-     * @param table
-     *            el componente tabla creado por este <em>binding</em>.
-     */
-    protected void setTable(JTable table) {
-
-        this.table = table;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected void valueModelChanged(Object newValue) {
-
-        // Ya que ValueModel y GlazedTableModel comparten event list no es
-        // necesario hacer nada.
-    }
-
-    /**
      * Crea el modelo del componente tabla creado por este <em>binding</em>.
      * <p>
      * Si el <em>value model</em> de la propiedad asociada al <em>binding</em> no es del tipo esperado lo modifica
@@ -734,12 +664,11 @@ public class TableBinding extends CustomBinding {
     @SuppressWarnings("unchecked")
     private TableModel createTableModel() {
 
-        // Asegurarse de que el value model de la colección es el esperado y en
-        // caso contrario modificarlo
+        // Asegurarse de que el value model de la colección es el esperado y en caso contrario modificarlo
         final Object value = this.getValue();
         if (!(value instanceof EventList)) {
-            BbFormModelHelper.addCollectionValueModel((ValidatingFormModel) //
-                    this.getFormModel(), this.getProperty(), Boolean.TRUE);
+            final ValidatingFormModel validatingFormModel = (ValidatingFormModel) this.getFormModel();
+            BbFormModelHelper.addCollectionValueModel(validatingFormModel, this.getProperty(), Boolean.TRUE);
         }
 
         // Crear el table model
@@ -825,24 +754,14 @@ public class TableBinding extends CustomBinding {
 
             super();
 
-            this.setDialogPage(new FormBackedDialogPage(//
-                    TableBinding.this.getDialogBackingForm()));
+            this.setDialogPage(new FormBackedDialogPage(TableBinding.this.getDialogBackingForm()));
 
             // Configurar el diálogo
-            this.setTitle(TableBinding.this.getMessage(//
-                    this.dialogTitleFmt.format(//
-                            new String[] { TableBinding.this.getProperty() })));
-            this.setTitlePaneTitle(TableBinding.this.getMessage(//
-                    this.dialogTitlePaneTitleFmt.format(//
-                            new String[] { TableBinding.this.getProperty() })));
+            this.setTitle(TableBinding.this.getMessage(this.dialogTitleFmt.format(//
+                    new String[] { TableBinding.this.getProperty() })));
+            this.setTitlePaneTitle(TableBinding.this.getMessage(this.dialogTitlePaneTitleFmt.format(//
+                    new String[] { TableBinding.this.getProperty() })));
             this.setCloseAction(CloseAction.DISPOSE);
-
-            // Establecer el tamaño del diálogo
-            if ((TableBinding.this.getWidthDialog() != null) && (TableBinding.this.getHeightDialog() != null)) {
-                this.setPreferredSize(new Dimension(//
-                        TableBinding.this.getWidthDialog(), //
-                        TableBinding.this.getHeightDialog()));
-            }
         }
 
         /**
@@ -881,10 +800,9 @@ public class TableBinding extends CustomBinding {
             } else {
                 // Establecer la entidad objeto de la edición en el formulario.
                 final EventList<Object> eventList = (EventList<Object>) TableBinding.this.getValue();
-                final int index = FilterModelUtil.getOriginalSelectedIdxs(//
-                        TableBinding.this.getTable()).get(0);
+                final int modelIndex = TableUtils.getSelectedModelIndexes(TableBinding.this.getTable()).get(0);
 
-                TableBinding.this.getDialogBackingForm().setFormObject(eventList.get(index));
+                TableBinding.this.getDialogBackingForm().setFormObject(eventList.get(modelIndex));
             }
 
             super.onAboutToShow();
@@ -901,28 +819,33 @@ public class TableBinding extends CustomBinding {
 
             // Commitear el formulario y obtener la entidad a añadir
             TableBinding.this.getDialogBackingForm().commit();
-            final Object formObject = TableBinding.this.getDialogBackingForm().getFormObject();
 
-            // Añadir una nueva entrada a la tabla
+            final GlazedTableModel tableModel = (GlazedTableModel) TableBinding.this.getTable().getModel();
+            final Object formObject = TableBinding.this.getDialogBackingForm().getFormObject();
             final EventList<Object> eventList = (EventList<Object>) TableBinding.this.getValue();
 
+            // If is updating, replace current value.
             if (!this.isCreatingNewEntity()) {
-                final int index = FilterModelUtil.getOriginalSelectedIdxs(//
-                        TableBinding.this.getTable()).get(0);
-                eventList.set(index, formObject);
+                final int index = TableUtils.getSelectedModelIndexes(TableBinding.this.getTable()).get(0);
+                eventList.getReadWriteLock().writeLock().lock();
+                try {
+                    eventList.set(index, formObject);
+                } finally {
+                    eventList.getReadWriteLock().writeLock().unlock();
+                }
             }
 
+            // Anyway update event list and change selection
+            final List newSelection;
             if (formObject instanceof Collection) {
-                FilterModelUtil.setSelectedEntities(eventList, //
-                        TableBinding.this.getTable(), //
-                        (Collection) formObject, //
-                        Boolean.TRUE);
+                newSelection = new ArrayList((Collection) formObject);
             } else {
-                FilterModelUtil.setSelectedEntity(eventList, //
-                        TableBinding.this.getTable(), //
-                        formObject);
-
+                newSelection = Arrays.asList(formObject);
             }
+
+            TableUtils.showEntities(tableModel, newSelection, Boolean.TRUE);
+            TableUtils.changeSelection(TableBinding.this.getTable(), tableModel, newSelection);
+
             TableBinding.this.getTable().requestFocusInWindow();
 
             return Boolean.TRUE;
@@ -984,13 +907,18 @@ public class TableBinding extends CustomBinding {
         protected void doExecuteCommand() {
 
             // Los índices de las filas seleccionadas
-            final List<Integer> indexes = FilterModelUtil.getOriginalSelectedIdxs(//
-                    TableBinding.this.getTable());
+            final List<Integer> indexes = TableUtils.getSelectedModelIndexes(TableBinding.this.getTable());
 
             // Eliminar las filas seleccionadas
             final EventList<Serializable> eventList = (EventList<Serializable>) TableBinding.this.getValue();
-            for (final int index : indexes) {
-                eventList.remove(index);
+
+            eventList.getReadWriteLock().writeLock().lock();
+            try {
+                for (final int index : indexes) {
+                    eventList.remove(index);
+                }
+            } finally {
+                eventList.getReadWriteLock().writeLock().unlock();
             }
         }
     }

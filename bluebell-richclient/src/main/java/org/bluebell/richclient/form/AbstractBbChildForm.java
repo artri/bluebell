@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (C) 2009 Julio Argüello <julio.arguello@gmail.com>
  *
  * This file is part of Bluebell Rich Client.
@@ -23,6 +23,7 @@ package org.bluebell.richclient.form;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.util.List;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
@@ -205,7 +206,7 @@ public abstract class AbstractBbChildForm<T extends Object> extends ApplicationW
      * @param selectedObjects
      *            el objeto seleccionado.
      */
-    protected void onSelectionChange(int[] selectedIndexes, Object[] selectedObjects) {
+    protected void onSelectionChange(List<Integer> selectedIndexes, List<T> selectedObjects) {
 
         // Nothing to do.
     }

@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (C) 2009 Julio Argüello <julio.arguello@gmail.com>
  *
  * This file is part of Bluebell Rich Client.
@@ -29,7 +29,7 @@ import javax.swing.UIManager;
 import javax.swing.border.Border;
 import javax.swing.plaf.ComponentUI;
 
-import org.bluebell.richclient.application.docking.vldocking.VLDockingUtil;
+import org.bluebell.richclient.application.docking.vldocking.VLDockingUtils;
 import org.bluebell.richclient.application.docking.vldocking.DockingPreferencesWidgetExtension.ActivationAware;
 import org.springframework.util.Assert;
 
@@ -144,18 +144,18 @@ public class SubstanceDockViewUI extends DockViewUI implements ActivationAware {
         if (parent instanceof TabbedDockableContainer) {
             final Container grandParent = parent.getParent();
             if (grandParent instanceof DockingPanel) {
-                border = UIManager.getBorder(VLDockingUtil.activationKey("DockView.maximizedDockableBorder", active));
+                border = UIManager.getBorder(VLDockingUtils.activationKey("DockView.maximizedDockableBorder", active));
             } else {
-                border = UIManager.getBorder(VLDockingUtil.activationKey("DockView.singleDockableBorder", active));
+                border = UIManager.getBorder(VLDockingUtils.activationKey("DockView.singleDockableBorder", active));
             }
         } else if (parent instanceof SplitContainer) {
-            border = UIManager.getBorder(VLDockingUtil.activationKey("DockView.singleDockableBorder", active));
+            border = UIManager.getBorder(VLDockingUtils.activationKey("DockView.singleDockableBorder", active));
         } else if (parent instanceof DockingPanel) {
-            border = UIManager.getBorder(VLDockingUtil.activationKey("DockView.maximizedDockableBorder", active));
+            border = UIManager.getBorder(VLDockingUtils.activationKey("DockView.maximizedDockableBorder", active));
         } else if (parent instanceof JPanel) { // FloatingDialog
-            border = UIManager.getBorder(VLDockingUtil.activationKey("DockView.singleDockableBorder", active));
+            border = UIManager.getBorder(VLDockingUtils.activationKey("DockView.singleDockableBorder", active));
         } else {
-            border = UIManager.getBorder(VLDockingUtil.activationKey("DockView.maximizedDockableBorder", active));
+            border = UIManager.getBorder(VLDockingUtils.activationKey("DockView.maximizedDockableBorder", active));
         }
 
         dockView.setBorder(border);

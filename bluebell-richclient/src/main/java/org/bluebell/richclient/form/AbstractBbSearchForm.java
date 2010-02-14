@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (C) 2009 Julio Argüello <julio.arguello@gmail.com>
  *
  * This file is part of Bluebell Rich Client.
@@ -20,17 +20,17 @@ package org.bluebell.richclient.form;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
-import java.util.Collection;
+import java.util.List;
 
 import javax.swing.BorderFactory;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
 
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.ListUtils;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
-import org.bluebell.richclient.command.support.CommandUtil;
+import org.bluebell.richclient.command.support.CommandUtils;
 import org.springframework.binding.form.FormModel;
 import org.springframework.binding.form.ValidatingFormModel;
 import org.springframework.richclient.command.ActionCommand;
@@ -261,7 +261,7 @@ public abstract class AbstractBbSearchForm<T extends Object, U extends Object> e
     public void reset() {
 
         super.reset();
-        this.getMasterForm().setVisibleEntities(CollectionUtils.EMPTY_COLLECTION);
+        this.getMasterForm().showEntities(ListUtils.EMPTY_LIST);
         this.getRefreshLastSearchCommand().setEnabled(Boolean.FALSE);
     }
 
@@ -384,7 +384,7 @@ public abstract class AbstractBbSearchForm<T extends Object, U extends Object> e
      *            un objeto con los parámetros de la búsqueda obtenido al <em>commitear</em> el formulario.
      * @return los resultados de la búsqueda.
      */
-    protected abstract Collection<T> doSearch(U searchParams);
+    protected abstract List<T> doSearch(U searchParams);
 
     /**
      * Obtiene el identificador del comando para añadir o no resultados.
@@ -515,7 +515,7 @@ public abstract class AbstractBbSearchForm<T extends Object, U extends Object> e
         attachResultsCmd.setSecurityControllerId(scid);
 
         // Configurar el comando
-        return CommandUtil.configureCommand(attachResultsCmd, this.getFormModel());
+        return CommandUtils.configureCommand(attachResultsCmd, this.getFormModel());
     }
 
     /**
@@ -543,14 +543,14 @@ public abstract class AbstractBbSearchForm<T extends Object, U extends Object> e
                 final U searchParams = AbstractBbSearchForm.this.getLastSearchParams();
 
                 // Obtener los resultados de la búsqueda.
-                final Collection<T> searchResults = AbstractBbSearchForm.this.doSearch(searchParams);
+                final List<T> searchResults = AbstractBbSearchForm.this.doSearch(searchParams);
 
                 // Notificar el número de resultados devuelto
                 AbstractBbSearchForm.this.showNumberOfResults(searchResults.size());
 
                 // Establecer los resultados de la búsqueda en el formulario
                 // maestro.
-                AbstractBbSearchForm.this.getMasterForm().setVisibleEntities(//
+                AbstractBbSearchForm.this.getMasterForm().showEntities(//
                         searchResults, AbstractBbSearchForm.this.isAttachResults());
             }
         };
@@ -563,7 +563,7 @@ public abstract class AbstractBbSearchForm<T extends Object, U extends Object> e
         refreshLastSearchCmd.setSecurityControllerId(scid);
 
         // Configurar el comando
-        return CommandUtil.configureCommand(refreshLastSearchCmd, this.getFormModel(), Boolean.TRUE);
+        return CommandUtils.configureCommand(refreshLastSearchCmd, this.getFormModel(), Boolean.TRUE);
     }
 
     /**
@@ -602,7 +602,7 @@ public abstract class AbstractBbSearchForm<T extends Object, U extends Object> e
         resetCmd.setSecurityControllerId(scid);
 
         // Configurar el comando
-        return CommandUtil.configureCommand(resetCmd, this.getFormModel());
+        return CommandUtils.configureCommand(resetCmd, this.getFormModel());
     }
 
     /**
@@ -631,13 +631,13 @@ public abstract class AbstractBbSearchForm<T extends Object, U extends Object> e
                 AbstractBbSearchForm.this.setLastSearchParams(formObject);
 
                 // Obtener los resultados de la búsqueda.
-                final Collection<T> searchResults = AbstractBbSearchForm.this.doSearch(formObject);
+                final List<T> searchResults = AbstractBbSearchForm.this.doSearch(formObject);
 
                 // Notificar el número de resultados devuelto
                 AbstractBbSearchForm.this.showNumberOfResults(searchResults.size());
 
                 // Establecer los resultados de la búsqueda en el formulario maestro.
-                AbstractBbSearchForm.this.getMasterForm().setVisibleEntities(//
+                AbstractBbSearchForm.this.getMasterForm().showEntities(//
                         searchResults, AbstractBbSearchForm.this.isAttachResults());
             }
         };
@@ -651,7 +651,7 @@ public abstract class AbstractBbSearchForm<T extends Object, U extends Object> e
         searchCmd.setSecurityControllerId(scid);
 
         // Configurar el comando
-        return CommandUtil.configureCommand(//
+        return CommandUtils.configureCommand(//
                 searchCmd, this.getFormModel(), Boolean.TRUE);
     }
 

@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (C) 2009 Julio Argüello <julio.arguello@gmail.com>
  *
  * This file is part of Bluebell Rich Client.
@@ -31,9 +31,10 @@ import javax.swing.UIManager;
 import javax.swing.border.Border;
 
 import org.apache.commons.collections.MapUtils;
-import org.bluebell.richclient.application.docking.vldocking.VLDockingUtil.DockViewType;
+import org.bluebell.richclient.application.docking.vldocking.VLDockingUtils.DockViewType;
 import org.bluebell.richclient.components.RoundedBorder;
 
+import com.jidesoft.swing.PartialLineBorder;
 import com.vlsolutions.swing.docking.DockingConstants;
 import com.vlsolutions.swing.docking.ui.DockingUISettings;
 
@@ -93,9 +94,15 @@ public class DockingPreferencesWidgetExtension {
 
         final Integer b = 2;
         final Integer m = this.desktopMarginSize();
-        final Color color = VLDockingUtil.DockingColor.SHADOW.getColor();
+        final Color color = VLDockingUtils.DockingColor.SHADOW.getColor();
 
-        Border outsideBorder = BorderFactory.createMatteBorder(b, b, b, b, color);
+        /*
+         * (JAF), 20100113, RoundedBorder does not work in this case. I do know why
+         */
+        final Border outsideBorder = new PartialLineBorder(color, b, Boolean.TRUE, m);
+        // outsideBorder = BorderFactory.createMatteBorder(b, b, b, b, color);
+        // outsideBorder = new RoundedBorder(m, b, color);
+
         final Border insideBorder;
 
         switch (pos) {
@@ -155,7 +162,7 @@ public class DockingPreferencesWidgetExtension {
     protected Border autoHideExpandPanelDraggerBorder(int pos) {
 
         final Integer s = 2;
-        final Color color = VLDockingUtil.DockingColor.INACTIVE_WIDGET.getColor();
+        final Color color = VLDockingUtils.DockingColor.INACTIVE_WIDGET.getColor();
 
         switch (pos) {
             case DockingConstants.INT_HIDE_TOP:
@@ -211,9 +218,11 @@ public class DockingPreferencesWidgetExtension {
 
         switch (type) {
             case DOCKED:
-                final Color color = active ? VLDockingUtil.DockingColor.ACTIVE_WIDGET.getColor()//
-                        : VLDockingUtil.DockingColor.INACTIVE_WIDGET.getColor();
+                final Color color = active ? VLDockingUtils.DockingColor.ACTIVE_WIDGET.getColor()//
+                        : VLDockingUtils.DockingColor.INACTIVE_WIDGET.getColor();
+
                 return new RoundedBorder(m, b, color);
+                // return new PartialLineBorder(color, b, Boolean.TRUE, m);
             case TABBED:
                 return BorderFactory.createEmptyBorder();
             case HIDDEN:
@@ -317,33 +326,33 @@ public class DockingPreferencesWidgetExtension {
                 this.autoHideExpandPanelDraggerBorder(DockingConstants.INT_HIDE_RIGHT));
 
         // AutoHideExpandPanel: expand from border
-        this.defaults.put(VLDockingUtil.activationKey("AutoHideExpandPanel.expandFromTopBorder", Boolean.TRUE), //
+        this.defaults.put(VLDockingUtils.activationKey("AutoHideExpandPanel.expandFromTopBorder", Boolean.TRUE), //
                 this.dockViewBorder(DockViewType.HIDDEN, Boolean.TRUE, DockingConstants.INT_HIDE_TOP));
-        this.defaults.put(VLDockingUtil.activationKey("AutoHideExpandPanel.expandFromTopBorder", Boolean.FALSE), //
+        this.defaults.put(VLDockingUtils.activationKey("AutoHideExpandPanel.expandFromTopBorder", Boolean.FALSE), //
                 this.dockViewBorder(DockViewType.HIDDEN, Boolean.FALSE, DockingConstants.INT_HIDE_TOP));
-        this.defaults.put(VLDockingUtil.activationKey("AutoHideExpandPanel.expandFromLeftBorder", Boolean.TRUE), //
+        this.defaults.put(VLDockingUtils.activationKey("AutoHideExpandPanel.expandFromLeftBorder", Boolean.TRUE), //
                 this.dockViewBorder(DockViewType.HIDDEN, Boolean.TRUE, DockingConstants.INT_HIDE_LEFT));
-        this.defaults.put(VLDockingUtil.activationKey("AutoHideExpandPanel.expandFromLeftBorder", Boolean.FALSE), //
+        this.defaults.put(VLDockingUtils.activationKey("AutoHideExpandPanel.expandFromLeftBorder", Boolean.FALSE), //
                 this.dockViewBorder(DockViewType.HIDDEN, Boolean.FALSE, DockingConstants.INT_HIDE_LEFT));
-        this.defaults.put(VLDockingUtil.activationKey("AutoHideExpandPanel.expandFromBottomBorder", Boolean.TRUE), //
+        this.defaults.put(VLDockingUtils.activationKey("AutoHideExpandPanel.expandFromBottomBorder", Boolean.TRUE), //
                 this.dockViewBorder(DockViewType.HIDDEN, Boolean.TRUE, DockingConstants.INT_HIDE_BOTTOM));
-        this.defaults.put(VLDockingUtil.activationKey("AutoHideExpandPanel.expandFromBottomBorder", Boolean.FALSE), //
+        this.defaults.put(VLDockingUtils.activationKey("AutoHideExpandPanel.expandFromBottomBorder", Boolean.FALSE), //
                 this.dockViewBorder(DockViewType.HIDDEN, Boolean.FALSE, DockingConstants.INT_HIDE_BOTTOM));
-        this.defaults.put(VLDockingUtil.activationKey("AutoHideExpandPanel.expandFromRightBorder", Boolean.TRUE), //
+        this.defaults.put(VLDockingUtils.activationKey("AutoHideExpandPanel.expandFromRightBorder", Boolean.TRUE), //
                 this.dockViewBorder(DockViewType.HIDDEN, Boolean.TRUE, DockingConstants.INT_HIDE_RIGHT));
-        this.defaults.put(VLDockingUtil.activationKey("AutoHideExpandPanel.expandFromRightBorder", Boolean.FALSE), //
+        this.defaults.put(VLDockingUtils.activationKey("AutoHideExpandPanel.expandFromRightBorder", Boolean.FALSE), //
                 this.dockViewBorder(DockViewType.HIDDEN, Boolean.FALSE, DockingConstants.INT_HIDE_RIGHT));
 
         // DockView: active and inactive dockable border
-        this.defaults.put(VLDockingUtil.activationKey("DockView.singleDockableBorder", Boolean.TRUE), //
+        this.defaults.put(VLDockingUtils.activationKey("DockView.singleDockableBorder", Boolean.TRUE), //
                 this.dockViewBorder(DockViewType.DOCKED, Boolean.TRUE, -1));
-        this.defaults.put(VLDockingUtil.activationKey("DockView.singleDockableBorder", Boolean.FALSE), //
+        this.defaults.put(VLDockingUtils.activationKey("DockView.singleDockableBorder", Boolean.FALSE), //
                 this.dockViewBorder(DockViewType.DOCKED, Boolean.FALSE, -1));
         this.defaults.put("DockView.tabbedDockableBorder", //
                 this.dockViewBorder(DockViewType.TABBED, Boolean.FALSE, -1));
-        this.defaults.put(VLDockingUtil.activationKey("DockView.maximizedDockableBorder", Boolean.TRUE), //
+        this.defaults.put(VLDockingUtils.activationKey("DockView.maximizedDockableBorder", Boolean.TRUE), //
                 this.dockViewBorder(DockViewType.MAXIMIZED, Boolean.TRUE, -1));
-        this.defaults.put(VLDockingUtil.activationKey("DockView.maximizedDockableBorder", Boolean.FALSE), //
+        this.defaults.put(VLDockingUtils.activationKey("DockView.maximizedDockableBorder", Boolean.FALSE), //
                 this.dockViewBorder(DockViewType.MAXIMIZED, Boolean.FALSE, -1));
 
         // DockViewTitleBar: border and title font

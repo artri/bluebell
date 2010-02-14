@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (C) 2009 Julio Argüello <julio.arguello@gmail.com>
  *
  * This file is part of Bluebell Rich Client.
@@ -87,8 +87,7 @@ public abstract class Main {
     protected ApplicationContext createApplicationContext(String[] configLocations, String[] baseDirs) {
 
         // Cargar el contexto de aplicación de Spring necesario
-        return new ClassPathXmlApplicationContext(//
-                this.getContextConfigLocations(configLocations, baseDirs));
+        return new ClassPathXmlApplicationContext(this.getContextConfigLocations(configLocations, baseDirs));
     }
 
     /**
@@ -180,11 +179,9 @@ public abstract class Main {
             if (args[i].equals(Main.CLASS_ARG)) {
                 className = args[i + 1];
             } else if (args[i].equals(Main.BASE_DIR_ARG)) {
-                baseDirs = StringUtils.split(args[i + 1], //
-                        Main.SEPARATOR);
+                baseDirs = StringUtils.split(args[i + 1], Main.SEPARATOR);
             } else if (args[i].equals(Main.CTX_ARG)) {
-                configLocations = StringUtils.split(args[i + 1], //
-                        Main.SEPARATOR);
+                configLocations = StringUtils.split(args[i + 1], Main.SEPARATOR);
             }
         }
 

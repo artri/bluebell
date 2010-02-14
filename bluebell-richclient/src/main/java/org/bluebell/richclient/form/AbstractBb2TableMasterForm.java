@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (C) 2009 Julio Argüello <julio.arguello@gmail.com>
  *
  * This file is part of Bluebell Rich Client.
@@ -18,7 +18,6 @@
 
 package org.bluebell.richclient.form;
 
-import java.awt.BorderLayout;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -26,10 +25,8 @@ import java.util.List;
 
 import javax.swing.JComponent;
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
 import javax.swing.event.ListSelectionListener;
 
-import org.bluebell.richclient.form.support.FilterModelAwareListSelectionHandler;
 import org.springframework.binding.form.HierarchicalFormModel;
 import org.springframework.binding.value.ValueModel;
 import org.springframework.binding.value.support.ObservableList;
@@ -38,8 +35,8 @@ import org.springframework.richclient.form.Form;
 import org.springframework.util.Assert;
 
 /**
- * Extiende el comportamiento de {@link AbstractBbTableMasterForm } simplificando la utilización de formularios maestros
- * y añadiéndole capacidades adicionales. Los cambios realizados son:
+ * Extiende el comportamiento de {@link AbstractBb1TableMasterForm } simplificando la utilización de los formularios
+ * maestros y añadiéndole capacidades adicionales. Los cambios realizados son:
  * <ul>
  * <li>Añadido constructor a partir de una <em>javabean</em> y la propiedad a utilizar para obtener la relación de
  * entidades a mostrar.
@@ -57,7 +54,7 @@ import org.springframework.util.Assert;
  * 
  * @author <a href = "mailto:julio.arguello@gmail.com" >Julio Argüello (JAF)</a>
  */
-public abstract class AbstractBb2TableMasterForm<T extends Object> extends AbstractBbTableMasterForm<T> {
+public abstract class AbstractBb2TableMasterForm<T extends Object> extends AbstractBb1TableMasterForm<T> {
 
     /**
      * 
@@ -175,12 +172,12 @@ public abstract class AbstractBb2TableMasterForm<T extends Object> extends Abstr
      * @param attach
      *            <em>flag</em> indicando si las nuevas entidades se han de sumar a las anteriores (<code>true</code>) o
      *            si por el contrario deben sustituirlos (<code>false</code>).
-     * @see AbstractBbTableMasterForm#setVisibleEntities(Collection, boolean)
+     * @see AbstractBb1TableMasterForm#showEntities(Collection, boolean)
      */
     @Override
-    public final void setVisibleEntities(Collection<T> entities, boolean attach) {
+    public final void showEntities(List<T> entities, Boolean attach) {
 
-        super.setVisibleEntities(entities, attach);
+        super.showEntities(entities, attach);
 
         // Si una vez establecido el listado de entidades no hay ninguna
         // seleccionada entonces notificar a los
@@ -225,56 +222,8 @@ public abstract class AbstractBb2TableMasterForm<T extends Object> extends Abstr
      * 
      * @see #afterSelectionChange(int, Object)
      */
-    protected void afterSelectionChange(int[] originalIdxs, Object[] selection) {
+    protected void afterSelectionChange(int[] originalIdxs, List<T> selection) {
 
-        // (JAF), 20090721, ha sido necesario cambiar la signatura de "T[]
-        // selection" a "Object[] selection" para evitar errores en tiempo de
-        // ejecución con los castings
-    }
-
-    /**
-     * Manejador para los cambios del elemento seleccionado. Se ejecuta antes de gestionar el cambio de elemento
-     * seleccionado.
-     * <p>
-     * Esta implementación no realiza tarea alguna. Las subclases pueden sobreescribirla para llevar a cabo un
-     * comportamiento adicional antes de que se cambie el elemento seleccionado.
-     * 
-     * @param originalIdx
-     *            el índice del elemento seleccionado relativo a la <em>master event list</em>.
-     * @param selection
-     *            la entidad seleccionada.
-     * 
-     * @return la entidad seleccionada modificada (o no) por este manejador.
-     */
-    @SuppressWarnings("deprecation")
-    protected T beforeSelectionChange(int originalIdx, T selection) {
-
-        // WARN, (JAF), 20080523, una vez se elimine #onSelectionChange este
-        // método debería devolver el objeto pasado como parámetro.
-        return this.onSelectionChange(originalIdx, selection);
-    }
-
-    /**
-     * Manejador para los cambios de los elementos seleccionados. Se ejecuta antes de gestionar el cambio de los
-     * elementos seleccionados.
-     * <p>
-     * Los mismos principios aplicables a {@link #beforeSelectionChange(int, Object)} son válidos para este método.
-     * 
-     * @param originalIdxs
-     *            los índices de los elementos seleccionados relativos a la <em>master event list</em>.
-     * @param selection
-     *            las entidades seleccionadas.
-     * @return las entidades seleccionadas modificadas (o no) por este manejador.
-     * 
-     * @see #beforeSelectionChange(int, Object)
-     */
-    protected Object[] beforeSelectionChange(int[] originalIdxs, Object[] selection) {
-
-        // (JAF), 20090721, ha sido necesario cambiar la signatura de "T[]
-        // selection" a "Object[] selection" para evitar errores en tiempo de
-        // ejecución con los castings
-
-        return selection;
     }
 
     /**
@@ -297,7 +246,7 @@ public abstract class AbstractBb2TableMasterForm<T extends Object> extends Abstr
     }
 
     /**
-     * Redefine {@link AbstractBbTableMasterForm#createFormControl()} del siguiente modo:
+     * Redefine {@link AbstractBb1TableMasterForm#createFormControl()} del siguiente modo:
      * <ul>
      * <li>Invoca al método de la clase padre.
      * <li>Da la oportunidad a las clases hijas de modificar el control creado ( {@link #onCreateFormControl()}).
@@ -311,12 +260,12 @@ public abstract class AbstractBb2TableMasterForm<T extends Object> extends Abstr
     protected final JComponent createFormControl() {
 
         // Obtener el control del formulario maestro.
-        super.createFormControl();
+        final JPanel panel = (JPanel) super.createFormControl();
 
         // El formulario maestro consta de una tabla y botones.
-        final JPanel panel = new JPanel(new BorderLayout());
-        panel.add(new JScrollPane(this.getMasterTable()), BorderLayout.CENTER);
-        panel.add(this.createButtonBar(), BorderLayout.SOUTH);
+        // final JPanel panel = new JPanel(new BorderLayout());
+        // panel.add(new JScrollPane(this.getMasterTable()), BorderLayout.CENTER);
+        // panel.add(this.createButtonBar(), BorderLayout.SOUTH);
         // panel.setBorder(BorderFactory.createTitledBorder(//
         // BorderFactory.createEtchedBorder()));
 
@@ -325,6 +274,7 @@ public abstract class AbstractBb2TableMasterForm<T extends Object> extends Abstr
 
         // Actualizar los controles en función del estado.
         super.updateControlsForState();
+        this.setEnabled(true);
 
         return panel;
     }
@@ -419,51 +369,42 @@ public abstract class AbstractBb2TableMasterForm<T extends Object> extends Abstr
      * @see #onSelectionChange(int, Object)
      * @see AbstractBbChildForm#onSelectionChange(int, Object)
      */
-    protected class ListSelectionHandler extends FilterModelAwareListSelectionHandler<T> {
-
-        /**
-         * Construye el <em>selection handler</em>.
-         */
-        public ListSelectionHandler() {
-
-            super(AbstractBb2TableMasterForm.this, AbstractBb2TableMasterForm.this.getDetailForm(),
-                    AbstractBb2TableMasterForm.this.getMasterTable());
-        }
+    protected class ListSelectionHandler extends AbstractBb0TableMasterForm<T>.MasterFormListSelectionHandler {
 
         /**
          * Invoca a {@link AbstractBbChildForm#onSelectionChange(int[], Object[])} en cada formulario hijo.
          * 
-         * @param originalIdxs
+         * @param modelIndexes
          *            los índices de los elementos seleccionados relativos al modelo original.
-         * @param filteredIdxs
+         * @param viewIndexes
          *            los índices de los elementos seleccionados relativos al modelo de filtrado.
          * @param selection
          *            las entidades seleccionadas.
          * 
-         * @see FilterModelAwareListSelectionHandler#onMultiSelection(int[], int[], Object[])
+         * @see MasterFormListSelectionHandler#onMultiSelection(int[], int[], Object[])
          */
         @Override
-        protected void onMultiSelection(int[] originalIdxs, int[] filteredIdxs, Object[] selection) {
+        protected void onMultiSelection(List<Integer> modelIndexes, List<Integer> viewIndexes, List<T> selection) {
 
             // Shortcut para acceder al formulario maestro
             final AbstractBb2TableMasterForm<T> thisForm = AbstractBb2TableMasterForm.this;
 
             // Gestión add-hoc PREVIA al cambio de los elementos seleccionados
             // por parte del formulario maestro
-            selection = thisForm.beforeSelectionChange(originalIdxs, selection);
+            // selection = thisForm.beforeSelectionChange(originalIdxs, selection);
 
             // Gestión general del cambio del elemento seleccionado
-            super.onMultiSelection(originalIdxs, filteredIdxs, selection);
+            super.onMultiSelection(modelIndexes, viewIndexes, selection);
 
             // Gestión ad hoc del cambio del elemento seleccionado por parte de
             // los formularios hijos
             for (final AbstractBbChildForm<T> childForm : thisForm.getDetailForms()) {
-                childForm.onSelectionChange(originalIdxs, selection);
+                childForm.onSelectionChange(modelIndexes, selection);
             }
 
             // Gestión ad hoc POSTERIOR al cambio del elemento seleccionado por
             // parte del formulario maestro
-            thisForm.afterSelectionChange(originalIdxs, selection);
+            // thisForm.afterSelectionChange(originalIdxs, selection);
         }
 
         /**
@@ -485,7 +426,7 @@ public abstract class AbstractBb2TableMasterForm<T extends Object> extends Abstr
             // El índice del elemento seleccionado después de la confirmación
             // del usuario. Determina si se ha de
             // proceder o no con el cambio.
-            final int currentIndex = this.getDetailForm().getSelectedIndex();
+            final int currentIndex = AbstractBb2TableMasterForm.this.getDetailForm().getSelectedIndex();
 
             final Boolean proceed = (currentIndex == -1);
             if (proceed) {
@@ -509,7 +450,7 @@ public abstract class AbstractBb2TableMasterForm<T extends Object> extends Abstr
          * @param selection
          *            la entidad seleccionada.
          * 
-         * @see FilterModelAwareListSelectionHandler#onSingleSelection(int, int, Object)
+         * @see MasterFormListSelectionHandler#onSingleSelection(int, int, Object)
          */
         @Override
         protected void onSingleSelection(int originalIdx, int filteredIdx, T selection) {
@@ -520,7 +461,10 @@ public abstract class AbstractBb2TableMasterForm<T extends Object> extends Abstr
             // Gestión ad hoc PREVIA al cambio del elemento seleccionado por
             // parte del formulario maestro y formularios
             // hijos
-            final T newSelection = thisForm.beforeSelectionChange(originalIdx, selection);
+
+            // TODO, revisar esto para que los formularios hijos reciban la nueva selección
+            // final T newSelection = thisForm.beforeSelectionChange(originalIdx, selection);
+            final T newSelection = selection;
             for (final AbstractBbChildForm<T> childForm : thisForm.getDetailForms()) {
                 childForm.beforeSelectionChange(originalIdx, newSelection);
             }
@@ -531,7 +475,7 @@ public abstract class AbstractBb2TableMasterForm<T extends Object> extends Abstr
             // Gestión ad hoc POSTERIOR al cambio del elemento seleccionado por
             // parte del formulario maestro y
             // formularios hijos
-            thisForm.afterSelectionChange(originalIdx, newSelection);
+            // thisForm.afterSelectionChange(originalIdx, newSelection);
             for (final AbstractBbChildForm<T> childForm : thisForm.getDetailForms()) {
                 childForm.afterSelectionChange(originalIdx, newSelection);
             }

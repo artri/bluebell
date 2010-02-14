@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (C) 2009 Julio Argüello <julio.arguello@gmail.com>
  *
  * This file is part of Bluebell Rich Client.
@@ -28,7 +28,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 
 import org.bluebell.richclient.application.docking.vldocking.DockingPreferencesWidgetExtension;
-import org.bluebell.richclient.application.docking.vldocking.VLDockingUtil;
+import org.bluebell.richclient.application.docking.vldocking.VLDockingUtils;
 import org.pushingpixels.lafplugin.LafComponentPlugin;
 import org.pushingpixels.substance.api.SubstanceLookAndFeel;
 import org.pushingpixels.substance.api.SubstanceSkin;
@@ -189,11 +189,11 @@ public class SubstanceVLDockingPlugin implements LafComponentPlugin, SkinChangeL
         final Color inactive = skin.getMainDefaultColorScheme().getMidColor();
 
         // Widget style colors
-        defaults.put(VLDockingUtil.DockingColor.BACKGROUND.getKey(), background);
-        defaults.put(VLDockingUtil.DockingColor.SHADOW.getKey(), shadow);
-        defaults.put(VLDockingUtil.DockingColor.HIGHLIGHT.getKey(), highlight);
-        defaults.put(VLDockingUtil.DockingColor.ACTIVE_WIDGET.getKey(), active);
-        defaults.put(VLDockingUtil.DockingColor.INACTIVE_WIDGET.getKey(), inactive);
+        defaults.put(VLDockingUtils.DockingColor.BACKGROUND.getKey(), background);
+        defaults.put(VLDockingUtils.DockingColor.SHADOW.getKey(), shadow);
+        defaults.put(VLDockingUtils.DockingColor.HIGHLIGHT.getKey(), highlight);
+        defaults.put(VLDockingUtils.DockingColor.ACTIVE_WIDGET.getKey(), active);
+        defaults.put(VLDockingUtils.DockingColor.INACTIVE_WIDGET.getKey(), inactive);
 
         // Color properties for detached dockables:
         // TODO cambiar esto

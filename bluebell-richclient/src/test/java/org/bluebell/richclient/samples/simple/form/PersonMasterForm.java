@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (C) 2009 Julio Argüello <julio.arguello@gmail.com>
  *
  * This file is part of Bluebell Rich Client.
@@ -20,6 +20,8 @@
  * 
  */
 package org.bluebell.richclient.samples.simple.form;
+
+import java.util.List;
 
 import org.bluebell.richclient.form.AbstractBb2TableMasterForm;
 import org.bluebell.richclient.samples.simple.bean.Person;
@@ -59,9 +61,9 @@ public class PersonMasterForm extends AbstractBb2TableMasterForm<Person> {
      * {@inheritDoc}
      */
     @Override
-    protected Person doRefresh(Person person) {
+    protected List<Person> doRefresh(List<Person> persons) {
 
-        return person;
+        return persons;
     }
 
     /**
