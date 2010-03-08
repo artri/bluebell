@@ -48,7 +48,7 @@ abstract class AbstractBbDetailForm<T> extends AbstractDetailForm {
     /**
      * El formulario maestro.
      */
-    private AbstractBb1TableMasterForm<T> masterForm;
+    private AbstractBb2TableMasterForm<T> masterForm;
 
     /**
      * Crea el formulario detalle a partir del formulario maestro, el identificador y un <em>value model</em>.
@@ -60,7 +60,7 @@ abstract class AbstractBbDetailForm<T> extends AbstractDetailForm {
      * @param valueModel
      *            <em>value model</em> a partir del cual crear el modelo de este formulario.
      */
-    public AbstractBbDetailForm(AbstractBb1TableMasterForm<T> masterForm, String formId, ValueModel valueModel) {
+    public AbstractBbDetailForm(AbstractBb2TableMasterForm<T> masterForm, String formId, ValueModel valueModel) {
 
         super(masterForm.getFormModel(), formId, valueModel, masterForm.getMasterEventList());
 
@@ -79,7 +79,7 @@ abstract class AbstractBbDetailForm<T> extends AbstractDetailForm {
      * @param editableItemList
      *            la lista observable de entidades editables.
      */
-    protected AbstractBbDetailForm(AbstractBb1TableMasterForm<T> masterForm, FormModel formModel, String formId,
+    protected AbstractBbDetailForm(AbstractBb2TableMasterForm<T> masterForm, FormModel formModel, String formId,
             ObservableList editableItemList) {
 
         super(formModel, formId, editableItemList);
@@ -92,7 +92,7 @@ abstract class AbstractBbDetailForm<T> extends AbstractDetailForm {
      * 
      * @return el formulario maestro.
      */
-    public AbstractBb1TableMasterForm<T> getMasterForm() {
+    public AbstractBb2TableMasterForm<T> getMasterForm() {
 
         return this.masterForm;
     }
@@ -207,7 +207,7 @@ abstract class AbstractBbDetailForm<T> extends AbstractDetailForm {
      * @param masterForm
      *            el formulario maestro.
      */
-    private void setMasterForm(AbstractBb1TableMasterForm<T> masterForm) {
+    private void setMasterForm(AbstractBb2TableMasterForm<T> masterForm) {
 
         this.masterForm = masterForm;
     }

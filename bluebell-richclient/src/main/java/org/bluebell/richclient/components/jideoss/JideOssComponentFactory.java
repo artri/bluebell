@@ -21,7 +21,14 @@
  */
 package org.bluebell.richclient.components.jideoss;
 
+import java.awt.Image;
+
+import javax.swing.JTabbedPane;
+
 import org.bluebell.richclient.factory.ComponentFactoryDecorator;
+import org.bluebell.richclient.swing.util.SwingUtils;
+
+import com.jidesoft.swing.JideTabbedPane;
 
 /**
  * Jide OSS based component factory implementation.
@@ -33,6 +40,11 @@ import org.bluebell.richclient.factory.ComponentFactoryDecorator;
 public class JideOssComponentFactory extends ComponentFactoryDecorator {
 
     /**
+     * 
+     */
+    private static final String JIDE_TABBED_PANE_TAB_TRAILING_IMAGE = "jideTabbedPane.tabTrailingImage";
+
+    /**
      * Creates de Jide OSS component factory.
      */
     public JideOssComponentFactory() {
@@ -40,51 +52,31 @@ public class JideOssComponentFactory extends ComponentFactoryDecorator {
         super();
     }
 
-    
-    
-    // private JPanel createSearchableTextArea() {
-    // final JTextComponent textArea = SearchableBarDemo.createEditor("Readme.txt");
-    // final JPanel panel = new JPanel(new BorderLayout());
-    // panel.add(new JScrollPane(textArea), BorderLayout.CENTER);
-    // Searchable searchable = SearchableUtils.installSearchable(textArea);
-    // searchable.setRepeats(true);
-    // _textAreaSearchableBar = SearchableBar.install(searchable, KeyStroke.getKeyStroke(KeyEvent.VK_F,
-    // KeyEvent.CTRL_DOWN_MASK), new SearchableBar.Installer() {
-    // public void openSearchBar(SearchableBar searchableBar) {
-    // panel.add(searchableBar, BorderLayout.AFTER_LAST_LINE);
-    // panel.invalidate();
-    // panel.revalidate();
-    // }
-    //
-    // public void closeSearchBar(SearchableBar searchableBar) {
-    // panel.remove(searchableBar);
-    // panel.invalidate();
-    // panel.revalidate();
-    // }
-    // });
-    // _textAreaSearchableBar.getInstaller().openSearchBar(_textAreaSearchableBar);
-    // return panel;
-    // }
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public JTabbedPane createTabbedPane() {
 
-    // private JPanel createSearchableTable() {
-    // JTable table = null;
-    // Searchable searchable = SearchableUtils.installSearchable(table);
-    // searchable.setRepeats(true);
-    // SearchableBar.install(searchable, KeyStroke.getKeyStroke(KeyEvent.VK_F, KeyEvent.CTRL_DOWN_MASK), new
-    // SearchableBar.Installer() {
-    // public void openSearchBar(SearchableBar searchableBar) {
-    // panel.add(searchableBar, BorderLayout.AFTER_LAST_LINE);
-    // panel.invalidate();
-    // panel.revalidate();
-    // }
-    //
-    // public void closeSearchBar(SearchableBar searchableBar) {
-    // panel.remove(searchableBar);
-    // panel.invalidate();
-    // panel.revalidate();
-    // }
-    // });
-    // _tableSearchableBar.setName("TableSearchableBar");
-    // return panel;
-    // }
+        final JideTabbedPane tabbedPane = new JideTabbedPane();
+
+        tabbedPane.setShowTabButtons(Boolean.TRUE);
+        tabbedPane.setHideOneTab(Boolean.FALSE);
+        tabbedPane.setShowTabArea(Boolean.TRUE);
+        tabbedPane.setShowTabContent(Boolean.TRUE);
+        tabbedPane.setUseDefaultShowIconsOnTab(Boolean.FALSE);
+        tabbedPane.setShowIconsOnTab(Boolean.TRUE);
+        tabbedPane.setBoldActiveTab(Boolean.TRUE);
+        tabbedPane.setScrollSelectedTabOnWheel(Boolean.TRUE);
+        tabbedPane.setShowCloseButton(Boolean.FALSE);
+        tabbedPane.setUseDefaultShowCloseButtonOnTab(Boolean.FALSE);
+        tabbedPane.setShowCloseButtonOnTab(Boolean.TRUE);
+        tabbedPane.setTabEditingAllowed(Boolean.FALSE);
+
+        // Install tab trailing component
+        final Image image = this.getImageSource().getImage(JideOssComponentFactory.JIDE_TABBED_PANE_TAB_TRAILING_IMAGE);
+        tabbedPane.setTabTrailingComponent(SwingUtils.generateComponent(image));
+
+        return tabbedPane;
+    }
 }

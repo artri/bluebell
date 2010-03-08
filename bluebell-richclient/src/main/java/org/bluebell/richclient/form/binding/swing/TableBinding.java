@@ -30,8 +30,10 @@ import java.util.List;
 
 import javax.swing.JComponent;
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.KeyStroke;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.TableModel;
@@ -53,9 +55,15 @@ import org.springframework.richclient.form.Form;
 import org.springframework.richclient.form.FormGuard;
 import org.springframework.richclient.form.binding.support.CustomBinding;
 import org.springframework.richclient.table.support.GlazedTableModel;
+import org.springframework.richclient.util.PopupMenuMouseListener;
 import org.springframework.util.Assert;
 
 import ca.odell.glazedlists.EventList;
+
+import com.jidesoft.swing.Searchable;
+import com.jidesoft.swing.SearchableBar;
+import com.jidesoft.swing.SearchableUtils;
+import com.jidesoft.swing.SearchableBar.Installer;
 
 /**
  * Binds a property of type <code>Collection</code> with a table capable of being edited 
@@ -152,14 +160,14 @@ public class TableBinding extends CustomBinding {
     private ActionCommand filterCommand;
 
     /**
-     * El grupo de comandos asociados a la tabla.
+     * The command group used to build the buttons.
      */
-    private CommandGroup commandGroup;
+    private CommandGroup buttonsCommandGroup;
 
     /**
-     * El menú <em>popup</em> asociado a la tabla.
+     * The command group used to build the popup menu.
      */
-    private CommandGroup popupMenu;
+    private CommandGroup popupMenuCommandGroup;
 
     /**
      * El diálogo a mostrar para añadir o editar una entidad de la tabla.
@@ -188,6 +196,26 @@ public class TableBinding extends CustomBinding {
         this.setTable(this.getComponentFactory().createTable());
     }
 
+    /**
+     * Construye el <em>binding</em> a partir de la tabla a utilizar, el modelo del formulario, la propiedad a la que
+     * hace referencia y los nombres de las columnas a representar en la tabla.
+     * 
+     * @param tableModel
+     *            TODO.
+     * @param formModel
+     *            el modelo del formulario.
+     * @param formPropertyPath
+     *            la propiedad a la que hace referencia el <em>binding</em>.
+     */
+    public TableBinding(TableModel tableModel, FormModel formModel, String formPropertyPath) {
+
+        super(formModel, formPropertyPath, null);
+
+        Assert.notNull(tableModel);
+        
+        this.setTable(this.getComponentFactory().createTable(tableModel));               
+    }
+    
     /**
      * Construye el <em>binding</em> a partir de la tabla a utilizar, el modelo del formulario, la propiedad a la que
      * hace referencia y los nombres de las columnas a representar en la tabla.
@@ -241,6 +269,60 @@ public class TableBinding extends CustomBinding {
     }
 
     /**
+     * Gets the buttons command group and if doesn't exist then creats it.
+     * 
+     * @return the buttons command group.
+     */
+    public final CommandGroup getButtonsCommandGroup() {
+
+        if (this.buttonsCommandGroup == null) {
+            this.buttonsCommandGroup = this.createButtonsCommandGroup();
+        }
+
+        return this.buttonsCommandGroup;
+    }
+
+    /**
+     * Sets the buttons command group.
+     * 
+     * @param buttonsCommandGroup
+     *            the buttons command group to set.
+     */
+    public void setButtonsCommandGroup(CommandGroup buttonsCommandGroup) {
+
+        Assert.notNull(buttonsCommandGroup, "buttonsCommandGroup");
+
+        this.buttonsCommandGroup = buttonsCommandGroup;
+    }
+
+    /**
+     * Gets the popup menu command group and if doesn't exist then creates it.
+     * 
+     * @return the popup menu command group.
+     */
+    public final CommandGroup getPopupMenuCommandGroup() {
+
+        if (this.popupMenuCommandGroup == null) {
+            this.popupMenuCommandGroup = this.createButtonsCommandGroup();
+        }
+
+        return this.popupMenuCommandGroup;
+    }
+
+    /**
+     * Sets the popup menu command group.
+     * 
+     * @param popupMenuCommandGroup
+     *            the popup menu command group to set.
+     */
+    public void setPopupMenuCommandGroup(CommandGroup popupMenuCommandGroup) {
+
+        Assert.notNull(popupMenuCommandGroup, "popupMenuCommandGroup");
+
+        this.popupMenuCommandGroup = popupMenuCommandGroup;
+    }
+
+    /**
      * Obtiene el comando que permite añadir un nuevo elemento a la tabla y si no existe lo crea.
      * 
      * @return el comando que permite añadir un nuevo elemento a la tabla.
@@ -252,6 +334,19 @@ public class TableBinding extends CustomBinding {
         }
 
         return this.addCommand;
+    }
+
+    /**
+     * Sets the command that allows adding new entities to the table.
+     * 
+     * @param addCommand
+     *            the command to set.
+     */
+    public void setAddCommand(ActionCommand addCommand) {
+
+        Assert.notNull(addCommand, "addCommand");
+
+        this.addCommand = addCommand;
     }
 
     /**
@@ -269,6 +364,19 @@ public class TableBinding extends CustomBinding {
     }
 
     /**
+     * Sets the command that allows modifying a entity.
+     * 
+     * @param modifyCommand
+     *            the command to set.
+     */
+    public void setModifyCommand(ActionCommand modifyCommand) {
+
+        Assert.notNull(modifyCommand, "modifyCommand");
+
+        this.modifyCommand = modifyCommand;
+    }
+
+    /**
      * Obtiene el comando que permite eliminar un elemento de la tabla y si no existe lo crea.
      * 
      * @return el comando que permite eliminar un elemento de la tabla.
@@ -280,6 +388,19 @@ public class TableBinding extends CustomBinding {
         }
 
         return this.removeCommand;
+    }
+
+    /**
+     * Sets the command that allows entity removal.
+     * 
+     * @param removeCommand
+     *            the command to set.
+     */
+    public void setRemoveCommand(ActionCommand removeCommand) {
+
+        Assert.notNull(removeCommand, "removeCommand");
+
+        this.removeCommand = removeCommand;
     }
 
     /**
@@ -351,13 +472,32 @@ public class TableBinding extends CustomBinding {
 
         // Construir el control del binding
         final JScrollPane scroolPane = new JScrollPane(this.getTable());
-        final JComponent buttonStack = this.getCommandGroup().createButtonStack();
 
         // La tabla a la izquierda y los botones a la derecha
         final JPanel jPanel = new JPanel();
         jPanel.setLayout(new BorderLayout());
         jPanel.add(scroolPane, BorderLayout.CENTER);
-        jPanel.add(buttonStack, BorderLayout.EAST);
+        
+        final Searchable searchable =  SearchableUtils.installSearchable(this.getTable());
+        
+        SearchableBar.install(searchable, KeyStroke.getKeyStroke(KeyEvent.VK_F, KeyEvent.CTRL_DOWN_MASK), new Installer() {
+            
+            @Override
+            public void openSearchBar(SearchableBar searchableBar) {
+                jPanel.add(searchableBar, BorderLayout.NORTH);
+                jPanel.invalidate();
+                jPanel.revalidate();             
+            }
+            
+            @Override
+            public void closeSearchBar(SearchableBar searchableBar) {
+                jPanel.remove(searchableBar);
+                jPanel.invalidate();
+                jPanel.revalidate();                
+            }
+        });
+        
+        jPanel.add(this.getButtonsCommandGroup().createButtonBar(), BorderLayout.SOUTH);
 
         return jPanel;
     }
@@ -433,11 +573,19 @@ public class TableBinding extends CustomBinding {
                 // Nothing to do
             }
         });
+
+        this.getTable().addMouseListener(new PopupMenuMouseListener(this.getPopupMenuCommandGroup().createPopupMenu()));
+
+        this.getTable().getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+
+            public void valueChanged(ListSelectionEvent e) {
+
+                TableBinding.this.updateControlForState();
+            }
+        });
+
         // (JAF), 20090128, obviar el doble click ya que esa combinación está
         // ahora pensada para la navegación.
-
-        // this.getTable().addMouseListener(
-        // new PopupMenuMouseListener(this.getPopupMenu().createPopupMenu()) {
         //
         // @Override
         // public void mousePressed(MouseEvent e) {
@@ -451,35 +599,14 @@ public class TableBinding extends CustomBinding {
         // }
         // }
         // });
-        this.getTable().getSelectionModel().addListSelectionListener(new ListSelectionListener() {
-
-            public void valueChanged(ListSelectionEvent e) {
-
-                TableBinding.this.updateControlForState();
-            }
-        });
     }
 
     /**
-     * Obtiene el grupo de comandos asociados a la tabla.
+     * Creates the buttons command group.
      * 
-     * @return el grupo de comandos.
+     * @return the buttons command group.
      */
-    protected CommandGroup getCommandGroup() {
-
-        if (this.commandGroup == null) {
-            this.commandGroup = this.createCommandGroup();
-        }
-
-        return this.commandGroup;
-    }
-
-    /**
-     * Crea el grupo de comandos asociados a la tabla.
-     * 
-     * @return el grupo de comandos.
-     */
-    protected CommandGroup createCommandGroup() {
+    protected CommandGroup createButtonsCommandGroup() {
 
         final CommandGroup group = CommandGroup.createCommandGroup(new Object[] {//
                 this.getFilterCommand(), //
@@ -494,25 +621,11 @@ public class TableBinding extends CustomBinding {
     }
 
     /**
-     * Crea el menú <em>popup</em> asociado a la tabla.
+     * Creates the popup menu command group.
      * 
-     * @return un <em>command group</em> con los comandos del menú <em>popup</em>.
+     * @return the popup menu command group.
      */
-    protected CommandGroup getPopupMenu() {
-
-        if (this.popupMenu == null) {
-            this.popupMenu = this.createPopupMenu();
-        }
-
-        return this.popupMenu;
-    }
-
-    /**
-     * Crea el menú popup de la tabla.
-     * 
-     * @return el menú popup.
-     */
-    protected CommandGroup createPopupMenu() {
+    protected JPopupMenu createPopupMenuCommandGroup() {
 
         final CommandGroup group = CommandGroup.createCommandGroup(new Object[] { this.getAddCommand(), //
                 this.getModifyCommand(), //
@@ -520,7 +633,7 @@ public class TableBinding extends CustomBinding {
 
         group.setCommandRegistry(this.getActiveWindow().getCommandManager());
 
-        return group;
+        return group.createPopupMenu();
     }
 
     /**

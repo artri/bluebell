@@ -27,7 +27,7 @@ import org.bluebell.richclient.form.AbstractBbChildForm;
 import org.bluebell.richclient.form.util.BbFormModelHelper;
 import org.bluebell.richclient.samples.simple.bean.Person;
 import org.springframework.binding.form.ValidatingFormModel;
-import org.springframework.richclient.form.binding.swing.SwingBindingFactory;
+import org.springframework.richclient.form.binding.BindingFactory;
 import org.springframework.richclient.form.builder.TableFormBuilder;
 
 /**
@@ -86,9 +86,12 @@ public class PersonChildForm extends AbstractBbChildForm<Person> {
     @Override
     protected JComponent createFormControl() {
 
-        final SwingBindingFactory bindingFactory = (SwingBindingFactory) this.getBindingFactory();
+        final BindingFactory bindingFactory = this.getBindingFactory();
         final TableFormBuilder formBuilder = new TableFormBuilder(bindingFactory);
 
+        // final JComponent overlayableForName = new DefaultOverlayable(name,
+        // SwingUtils.generateComponent(Application.instance().getImage()));
+        //        
         formBuilder.add("name");
         formBuilder.row();
         formBuilder.add("age");

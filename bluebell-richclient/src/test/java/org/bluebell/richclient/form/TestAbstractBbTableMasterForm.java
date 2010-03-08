@@ -42,18 +42,20 @@ import org.jdesktop.swingx.JXTable;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.richclient.application.PageDescriptor;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.util.Assert;
 
 /**
- * Tests the correct behaviour of {@link AbstractBb0TableMasterForm}.
+ * Tests the correct behaviour of {@link AbstractBbTableMasterForm}.
  * 
  * @see org.bluebell.richclient.form.binding.swing.TableBinding
  * 
  * @author <a href = "mailto:julio.arguello@gmail.com" >Julio Argüello (JAF)</a>
  */
 @ContextConfiguration()
-public class TestAbstractBb0TableMasterForm extends AbstractBbSamplesTests {
+public class TestAbstractBbTableMasterForm extends AbstractBbSamplesTests {
 
     /**
      * The first list with persons.
@@ -93,21 +95,36 @@ public class TestAbstractBb0TableMasterForm extends AbstractBbSamplesTests {
      */
     protected static final String MOCK_MASTER_VIEW_DESCRIPTOR_BEAN_NAME = "mockPersonMasterViewDescriptor";
 
+    /**
+     * The page descriptor used for testing.
+     */
+    @Autowired
+    private PageDescriptor pageDescriptor;
+
     static {
-        TestAbstractBb0TableMasterForm.PERSONS_1.add(new Person("0"));
-        TestAbstractBb0TableMasterForm.PERSONS_1.add(new Person("1"));
-        TestAbstractBb0TableMasterForm.PERSONS_1.add(new Person("2"));
-        TestAbstractBb0TableMasterForm.PERSONS_1.add(new Person("3"));
+        TestAbstractBbTableMasterForm.PERSONS_1.add(new Person("0"));
+        TestAbstractBbTableMasterForm.PERSONS_1.add(new Person("1"));
+        TestAbstractBbTableMasterForm.PERSONS_1.add(new Person("2"));
+        TestAbstractBbTableMasterForm.PERSONS_1.add(new Person("3"));
 
-        TestAbstractBb0TableMasterForm.PERSONS_2.add(new Person("A"));
-        TestAbstractBb0TableMasterForm.PERSONS_2.add(new Person("B"));
-        TestAbstractBb0TableMasterForm.PERSONS_2.add(new Person("C"));
-        TestAbstractBb0TableMasterForm.PERSONS_2.add(new Person("D"));
+        TestAbstractBbTableMasterForm.PERSONS_2.add(new Person("A"));
+        TestAbstractBbTableMasterForm.PERSONS_2.add(new Person("B"));
+        TestAbstractBbTableMasterForm.PERSONS_2.add(new Person("C"));
+        TestAbstractBbTableMasterForm.PERSONS_2.add(new Person("D"));
 
-        TestAbstractBb0TableMasterForm.PERSONS_3.add(new Person("3"));
-        TestAbstractBb0TableMasterForm.PERSONS_3.add(new Person("4"));
-        TestAbstractBb0TableMasterForm.PERSONS_3.add(new Person("D"));
-        TestAbstractBb0TableMasterForm.PERSONS_3.add(new Person("E"));
+        TestAbstractBbTableMasterForm.PERSONS_3.add(new Person("3"));
+        TestAbstractBbTableMasterForm.PERSONS_3.add(new Person("4"));
+        TestAbstractBbTableMasterForm.PERSONS_3.add(new Person("D"));
+        TestAbstractBbTableMasterForm.PERSONS_3.add(new Person("E"));
+    }
+
+    /** 
+     * {@inheritDoc}
+     */
+    @Test
+    public void testDependencyInjection() {
+
+        TestCase.assertNotNull("pageDescriptor", this.pageDescriptor);
     }
 
     /**
@@ -117,7 +134,7 @@ public class TestAbstractBb0TableMasterForm extends AbstractBbSamplesTests {
     @Test
     public void testShowEntities() {
 
-        final AbstractBb0TableMasterForm<Person> masterForm = this.getBackingForm(this.getMasterView());
+        final AbstractBbTableMasterForm<Person> masterForm = this.getBackingForm(this.getMasterView());
         final int size04 = 4;
         final int size08 = 8;
         final int size10 = 10;
@@ -127,27 +144,27 @@ public class TestAbstractBb0TableMasterForm extends AbstractBbSamplesTests {
         TestCase.assertTrue(CollectionUtils.isEqualCollection(expectedView, masterForm.getMasterEventList()));
 
         // Set visible entities
-        expectedView = TestAbstractBb0TableMasterForm.PERSONS_1;
-        masterForm.showEntities(TestAbstractBb0TableMasterForm.PERSONS_1);
+        expectedView = TestAbstractBbTableMasterForm.PERSONS_1;
+        masterForm.showEntities(TestAbstractBbTableMasterForm.PERSONS_1);
         TestCase.assertTrue(CollectionUtils.isEqualCollection(expectedView, masterForm.getMasterEventList()));
         TestCase.assertEquals(size04, masterForm.getMasterEventList().size());
 
         // Attach additional entities
         expectedView = CollectionUtils.union(//
-                TestAbstractBb0TableMasterForm.PERSONS_1, TestAbstractBb0TableMasterForm.PERSONS_2);
-        masterForm.showEntities(TestAbstractBb0TableMasterForm.PERSONS_2, Boolean.TRUE);
+                TestAbstractBbTableMasterForm.PERSONS_1, TestAbstractBbTableMasterForm.PERSONS_2);
+        masterForm.showEntities(TestAbstractBbTableMasterForm.PERSONS_2, Boolean.TRUE);
         TestCase.assertTrue(CollectionUtils.isEqualCollection(expectedView, masterForm.getMasterEventList()));
         TestCase.assertEquals(size08, masterForm.getMasterEventList().size());
 
         // Attach existing and new entities
-        expectedView = CollectionUtils.union(expectedView, TestAbstractBb0TableMasterForm.PERSONS_3);
-        masterForm.showEntities(TestAbstractBb0TableMasterForm.PERSONS_3, Boolean.TRUE);
+        expectedView = CollectionUtils.union(expectedView, TestAbstractBbTableMasterForm.PERSONS_3);
+        masterForm.showEntities(TestAbstractBbTableMasterForm.PERSONS_3, Boolean.TRUE);
         TestCase.assertTrue(CollectionUtils.isEqualCollection(expectedView, masterForm.getMasterEventList()));
         TestCase.assertEquals(size10, masterForm.getMasterEventList().size());
 
         // Change visible entities
-        expectedView = TestAbstractBb0TableMasterForm.PERSONS_3;
-        masterForm.showEntities(TestAbstractBb0TableMasterForm.PERSONS_3);
+        expectedView = TestAbstractBbTableMasterForm.PERSONS_3;
+        masterForm.showEntities(TestAbstractBbTableMasterForm.PERSONS_3);
         TestCase.assertTrue(CollectionUtils.isEqualCollection(expectedView, masterForm.getMasterEventList()));
         TestCase.assertEquals(size04, masterForm.getMasterEventList().size());
     }
@@ -160,7 +177,7 @@ public class TestAbstractBb0TableMasterForm extends AbstractBbSamplesTests {
     public void testChangeSelection() {
 
         final int pos03 = 3;
-        final AbstractBb0TableMasterForm<Person> masterForm = this.getBackingForm(this.getMasterView());
+        final AbstractBbTableMasterForm<Person> masterForm = this.getBackingForm(this.getMasterView());
         List<Person> expectedView = ListUtils.EMPTY_LIST;
         List<Person> expectedSelection = ListUtils.EMPTY_LIST;
 
@@ -168,43 +185,43 @@ public class TestAbstractBb0TableMasterForm extends AbstractBbSamplesTests {
         TestCase.assertTrue(masterForm.getMasterEventList().isEmpty());
 
         // Select an entity that is not shown currently
-        expectedView = TestAbstractBb0TableMasterForm.PERSONS_1.subList(0, 1);
-        expectedSelection = TestAbstractBb0TableMasterForm.PERSONS_1.subList(0, 1);
+        expectedView = TestAbstractBbTableMasterForm.PERSONS_1.subList(0, 1);
+        expectedSelection = TestAbstractBbTableMasterForm.PERSONS_1.subList(0, 1);
         this.doTestChangeSelection(masterForm, expectedView, expectedSelection);
 
         // Select other entity that is not shown currently
-        expectedView = TestAbstractBb0TableMasterForm.PERSONS_1.subList(0, 2);
-        expectedSelection = TestAbstractBb0TableMasterForm.PERSONS_1.subList(1, 2);
+        expectedView = TestAbstractBbTableMasterForm.PERSONS_1.subList(0, 2);
+        expectedSelection = TestAbstractBbTableMasterForm.PERSONS_1.subList(1, 2);
         this.doTestChangeSelection(masterForm, expectedView, expectedSelection);
 
         // Select an entity that is shown currently
-        expectedView = TestAbstractBb0TableMasterForm.PERSONS_1.subList(0, 2);
-        expectedSelection = TestAbstractBb0TableMasterForm.PERSONS_1.subList(0, 1);
+        expectedView = TestAbstractBbTableMasterForm.PERSONS_1.subList(0, 2);
+        expectedSelection = TestAbstractBbTableMasterForm.PERSONS_1.subList(0, 1);
         this.doTestChangeSelection(masterForm, expectedView, expectedSelection);
 
         // Multiple selection when both entities are shown currently
-        expectedView = TestAbstractBb0TableMasterForm.PERSONS_1.subList(0, 2);
-        expectedSelection = TestAbstractBb0TableMasterForm.PERSONS_1.subList(0, 2);
+        expectedView = TestAbstractBbTableMasterForm.PERSONS_1.subList(0, 2);
+        expectedSelection = TestAbstractBbTableMasterForm.PERSONS_1.subList(0, 2);
         this.doTestChangeSelection(masterForm, expectedView, expectedSelection);
 
         // Multiple selection when an entity is not shown currently
-        expectedView = TestAbstractBb0TableMasterForm.PERSONS_1.subList(0, pos03);
-        expectedSelection = TestAbstractBb0TableMasterForm.PERSONS_1.subList(0, pos03);
+        expectedView = TestAbstractBbTableMasterForm.PERSONS_1.subList(0, pos03);
+        expectedSelection = TestAbstractBbTableMasterForm.PERSONS_1.subList(0, pos03);
         this.doTestChangeSelection(masterForm, expectedView, expectedSelection);
 
         // Decrease multiple selection size
-        expectedView = TestAbstractBb0TableMasterForm.PERSONS_1.subList(0, pos03);
-        expectedSelection = TestAbstractBb0TableMasterForm.PERSONS_1.subList(0, 2);
+        expectedView = TestAbstractBbTableMasterForm.PERSONS_1.subList(0, pos03);
+        expectedSelection = TestAbstractBbTableMasterForm.PERSONS_1.subList(0, 2);
         this.doTestChangeSelection(masterForm, expectedView, expectedSelection);
 
         // Convert multiple selection into single selection
-        expectedView = TestAbstractBb0TableMasterForm.PERSONS_1.subList(0, pos03);
-        expectedSelection = TestAbstractBb0TableMasterForm.PERSONS_1.subList(0, 1);
+        expectedView = TestAbstractBbTableMasterForm.PERSONS_1.subList(0, pos03);
+        expectedSelection = TestAbstractBbTableMasterForm.PERSONS_1.subList(0, 1);
         this.doTestChangeSelection(masterForm, expectedView, expectedSelection);
 
         // Clear selection
         expectedSelection = ListUtils.EMPTY_LIST;
-        expectedView = TestAbstractBb0TableMasterForm.PERSONS_1.subList(0, pos03);
+        expectedView = TestAbstractBbTableMasterForm.PERSONS_1.subList(0, pos03);
         this.doTestChangeSelection(masterForm, expectedView, expectedSelection);
     }
 
@@ -215,15 +232,15 @@ public class TestAbstractBb0TableMasterForm extends AbstractBbSamplesTests {
     @Test
     public void testGetSelection() {
 
-        final AbstractBb0TableMasterForm<Person> masterForm = this.getBackingForm(this.getMasterView());
+        final AbstractBbTableMasterForm<Person> masterForm = this.getBackingForm(this.getMasterView());
         final JXTable masterTable = (JXTable) masterForm.getMasterTable();
         final ListSelectionModel selectionModel = masterTable.getSelectionModel();
         final int column = 0;
 
         // Show entities (randomly, ascendant and descendant ordered respectively)
-        final List<Person> ranEntities = new ArrayList<Person>(TestAbstractBb0TableMasterForm.PERSONS_1);
-        final List<Person> ascEntities = new ArrayList<Person>(TestAbstractBb0TableMasterForm.PERSONS_1);
-        final List<Person> desEntities = new ArrayList<Person>(TestAbstractBb0TableMasterForm.PERSONS_1);
+        final List<Person> ranEntities = new ArrayList<Person>(TestAbstractBbTableMasterForm.PERSONS_1);
+        final List<Person> ascEntities = new ArrayList<Person>(TestAbstractBbTableMasterForm.PERSONS_1);
+        final List<Person> desEntities = new ArrayList<Person>(TestAbstractBbTableMasterForm.PERSONS_1);
 
         Collections.shuffle(ranEntities);
         Collections.sort(ascEntities);
@@ -270,18 +287,18 @@ public class TestAbstractBb0TableMasterForm extends AbstractBbSamplesTests {
         final PersonChildForm detailForm = (PersonChildForm) this.getBackingForm(this.getDetailView());
 
         List<Person> oldSelection = ListUtils.EMPTY_LIST;
-        List<Person> newSelection = Arrays.asList(TestAbstractBb0TableMasterForm.PERSONS_1.get(1));
+        List<Person> newSelection = Arrays.asList(TestAbstractBbTableMasterForm.PERSONS_1.get(1));
         int requestCount = 0;
 
         // Show entities:
         // EXPECTED: [1,2,3,4]
-        masterForm.showEntities(TestAbstractBb0TableMasterForm.PERSONS_1);
+        masterForm.showEntities(TestAbstractBbTableMasterForm.PERSONS_1);
         masterForm.changeSelection(newSelection);
 
         // Change selection: requests count should keep invariable
         // EXPECTED: [1, 2, -->3<--, 4]
         oldSelection = newSelection;
-        newSelection = Arrays.asList(TestAbstractBb0TableMasterForm.PERSONS_1.get(2));
+        newSelection = Arrays.asList(TestAbstractBbTableMasterForm.PERSONS_1.get(2));
         this.doTestRequestUserConfirmation(masterForm, Boolean.TRUE, newSelection, requestCount, newSelection);
 
         // Change age: detail form should get dirty
@@ -292,7 +309,7 @@ public class TestAbstractBb0TableMasterForm extends AbstractBbSamplesTests {
         // Abort selection change
         // EXPECTED: [1, 2, -->[D]3<--, 4]
         oldSelection = newSelection;
-        newSelection = Arrays.asList(TestAbstractBb0TableMasterForm.PERSONS_1.get(pos03));
+        newSelection = Arrays.asList(TestAbstractBbTableMasterForm.PERSONS_1.get(pos03));
         this.doTestRequestUserConfirmation(masterForm, Boolean.FALSE, newSelection, ++requestCount, oldSelection);
 
         // Confirm selection change
@@ -309,7 +326,7 @@ public class TestAbstractBb0TableMasterForm extends AbstractBbSamplesTests {
         // EXPECTED: [1, 2, 3, -->[D]4<--]
         oldSelection = newSelection;
         newSelection = Arrays.asList(//
-                TestAbstractBb0TableMasterForm.PERSONS_1.get(2), TestAbstractBb0TableMasterForm.PERSONS_1.get(pos03));
+                TestAbstractBbTableMasterForm.PERSONS_1.get(2), TestAbstractBbTableMasterForm.PERSONS_1.get(pos03));
         this.doTestRequestUserConfirmation(masterForm, Boolean.FALSE, newSelection, ++requestCount, oldSelection);
 
         // Confirm multiple selection
@@ -319,7 +336,7 @@ public class TestAbstractBb0TableMasterForm extends AbstractBbSamplesTests {
 
         // Abort single selection again
         oldSelection = newSelection;
-        newSelection = Arrays.asList(TestAbstractBb0TableMasterForm.PERSONS_1.get(2));
+        newSelection = Arrays.asList(TestAbstractBbTableMasterForm.PERSONS_1.get(2));
         this.doTestRequestUserConfirmation(masterForm, Boolean.FALSE, newSelection, ++requestCount, oldSelection);
 
         // Confirm single selection again
@@ -335,8 +352,7 @@ public class TestAbstractBb0TableMasterForm extends AbstractBbSamplesTests {
     @Before
     public void startup() {
 
-        this.initTest(new String[] { TestAbstractBb0TableMasterForm.MOCK_MASTER_VIEW_DESCRIPTOR_BEAN_NAME,
-                AbstractBbSamplesTests.DETAIL_VIEW_DESCRIPTOR_BEAN_NAME });
+        this.initializeVariables(this.pageDescriptor);
     }
 
     /**
@@ -346,7 +362,7 @@ public class TestAbstractBb0TableMasterForm extends AbstractBbSamplesTests {
     @After
     public void cleanMasterEventList() {
 
-        final AbstractBb0TableMasterForm<Person> masterForm = this.getBackingForm(this.getMasterView());
+        final AbstractBbTableMasterForm<Person> masterForm = this.getBackingForm(this.getMasterView());
         masterForm.showEntities(ListUtils.EMPTY_LIST);
     }
 
@@ -356,7 +372,7 @@ public class TestAbstractBb0TableMasterForm extends AbstractBbSamplesTests {
     @Override
     protected FormBackedView<AbstractBb2TableMasterForm<Person>> getMasterView() {
 
-        return this.getApplicationPage().getView(TestAbstractBb0TableMasterForm.MOCK_MASTER_VIEW_DESCRIPTOR_BEAN_NAME);
+        return this.getApplicationPage().getView(TestAbstractBbTableMasterForm.MOCK_MASTER_VIEW_DESCRIPTOR_BEAN_NAME);
     }
 
     /**
@@ -369,7 +385,7 @@ public class TestAbstractBb0TableMasterForm extends AbstractBbSamplesTests {
      * @param expectedSelection
      *            the expected selection.
      */
-    private void doTestChangeSelection(AbstractBb0TableMasterForm<Person> masterForm, Collection<Person> expectedView,
+    private void doTestChangeSelection(AbstractBbTableMasterForm<Person> masterForm, Collection<Person> expectedView,
             List<Person> expectedSelection) {
 
         masterForm.changeSelection(expectedSelection);
@@ -387,7 +403,7 @@ public class TestAbstractBb0TableMasterForm extends AbstractBbSamplesTests {
      * @param indexes
      *            the view selected indexes.
      */
-    private void doTestGetSelection(AbstractBb0TableMasterForm<Person> masterForm, List<Person> currentOrder,
+    private void doTestGetSelection(AbstractBbTableMasterForm<Person> masterForm, List<Person> currentOrder,
             List<Integer> indexes) {
 
         Collections.sort(indexes);

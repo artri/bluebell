@@ -29,10 +29,10 @@ import javax.swing.UIManager;
 
 import org.bluebell.richclient.application.docking.vldocking.DockingPreferencesWidgetExtension;
 import org.bluebell.richclient.application.docking.vldocking.VLDockingUtils;
-import org.pushingpixels.lafplugin.LafComponentPlugin;
-import org.pushingpixels.substance.api.SubstanceLookAndFeel;
-import org.pushingpixels.substance.api.SubstanceSkin;
-import org.pushingpixels.substance.api.skin.SkinChangeListener;
+import org.jvnet.lafplugin.LafComponentPlugin;
+import org.jvnet.substance.SubstanceLookAndFeel;
+import org.jvnet.substance.api.SubstanceSkin;
+import org.jvnet.substance.skin.SkinChangeListener;
 import org.springframework.util.Assert;
 
 import com.vlsolutions.swing.docking.DockableContainerFactory;
@@ -214,6 +214,8 @@ public class SubstanceVLDockingPlugin implements LafComponentPlugin, SkinChangeL
         defaults.put("DockViewUI", SubstanceDockViewUI.class.getName());
         defaults.put("DockViewTitleBarUI", SubstanceDockViewTitleBarUI.class.getName());
         defaults.put("DockingSplitPaneUI", SubstanceDockingSplitPaneUI.class.getName());
+        
+//        defaults.put("JideTabbedPaneUI", SubstanceJideTabbedPaneUI.class.getName());
 
         return defaults;
     }

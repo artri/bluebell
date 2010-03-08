@@ -127,27 +127,27 @@
 		<dependency>
 			<groupId>net.java.dev.glazedlists</groupId>
 			<artifactId>glazedlists_java15</artifactId>
-			<version>1.8.0</version>
 		</dependency>
 		<dependency>
 			<groupId>com.jidesoft</groupId>
 			<artifactId>jide-oss</artifactId>
-			<version>2.4.8</version>
 		</dependency>
 		<dependency>
 			<groupId>com.dryicons</groupId>
 			<artifactId>coquette</artifactId>
-			<version>1.0</version>
-			<scope>runtime</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.pushingpixels</groupId>
 			<artifactId>substance</artifactId>
 		</dependency>
+		<!--		<dependency>-->
+		<!--			<groupId>org.pushingpixels</groupId>-->
+		<!--			<artifactId>substance</artifactId>-->
+		<!--			<type>test-jar</type>-->
+		<!--		</dependency> -->
 		<dependency>
 			<groupId>org.pushingpixels</groupId>
-			<artifactId>substance</artifactId>
-			<type>test-jar</type>
+			<artifactId>substance-jide</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.pushingpixels</groupId>
@@ -164,7 +164,6 @@
 		<dependency>
 			<groupId>com.vlsolutions</groupId>
 			<artifactId>vldocking</artifactId>
-			<version>3.0.0</version>
 		</dependency>
 
 		<!--

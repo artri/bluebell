@@ -78,7 +78,7 @@ public class SwingxStatusBar extends DefaultStatusBar {
         jxStatusBar.add(this.getMessageLabel(), JXStatusBar.Constraint.ResizeBehavior.FILL);
         // jxStatusBar.add(new JSeparator(JSeparator.VERTICAL));
         jxStatusBar.add(new SubstanceSkinChooserComboBox().getControl());
-        jxStatusBar.add(test.check.statusbar.FontSizePanel.getPanel());
+//        jxStatusBar.add(test.check.statusbar.FontSizePanel.getPanel());
         jxStatusBar.add(((StatusBarProgressMonitor) this.getProgressMonitor()).getControl());
 
         return jxStatusBar;

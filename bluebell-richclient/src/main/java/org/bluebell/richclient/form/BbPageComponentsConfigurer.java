@@ -21,7 +21,6 @@
  */
 package org.bluebell.richclient.form;
 
-import java.awt.EventQueue;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -30,13 +29,12 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import javax.swing.SwingUtilities;
-
 import org.aspectj.lang.annotation.AfterReturning;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.annotation.Pointcut;
 import org.bluebell.richclient.application.support.FormBackedView;
+import org.bluebell.richclient.swing.util.SwingUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.binding.form.FormModel;
@@ -189,14 +187,7 @@ public class BbPageComponentsConfigurer<T> {
         }
 
         // Page components creation must be done in the event dispatcher thread
-        if (SwingUtilities.isEventDispatchThread()) {
-            // TODO hacer lo del run
-            new String("Avoid CS warnings");
-        } else {
-            new String("Avoid CS warnings");
-            // invoker later
-        }
-        EventQueue.invokeLater(new Runnable() {
+        SwingUtils.runInEventDispatcherThread(new Runnable() {
 
             @SuppressWarnings("unchecked")
             public void run() {
@@ -376,7 +367,7 @@ public class BbPageComponentsConfigurer<T> {
 
         final Form form = view.getBackingForm();
 
-        if (form instanceof AbstractBb1TableMasterForm<?>) {
+        if (form instanceof AbstractBbTableMasterForm<?>) {
             this.processMasterView((FormBackedView<AbstractBb2TableMasterForm<T>>) view);
         } else if (form instanceof BbValidationForm) {
             this.processValidatingView((FormBackedView<BbValidationForm<T>>) view);
@@ -455,8 +446,7 @@ public class BbPageComponentsConfigurer<T> {
 
         BbPageComponentsConfigurer.assertNotAlreadySet(this.getMasterView(), masterView);
 
-        // Attach a "change active component" command interceptor and set the
-        // master view
+        // Attach a "change active component" command interceptor and set the master view
         if (this.getMasterView() == null) {
             // final ActionCommand newFormObjectCommand =
             // targetMasterForm.getNewFormObjectCommand();
@@ -499,10 +489,10 @@ public class BbPageComponentsConfigurer<T> {
         // Validation checks
         Assert.notNull(searchView, "searchView");
 
-        final AbstractBb1TableMasterForm<T> masterForm = //
+        final AbstractBbTableMasterForm<T> masterForm = //
         BbPageComponentsConfigurer.getBackingForm(this.getMasterView());
         final AbstractBbSearchForm<T, ?> targetSearchForm = BbPageComponentsConfigurer.getBackingForm(searchView);
-        final AbstractBb1TableMasterForm<T> targetMasterForm = targetSearchForm.getMasterForm();
+        final AbstractBbTableMasterForm<T> targetMasterForm = targetSearchForm.getMasterForm();
 
         BbPageComponentsConfigurer.assertNotAlreadySet(targetMasterForm, masterForm);
 
@@ -527,7 +517,7 @@ public class BbPageComponentsConfigurer<T> {
         // Validation checks
         Assert.notNull(pageComponent, "pageComponent");
 
-        this.getUnknownPageComponents().add(pageComponent);
+        this.unknownPageComponents.add(pageComponent);
     }
 
     /**
@@ -544,11 +534,10 @@ public class BbPageComponentsConfigurer<T> {
         // Validation checks
         Assert.notNull(validationView, "validationView");
 
-        final AbstractBb1TableMasterForm<T> masterForm = BbPageComponentsConfigurer
-                .getBackingForm(this.getMasterView());
+        final AbstractBbTableMasterForm<T> masterForm = BbPageComponentsConfigurer.getBackingForm(this.getMasterView());
         final BbDispatcherForm<T> theDispatcherForm = this.getDispatcherForm();
         final BbValidationForm<T> targetValidationForm = BbPageComponentsConfigurer.getBackingForm(validationView);
-        final AbstractBb1TableMasterForm<T> targetMasterForm = targetValidationForm.getMasterForm();
+        final AbstractBbTableMasterForm<T> targetMasterForm = targetValidationForm.getMasterForm();
 
         BbPageComponentsConfigurer.assertNotAlreadySet(targetMasterForm, masterForm);
 
@@ -602,8 +591,6 @@ public class BbPageComponentsConfigurer<T> {
      *            the dispatcherForm to set
      */
     private void setDispatcherForm(BbDispatcherForm<T> dispatcherForm) {
-
-        Assert.notNull(dispatcherForm, "dispatcherForm");
 
         this.dispatcherForm = dispatcherForm;
     }

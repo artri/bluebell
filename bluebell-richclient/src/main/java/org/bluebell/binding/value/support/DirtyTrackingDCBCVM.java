@@ -182,8 +182,7 @@ public class DirtyTrackingDCBCVM<T> extends DeepCopyBufferedCollectionValueModel
     public void setValue(Object value) {
 
         final Collection<T> valueToSet = this.getValueToSet(value);
-        final Collection<T> wrappedCollection = (Collection<T>) //
-        this.getWrappedValueModel().getValue();
+        final Collection<T> wrappedCollection = (Collection<T>) this.getWrappedValueModel().getValue();
 
         // 1) Establecer el valor apropiado sólo si es necesario
         this.setValueIfChanged(valueToSet);
@@ -200,8 +199,7 @@ public class DirtyTrackingDCBCVM<T> extends DeepCopyBufferedCollectionValueModel
 
         // 3) Si el nuevo valor es igual que el recordado entonces el
         // formulario no está dirty (probablemente se trate de un revert)
-        final Boolean maybeReverting = !this.getValueChangeDetector().//
-                hasValueChanged(valueToSet, wrappedCollection);
+        final Boolean maybeReverting = !this.getValueChangeDetector().hasValueChanged(valueToSet, wrappedCollection);
         if (maybeReverting) {
             // (JAF), 20080929, no se utiliza "this.hasValueChanged" ya que
             // hace comprobaciones adicionales que hacen romper el algoritmo
@@ -316,23 +314,20 @@ public class DirtyTrackingDCBCVM<T> extends DeepCopyBufferedCollectionValueModel
     /**
      * Establece el valor indicado únicamente si ha cambiado.
      * 
-     * @param valueToSet
+     * @param value
      *            el valor a establecer.
      * @return <code>true</code> si ha sido necesario establecer el valor y <code>false</code> en caso contrario.
      */
-    protected Boolean setValueIfChanged(Collection<T> valueToSet) {
+    protected Boolean setValueIfChanged(Collection<T> value) {
 
-        // (JAF), 20090614, esta comprobación se hace necesario ya que el método
-        // hasValueChanged de la clase padre devuelve true aún a pesar de que
-        // sean colecciones equivalentes.
+        // (JAF), 20090614, esta comprobación se hace necesario ya que el método hasValueChanged de la clase padre
+        // devuelve true aún a pesar de que sean colecciones equivalentes.
 
-        // (JAF), 20090614, no se utiliza "this.hasValueChanged" ya que
-        // hace comprobaciones adicionales que hacen romper el algoritmo
-        final Boolean hasValueChanged = this.getValueChangeDetector().//
-                hasValueChanged(this.getOriginalValue(), valueToSet);
-
+        // (JAF), 20090614, no se utiliza "this.hasValueChanged" ya que hace comprobaciones adicionales que hacen romper
+        // el algoritmo
+        final Boolean hasValueChanged = this.getValueChangeDetector().hasValueChanged(this.getOriginalValue(), value);
         if (hasValueChanged) {
-            super.setValue(valueToSet);
+            super.setValue(value);
         }
 
         return hasValueChanged;
@@ -347,14 +342,11 @@ public class DirtyTrackingDCBCVM<T> extends DeepCopyBufferedCollectionValueModel
      */
     protected void validateCollection(Collection<T> collection) {
 
-        // (JAF), 20080107, si deepCopy está habilitado entonces
-        // todos los elementos de la colección deberían de ser
-        // serializables, de no ser así la copia provocará una
-        // excepción silenciosa
+        // (JAF), 20080107, si deepCopy está habilitado entonces todos los elementos de la colección deberían de ser
+        // serializables, de no ser así la copia provocará una excepción silenciosa
         if (this.isDeepCopyEnabled() && (collection != null)) {
 
-            CollectionUtils.predicatedCollection(collection, //
-                    InstanceofPredicate.getInstance(Serializable.class));
+            CollectionUtils.predicatedCollection(collection, InstanceofPredicate.getInstance(Serializable.class));
         }
     }
 
@@ -398,8 +390,7 @@ public class DirtyTrackingDCBCVM<T> extends DeepCopyBufferedCollectionValueModel
     private ObservableList getBufferedListModel() {
 
         try {
-            return (ObservableList) //
-            DirtyTrackingDCBCVM.BUFFERED_LIST_MODEL_FIELD.get(this);
+            return (ObservableList) DirtyTrackingDCBCVM.BUFFERED_LIST_MODEL_FIELD.get(this);
         } catch (final Exception e) {
             DirtyTrackingDCBCVM.LOGGER.info(e.getMessage());
             return null;

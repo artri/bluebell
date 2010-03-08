@@ -20,13 +20,13 @@ package org.bluebell.richclient.command.support;
 
 import org.bluebell.richclient.application.docking.vldocking.BbVLDockingApplicationPage;
 import org.springframework.richclient.application.Application;
+import org.springframework.richclient.application.ApplicationPage;
 import org.springframework.richclient.command.ActionCommand;
 
 /**
  * Command responsible for resetting current page layout.
- * 
- * Para su utilización es necesario crear el comando en el contexto de aplicación y referenciarlo, por ejemplo, desde la
- * <em>toolbar</em>:
+ * <p>
+ * To be used requires creating the command into the application context and reference it, for instance at the tool bar.
  * 
  * <pre>
  * &lt;bean id=&quot;resetPerspectiveCommand&quot;
@@ -56,9 +56,10 @@ public class ResetPerspectiveCommand extends ActionCommand {
     @Override
     protected void doExecuteCommand() {
 
-        final BbVLDockingApplicationPage<?> page = (BbVLDockingApplicationPage<?>) //
-        Application.instance().getActiveWindow().getPage();
+        final ApplicationPage page = Application.instance().getActiveWindow().getPage();
 
-        page.resetLayout();
+        if (page instanceof BbVLDockingApplicationPage<?>) {
+            ((BbVLDockingApplicationPage<?>) page).resetLayout();
+        }
     }
 }

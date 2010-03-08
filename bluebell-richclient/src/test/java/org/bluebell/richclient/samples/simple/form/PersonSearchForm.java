@@ -29,7 +29,7 @@ import javax.swing.JComponent;
 import org.bluebell.richclient.form.AbstractBbSearchForm;
 import org.bluebell.richclient.form.util.BbFormModelHelper;
 import org.bluebell.richclient.samples.simple.bean.Person;
-import org.springframework.richclient.form.binding.swing.SwingBindingFactory;
+import org.springframework.richclient.form.binding.BindingFactory;
 import org.springframework.richclient.form.builder.TableFormBuilder;
 
 /**
@@ -69,7 +69,7 @@ public class PersonSearchForm extends AbstractBbSearchForm<Person, Person> {
     @Override
     protected JComponent createSearchParamsControl() {
 
-        final SwingBindingFactory bindingFactory = (SwingBindingFactory) this.getBindingFactory();
+        final BindingFactory bindingFactory = this.getBindingFactory();
         final TableFormBuilder formBuilder = new TableFormBuilder(bindingFactory);
 
         formBuilder.add("name");

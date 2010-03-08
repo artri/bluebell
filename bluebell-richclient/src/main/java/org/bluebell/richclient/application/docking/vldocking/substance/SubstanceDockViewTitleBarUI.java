@@ -28,10 +28,10 @@ import javax.swing.plaf.ComponentUI;
 
 import org.bluebell.richclient.application.docking.vldocking.VLDockingUtils;
 import org.bluebell.richclient.application.docking.vldocking.DockingPreferencesWidgetExtension.ActivationAware;
-import org.pushingpixels.substance.api.DecorationAreaType;
-import org.pushingpixels.substance.api.SubstanceLookAndFeel;
-import org.pushingpixels.substance.api.SubstanceSkin;
-import org.pushingpixels.substance.internal.utils.SubstanceCoreUtilities;
+import org.jvnet.substance.SubstanceLookAndFeel;
+import org.jvnet.substance.api.SubstanceSkin;
+import org.jvnet.substance.painter.decoration.DecorationAreaType;
+import org.jvnet.substance.utils.SubstanceCoreUtilities;
 
 import com.vlsolutions.swing.docking.DockViewTitleBar;
 import com.vlsolutions.swing.docking.Dockable;
@@ -56,6 +56,11 @@ import com.vlsolutions.swing.docking.ui.DockViewTitleBarUI;
  * @author <a href = "mailto:julio.arguello@gmail.com" >Julio Argüello (JAF)</a>
  */
 public class SubstanceDockViewTitleBarUI extends DockViewTitleBarUI implements ActivationAware {
+
+    /**
+     * The active property name.
+     */
+    private static final String ACTIVE_PROPERTY_NAME = "active";
 
     /**
      * Creates the UI.
@@ -101,8 +106,7 @@ public class SubstanceDockViewTitleBarUI extends DockViewTitleBarUI implements A
     @Override
     public void paint(Graphics g, JComponent c) {
 
-        this.installLabel(); // Re-install label in order to support font
-        // resizing
+        this.installLabel(); // Re-install label in order to support font resizing
         this.installBackground();
     }
 
@@ -112,7 +116,7 @@ public class SubstanceDockViewTitleBarUI extends DockViewTitleBarUI implements A
     @Override
     public void propertyChange(PropertyChangeEvent e) {
 
-        if ("active".equals(e.getPropertyName())) {
+        if (SubstanceDockViewTitleBarUI.ACTIVE_PROPERTY_NAME.equals(e.getPropertyName())) {
 
             final Boolean active = (Boolean) e.getNewValue();
             final Dockable dockable = this.titleBar.getDockable();

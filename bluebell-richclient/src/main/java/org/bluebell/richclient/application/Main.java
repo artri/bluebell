@@ -117,10 +117,6 @@ public abstract class Main {
         // Obtener las ubicaciones del contexto de aplicación de Spring.
         final Collection<String> envLocations = new HashSet<String>();
         CollectionUtils.addAll(envLocations, configLocations);
-        // for (String baseDir : baseDirs) {
-        // envLocations.add(//
-        // EnvironmentUtils.getEnvironmentConfigLocations(baseDir));
-        // }
 
         return envLocations.toArray(new String[envLocations.size()]);
     }

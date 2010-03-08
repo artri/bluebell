@@ -23,11 +23,9 @@ package org.bluebell.richclient.test;
 
 import java.awt.EventQueue;
 import java.lang.reflect.InvocationTargetException;
-import java.util.Arrays;
 
 import junit.framework.TestCase;
 
-import org.apache.commons.lang.StringUtils;
 import org.bluebell.richclient.application.support.FormBackedView;
 import org.bluebell.richclient.form.AbstractBb2TableMasterForm;
 import org.bluebell.richclient.form.AbstractBbChildForm;
@@ -116,11 +114,6 @@ public abstract class AbstractBbSamplesTests extends AbstractBbRichClientTests {
     private MultiViewPageDescriptor personPageDescriptor;
 
     /**
-     * The active window.
-     */
-    private ApplicationWindow activeWindow;
-
-    /**
      * The master view to be tested.
      */
     private FormBackedView<AbstractBb2TableMasterForm<Person>> masterView;
@@ -169,70 +162,23 @@ public abstract class AbstractBbSamplesTests extends AbstractBbRichClientTests {
     }
 
     /**
-     * Creates a page with the given view descriptors and show it in the active window.
-     * 
-     * @param viewDescriptorIds
-     *            the view descriptors.
-     * @return the resultant page descriptor.
-     */
-    public PageDescriptor initTest(String[] viewDescriptorIds) {
-
-        // Create the page descriptor (use diferent id each time)
-        final MultiViewPageDescriptor multiViewPageDescriptor = new MultiViewPageDescriptor();
-        multiViewPageDescriptor.setId(StringUtils.join(viewDescriptorIds));
-        multiViewPageDescriptor.setViewDescriptors(Arrays.asList(viewDescriptorIds));
-
-        // Initialize test variables
-        this.initializeVariables(multiViewPageDescriptor);
-
-        return multiViewPageDescriptor;
-    }
-    
-    /**
-     * Terminates the test.
-     */
-    public void terminateTest() {
-        
-        this.getActiveWindow().getControl().dispose();
-    }
-    
-
-    /**
      * Initialize other local variables different from those populated by Spring.
      * <p>
      * Call this method at the beginning of every test case.
      * 
      * @param pageDescriptor
      *            the page descriptor this method applies to.
+     * 
+     * @see #initializeApplicationAndWait()
      */
     @SuppressWarnings("unchecked")
-    public void initializeVariables(PageDescriptor pageDescriptor) {
+    protected void initializeVariables(PageDescriptor pageDescriptor) {
 
-        // Retrieve application page factory
-        this.setApplicationPageFactory(this.getService(ApplicationPageFactory.class));
-
-        // Retrieve active window
-        this.setActiveWindow(Application.instance().getActiveWindow());
+        this.initializeApplicationAndWait();
 
         // Create related page
         this.setApplicationPage(//
                 this.getApplicationPageFactory().createApplicationPage(this.getActiveWindow(), pageDescriptor));
-
-        try {
-            EventQueue.invokeAndWait(new Runnable() {
-
-                @Override
-                public void run() {
-
-                    // Nothing to do, just waiting for page creation to be completed
-                    new String("Avoid Checkstyle warning");
-                }
-            });
-        } catch (InterruptedException e) {
-            TestCase.fail(e.getMessage());
-        } catch (InvocationTargetException e) {
-            TestCase.fail(e.getMessage());
-        }
 
         // Fire page components creation and show the new page
         this.getActiveWindow().showPage(this.getApplicationPage());
@@ -246,6 +192,42 @@ public abstract class AbstractBbSamplesTests extends AbstractBbRichClientTests {
                 this.getApplicationPage().getView(AbstractBbSamplesTests.DETAIL_VIEW_DESCRIPTOR_BEAN_NAME));
         this.setValidationView((FormBackedView<BbValidationForm<Person>>) //
                 this.getApplicationPage().getView(AbstractBbSamplesTests.VALIDATION_VIEW_DESCRIPTOR_BEAN_NAME));
+    }
+
+    /**
+     * Initializes the global application instance and waits until completion.
+     * <p>
+     * This method should be called at the beginning of every test case. May be
+     * {@link #initializeVariables(PageDescriptor)} could be preferred instead.
+     */
+    protected final void initializeApplicationAndWait() {
+    
+        // Retrieve application page factory
+        this.setApplicationPageFactory(this.getService(ApplicationPageFactory.class));
+    
+        try {
+            EventQueue.invokeAndWait(new Runnable() {
+    
+                @Override
+                public void run() {
+    
+                    // Nothing to do, just waiting for page creation to be completed
+                    new String("Avoid Checkstyle warning");
+                }
+            });
+        } catch (InterruptedException e) {
+            TestCase.fail(e.getMessage());
+        } catch (InvocationTargetException e) {
+            TestCase.fail(e.getMessage());
+        }
+    }
+
+    /**
+     * Terminates the test.
+     */
+    protected void terminateTest() {
+
+        this.getActiveWindow().getControl().dispose();
     }
 
     /**
@@ -296,9 +278,9 @@ public abstract class AbstractBbSamplesTests extends AbstractBbRichClientTests {
      * 
      * @return the activeWindow
      */
-    protected ApplicationWindow getActiveWindow() {
+    protected final ApplicationWindow getActiveWindow() {
 
-        return this.activeWindow;
+        return Application.instance().getActiveWindow();
     }
 
     /**
@@ -306,7 +288,7 @@ public abstract class AbstractBbSamplesTests extends AbstractBbRichClientTests {
      * 
      * @return the applicationPage
      */
-    protected ApplicationPage getApplicationPage() {
+    protected final ApplicationPage getApplicationPage() {
 
         return this.applicationPage;
     }
@@ -316,7 +298,7 @@ public abstract class AbstractBbSamplesTests extends AbstractBbRichClientTests {
      * 
      * @return the applicationPageFactory
      */
-    protected ApplicationPageFactory getApplicationPageFactory() {
+    protected final ApplicationPageFactory getApplicationPageFactory() {
 
         return this.applicationPageFactory;
     }
@@ -326,7 +308,7 @@ public abstract class AbstractBbSamplesTests extends AbstractBbRichClientTests {
      * 
      * @return the personPageDescriptor
      */
-    protected MultiViewPageDescriptor getPersonPageDescriptor() {
+    protected final MultiViewPageDescriptor getPersonPageDescriptor() {
 
         return this.personPageDescriptor;
     }
@@ -369,19 +351,6 @@ public abstract class AbstractBbSamplesTests extends AbstractBbRichClientTests {
     protected FormBackedView<BbValidationForm<Person>> getValidationView() {
 
         return this.validationView;
-    }
-
-    /**
-     * Sets the activeWindow.
-     * 
-     * @param activeWindow
-     *            the activeWindow to set
-     */
-    private void setActiveWindow(ApplicationWindow activeWindow) {
-
-        Assert.notNull(activeWindow, "activeWindow");
-
-        this.activeWindow = activeWindow;
     }
 
     /**

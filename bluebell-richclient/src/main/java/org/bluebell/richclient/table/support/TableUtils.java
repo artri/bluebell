@@ -341,7 +341,8 @@ public final class TableUtils {
                         if (!attach) {
                             eventList.clear();
                         }
-                        eventList.addAll(CollectionUtils.subtract(entities, eventList));
+
+                        eventList.addAll(eventList.size(), CollectionUtils.subtract(entities, eventList));
                     } finally {
                         // Since Swing is multithread we need to lock before and unlock later
                         // http://sites.google.com/site/glazedlists/documentation/faq

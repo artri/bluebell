@@ -137,7 +137,9 @@ public class BbVLDockingApplicationPage<T> extends VLDockingApplicationPage {
 
         final DockingDesktop dockingDesktop = (DockingDesktop) this.getControl();
 
-        this.saveLayout(dockingDesktop, this.getUserLayout());
+        if (this.getUserLayout() != null) {
+            this.saveLayout(dockingDesktop, this.getUserLayout());
+        }
         this.buildLayout(dockingDesktop, this.getInitialLayout());
     }
 
@@ -195,6 +197,7 @@ public class BbVLDockingApplicationPage<T> extends VLDockingApplicationPage {
     public void saveLayout(DockingDesktop dockingDesktop, Resource dest) {
 
         Assert.notNull(dockingDesktop, "dockingDesktop");
+        Assert.notNull(dest, "dest");
 
         try {
             // Create file if doesn't exist
@@ -387,21 +390,21 @@ public class BbVLDockingApplicationPage<T> extends VLDockingApplicationPage {
     private Boolean doClose() {
 
         // 20090913, (JAF), prevents attemps to close a non existing control
-        // (i.e.: on exit command execution after page
-        // creation exception)
+        // (i.e.: on exit command execution after page creation exception)
         if (!this.isControlCreated()) {
             return Boolean.TRUE;
         }
 
-        // HACK, set temporally a null initial layout before calling super#close
-        // and restore the value later.
+        // HACK, set temporally a null initial layout before calling super#close and restore the value later.
         // This will avoid writing the layout twice.
         super.setInitialLayout(null);
 
         final Resource layout = this.getUserLayout();
         Boolean success = null;
         try {
-            this.saveLayout((DockingDesktop) this.getControl(), layout);
+            if (layout != null) {
+                this.saveLayout((DockingDesktop) this.getControl(), layout);
+            }
             success = super.close();
         } catch (Exception e) {
             final String resourceDescription = (layout != null) ? layout.getDescription() : StringUtils.EMPTY;

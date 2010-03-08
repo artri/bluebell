@@ -122,8 +122,7 @@ public class DirtyIndicatorInterceptor extends AbstractFormComponentInterceptor 
     public void processComponent(final String propertyName, final JComponent component) {
 
         // Clase que gestiona el estado de la propiedad
-        final OverlayHandler overlayHandler = new OverlayHandler(//
-                propertyName, component);
+        final OverlayHandler overlayHandler = new OverlayHandler(propertyName, component);
 
         // Escuchar cambios en la propiedad "dirty" de la metainfo. del campo
         this.getFormModel().getFieldMetadata(propertyName).addPropertyChangeListener(FormModel.DIRTY_PROPERTY, //
@@ -216,8 +215,8 @@ public class DirtyIndicatorInterceptor extends AbstractFormComponentInterceptor 
             if (visible) {
                 final FormModel theFormModel = DirtyIndicatorInterceptor.DirtyOverlay.this.formModel;
                 final String thePropertyName = DirtyIndicatorInterceptor.DirtyOverlay.this.propertyName;
-                final MessageSource messageSource = (MessageSource) ApplicationServicesLocator.//
-                        services().getService(MessageSource.class);
+                final MessageSource messageSource = (MessageSource) ApplicationServicesLocator.services().getService(
+                        MessageSource.class);
                 final Locale locale = Locale.getDefault();
                 final String displayName = theFormModel.getFieldFace(thePropertyName).getDisplayName();
 
@@ -227,8 +226,7 @@ public class DirtyIndicatorInterceptor extends AbstractFormComponentInterceptor 
                 // Si el valor original es nulo internacionalizar su valor (ej.:
                 // vacío).
                 if (originalValue == null) {
-                    originalValue = messageSource.getMessage(//
-                            DirtyIndicatorInterceptor.NULL_MESSAGE_KEY, //
+                    originalValue = messageSource.getMessage(DirtyIndicatorInterceptor.NULL_MESSAGE_KEY, //
                             new Object[] {}, locale);
                 }
 
@@ -277,8 +275,7 @@ public class DirtyIndicatorInterceptor extends AbstractFormComponentInterceptor 
             control.setOpaque(true);
             final IconSource iconSource = (IconSource) //
             ApplicationServicesLocator.services().getService(IconSource.class);
-            final Icon icon = iconSource.getIcon(//
-                    DirtyIndicatorInterceptor.DIRTY_ICON_KEY);
+            final Icon icon = iconSource.getIcon(DirtyIndicatorInterceptor.DIRTY_ICON_KEY);
             this.dirtyLabel = new JLabel(icon);
             control.add(this.dirtyLabel, BorderLayout.CENTER);
 
@@ -383,9 +380,7 @@ public class DirtyIndicatorInterceptor extends AbstractFormComponentInterceptor 
             final int xOffset = 5;
             final int yOffset = 0;
 
-            this.overlay = new DirtyOverlay(//
-                    DirtyIndicatorInterceptor.this.getFormModel(), //
-                    propertyName, this);
+            this.overlay = new DirtyOverlay(DirtyIndicatorInterceptor.this.getFormModel(), propertyName, this);
             InterceptorOverlayHelper.attachOverlay(this.overlay.getControl(), component, SwingConstants.NORTH_WEST,
                     xOffset, yOffset);
 

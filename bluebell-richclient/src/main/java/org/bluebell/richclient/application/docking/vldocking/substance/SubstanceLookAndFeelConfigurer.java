@@ -34,14 +34,14 @@ import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
 import org.bluebell.richclient.swing.util.SwingUtils;
-import org.pushingpixels.lafwidget.LafWidget;
-import org.pushingpixels.lafwidget.animation.FadeConfigurationManager;
-import org.pushingpixels.lafwidget.animation.FadeKind;
-import org.pushingpixels.lafwidget.preview.DefaultPreviewPainter;
-import org.pushingpixels.lafwidget.tabbed.DefaultTabPreviewPainter;
-import org.pushingpixels.lafwidget.utils.LafConstants.TabOverviewKind;
-import org.pushingpixels.substance.api.SubstanceLookAndFeel;
-import org.pushingpixels.substance.api.SubstanceConstants.TabContentPaneBorderKind;
+import org.jvnet.lafwidget.LafWidget;
+import org.jvnet.lafwidget.animation.FadeConfigurationManager;
+import org.jvnet.lafwidget.animation.FadeKind;
+import org.jvnet.lafwidget.preview.DefaultPreviewPainter;
+import org.jvnet.lafwidget.tabbed.DefaultTabPreviewPainter;
+import org.jvnet.lafwidget.utils.LafConstants.TabOverviewKind;
+import org.jvnet.substance.SubstanceLookAndFeel;
+import org.jvnet.substance.api.SubstanceConstants.TabContentPaneBorderKind;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.core.io.Resource;
 import org.springframework.richclient.application.config.UIManagerConfigurer;
@@ -316,7 +316,6 @@ public class SubstanceLookAndFeelConfigurer extends UIManagerConfigurer implemen
      * <code>System.setProperty("sun.awt.noerasebackground", "true");</code>. You can set this property along with the
      * above two lines.
      * </dl>
-     * 
      */
     @Override
     protected void doInstallCustomDefaults() throws Exception {

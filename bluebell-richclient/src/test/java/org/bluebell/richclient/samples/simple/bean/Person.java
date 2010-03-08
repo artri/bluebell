@@ -38,7 +38,7 @@ public class Person implements Comparable<Person> {
      * 
      * @author <a href = "mailto:julio.arguello@gmail.com" >Julio Argüello (JAF)</a>
      */
-    private enum Sex {
+    public enum Sex {
         /**
          * Male.
          */

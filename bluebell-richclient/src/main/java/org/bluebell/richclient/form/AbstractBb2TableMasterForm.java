@@ -18,21 +18,64 @@
 
 package org.bluebell.richclient.form;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.event.ListSelectionListener;
 
+import org.bluebell.richclient.application.config.FilterCommand;
+import org.bluebell.richclient.command.support.CommandUtils;
+import org.bluebell.richclient.table.support.TableUtils;
 import org.springframework.binding.form.HierarchicalFormModel;
 import org.springframework.binding.value.ValueModel;
 import org.springframework.binding.value.support.ObservableList;
+import org.springframework.context.ApplicationEvent;
+import org.springframework.richclient.application.event.LifecycleApplicationEvent;
+import org.springframework.richclient.command.ActionCommand;
+import org.springframework.richclient.command.ActionCommandExecutor;
+import org.springframework.richclient.command.TargetableActionCommand;
+import org.springframework.richclient.command.support.GlobalCommandIds;
+import org.springframework.richclient.exceptionhandling.delegation.ExceptionHandlerDelegate;
 import org.springframework.richclient.form.AbstractDetailForm;
 import org.springframework.richclient.form.Form;
 import org.springframework.util.Assert;
+import org.springframework.util.ClassUtils;
+import org.springframework.util.StringUtils;
+
+/**
+ * Extiende el comportamiento de {@link org.springframework.richclient.form.AbstractTableMasterForm } simplificando
+ * la utilización de formularios maestros y añadiéndole capacidades adicionales.
+ * Los cambios realizados son:
+ * <ul>
+ * <li>Implementa {@link GlobalCommandsAccessor}.
+ * <li>Notifica a la barra de estado ante errores de validación.
+ * <li>Incorpora métodos de conveniencia para realizar operaciones
+ * <em>CRUD (<b>C</b>reate, <b>R</b>ead, <b>U</b>pdate, <b>D</b>elete</em>)
+ * básicas en la capa de servicio.
+ * <dl>
+ * <dt><em>C</em>reate
+ * <dd>{@link #doInsert(Object)}
+ * <dt><em>R</em>ead
+ * <dd>{@link #doRefresh(Object)}
+ * <dd>{@link #showEntities(java.util.Collection)}
+ * <dd>{@link #showEntities(java.util.Collection, boolean)}
+ * <dt><em>U</em>pdate
+ * <dd>{@link #doUpdate(Object)}
+ * <dt><em>D</em>elete
+ * <dd>{@link #doDelete(Object)}
+ * </dl>
+ * </ul>
+ * 
+ * @param <T>
+ *            el tipo de las entidades que gestiona este formulario.
+ * 
+ * @author <a href = "mailto:julio.arguello@gmail.com" >Julio Argüello (JAF)</a>
+ */
 
 /**
  * Extiende el comportamiento de {@link AbstractBb1TableMasterForm } simplificando la utilización de los formularios
@@ -54,7 +97,69 @@ import org.springframework.util.Assert;
  * 
  * @author <a href = "mailto:julio.arguello@gmail.com" >Julio Argüello (JAF)</a>
  */
-public abstract class AbstractBb2TableMasterForm<T extends Object> extends AbstractBb1TableMasterForm<T> {
+public abstract class AbstractBb2TableMasterForm<T extends Object> extends AbstractBbTableMasterForm<T> implements
+        GlobalCommandsAccessor {
+
+    /**
+     * El nombre del parámetro de <code>refreshCommand</code> que le indica si se ha de limpiar la selección antes de
+     * ejecutarlo.
+     */
+    public static final String CLEAR_SELECTION_BEFORE_REFRESH_COMMAND_PARAM = "clearSelection";
+
+    /**
+     * Sufijo para el identificador del modelo padre de este formulario.
+     */
+    protected static final String PARENT_FORM_MODEL_SUFIX = "ParentFormModel";
+
+    /**
+     * El identificador por defecto del comando para cancelar la creación de una nueva entidad.
+     */
+    private static final String CANCEL_COMMAND_ID = "cancelCommand";
+
+    /**
+     * El identificador por defecto del comando de filtrado de la tabla maestra.
+     */
+    private static final String FILTER_COMMAND_ID = "filterCommand";
+
+    /**
+     * El identificador por defecto del comando para crear una nueva entidad.
+     */
+    private static final String NEW_FORM_OBJECT_COMMAND_ID = "newCommand";
+
+    /**
+     * The logger.
+     */
+    // private static final Logger LOGGER = LoggerFactory.getLogger(BbPageComponentsConfigurer.class);
+
+    /**
+     * Comando para cancelar la creación de una nueva entidad.
+     */
+    private ActionCommand cancelCommand;
+
+    /**
+     * Comando que filtra la tabla maestra.
+     */
+    private ActionCommand filterCommand;
+
+    /**
+     * Comando que refresca una entidad.
+     */
+    // private ActionCommand refreshCommand;
+
+    /**
+     * Comando que deshace los cambios sobre una entidad.
+     */
+    private ActionCommand revertAllCommand;
+
+    /**
+     * Comando que salva los cambios realizados sobre una entidad.
+     */
+    private ActionCommand saveCommand;
+
+    /**
+     * Comando que selecciona todos los elementos de la tabla maestra.
+     */
+    private ActionCommand selectAllCommand;
 
     /**
      * 
@@ -70,9 +175,9 @@ public abstract class AbstractBb2TableMasterForm<T extends Object> extends Abstr
      *            la clase del tipo detalle.
      */
     public AbstractBb2TableMasterForm(String formId, Class<T> detailType) {
-
+    
         super(formId, detailType);
-
+    
         this.setSearchForms(new ArrayList<AbstractBbSearchForm<T, ?>>());
     }
 
@@ -90,11 +195,11 @@ public abstract class AbstractBb2TableMasterForm<T extends Object> extends Abstr
     @SuppressWarnings("unchecked")
     @Override
     public final void addChildForm(Form childForm) {
-
+    
         Assert.notNull(childForm);
         Assert.notNull(this.getDetailForm());
         Assert.isInstanceOf(AbstractBbChildForm.class, childForm);
-
+    
         // Añadir el formulario hijo e indicarle cual es su maestro
         ((AbstractBbChildForm<T>) childForm).setMasterForm(this);
         this.getDetailForm().addChildForm(childForm);
@@ -107,15 +212,15 @@ public abstract class AbstractBb2TableMasterForm<T extends Object> extends Abstr
      *            the search form.
      */
     public final void addSearchForm(AbstractBbSearchForm<T, ?> searchForm) {
-
+    
         Assert.notNull(searchForm, "searchForm");
-
+    
         if (this.getSearchForms().contains(searchForm)) {
             throw new IllegalStateException(); // TODO cambiar la excepción
         } else if (searchForm.getMasterForm() != null) {
             throw new IllegalStateException(); // TODO cambiar la excepción
         }
-
+    
         searchForm.setMasterForm(this);
         this.searchForms.add(searchForm);
     }
@@ -127,7 +232,7 @@ public abstract class AbstractBb2TableMasterForm<T extends Object> extends Abstr
      */
     @SuppressWarnings("unchecked")
     public Collection<AbstractBbChildForm<T>> getDetailForms() {
-
+    
         return ((BbDispatcherForm<T>) this.getDetailForm()).getChildForms();
     }
 
@@ -137,7 +242,7 @@ public abstract class AbstractBb2TableMasterForm<T extends Object> extends Abstr
      * @return the searchForms
      */
     public List<AbstractBbSearchForm<T, ?>> getSearchForms() {
-
+    
         return Collections.unmodifiableList(this.searchForms);
     }
 
@@ -153,11 +258,11 @@ public abstract class AbstractBb2TableMasterForm<T extends Object> extends Abstr
      */
     @Override
     public final void removeChildForm(Form childForm) {
-
+    
         // Comprobar los parámetros
         Assert.notNull(childForm);
         Assert.notNull(this.getDetailForm());
-
+    
         // Eliminar el formulario hijo
         this.getDetailForm().removeChildForm(childForm);
     }
@@ -176,9 +281,9 @@ public abstract class AbstractBb2TableMasterForm<T extends Object> extends Abstr
      */
     @Override
     public final void showEntities(List<T> entities, Boolean attach) {
-
+    
         super.showEntities(entities, attach);
-
+    
         // Si una vez establecido el listado de entidades no hay ninguna
         // seleccionada entonces notificar a los
         // formularios hijos.
@@ -188,6 +293,504 @@ public abstract class AbstractBb2TableMasterForm<T extends Object> extends Abstr
         if (this.getMasterTable().getSelectionModel().getMaxSelectionIndex() < 0) {
             ((ListSelectionHandler) this.getSelectionHandler()).onNoSelection();
         }
+    }
+
+    /**
+     * Obtiene el comando para cancelar la creación de una nueva entidad.
+     * 
+     * @return el comando de cancelación.
+     * 
+     * @see #createFilterCommand()
+     */
+    public final ActionCommand getCancelCommand() {
+
+        if (this.cancelCommand == null) {
+            this.cancelCommand = this.createCancelCommand();
+        }
+        return this.cancelCommand;
+    }
+
+    /**
+     * Obtiene el comando de filtrado de la tabla maestra y si no existe entonces lo crea.
+     * 
+     * @return el comando de filtrado.
+     * 
+     * @see #createFilterCommand()
+     */
+    public final ActionCommand getFilterCommand() {
+
+        if (this.filterCommand == null) {
+            this.filterCommand = this.createFilterCommand();
+        }
+        return this.filterCommand;
+    }
+
+    /**
+     * Obtiene el comando que que deshace los cambios sobre una entidad y si no existe lo crea.
+     * 
+     * @return el comando de <em>undo</em>.
+     */
+    public ActionCommand getRevertAllCommand() {
+
+        if (this.revertAllCommand == null) {
+            this.revertAllCommand = this.createRevertAllCommand();
+        }
+        return this.revertAllCommand;
+    }
+
+    /**
+     * Obtiene el comando para guardar los cambios realizados sobre una entidad y si no existe lo crea.
+     * 
+     * @return el comando de salvado.
+     */
+    public ActionCommand getSaveCommand() {
+
+        if (this.saveCommand == null) {
+            this.saveCommand = this.createSaveCommand();
+        }
+        return this.saveCommand;
+    }
+
+    /**
+     * Obtiene el comando de selección de todos los elementos de la tabla maestra y si no existe lo crea.
+     * 
+     * @return el comando de selección.
+     */
+    public final ActionCommand getSelectAllCommand() {
+
+        if (this.selectAllCommand == null) {
+            this.selectAllCommand = this.createSelectAllCommand();
+        }
+        return this.selectAllCommand;
+    }
+
+    /**
+     * Método que devuelve al formulario a su situación inicial después de un fallo.
+     * <p>
+     * Por el momento limpia la selección de la tabla maestra y resetea los formularios hijos.
+     */
+    public void keepAliveAfterFailure() {
+    
+        this.changeSelection(null);
+        this.getDetailForm().reset();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public ActionCommandExecutor getRefreshCommand() {
+    
+        // FIXME
+        return this.getNewFormObjectCommand();
+    }
+
+    /**
+     * Permite refrescar una entidad en el sistema (Se corresponde con la 'R' de C<b>R</b>UD).
+     * 
+     * @param entities
+     *            el objeto a refrescar.
+     * @return el objeto refrescado y <code>null</code> en caso de error.
+     */
+    protected abstract List<T> doRefresh(List<T> entities);
+
+    /**
+     * Publica un evento de aplicación indicando que se ha creado, modificado, refrescado o eliminado un objeto.
+     * <p>
+     * 
+     * @param eventType
+     *            el tipo del evento.
+     * @param source
+     *            el objeto desencadenante del evento.
+     */
+    protected final void publishApplicationEvent(EventType eventType, T source) {
+    
+        final ApplicationEvent applicationEvent = new LifecycleApplicationEvent(eventType.toString(), source);
+        this.getApplicationContext().publishEvent(applicationEvent);
+    }
+
+    /**
+     * Obtiene un nuevo nombre para un comando a partir del nombre inicial de la forma "xxxCommand".
+     * <p>
+     * El nombre resultante es "xxxYyyCommand,xxxCommand" donde "yyy" es el tipo de los objetos editados por este
+     * formulario con la primera letra mayúscula.
+     * 
+     * @param defaultCommandName
+     *            el nombre por defecto del comando.
+     * @return el nuevo nombre.
+     * 
+     * @see CommandUtils#getCommandFaceDescriptorId(String, String)
+     */
+    protected final String getCommandName(String defaultCommandName) {
+    
+        final String detailType = StringUtils.capitalize(ClassUtils.getShortName(this.getDetailType()));
+    
+        return CommandUtils.getCommandFaceDescriptorId(defaultCommandName, detailType);
+    }
+
+    /**
+     * Actualiza los controles en función del estado del formulario.
+     * <p>
+     * Añade al comportamiento original (
+     * {@link org.springframework.richclient.form.AbstractTableMasterForm#updateControlsForState()}) la capacidad de
+     * habilitar/deshabilitar el comando de refresco.
+     */
+    @Override
+    protected void updateControlsForState() {
+    
+        super.updateControlsForState();
+    
+        // v2.5.18: el comando se activa si hay alguna fila seleccionada
+        // final Boolean enabled = !this.getSelectedEntities().isEmpty();
+        // this.getRefreshCommand().setEnabled(enabled);
+    
+        // this.getRefreshCommand().setEnabled(this.getDeleteCommand().isEnabled());
+    }
+
+    /**
+     * Obtiene el identificador del comando de refresco de entidades.
+     * 
+     * @return el identificador.
+     * 
+     * @see #getCommandName(String)
+     */
+    protected String getRefreshCommandFaceDescriptorId() {
+    
+        return this.getCommandName(GlobalCommandsAccessor.REFRESH);
+    }
+
+    /**
+     * Configura el comando dado previo establecimiento de un <em>security controller id</em>.
+     * 
+     * @param command
+     *            el comando.
+     * @param longRunningCommand
+     *            indica si es un comando de larga duración.
+     * 
+     * @return el comando pasado como parámetro una vez configurado.
+     * 
+     * @see CommandUtils#configureCommand(ActionCommand, org.springframework.binding.form.ValidatingFormModel)
+     */
+    protected ActionCommand configureCommand(ActionCommand command, Boolean longRunningCommand) {
+    
+        return CommandUtils.configureCommand(command, this.getFormModel(), longRunningCommand);
+    }
+
+    /**
+     * Sobreescribe {@link org.springframework.richclient.form.AbstractForm#constructSecurityControllerId(String)} para
+     * que utilice el identificador más prioritario.
+     * 
+     * @param commandFaceId
+     *            el identificador original.
+     * @return el identificador para la seguridad.
+     */
+    @Override
+    protected String constructSecurityControllerId(String commandFaceId) {
+
+        final String[] ids = StringUtils.commaDelimitedListToStringArray(commandFaceId);
+
+        return super.constructSecurityControllerId(ids[0]);
+    }
+
+    /**
+     * Crea y configura el comando para cancelar la creación de una nueva entidad.
+     * 
+     * @return el comando de cancelación.
+     */
+    protected ActionCommand createCancelCommand() {
+
+        Assert.notNull(this.getDetailForm());
+
+        // Obtener los identificadores del comando, separados por comas y
+        // ordenados según prioridad
+        final String commandId = this.getCancelCommandFaceDescriptorId();
+
+        // Crear el comando y sincronizar su estado enabled/disabled
+        final ActionCommand command = new TargetableActionCommand(commandId, this.getDetailForm().getCancelCommand());
+
+        // Determinar cuando ha de estar habilitado el comando.
+        command.setEnabled(Boolean.FALSE);
+        this.getNewFormObjectCommand().addEnabledListener(new PropertyChangeListener() {
+            public void propertyChange(PropertyChangeEvent evt) {
+
+                command.setEnabled(!(Boolean) evt.getNewValue());
+            }
+        });
+
+        // Configurar el comando
+        return this.configureCommand(command, Boolean.FALSE);
+    }
+
+    /**
+     * Crea y configura el comando de filtrado de la tabla maestra.
+     * 
+     * @return el comando de filtrado.
+     */
+    protected ActionCommand createFilterCommand() {
+
+        // Obtener los identificadores del comando, separados por comas y
+        // ordenados según prioridad
+        final String commandId = this.getFilterCommandFaceDescriptorId();
+
+        // Crear el comando
+        final ActionCommand command = new FilterCommand(commandId, AbstractBb2TableMasterForm.this.getMasterTable());
+
+        // Configurar el comando
+        return this.configureCommand(command, Boolean.FALSE);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected ActionCommand createNewFormObjectCommand() {
+
+        final ActionCommand newFormObjectCommand = super.createNewFormObjectCommand();
+
+        return this.configureCommand(newFormObjectCommand, Boolean.FALSE);
+    }
+
+    /**
+     * Crea y configura el comando que deshace los cambios sobre una entidad.
+     * 
+     * @return el comando de <em>undo</em>.
+     */
+    protected ActionCommand createRevertAllCommand() {
+
+        Assert.notNull(this.getDetailForm());
+
+        // Obtener los identificadores del comando, separados por comas y
+        // ordenados según prioridad
+        final String commandId = this.getRevertAllCommandFaceDescriptorId();
+
+        // Crear el comando
+        final ActionCommand command = new TargetableActionCommand(commandId, this.getDetailForm().getRevertCommand());
+
+        // Configurar el comando
+        return this.configureCommand(command, Boolean.FALSE);
+    }
+
+    /**
+     * Crea y configura el comando para guardar los cambios realizados sobre una entidad.
+     * 
+     * @return el comando de salvado.
+     */
+    protected ActionCommand createSaveCommand() {
+
+        Assert.notNull(this.getDetailForm());
+
+        // Obtener los identificadores del comando, separados por comas y
+        // ordenados según prioridad
+        final String commandId = this.getSaveCommandFaceDescriptorId();
+
+        // Crear el comando
+        final ActionCommand command = new TargetableActionCommand(commandId, this.getDetailForm().getCommitCommand());
+
+        // Configurar el comando
+        return this.configureCommand(command, Boolean.TRUE);
+    }
+
+    /**
+     * Crea y configura el comando de selección de todos los elementos de la tabla maestra.
+     * 
+     * @return el comando de selección
+     */
+    protected ActionCommand createSelectAllCommand() {
+
+        // Obtener los identificadores del comando, separados por comas y
+        // ordenados según prioridad
+        final String commandId = this.getSelectAllCommandFaceDescriptorId();
+
+        // Crear el comando
+        final ActionCommand command = new ActionCommand(commandId) {
+
+            /**
+             * Selecciona todas las entidades de la tabla maestra.
+             */
+            @Override
+            protected void doExecuteCommand() {
+
+                AbstractBb2TableMasterForm.this.getMasterTable().selectAll();
+            }
+        };
+
+        // Configurar el comando
+        return this.configureCommand(command, Boolean.TRUE);
+    }
+
+    /**
+     * Sobrescribe el método de la clase base que elimina de la tabla maestra el departamento seleccionado para su
+     * eliminación también de forma persistente.
+     */
+    @Override
+    protected final void deleteSelectedItems() {
+
+        // Resetear el formulario detalle para que no dé falsos avisos de dirty
+        this.getDetailForm().reset();
+
+        final List<T> selection = TableUtils.getSelection(this.getMasterTable(), this.getMasterTableModel());
+
+        for (T entity : selection) {
+
+            // Eliminar la entidad y retonar null en caso de fallo.
+            final boolean success = (AbstractBb2TableMasterForm.this.doDelete(entity) != null);
+            if (!success) {
+
+                new String("Avoid CS warning");
+                // TODO, do something
+            }
+
+            // Actualizar la tabla maestra.
+            AbstractBb2TableMasterForm.this.getMasterEventList().remove(entity);
+
+            // Publicar el evento de notificación de borrado.
+            AbstractBb2TableMasterForm.this.publishApplicationEvent(EventType.DELETED, entity);
+        }
+    }
+
+    /**
+     * Permite eliminar una nueva entidad del sistema (Se corresponde con la 'D' de CRU<b>D</b>).
+     * 
+     * @param object
+     *            el objeto a eliminar.
+     * @return el objeto eliminado y <code>null</code> en caso de error.
+     * 
+     * @see #deleteSelectedItems()
+     */
+    protected abstract T doDelete(T object);
+
+    /**
+     * Permite insertar una nueva entidad en el sistema (Se corresponde con la 'C' de <b>C</b>RUD).
+     * 
+     * @param object
+     *            el objeto a insertar.
+     * @return el objeto insertado y <code>null</code> en caso de error.
+     * 
+     * @see AbstractBbDetailForm#postCommit(org.springframework.binding.form.FormModel)
+     */
+    protected abstract T doInsert(T object);
+
+    /**
+     * Permite actualizar una entidad en el sistema (Se corresponde con la 'U' de CR<b>U</b>D).
+     * 
+     * @param object
+     *            el objeto a insertar.
+     * @return el objeto actualizado y <code>null</code> en caso de error.
+     * 
+     * @see AbstractBbDetailForm#postCommit(org.springframework.binding.form.FormModel)
+     */
+    protected abstract T doUpdate(T object);
+
+    /**
+     * Obtiene el identificador del comando para cancelar la creación de una nueva entidad.
+     * 
+     * @return el identificador.
+     * 
+     * @see #getCommandName(String)
+     */
+    protected String getCancelCommandFaceDescriptorId() {
+
+        return this.getCommandName(AbstractBb2TableMasterForm.CANCEL_COMMAND_ID);
+    }
+
+    /**
+     * Obtiene el identificador del comando de salvado de la edición actual.
+     * 
+     * @return el identificador.
+     * 
+     * @see #getCommandName(String)
+     */
+    @Override
+    protected String getCommitCommandFaceDescriptorId() {
+
+        return this.getCommandName(GlobalCommandIds.SAVE);
+    }
+
+    /**
+     * Obtiene el identificador del comando que borra las entidades seleccionadas.
+     * 
+     * @return el identificador.
+     * 
+     * @see #getCommandName(String)
+     */
+    @Override
+    protected String getDeleteCommandId() {
+
+        return this.getCommandName(GlobalCommandIds.DELETE);
+    }
+
+    /**
+     * Obtiene el identificador del comando de filtrado de la tabla maestra.
+     * 
+     * @return el identificador.
+     * 
+     * @see #getCommandName(String)
+     */
+    protected String getFilterCommandFaceDescriptorId() {
+
+        return this.getCommandName(AbstractBb2TableMasterForm.FILTER_COMMAND_ID);
+    }
+
+    /**
+     * Obtiene el identificador del comando que crea una nueva entidad.
+     * 
+     * @return el identificador.
+     * 
+     * @see #getCommandName(String)
+     */
+    @Override
+    protected String getNewFormObjectCommandId() {
+
+        return this.getCommandName(AbstractBb2TableMasterForm.NEW_FORM_OBJECT_COMMAND_ID);
+    }
+
+    /**
+     * Obtiene el identificador que deshace los cambios sobre una entidad.
+     * 
+     * @return el identificador.
+     * 
+     * @see #getCommandName(String)
+     */
+    protected String getRevertAllCommandFaceDescriptorId() {
+
+        return this.getCommandName(GlobalCommandsAccessor.REVERT_ALL);
+    }
+
+    /**
+     * Obtiene el identificador que deshace los cambios parcialmente sobre una entidad.
+     * 
+     * @return el identificador.
+     * 
+     * @see #getCommandName(String)
+     */
+    @Override
+    protected String getRevertCommandFaceDescriptorId() {
+
+        return this.getCommandName(GlobalCommandIds.UNDO);
+    }
+
+    /**
+     * Obtiene el identificador que guarda los cambios realizados sobre una entidad.
+     * 
+     * @return el identificador.
+     * 
+     * @see #getCommandName(String)
+     */
+    protected String getSaveCommandFaceDescriptorId() {
+
+        return this.getCommandName(GlobalCommandIds.SAVE);
+    }
+
+    /**
+     * Obtiene el identificador para la selección de todas las entidades de la tabla maestra.
+     * 
+     * @return el identificador.
+     * 
+     * @see #getCommandName(String)
+     */
+    protected String getSelectAllCommandFaceDescriptorId() {
+
+        return this.getCommandName(GlobalCommandIds.SELECT_ALL);
     }
 
     /**
@@ -256,28 +859,28 @@ public abstract class AbstractBb2TableMasterForm<T extends Object> extends Abstr
      * 
      * @return el componente con el formulario maestro excluyendo el formulario detalle.
      */
-    @Override
-    protected final JComponent createFormControl() {
-
-        // Obtener el control del formulario maestro.
-        final JPanel panel = (JPanel) super.createFormControl();
-
-        // El formulario maestro consta de una tabla y botones.
-        // final JPanel panel = new JPanel(new BorderLayout());
-        // panel.add(new JScrollPane(this.getMasterTable()), BorderLayout.CENTER);
-        // panel.add(this.createButtonBar(), BorderLayout.SOUTH);
-        // panel.setBorder(BorderFactory.createTitledBorder(//
-        // BorderFactory.createEtchedBorder()));
-
-        // Dar la oportunidad a la clase hija de modificar el control.
-        this.onCreateFormControl(panel);
-
-        // Actualizar los controles en función del estado.
-        super.updateControlsForState();
-        this.setEnabled(true);
-
-        return panel;
-    }
+//    @Override
+//    protected final JComponent createFormControl() {
+//
+//        // Obtener el control del formulario maestro.
+//        final JPanel panel = (JPanel) super.createFormControl();
+//
+//        // El formulario maestro consta de una tabla y botones.
+//        // final JPanel panel = new JPanel(new BorderLayout());
+//        // panel.add(new JScrollPane(this.getMasterTable()), BorderLayout.CENTER);
+//        // panel.add(this.createButtonBar(), BorderLayout.SOUTH);
+//        // panel.setBorder(BorderFactory.createTitledBorder(//
+//        // BorderFactory.createEtchedBorder()));
+//
+//        // Dar la oportunidad a la clase hija de modificar el control.
+//        this.onCreateFormControl(panel);
+//
+//        // Actualizar los controles en función del estado.
+//        super.updateControlsForState();
+//        this.setEnabled(true);
+//
+//        return panel;
+//    }
 
     /**
      * Crea un <em>list selection listener</em> para la tabla maestra de tipo
@@ -346,6 +949,17 @@ public abstract class AbstractBb2TableMasterForm<T extends Object> extends Abstr
     }
 
     /**
+     * Gets the dispatcher form.
+     * 
+     * @return the dispatcher form.
+     */
+    @SuppressWarnings("unchecked")
+    BbDispatcherForm<T> getDispatcherForm() {
+    
+        return (BbDispatcherForm<T>) super.getDetailForm();
+    }
+
+    /**
      * Sets the searchForms.
      * 
      * @param searchForms
@@ -359,6 +973,56 @@ public abstract class AbstractBb2TableMasterForm<T extends Object> extends Abstr
     }
 
     /**
+     * Manejador de errores que mantiene "vivo" el formulario maestro después de un fallo.
+     * <p>
+     * Se hace necesario ya que ante una excepción no controlada los <em>backing objects</em> de los formularios quedan
+     * en un estado precario y provocan continuas excepciones dejando la aplicación insusable.
+     * <p>
+     * Por tanto esta implementación mantiene vivo el formulario en {@link #hasAppropriateHandler(Throwable)} y devuelve
+     * siempre <code>false</code> en {@link #uncaughtException(Thread, Throwable)}.
+     * 
+     * @author <a href = "mailto:julio.arguello@gmail.com" >Julio Argüello (JAF)</a>
+     */
+    public static class KeepAliveAfterFailureExceptionHandlerDelegate implements ExceptionHandlerDelegate {
+    
+        /**
+         * {@inheritDoc}
+         */
+        public boolean hasAppropriateHandler(Throwable thrownTrowable) {
+    
+            // final ApplicationWindow window =
+            // Application.instance().getActiveWindow();
+            // final ApplicationPage page = window != null ? window.getPage() //
+            // : null;
+    
+            // TODO, 20090919, me da que haciendolo con hilos ya no habría estos
+            // problemas
+    
+            // if (page != null && page instanceof BbVLDockingApplicationPage) {
+            //
+            // final BbVLDockingApplicationPage<Object> tPage =
+            // (BbVLDockingApplicationPage<Object>) page;
+            // final AbstractBbTableMasterForm<Object> masterForm =
+            // tPage.getLastMasterForm();
+            //
+            // if (masterForm != null) {
+            // masterForm.keepAliveAfterFailure();
+            // }
+            // }
+    
+            return Boolean.FALSE;
+        }
+    
+        /**
+         * {@inheritDoc}
+         */
+        public void uncaughtException(Thread t, Throwable e) {
+    
+            // Nothing to do
+        }
+    }
+
+    /**
      * Obtiene un <code>ListSelectionListener</code> que extiende {@link AbstractBbTableMasterForm.ListSelectionHandler}
      * añadiéndole la capacidad de invocar a {@link #onSelectionChange(int, Object)} sobre este formulario, y a
      * {@link AbstractBbChildForm#onSelectionChange(int, Object)} sobre cada uno de los formulario hijos, antes de
@@ -369,7 +1033,7 @@ public abstract class AbstractBb2TableMasterForm<T extends Object> extends Abstr
      * @see #onSelectionChange(int, Object)
      * @see AbstractBbChildForm#onSelectionChange(int, Object)
      */
-    protected class ListSelectionHandler extends AbstractBb0TableMasterForm<T>.MasterFormListSelectionHandler {
+    protected class ListSelectionHandler extends AbstractBbTableMasterForm<T>.MasterFormListSelectionHandler {
 
         /**
          * Invoca a {@link AbstractBbChildForm#onSelectionChange(int[], Object[])} en cada formulario hijo.

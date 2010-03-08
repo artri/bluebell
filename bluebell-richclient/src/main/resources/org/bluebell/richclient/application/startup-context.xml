@@ -1,28 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!--
+	<!--
 
-    Copyright (C) 2009 Julio Argüello <julio.arguello@gmail.com>
+		Copyright (C) 2009 Julio Argüello <julio.arguello@gmail.com> This file is part of Bluebell Rich Client. Licensed under
+		the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You
+		may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or
+		agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+		CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and
+		limitations under the License.
+	-->
 
-    This file is part of Bluebell Rich Client.
-
-    Licensed under the Apache License, Version 2.0 (the "License");
-    you may not use this file except in compliance with the License.
-    You may obtain a copy of the License at
-
-            http://www.apache.org/licenses/LICENSE-2.0
-
-    Unless required by applicable law or agreed to in writing, software
-    distributed under the License is distributed on an "AS IS" BASIS,
-    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-    See the License for the specific language governing permissions and
-    limitations under the License.
-
--->
-
-<beans xmlns="http://www.springframework.org/schema/beans"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:p="http://www.springframework.org/schema/p"
-	xmlns:util="http://www.springframework.org/schema/util" xmlns:context="http://www.springframework.org/schema/context"
-	xmlns:aop="http://www.springframework.org/schema/aop"
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:p="http://www.springframework.org/schema/p" xmlns:util="http://www.springframework.org/schema/util"
+	xmlns:context="http://www.springframework.org/schema/context" xmlns:aop="http://www.springframework.org/schema/aop"
 	xsi:schemaLocation="http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.5.xsd
 		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
 		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.5.xsd
@@ -31,66 +20,66 @@
 
 	<aop:aspectj-autoproxy />
 
-	<context:property-placeholder location="classpath*:META-INF/spring/*.properties" />
+	<bean id="startupPropertyPlaceholderConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+		<property name="locations">
+			<list>
+				<value>classpath*:META-INF/spring/*.properties</value>
+			</list>
+		</property>
+	</bean>
 
 	<alias alias="splashScreen" name="${richclient.splashScreen}" />
 
 	<!--
 		TODO DOC
 	-->
-	<bean id="macOsxSplashScreen"
-		class="org.springframework.richclient.application.splash.MacOSXSplashScreen"
-		p:icon-resource-path="${richclient.icon}" />
+	<bean id="macOsxSplashScreen" class="org.springframework.richclient.application.splash.MacOSXSplashScreen"
+	p:icon-resource-path="/org/bluebell/richclient/images/bluebell/bluebell-transparente-74x34.png" />
+<!--		p:icon-resource-path="${richclient.icon}" />-->
+
 
 	<!--
 		TODO DOC
 	-->
-	<bean id="progressSplashScreen"
-		class="org.springframework.richclient.application.splash.ProgressSplashScreen"
-		p:image-resource-path="${richclient.image}" p:show-progress-label="true"
-		p:shadow-border="true" p:icon-resource-path="${richclient.icon}" />
+	<bean id="progressSplashScreen" class="org.springframework.richclient.application.splash.ProgressSplashScreen"
+		p:image-resource-path="${richclient.image}" p:show-progress-label="true" p:shadow-border="true" p:icon-resource-path="${richclient.icon}" />
 
 
 	<!-- 
 		TODO DOC		
 	-->
-	<!--	-->  
-	<bean id="substanceLookAndFeelConfigurer"
-		class="org.bluebell.richclient.application.docking.vldocking.substance.SubstanceLookAndFeelConfigurer">
-		<constructor-arg index="0" value="org.pushingpixels.substance.api.skin.SubstanceDustLookAndFeel" />
+	<!--	-->
+	<bean id="substanceLookAndFeelConfigurer" class="org.bluebell.richclient.application.docking.vldocking.substance.SubstanceLookAndFeelConfigurer">
+		<constructor-arg index="0" value="org.jvnet.substance.skin.SubstanceDustLookAndFeel" />
 		<property name="progressMonitorProxyBean">
 			<util:property-path id="progressMonitor" path="splashScreen.progressMonitor" />
 		</property>
 		<property name="imageLocations" ref="imageResourcesFactory" />
 	</bean>
-	
+
 	<!-- 
 		TODO, change broken image indicator
 	 -->
-	<bean id="imageSource" class="org.springframework.richclient.image.DefaultImageSource" 
-		p:brokenImageIndicator="/com/vlsolutions/swing/docking/close16v2.png">
-		<constructor-arg index="0"  type="java.util.Map" ref="imageResourcesFactory" />
-	</bean>	
-		
-	
-  <!--
-    Bean: imageResourcesFactory
-    Usage: platform required (if you are using the DefaultImageSource, see below)
-    Description: This specifies the component that is responsible for providing
-    image resources locations.  This factory uses the specified properties
-    files to map image resource keys to image locations.
-  -->
-	<bean id="imageResourcesFactory"
-		class="org.springframework.context.support.ResourceMapFactoryBean">
+	<bean id="imageSource" class="org.springframework.richclient.image.DefaultImageSource" p:brokenImageIndicator="/com/vlsolutions/swing/docking/close16v2.png">
+		<constructor-arg index="0" type="java.util.Map" ref="imageResourcesFactory" />
+	</bean>
+
+
+	<!--
+		Bean: imageResourcesFactory Usage: platform required (if you are using the DefaultImageSource, see below) Description:
+		This specifies the component that is responsible for providing image resources locations. This factory uses the
+		specified properties files to map image resource keys to image locations.
+	-->
+	<bean id="imageResourcesFactory" class="org.springframework.context.support.ResourceMapFactoryBean">
 		<property name="locations">
 			<list>
-				<!-- 
-				<value>classpath:/org/springframework/richclient/image/images.properties</value>
-				<value>classpath:/org/bluebell/richclient/image/images.properties</value>
+				<!--
+					<value>classpath:/org/springframework/richclient/image/images.properties</value>
+					<value>classpath:/org/bluebell/richclient/image/images.properties</value>
 				-->
-				<value>classpath:/org/bluebell/richclient/image/prueba2.properties</value>
-			</list>	
+				<value>classpath:/org/bluebell/richclient/image/images.properties</value>
+			</list>
 		</property>
 	</bean>
-	
+
 </beans>

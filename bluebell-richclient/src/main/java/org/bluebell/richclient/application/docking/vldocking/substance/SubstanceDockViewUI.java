@@ -34,6 +34,7 @@ import org.bluebell.richclient.application.docking.vldocking.DockingPreferencesW
 import org.springframework.util.Assert;
 
 import com.vlsolutions.swing.docking.DockView;
+import com.vlsolutions.swing.docking.DockViewTitleBar;
 import com.vlsolutions.swing.docking.DockingPanel;
 import com.vlsolutions.swing.docking.SplitContainer;
 import com.vlsolutions.swing.docking.TabbedDockableContainer;
@@ -76,6 +77,9 @@ public class SubstanceDockViewUI extends DockViewUI implements ActivationAware {
 
         final DockView dockView = (DockView) c;
         this.activate(dockView, dockView.getTitleBar().isActive());
+
+        // (JAF), 20100226, maximized dockables lose their background color under Substance 5.3 so set it explicitly
+        c.setBackground(VLDockingUtils.DockingColor.BACKGROUND.getColor());
     }
 
     /**
@@ -91,6 +95,7 @@ public class SubstanceDockViewUI extends DockViewUI implements ActivationAware {
     /**
      * {@inheritDoc}
      */
+    @Override
     public void activate(JComponent target, Boolean active) {
 
         Assert.isInstanceOf(DockView.class, target, "target");
@@ -105,7 +110,7 @@ public class SubstanceDockViewUI extends DockViewUI implements ActivationAware {
     @Override
     protected void installMaximizedDockableBorder(DockView dockView) {
 
-        this.installBorder(dockView, Boolean.FALSE);
+        this.installBorder(dockView);
     }
 
     /**
@@ -114,7 +119,7 @@ public class SubstanceDockViewUI extends DockViewUI implements ActivationAware {
     @Override
     protected void installSingleDockableBorder(DockView dockView) {
 
-        this.installBorder(dockView, Boolean.FALSE);
+        this.installBorder(dockView);
     }
 
     /**
@@ -123,7 +128,20 @@ public class SubstanceDockViewUI extends DockViewUI implements ActivationAware {
     @Override
     protected void installTabbedDockableBorder(DockView dockView) {
 
-        this.installBorder(dockView, Boolean.FALSE);
+        this.installBorder(dockView);
+    }
+
+    /**
+     * Install different borders to the dockView depending on its selection state {@link #isActive(DockView)}.
+     * 
+     * @param dockView
+     *            the dock view.
+     * 
+     * @see #installBorder(DockView, Boolean)
+     */
+    protected final void installBorder(DockView dockView) {
+
+        this.installBorder(dockView, this.isActive(dockView));
     }
 
     /**
@@ -159,6 +177,14 @@ public class SubstanceDockViewUI extends DockViewUI implements ActivationAware {
         }
 
         dockView.setBorder(border);
+    }
+
+    private Boolean isActive(DockView dockView) {
+
+        final DockViewTitleBar titleBar = dockView.getTitleBar();
+        final Boolean active = (titleBar != null) ? titleBar.isActive() : Boolean.FALSE;
+
+        return active;
     }
 
     /**

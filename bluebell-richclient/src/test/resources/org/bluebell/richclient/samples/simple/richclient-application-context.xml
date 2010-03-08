@@ -1,23 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!--
+	<!--
 
-    Copyright (C) 2009 Julio Argüello <julio.arguello@gmail.com>
-
-    This file is part of Bluebell Rich Client.
-
-    Licensed under the Apache License, Version 2.0 (the "License");
-    you may not use this file except in compliance with the License.
-    You may obtain a copy of the License at
-
-            http://www.apache.org/licenses/LICENSE-2.0
-
-    Unless required by applicable law or agreed to in writing, software
-    distributed under the License is distributed on an "AS IS" BASIS,
-    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-    See the License for the specific language governing permissions and
-    limitations under the License.
-
--->
+		Copyright (C) 2009 Julio Argüello <julio.arguello@gmail.com> This file is part of Bluebell Rich Client. Licensed under
+		the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You
+		may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or
+		agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+		CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and
+		limitations under the License.
+	-->
 
 <beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:p="http://www.springframework.org/schema/p" xmlns:util="http://www.springframework.org/schema/util"
@@ -28,13 +18,15 @@
 
 
 	<bean id="personPropertyPlaceholderConfigurer" parent="propertyPlaceholderConfigurer"
-		p:ignore-unresolvable-placeholders="true" p:order="-1" p:location="classpath*:META-INF/spring/person/*.properties" />
+		p:ignore-unresolvable-placeholders="true" p:ignore-resource-not-found="false" p:order="-1">
+		<property name="locations">
+			<list>
+				<value>classpath*:META-INF/spring/person/*.properties</value>
+			</list>
+		</property>
+	</bean>
 
 	<bean id="personPageDescriptor" parent="abstractVlDockingPageDescriptor" p:initial-layout="classpath:/org/bluebell/richclient/samples/layout/personLayout.xml">
-
-		<!--
-			p:initial-layout="classpath:/es/uniovi/sies/mat/ui/layout/periodosMatriculaLayout.xml"
-		-->
 		<property name="viewDescriptors">
 			<list>
 				<value>personMasterViewDescriptor</value>
@@ -61,6 +53,14 @@
 				<value>org.bluebell.richclient.application.messages</value>
 				<value>org.springframework.richclient.application.messages</value>
 				<value>org.bluebell.richclient.samples.simple.messages</value>
+			</list>
+		</property>
+	</bean>
+
+	<bean id="personImageResourcesFactory" parent="imageResourcesFactory">
+		<property name="locations">
+			<list merge="true">
+				<value>classpath:/org/bluebell/richclient/samples/simple/image/images.properties</value>
 			</list>
 		</property>
 	</bean>

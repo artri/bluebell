@@ -46,6 +46,7 @@ import javax.swing.table.TableModel;
 
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.binding.value.ValueModel;
+import org.springframework.richclient.application.support.ApplicationServicesAccessor;
 import org.springframework.richclient.factory.ComponentFactory;
 import org.springframework.richclient.util.Alignment;
 import org.springframework.util.Assert;
@@ -58,7 +59,8 @@ import org.springframework.util.Assert;
  * 
  * @author <a href = "mailto:julio.arguello@gmail.com" >Julio Argüello (JAF)</a>
  */
-public abstract class ComponentFactoryDecorator implements ComponentFactory, InitializingBean {
+public abstract class ComponentFactoryDecorator extends ApplicationServicesAccessor implements ComponentFactory,
+        InitializingBean {
 
     /**
      * The decorated component factory.

@@ -35,7 +35,7 @@ public class ApplicationPageException extends BbApplicationException {
     /**
      * The default error code for this kind of exceptions.
      */
-    private static final String DEFAULT_ERROR_CODE = "ApplicationPageException";
+    private static final String DEFAULT_ERROR_CODE = "applicationPageException";
 
     /**
      * Implements <code>Serializable</code>.
@@ -143,6 +143,8 @@ public class ApplicationPageException extends BbApplicationException {
     }
 
     /**
+     * Gets the page id.
+     * 
      * @return the page id.
      */
     public String getPageId() {
@@ -154,6 +156,8 @@ public class ApplicationPageException extends BbApplicationException {
     }
 
     /**
+     * Sets the page id.
+     * 
      * @param pageId
      *            the page id to set.
      */

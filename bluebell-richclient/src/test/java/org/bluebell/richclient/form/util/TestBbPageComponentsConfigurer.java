@@ -21,11 +21,8 @@
  */
 package org.bluebell.richclient.form.util;
 
-import java.util.List;
-
 import junit.framework.TestCase;
 
-import org.apache.commons.lang.ArrayUtils;
 import org.bluebell.richclient.form.AbstractBb2TableMasterForm;
 import org.bluebell.richclient.form.AbstractBbChildForm;
 import org.bluebell.richclient.form.AbstractBbSearchForm;
@@ -34,21 +31,106 @@ import org.bluebell.richclient.form.BbValidationForm;
 import org.bluebell.richclient.samples.simple.bean.Person;
 import org.bluebell.richclient.test.AbstractBbSamplesTests;
 import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.richclient.application.PageDescriptor;
+import org.springframework.test.context.ContextConfiguration;
 
 /**
  * Tests the correct behaviour of {@link BbPageComponentsConfigurer}.
  * 
- *@author <a href = "mailto:julio.arguello@gmail.com" >Julio Argüello (JAF)</a>
+ * @author <a href = "mailto:julio.arguello@gmail.com" >Julio Argüello (JAF)</a>
  */
+@ContextConfiguration
 public class TestBbPageComponentsConfigurer extends AbstractBbSamplesTests {
 
+    /**
+     * A page descriptor containing a master view descriptor.
+     */
+    @Autowired
+    private PageDescriptor masterViewPageDescriptor;
+    
+    /**
+     * A page descriptor containing a detail view descriptor.
+     */
+    @Autowired
+    private PageDescriptor detailViewPageDescriptor;
+    
+    /**
+     * A page descriptor containing a search view descriptor.
+     */
+    @Autowired
+    private PageDescriptor searchViewPageDescriptor;
+   
+    /**
+     * A page descriptor containing a validation view descriptor.
+     */
+    @Autowired
+    private PageDescriptor validationViewPageDescriptor;
+    
+    /**
+     * A page descriptor containing a master and a detail view descriptors.
+     */
+    @Autowired
+    private PageDescriptor masterAndDetailViewsPageDescriptor;
+
+    /**
+     * A page descriptor containing a master and a detail view descriptors (reverse order).
+     */
+    @Autowired
+    private PageDescriptor rMasterAndDetailViewsPageDescriptor;
+
+    /**
+     * A page descriptor containing a master and a search view descriptors.
+     */
+    @Autowired
+    private PageDescriptor masterAndSearchViewsPageDescriptor;
+
+    /**
+     * A page descriptor containing a master and a search view descriptors (reverse order).
+     */
+    @Autowired
+    private PageDescriptor rMasterAndSearchViewsPageDescriptor;
+
+    /**
+     * A page descriptor containing all kind of views.
+     */
+    @Autowired
+    private PageDescriptor fullPageDescriptor;
+    
+    /**
+     * A page descriptor containing all kind of views (reverse order).
+     */
+    @Autowired
+    private PageDescriptor rFullPageDescriptor;
+    
+    
+    /** 
+     * {@inheritDoc}
+     */
+    @Override
+    public void testDependencyInjection() {
+         
+        super.testDependencyInjection();
+        
+        TestCase.assertNotNull("masterViewPageDescriptor", this.masterViewPageDescriptor);
+        TestCase.assertNotNull("detailViewPageDescriptor", this.detailViewPageDescriptor);
+        TestCase.assertNotNull("searchViewPageDescriptor", this.searchViewPageDescriptor);
+        TestCase.assertNotNull("validationViewPageDescriptor", this.validationViewPageDescriptor);
+        TestCase.assertNotNull("masterAndDetailViewsPageDescriptor", this.masterAndDetailViewsPageDescriptor);
+        TestCase.assertNotNull("rMasterAndDetailViewsPageDescriptor", this.rMasterAndDetailViewsPageDescriptor);
+        TestCase.assertNotNull("masterAndSearchViewsPageDescriptor", this.masterAndSearchViewsPageDescriptor);
+        TestCase.assertNotNull("rMasterAndSearchViewsPageDescriptor", this.rMasterAndSearchViewsPageDescriptor);
+        TestCase.assertNotNull("fullPageDescriptor", this.fullPageDescriptor);
+        TestCase.assertNotNull("rFullPageDescriptor", this.rFullPageDescriptor);
+    }
+    
     /**
      * Case that tests pages with a single master view descriptor.
      */
     @Test
     public void testMasterViewDescriptor() {
 
-        this.initTest(new String[] { AbstractBbSamplesTests.MASTER_VIEW_DESCRIPTOR_BEAN_NAME });
+        this.initializeVariables(this.masterViewPageDescriptor);
 
         this.assertViewDescriptors(Boolean.FALSE, Boolean.TRUE, Boolean.TRUE, Boolean.TRUE);
     }
@@ -59,7 +141,7 @@ public class TestBbPageComponentsConfigurer extends AbstractBbSamplesTests {
     @Test
     public void testDetailViewDescriptor() {
 
-        this.initTest(new String[] { AbstractBbSamplesTests.DETAIL_VIEW_DESCRIPTOR_BEAN_NAME });
+        this.initializeVariables(this.detailViewPageDescriptor);
 
         this.assertViewDescriptors(Boolean.TRUE, Boolean.FALSE, Boolean.TRUE, Boolean.TRUE);
     }
@@ -70,7 +152,7 @@ public class TestBbPageComponentsConfigurer extends AbstractBbSamplesTests {
     @Test
     public void testSearchViewDescriptor() {
 
-        this.initTest(new String[] { AbstractBbSamplesTests.SEARCH_VIEW_DESCRIPTOR_BEAN_NAME });
+        this.initializeVariables(this.searchViewPageDescriptor);
 
         this.assertViewDescriptors(Boolean.TRUE, Boolean.TRUE, Boolean.FALSE, Boolean.TRUE);
     }
@@ -81,7 +163,7 @@ public class TestBbPageComponentsConfigurer extends AbstractBbSamplesTests {
     @Test
     public void testValidationViewDescriptor() {
 
-        this.initTest(new String[] { AbstractBbSamplesTests.VALIDATION_VIEW_DESCRIPTOR_BEAN_NAME });
+        this.initializeVariables(this.validationViewPageDescriptor);
 
         this.assertViewDescriptors(Boolean.TRUE, Boolean.TRUE, Boolean.TRUE, Boolean.FALSE);
     }
@@ -92,8 +174,7 @@ public class TestBbPageComponentsConfigurer extends AbstractBbSamplesTests {
     @Test
     public void testMasterAndDetailViewDescriptors() {
 
-        this.initTest(new String[] { AbstractBbSamplesTests.MASTER_VIEW_DESCRIPTOR_BEAN_NAME,
-                AbstractBbSamplesTests.DETAIL_VIEW_DESCRIPTOR_BEAN_NAME });
+        this.initializeVariables(this.masterAndDetailViewsPageDescriptor);
 
         this.assertViewDescriptors(Boolean.FALSE, Boolean.FALSE, Boolean.TRUE, Boolean.TRUE);
     }
@@ -104,8 +185,7 @@ public class TestBbPageComponentsConfigurer extends AbstractBbSamplesTests {
     @Test
     public void testMasterAndDetailViewDescriptorsReverse() {
 
-        this.initTest(new String[] { AbstractBbSamplesTests.DETAIL_VIEW_DESCRIPTOR_BEAN_NAME,
-                AbstractBbSamplesTests.MASTER_VIEW_DESCRIPTOR_BEAN_NAME });
+        this.initializeVariables(this.rMasterAndDetailViewsPageDescriptor);
 
         this.assertViewDescriptors(Boolean.FALSE, Boolean.FALSE, Boolean.TRUE, Boolean.TRUE);
     }
@@ -116,8 +196,7 @@ public class TestBbPageComponentsConfigurer extends AbstractBbSamplesTests {
     @Test
     public void testMasterAndSearchViewDescriptors() {
 
-        this.initTest(new String[] { AbstractBbSamplesTests.MASTER_VIEW_DESCRIPTOR_BEAN_NAME,
-                AbstractBbSamplesTests.SEARCH_VIEW_DESCRIPTOR_BEAN_NAME });
+        this.initializeVariables(this.masterAndSearchViewsPageDescriptor);
 
         this.assertViewDescriptors(Boolean.FALSE, Boolean.TRUE, Boolean.FALSE, Boolean.TRUE);
     }
@@ -128,8 +207,7 @@ public class TestBbPageComponentsConfigurer extends AbstractBbSamplesTests {
     @Test
     public void testMasterAndSearchViewDescriptorsReverse() {
 
-        this.initTest(new String[] { AbstractBbSamplesTests.SEARCH_VIEW_DESCRIPTOR_BEAN_NAME,
-                AbstractBbSamplesTests.MASTER_VIEW_DESCRIPTOR_BEAN_NAME });
+        this.initializeVariables(this.rMasterAndSearchViewsPageDescriptor);
 
         this.assertViewDescriptors(Boolean.FALSE, Boolean.TRUE, Boolean.FALSE, Boolean.TRUE);
     }
@@ -140,9 +218,7 @@ public class TestBbPageComponentsConfigurer extends AbstractBbSamplesTests {
     @Test
     public void testFullPage() {
 
-        final List<?> viewDescriptors = this.getPersonPageDescriptor().getViewDescriptors();
-        final String[] viewDescriptorsArray = viewDescriptors.toArray(new String[viewDescriptors.size()]);
-        this.initTest(viewDescriptorsArray);
+        this.initializeVariables(this.fullPageDescriptor);
 
         this.assertViewDescriptors(Boolean.FALSE, Boolean.FALSE, Boolean.FALSE, Boolean.FALSE);
     }
@@ -153,10 +229,7 @@ public class TestBbPageComponentsConfigurer extends AbstractBbSamplesTests {
     @Test
     public void testFullPageReverse() {
 
-        final List<?> viewDescriptors = this.getPersonPageDescriptor().getViewDescriptors();
-        final String[] viewDescriptorsArray = viewDescriptors.toArray(new String[viewDescriptors.size()]);
-        ArrayUtils.reverse(viewDescriptorsArray);
-        this.initTest(viewDescriptorsArray);
+        this.initializeVariables(this.rFullPageDescriptor);
 
         this.assertViewDescriptors(Boolean.FALSE, Boolean.FALSE, Boolean.FALSE, Boolean.FALSE);
     }

@@ -24,7 +24,14 @@ package org.bluebell.richclient.swing.util;
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.EventQueue;
+import java.awt.Image;
 import java.lang.reflect.InvocationTargetException;
+
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
+import javax.swing.JComponent;
+import javax.swing.JLabel;
+import javax.swing.plaf.UIResource;
 
 import org.bluebell.richclient.application.RcpMain;
 import org.springframework.util.Assert;
@@ -113,5 +120,75 @@ public final class SwingUtils {
         }
 
         return null;
+    }
+
+    /**
+     * Generates a component to view an image.
+     * 
+     * @param image
+     *            the image.
+     * @return the component.
+     */
+    public static JComponent generateComponent(Image image) {
+
+        if (image == null) {
+            return new LabelUIResource("Image is null");
+        }
+
+        return SwingUtils.generateComponent(new ImageIcon(image));
+    }
+
+    /**
+     * Generates a component to view an icon.
+     * 
+     * @param icon
+     *            the icon
+     * @return the component.
+     */
+    public static JComponent generateComponent(Icon icon) {
+
+        if (icon == null) {
+            return new LabelUIResource("Icon is null");
+        }
+
+        return new LabelUIResource(icon);
+    }
+
+    /**
+     * A <code>JLabel</code> that implements {@link UIResource}.
+     * <p>
+     * This is an alternative to <code>org.springframework.richclient.widget.ImageViewWidget</code> that implements
+     * <code>UIResource</code>.
+     * 
+     * @author <a href = "mailto:julio.arguello@gmail.com" >Julio Argüello (JAF)</a>
+     */
+    public static class LabelUIResource extends JLabel implements UIResource {
+
+        /**
+         * This is <code>Serializable</code>.
+         */
+        private static final long serialVersionUID = 6220541408412819253L;
+
+        /**
+         * Creates a <code>LabelUIResource</code> given a text.
+         * 
+         * @param text
+         *            the text.
+         */
+        public LabelUIResource(String text) {
+
+            super(text);
+        }
+
+        /**
+         * Creates a <code>LabelUIResource</code> given an image.
+         * 
+         * @param image
+         *            the image.
+         */
+        public LabelUIResource(Icon image) {
+
+            super(image);
+        }
     }
 }

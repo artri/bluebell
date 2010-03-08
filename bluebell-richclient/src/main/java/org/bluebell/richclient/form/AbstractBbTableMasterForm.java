@@ -46,7 +46,9 @@ import java.util.List;
 import javax.swing.JComponent;
 import javax.swing.JFormattedTextField;
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 import javax.swing.JTable;
+import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.TableModel;
 
@@ -62,13 +64,21 @@ import org.bluebell.richclient.table.support.TableUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.binding.form.ConfigurableFormModel;
+import org.springframework.binding.form.FormModel;
 import org.springframework.binding.form.HierarchicalFormModel;
 import org.springframework.binding.value.support.ValueHolder;
+import org.springframework.richclient.application.Application;
+import org.springframework.richclient.application.ApplicationWindow;
+import org.springframework.richclient.application.config.ApplicationWindowAware;
+import org.springframework.richclient.command.CommandGroup;
+import org.springframework.richclient.command.CommandGroupFactoryBean;
+import org.springframework.richclient.command.support.GlobalCommandIds;
 import org.springframework.richclient.dialog.ConfirmationDialog;
-import org.springframework.richclient.form.AbstractTableMasterForm;
+import org.springframework.richclient.form.AbstractMasterForm;
 import org.springframework.richclient.table.ListSelectionListenerSupport;
 import org.springframework.richclient.table.support.GlazedTableModel;
 import org.springframework.richclient.util.Assert;
+import org.springframework.richclient.util.PopupMenuMouseListener;
 
 import ca.odell.glazedlists.EventList;
 
@@ -79,6 +89,7 @@ import ca.odell.glazedlists.EventList;
  * <li>Requests user confirmation before aborting a current edition.
  * <li>Includes an improved selection handling mechanism, where events come with view and model relative indexes.
  * <li>View is built on top of {@link TableBinding}.
+ * <li>Implements <code>ApplicationWindowAware</code>.
  * </ul>
  * 
  * @param <T>
@@ -86,7 +97,8 @@ import ca.odell.glazedlists.EventList;
  * 
  * @author <a href = "mailto:julio.arguello@gmail.com" >Julio Argüello (JAF)</a>
  */
-public abstract class AbstractBb0TableMasterForm<T extends Object> extends AbstractTableMasterForm {
+public abstract class AbstractBbTableMasterForm<T extends Object> extends AbstractMasterForm implements
+        ApplicationWindowAware {
 
     /**
      * Sufix that identifies the parent form model.
@@ -96,7 +108,7 @@ public abstract class AbstractBb0TableMasterForm<T extends Object> extends Abstr
     /**
      * The logger.
      */
-    private static final Logger LOGGER = LoggerFactory.getLogger(AbstractBb0TableMasterForm.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(AbstractBbTableMasterForm.class);
 
     /**
      * Debug message for <code>#beforeSelection</code>.
@@ -111,9 +123,29 @@ public abstract class AbstractBb0TableMasterForm<T extends Object> extends Abstr
     new MessageFormat("After selecting model indexes \"{0}\" on {1}");
 
     /**
+     * The binding used to render the master table.
+     */
+    private TableBinding masterTableBinding;
+
+    /**
      * The list selection handler to be installed on the master event list.
      */
     private ListSelectionListener listSelectionHandler;
+
+    /**
+     * The command group used to build the buttons of this form.
+     */
+    private CommandGroup buttonsCommandGroup;
+
+    /**
+     * The command group used to build the popup menu of the master table.
+     */
+    private CommandGroup popupMenuCommandGroup;
+
+    /**
+     * The windows this form belongs to.
+     */
+    private ApplicationWindow applicationWindow;
 
     /**
      * Creates the master form given its identifier and the detail type.
@@ -128,12 +160,11 @@ public abstract class AbstractBb0TableMasterForm<T extends Object> extends Abstr
      * @see #AbstractBb0TableMasterForm(HierarchicalFormModel, String, String, Class)
      * @see ParentFormBackingBean
      */
-    public AbstractBb0TableMasterForm(String formId, Class<T> detailType) {
+    public AbstractBbTableMasterForm(String formId, Class<T> detailType) {
 
         this(BbFormModelHelper.createValidatingFormModel(new ParentFormBackingBean(), Boolean.FALSE, //
-                formId + AbstractBb0TableMasterForm.PARENT_FORM_MODEL_SUFIX), //
+                formId + AbstractBbTableMasterForm.PARENT_FORM_MODEL_SUFIX), //
                 ParentFormBackingBean.PROPERTY_NAME, formId, detailType);
-
     }
 
     /**
@@ -148,7 +179,7 @@ public abstract class AbstractBb0TableMasterForm<T extends Object> extends Abstr
      * @param detailType
      *            the detail type.
      */
-    private AbstractBb0TableMasterForm(HierarchicalFormModel parentFormModel, String property, String formId,
+    private AbstractBbTableMasterForm(HierarchicalFormModel parentFormModel, String property, String formId,
             Class<T> detailType) {
 
         super(parentFormModel, property, formId, detailType);
@@ -157,12 +188,13 @@ public abstract class AbstractBb0TableMasterForm<T extends Object> extends Abstr
     }
 
     /**
-     * {@inheritDoc}
+     * Gets the master table binding.
+     * 
+     * @return the binding.
      */
-    @Override
-    public JTable getMasterTable() {
+    public TableBinding getMasterTableBinding() {
 
-        return super.getMasterTable();
+        return this.masterTableBinding;
     }
 
     /**
@@ -246,9 +278,9 @@ public abstract class AbstractBb0TableMasterForm<T extends Object> extends Abstr
     public Boolean requestUserConfirmation() {
 
         // Dirty dialog
-        final String title = AbstractBb0TableMasterForm.this.getMessage(//
+        final String title = AbstractBbTableMasterForm.this.getMessage(//
                 new String[] { this.getId() + ".dirtyChange.title", "masterForm.dirtyChange.title" });
-        final String message = AbstractBb0TableMasterForm.this.getMessage(//
+        final String message = AbstractBbTableMasterForm.this.getMessage(//
                 new String[] { this.getId() + ".dirtyChange.message", "masterForm.dirtyChange.message" });
         final String description = DirtyTrackingUtils.getI18nDirtyPropertiesHtmlString(this.getDetailFormModel());
         final ValueHolder proceed = new ValueHolder(Boolean.FALSE);
@@ -261,8 +293,8 @@ public abstract class AbstractBb0TableMasterForm<T extends Object> extends Abstr
             @Override
             protected void onConfirm() {
 
-                if (AbstractBb0TableMasterForm.LOGGER.isDebugEnabled()) {
-                    AbstractBb0TableMasterForm.LOGGER.debug("User confirmed request");
+                if (AbstractBbTableMasterForm.LOGGER.isDebugEnabled()) {
+                    AbstractBbTableMasterForm.LOGGER.debug("User confirmed request");
                 }
 
                 proceed.setValue(Boolean.TRUE);
@@ -273,8 +305,8 @@ public abstract class AbstractBb0TableMasterForm<T extends Object> extends Abstr
              */
             protected void onCancel() {
 
-                if (AbstractBb0TableMasterForm.LOGGER.isDebugEnabled()) {
-                    AbstractBb0TableMasterForm.LOGGER.debug("User cancel request");
+                if (AbstractBbTableMasterForm.LOGGER.isDebugEnabled()) {
+                    AbstractBbTableMasterForm.LOGGER.debug("User cancel request");
                 }
 
             };
@@ -303,46 +335,44 @@ public abstract class AbstractBb0TableMasterForm<T extends Object> extends Abstr
     }
 
     /**
+     * Gets the application windows this form belongs to.
+     * <p>
+     * Note someone should stablish it before. If <code>FormBackedView</code> is used then it will be the one.
+     * <p>
+     * If it's not stablished then returns the active window.
+     * <p>
+     * This is needed to avoid race conditions when dealing with <code>Application.instance().getActiveWindow()</code>
+     * since while creating a page the active window may be the former.
+     * 
+     * @return the application window.
+     * 
+     * @see Application#getActiveWindow()
+     */
+    public final ApplicationWindow getApplicationWindow() {
+
+        return (this.applicationWindow != null) ? this.applicationWindow : Application.instance().getActiveWindow();
+    }
+
+    /**
+     * Sets the application windows this form belongs to.
+     * 
+     * @param applicationWindow
+     *            the application window.
+     */
+    public void setApplicationWindow(ApplicationWindow applicationWindow) {
+
+        Assert.notNull(applicationWindow, "applicationWindow");
+
+        this.applicationWindow = applicationWindow;
+    }
+
+    /**
      * {@inheritDoc}
      */
     @Override
     public String toString() {
 
         return new ToStringBuilder(this, ToStringStyle.SIMPLE_STYLE).append("id", this.getId()).toString();
-    }
-
-    /**
-     * {@inheritDoc}
-     * <p>
-     * Employs a table binding for displaying the master form.
-     */
-    @Override
-    protected JComponent createFormControl() {
-
-        super.createFormControl();
-
-        // HACK, (JAF) 20080725, para que el scrolling sea más usable
-        // TODO review table scrolling, not very useful with JXTable I think
-        this.getMasterTable().setPreferredScrollableViewportSize(this.getMasterTable().getPreferredSize());
-
-        final TableBinding tableBinding = new TableBinding(//
-                this.getMasterTable(), this.getFormModel().getParent(), ParentFormBackingBean.PROPERTY_NAME);
-        tableBinding.setColumnPropertyNames(this.getColumnPropertyNames());
-
-        // Intercepting is not interesting in this case
-        // ((SwingBindingFactory)this.getBindingFactory()).interceptBinding(tableBinding);
-
-        return tableBinding.getControl();
-    }
-
-    /**
-     * Creates the selection handler to be installed in the master event list.
-     * 
-     * @return the selection handler.
-     */
-    protected ListSelectionListener createSelectionHandler() {
-
-        return new MasterFormListSelectionHandler();
     }
 
     /**
@@ -358,9 +388,9 @@ public abstract class AbstractBb0TableMasterForm<T extends Object> extends Abstr
      * @param selection
      *            the selected entities.
      * 
-     * @see AbstractBb0TableMasterForm#beforeSelectionChange(List, List)
+     * @see AbstractBbTableMasterForm#beforeSelectionChange(List, List)
      * @see #doSelectionChange(int[], int[], List)
-     * @see AbstractBb0TableMasterForm#afterSelectionChange(List, List)
+     * @see AbstractBbTableMasterForm#afterSelectionChange(List, List)
      */
     protected final void handleSelectionChange(List<Integer> newModelIndexes, List<Integer> newViewIndexes,
             List<T> selection) {
@@ -378,7 +408,7 @@ public abstract class AbstractBb0TableMasterForm<T extends Object> extends Abstr
         } else {
             this.undoSelectionChange(oldModelIndexes, oldViewIndexes, newModelIndexes, newViewIndexes, selection);
         }
-        
+
         this.installSelectionHandler();
     }
 
@@ -408,7 +438,7 @@ public abstract class AbstractBb0TableMasterForm<T extends Object> extends Abstr
         final Boolean isSingleSelection = (selection.size() == 1);
         if (isSingleSelection) {
             this.getDetailForm().setSelectedIndex(newModelIndexes.get(0));
-            DirtyTrackingUtils.clearDirty(AbstractBb0TableMasterForm.this.getDetailForm().getFormModel());
+            DirtyTrackingUtils.clearDirty(AbstractBbTableMasterForm.this.getDetailForm().getFormModel());
         }
     }
 
@@ -450,8 +480,8 @@ public abstract class AbstractBb0TableMasterForm<T extends Object> extends Abstr
      */
     protected List<T> beforeSelectionChange(List<Integer> modelIndexes, List<T> selection) {
 
-        if (AbstractBb0TableMasterForm.LOGGER.isDebugEnabled()) {
-            AbstractBb0TableMasterForm.LOGGER.debug(AbstractBb0TableMasterForm.BEFORE_SELECTION_FMT.format(//
+        if (AbstractBbTableMasterForm.LOGGER.isDebugEnabled()) {
+            AbstractBbTableMasterForm.LOGGER.debug(AbstractBbTableMasterForm.BEFORE_SELECTION_FMT.format(//
                     new Object[] { ArrayUtils.toString(modelIndexes), this.getId() }));
         }
 
@@ -470,27 +500,182 @@ public abstract class AbstractBb0TableMasterForm<T extends Object> extends Abstr
      */
     protected void afterSelectionChange(List<Integer> modelIndexes, List<T> selection) {
 
-        if (AbstractBb0TableMasterForm.LOGGER.isDebugEnabled()) {
-            AbstractBb0TableMasterForm.LOGGER.debug(AbstractBb0TableMasterForm.AFTER_SELECTION_FMT.format(//
+        if (AbstractBbTableMasterForm.LOGGER.isDebugEnabled()) {
+            AbstractBbTableMasterForm.LOGGER.debug(AbstractBbTableMasterForm.AFTER_SELECTION_FMT.format(//
                     new Object[] { ArrayUtils.toString(modelIndexes), this.getId() }));
         }
     }
 
     /**
      * {@inheritDoc}
+     * <p>
+     * Employs a table binding for displaying the master form.
      */
     @Override
+    protected JComponent createFormControl() {
+
+        // Configure all sub-components
+        this.configure();
+
+        final FormModel parentFormModel = this.getFormModel().getParent();
+        final TableModel tableModel = this.createTableModel();
+
+        // Configure master table binding
+        this.setMasterTableBinding(new TableBinding(tableModel, parentFormModel, ParentFormBackingBean.PROPERTY_NAME));
+        this.getMasterTableBinding().setColumnPropertyNames(this.getColumnPropertyNames());
+        this.getMasterTableBinding().setButtonsCommandGroup(this.getCommandGroup());
+        this.getMasterTableBinding().setPopupMenuCommandGroup(this.getPopupMenuCommandGroup());
+        // Interception is not interesting in this case
+        // ((SwingBindingFactory)this.getBindingFactory()).interceptBinding(tableBinding);
+
+        // Configure master table
+        this.getMasterTable().setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+        this.getMasterTable().addMouseListener(new PopupMenuMouseListener(this.getPopupMenu()));
+        // this.getMasterTable().setPreferredScrollableViewportSize(this.getMasterTable().getPreferredSize());
+
+        // Setup selection listener so that it controls the detail form
+        this.installSelectionHandler();
+
+        // Update controls for state
+        this.updateControlsForState();
+
+        return this.getMasterTableBinding().getControl();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected final CommandGroup getCommandGroup() {
+
+        return this.getButtonsCommandGroup();
+    }
+
+    /**
+     * Gets the buttons command group and if doesn't exist then creates it.
+     * 
+     * @return the buttons command group.
+     */
+    protected final CommandGroup getButtonsCommandGroup() {
+
+        if (this.buttonsCommandGroup == null) {
+            this.buttonsCommandGroup = this.createButtonsCommandGroup();
+        }
+
+        return this.buttonsCommandGroup;
+    }
+
+    /**
+     * Creates the buttons command group.
+     * 
+     * @return the buttons command group.
+     */
+    protected CommandGroup createButtonsCommandGroup() {
+
+        final CommandGroup group = CommandGroup.createCommandGroup(new Object[] {
+        // this.getFilterCommand(), //
+                // CommandGroupFactoryBean.SEPARATOR_MEMBER_CODE, //
+                // CommandGroupFactoryBean.SEPARATOR_MEMBER_CODE, //
+                GlobalCommandIds.PROPERTIES, //
+                GlobalCommandIds.SAVE, //
+                GlobalCommandsAccessor.CANCEL, //
+                GlobalCommandIds.DELETE //
+                });
+
+        group.setCommandRegistry(this.getApplicationWindow().getCommandManager());
+
+        return group;
+    }
+
+    /**
+     * Gets the popup menu for the master table.
+     * <p>
+     * This is built from the command group returned from {@link #getPopupMenuCommandGroup()}.
+     * 
+     * @return the popup menu.
+     */
+    @Override
+    protected final JPopupMenu getPopupMenu() {
+
+        return this.getPopupMenuCommandGroup().createPopupMenu();
+    }
+
+    /**
+     * Gets the popup menu command group and if doesn't exist then creates it.
+     * 
+     * @return the popup menu command group.
+     */
+    protected final CommandGroup getPopupMenuCommandGroup() {
+
+        if (this.popupMenuCommandGroup == null) {
+            this.popupMenuCommandGroup = this.createButtonsCommandGroup();
+        }
+
+        return this.popupMenuCommandGroup;
+    }
+
+    /**
+     * Creates the popup menu command group.
+     * 
+     * @return the popup menu command group.
+     */
+    protected CommandGroup createPopupMenuCommandGroup() {
+
+        final CommandGroup group = CommandGroup.createCommandGroup(new Object[] { GlobalCommandIds.PROPERTIES, //
+                GlobalCommandIds.SAVE, //  
+                GlobalCommandsAccessor.CANCEL, //
+                GlobalCommandIds.DELETE, //
+                CommandGroupFactoryBean.SEPARATOR_MEMBER_CODE, //
+                GlobalCommandsAccessor.REVERT, //
+                GlobalCommandsAccessor.REVERT_ALL //  
+                });
+
+        group.setCommandRegistry(this.getApplicationWindow().getCommandManager());
+
+        return group;
+    }
+
+    /**
+     * Gets the master table.
+     * 
+     * @return the master table.
+     */
+    protected final JTable getMasterTable() {
+
+        return this.getMasterTableBinding().getTable();
+    }
+
+    /**
+     * @return Returns the masterTableModel.
+     */
     protected final GlazedTableModel getMasterTableModel() {
 
-        return (GlazedTableModel) super.getMasterTableModel();
+        return (GlazedTableModel) (getMasterTable() != null ? getMasterTable().getModel() : null);
+    }
+
+    /**
+     * Gets the property names to show in columns of the master table.
+     * 
+     * @return an array of property names
+     */
+    protected abstract String[] getColumnPropertyNames();
+
+    /**
+     * Gets the selection model for the master list representation.
+     * 
+     * @return selection model or <code>null</code> if master table has not been constructed yet.
+     */
+    @Override
+    protected ListSelectionModel getSelectionModel() {
+
+        return this.isControlCreated() ? this.getMasterTable().getSelectionModel() : null;
     }
 
     /**
      * {@inheritDoc}
      */
     @SuppressWarnings("unchecked")
-    @Override
-    protected final TableModel createTableModel() {
+    protected TableModel createTableModel() {
 
         final EventList<T> eventList = this.getMasterEventList();
 
@@ -514,6 +699,16 @@ public abstract class AbstractBb0TableMasterForm<T extends Object> extends Abstr
     }
 
     /**
+     * Creates the selection handler to be installed in the master event list.
+     * 
+     * @return the selection handler.
+     */
+    protected ListSelectionListener createSelectionHandler() {
+
+        return new MasterFormListSelectionHandler();
+    }
+
+    /**
      * Returns whether should proceed with an user action that can breaks a current edition.
      * 
      * @return <code>true</code> to proceed and <code>false</code> in any other case.
@@ -528,6 +723,19 @@ public abstract class AbstractBb0TableMasterForm<T extends Object> extends Abstr
     }
 
     /**
+     * Sets the master table binding.
+     * 
+     * @param masterTableBinding
+     *            the binding to set.
+     */
+    private void setMasterTableBinding(TableBinding masterTableBinding) {
+
+        Assert.notNull(masterTableBinding, "masterTableBinding");
+
+        this.masterTableBinding = masterTableBinding;
+    }
+
+    /**
      * Improved list selection listener that request user confirmation before changing selection. This is really useful
      * to prevent information lost after changing the selected entity.
      * <p>
@@ -539,13 +747,13 @@ public abstract class AbstractBb0TableMasterForm<T extends Object> extends Abstr
      * <dd>To {@link #onSingleSelection(int[], int[], List<T>)}
      * </dl>
      * <p>
-     * Calls {@link AbstractBb0TableMasterForm#doRefresh(List)} after a selection event is raised, in order to allow
+     * Calls {@link AbstractBbTableMasterForm#doRefresh(List)} after a selection event is raised, in order to allow
      * implementor to refresh selection state in a customized way. This may be useful to synchronize page state when
      * dealing with multiple pages, windows or clients.
      * <p>
      * Internally distinguish between <code>JTable</code> relative row indexes and backing collection relative indexes.
      * 
-     * @see AbstractBb0TableMasterForm#doRefresh(List)
+     * @see AbstractBbTableMasterForm#doRefresh(List)
      * 
      * @author <a href = "mailto:julio.arguello@gmail.com" >Julio Argüello (JAF)</a>
      */
@@ -580,7 +788,7 @@ public abstract class AbstractBb0TableMasterForm<T extends Object> extends Abstr
          * @param viewIndexes
          *            user relative indexes.
          * 
-         * @see AbstractBb0TableMasterForm#doRefresh(List)
+         * @see AbstractBbTableMasterForm#doRefresh(List)
          * @see #onSingleSelection(int, int, Object)
          * @see #onMultiSelection(List, List, List)
          */
@@ -588,7 +796,7 @@ public abstract class AbstractBb0TableMasterForm<T extends Object> extends Abstr
         protected final void delegateSelectionChange(List<Integer> viewIndexes) {
 
             // Constants
-            final AbstractBb0TableMasterForm<T> masterForm = AbstractBb0TableMasterForm.this;
+            final AbstractBbTableMasterForm<T> masterForm = AbstractBbTableMasterForm.this;
             final JTable masterTable = masterForm.getMasterTable();
             final EventList<T> masterEventList = masterForm.getMasterEventList();
 
@@ -625,11 +833,11 @@ public abstract class AbstractBb0TableMasterForm<T extends Object> extends Abstr
         @Override
         protected void onNoSelection() {
 
-            if (AbstractBb0TableMasterForm.LOGGER.isDebugEnabled()) {
-                AbstractBb0TableMasterForm.LOGGER.debug("Selection is empty");
+            if (AbstractBbTableMasterForm.LOGGER.isDebugEnabled()) {
+                AbstractBbTableMasterForm.LOGGER.debug("Selection is empty");
             }
 
-            AbstractBb0TableMasterForm.this.handleSelectionChange(//
+            AbstractBbTableMasterForm.this.handleSelectionChange(//
                     ListUtils.EMPTY_LIST, ListUtils.EMPTY_LIST, ListUtils.EMPTY_LIST);
         }
 
@@ -650,11 +858,11 @@ public abstract class AbstractBb0TableMasterForm<T extends Object> extends Abstr
         @SuppressWarnings("unchecked")
         protected void onSingleSelection(int modelIndex, int viewIndex, T selection) {
 
-            if (AbstractBb0TableMasterForm.LOGGER.isDebugEnabled()) {
-                AbstractBb0TableMasterForm.LOGGER.debug("Selected row " + viewIndex);
+            if (AbstractBbTableMasterForm.LOGGER.isDebugEnabled()) {
+                AbstractBbTableMasterForm.LOGGER.debug("Selected row " + viewIndex);
             }
 
-            AbstractBb0TableMasterForm.this.handleSelectionChange(//
+            AbstractBbTableMasterForm.this.handleSelectionChange(//
                     Arrays.asList(modelIndex), Arrays.asList(viewIndex), Arrays.asList(selection));
         }
 
@@ -674,11 +882,11 @@ public abstract class AbstractBb0TableMasterForm<T extends Object> extends Abstr
          */
         protected void onMultiSelection(List<Integer> modelIndexes, List<Integer> viewIndexes, List<T> selection) {
 
-            if (AbstractBb0TableMasterForm.LOGGER.isDebugEnabled()) {
-                AbstractBb0TableMasterForm.LOGGER.debug("Selected rows " + ArrayUtils.toString(viewIndexes));
+            if (AbstractBbTableMasterForm.LOGGER.isDebugEnabled()) {
+                AbstractBbTableMasterForm.LOGGER.debug("Selected rows " + ArrayUtils.toString(viewIndexes));
             }
 
-            AbstractBb0TableMasterForm.this.handleSelectionChange(modelIndexes, viewIndexes, selection);
+            AbstractBbTableMasterForm.this.handleSelectionChange(modelIndexes, viewIndexes, selection);
         }
     }
 
