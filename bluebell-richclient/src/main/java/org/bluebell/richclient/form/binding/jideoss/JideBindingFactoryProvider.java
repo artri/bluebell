@@ -60,7 +60,7 @@ public class JideBindingFactoryProvider implements BindingFactoryProvider, Appli
     /**
      * Sets the application context.
      * 
-     * @param application
+     * @param applicationContext
      *            context the application context to set.
      */
     public void setApplicationContext(ApplicationContext applicationContext) {

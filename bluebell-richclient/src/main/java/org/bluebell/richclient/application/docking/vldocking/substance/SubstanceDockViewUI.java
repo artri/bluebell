@@ -179,6 +179,13 @@ public class SubstanceDockViewUI extends DockViewUI implements ActivationAware {
         dockView.setBorder(border);
     }
 
+    /**
+     * Returns whether the target dock view is currently active or not.
+     * 
+     * @param dockView
+     *            the dock view.
+     * @return <code>true</code> if active and <code>false</code> in other case.
+     */
     private Boolean isActive(DockView dockView) {
 
         final DockViewTitleBar titleBar = dockView.getTitleBar();

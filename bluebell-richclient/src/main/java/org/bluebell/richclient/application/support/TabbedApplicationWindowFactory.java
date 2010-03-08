@@ -175,8 +175,6 @@ public class TabbedApplicationWindowFactory implements ApplicationWindowFactory 
          * 
          * @param page
          *            the page.
-         * 
-         * @return the index of the inserted tab.
          */
         public void addPage(final ApplicationPage page) {
 
@@ -327,7 +325,7 @@ public class TabbedApplicationWindowFactory implements ApplicationWindowFactory 
          * 
          * @return the tabbed pane.
          */
-        private final JTabbedPane getTabbedPane() {
+        private JTabbedPane getTabbedPane() {
 
             if (this.tabbedPane == null) {
                 final ComponentFactory componentFactory = (ComponentFactory) this.//
@@ -350,7 +348,7 @@ public class TabbedApplicationWindowFactory implements ApplicationWindowFactory 
          *            the tabbed pane.
          * @return the tabbed pane.
          */
-        private final JTabbedPane setTabbedPane(JTabbedPane tabbedPane) {
+        private JTabbedPane setTabbedPane(JTabbedPane tabbedPane) {
 
             Assert.notNull(tabbedPane, "tabbedPane");
 
@@ -382,11 +380,11 @@ public class TabbedApplicationWindowFactory implements ApplicationWindowFactory 
          * @param emptyPageDescriptor
          *            the emptyPageDescriptor to set.
          */
-        private void setEmptyPageDescriptor(PageDescriptor pageDescriptor) {
+        private void setEmptyPageDescriptor(PageDescriptor emptyPageDescriptor) {
 
-            Assert.notNull(pageDescriptor, "pageDescriptor");
+            Assert.notNull(emptyPageDescriptor, "pageDescriptor");
 
-            this.emptyPageDescriptor = pageDescriptor;
+            this.emptyPageDescriptor = emptyPageDescriptor;
         }
 
         /**

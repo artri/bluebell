@@ -120,11 +120,13 @@ public class TestTabbedApplicationWindowFactory extends AbstractBbSamplesTests {
         final ApplicationPage emptyPage = this.getActiveWindow().getPage();
 
         // Show pd1 and ensure pd1 is the active page
-        final ApplicationPage page1 = activePage = this.showPage(this.pageDescriptor1);
+        activePage = this.showPage(this.pageDescriptor1);
+        final ApplicationPage page1 = activePage;
         TestCase.assertEquals(this.pageDescriptor1.getId(), activePage.getId());
 
         // Show pd2 and ensure pd2 is the active page
-        final ApplicationPage page2 = activePage = this.showPage(this.pageDescriptor2);
+        activePage = this.showPage(this.pageDescriptor2);
+        final ApplicationPage page2 = activePage;
         TestCase.assertEquals(this.pageDescriptor2.getId(), activePage.getId());
 
         // Show pd1 again and ensure it's the same instance
@@ -170,7 +172,7 @@ public class TestTabbedApplicationWindowFactory extends AbstractBbSamplesTests {
 
         this.doTestOpenNewWindow(expectedPageId);
     }
-    
+
     /**
      * Tests the correct behaviour of opening a new window when there are multiple pages.
      */
@@ -230,7 +232,7 @@ public class TestTabbedApplicationWindowFactory extends AbstractBbSamplesTests {
 
         // At this point the tab panel is empty
         TestCase.assertTrue(window.getPages().isEmpty());
-        
+
         // Add an unknow page
         window.showPage(new EmptyPageDescriptor());
         TestCase.assertTrue("Page added successfully", Boolean.TRUE);
@@ -243,10 +245,10 @@ public class TestTabbedApplicationWindowFactory extends AbstractBbSamplesTests {
     public void testAddKnownPageDescriptor() {
 
         final TabbedApplicationWindow window = (TabbedApplicationWindow) this.getActiveWindow();
-     
+
         // At this point the tab panel is empty
-        TestCase.assertTrue(window.getPages().isEmpty());        
-        
+        TestCase.assertTrue(window.getPages().isEmpty());
+
         // Add a known page
         window.showPage(this.getPersonPageDescriptor());
         TestCase.assertTrue("Page added successfully", Boolean.TRUE);
@@ -267,7 +269,7 @@ public class TestTabbedApplicationWindowFactory extends AbstractBbSamplesTests {
             TestCase.assertTrue(e.getMessage(), Boolean.TRUE);
         }
     }
-    
+
     /**
      * Tests an error is raised while trying to remove an isolated page.
      */
@@ -288,7 +290,7 @@ public class TestTabbedApplicationWindowFactory extends AbstractBbSamplesTests {
             TestCase.assertTrue(e.getMessage(), Boolean.TRUE);
         }
     }
-    
+
     /**
      * Tests everything works ok in spite of removing a page with an unknown descriptor.
      */
@@ -299,16 +301,16 @@ public class TestTabbedApplicationWindowFactory extends AbstractBbSamplesTests {
 
         // At this point the tab panel is empty
         TestCase.assertTrue(window.getPages().isEmpty());
-        
+
         // Add an unknow page
         window.showPage(new EmptyPageDescriptor());
-        
+
         // Remove the page with unknown descriptor
         final ApplicationPage page = window.getPage();
         window.removePage(page);
         TestCase.assertTrue("Page removed successfully", Boolean.TRUE);
     }
-    
+
     /**
      * Tests everything works ok after removing a page with a known descriptor.
      */
@@ -316,13 +318,13 @@ public class TestTabbedApplicationWindowFactory extends AbstractBbSamplesTests {
     public void testRemoveKnownPageDescriptor() {
 
         final TabbedApplicationWindow window = (TabbedApplicationWindow) this.getActiveWindow();
-     
+
         // At this point the tab panel is empty
-        TestCase.assertTrue(window.getPages().isEmpty());        
-        
+        TestCase.assertTrue(window.getPages().isEmpty());
+
         // Add a known page
         window.showPage(this.getPersonPageDescriptor());
-        
+
         // Remove the page with known descriptor
         final ApplicationPage page = window.getPage();
         window.removePage(page);
@@ -351,7 +353,6 @@ public class TestTabbedApplicationWindowFactory extends AbstractBbSamplesTests {
      * 
      * @param expectedPageId
      *            the current window expected active page id.
-     * @return the active window.
      */
     private void doTestOpenNewWindow(String expectedPageId) {
 
@@ -400,5 +401,5 @@ public class TestTabbedApplicationWindowFactory extends AbstractBbSamplesTests {
         this.getActiveWindow().showPage(pageDescriptor);
 
         return this.getActiveWindow().getPage();
-    }  
+    }
 }

@@ -94,8 +94,8 @@ public class ApplicationWindowException extends BbApplicationException {
     }
 
     /**
-     * Creates a new {@code ApplicationWindowException} with the specified message, nested exception, error code and window
-     * id.
+     * Creates a new {@code ApplicationWindowException} with the specified message, nested exception, error code and
+     * window id.
      * 
      * @param message
      *            the detail message.
@@ -142,7 +142,7 @@ public class ApplicationWindowException extends BbApplicationException {
         this.setWindowId(windowId);
     }
 
-    /** 
+    /**
      * Gets the window id.
      * 
      * @return the window id.

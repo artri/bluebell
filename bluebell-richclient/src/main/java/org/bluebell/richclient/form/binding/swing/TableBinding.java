@@ -480,7 +480,8 @@ public class TableBinding extends CustomBinding {
         
         final Searchable searchable =  SearchableUtils.installSearchable(this.getTable());
         
-        SearchableBar.install(searchable, KeyStroke.getKeyStroke(KeyEvent.VK_F, KeyEvent.CTRL_DOWN_MASK), new Installer() {
+        SearchableBar.install(searchable, KeyStroke.getKeyStroke(KeyEvent.VK_F, KeyEvent.CTRL_DOWN_MASK),
+                new Installer() {
             
             @Override
             public void openSearchBar(SearchableBar searchableBar) {

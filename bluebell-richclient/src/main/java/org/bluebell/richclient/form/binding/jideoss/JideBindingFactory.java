@@ -228,7 +228,7 @@ public class JideBindingFactory extends SwingBindingFactory {
         /**
          * Sets the form model.
          * 
-         * @param form
+         * @param formModel
          *            model the form model to set.
          */
         private void setFormModel(FormModel formModel) {

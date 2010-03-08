@@ -25,7 +25,7 @@ import org.bluebell.richclient.test.AbstractBbSamplesTests;
 import org.junit.Test;
 
 /**
- * TODO tests save perspective
+ * TODO tests save perspective.
  * 
  * @author <a href = "mailto:julio.arguello@gmail.com" >Julio Argüello (JAF)</a>
  */
