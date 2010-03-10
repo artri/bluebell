@@ -24,7 +24,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.bluebell.richclient.bean.Problem;
-import org.bluebell.richclient.bean.ProblemBean;
+import org.bluebell.richclient.bean.ValidationBean;
 
 import ca.odell.glazedlists.BasicEventList;
 import ca.odell.glazedlists.EventList;
@@ -38,31 +38,31 @@ import ca.odell.glazedlists.EventList;
  * 
  * @author <a href = "mailto:julio.arguello@gmail.com" >Julio Argüello (JAF)</a>
  */
-public class ProblemsTable {
+public class ValidationTable {
 
     /**
      * Lista que permite mostrar el contenido de la tabla de problemas en un una <code>JTable</code>.
      */
-    private final EventList<ProblemBean> eventList;
+    private final EventList<ValidationBean> eventList;
 
     /**
      * Tabla con los errores sobre la correcta estuctura de un plan docente.
      */
-    private final Map<String, Collection<ProblemBean>> modelProblems;
+    private final Map<String, Collection<ValidationBean>> modelProblems;
 
     /**
      * Tabla con los errores de validación.
      */
-    private final Map<String, Collection<ProblemBean>> validationProblems;
+    private final Map<String, Collection<ValidationBean>> validationProblems;
 
     /**
      * Constructor por defecto.
      */
-    public ProblemsTable() {
+    public ValidationTable() {
 
-        this.eventList = new BasicEventList<ProblemBean>();
-        this.modelProblems = new HashMap<String, Collection<ProblemBean>>();
-        this.validationProblems = new HashMap<String, Collection<ProblemBean>>();
+        this.eventList = new BasicEventList<ValidationBean>();
+        this.modelProblems = new HashMap<String, Collection<ValidationBean>>();
+        this.validationProblems = new HashMap<String, Collection<ValidationBean>>();
     }
 
     /**
@@ -128,7 +128,7 @@ public class ProblemsTable {
      * 
      * @return <code>EventList</code> con los errores de la tabla de errores.
      */
-    public final EventList<ProblemBean> getEventList() {
+    public final EventList<ValidationBean> getEventList() {
 
         return this.eventList;
     }
@@ -142,12 +142,12 @@ public class ProblemsTable {
         this.eventList.clear();
 
         // Se agregan los problemas del Modelo.
-        for (final Collection<ProblemBean> problems : this.modelProblems.values()) {
+        for (final Collection<ValidationBean> problems : this.modelProblems.values()) {
             this.eventList.addAll(problems);
         }
 
         // Se agregan los problemas de validación
-        for (final Collection<ProblemBean> problems : this.validationProblems.values()) {
+        for (final Collection<ValidationBean> problems : this.validationProblems.values()) {
             this.eventList.addAll(problems);
         }
     }
@@ -160,12 +160,12 @@ public class ProblemsTable {
      *            colección de <code>Problem</code> a envolver.
      * @return colección de tipo <code>ProblemBean</code> envoltorio.
      */
-    private Collection<ProblemBean> wrapProblems(final Collection<Problem> problems) {
+    private Collection<ValidationBean> wrapProblems(final Collection<Problem> problems) {
 
-        final Collection<ProblemBean> problemBeans = new ArrayList<ProblemBean>();
+        final Collection<ValidationBean> problemBeans = new ArrayList<ValidationBean>();
 
         for (final Problem problem : problems) {
-            problemBeans.add(new ProblemBean(problem));
+            problemBeans.add(new ValidationBean(problem));
         }
 
         return problemBeans;

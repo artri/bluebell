@@ -138,6 +138,8 @@
 		<property name="registryEntries">
 			<map>
 
+				<entry key="org.bluebell.richclient.components.OverlayService" value-ref="${richclient.overlayService}" />
+					
 				<entry key="org.springframework.richclient.command.CommandServices" value-ref="${richclient.commandServices}" />
 
 				<entry key="org.springframework.richclient.factory.MenuFactory" value-ref="${richclient.menuFactory}" />
@@ -335,6 +337,16 @@
   TODO
    -->
 	<bean id="applicationWindowFactory" class="org.bluebell.richclient.application.support.TabbedApplicationWindowFactory" />
+
+	<!-- 
+  TODO
+   -->
+	<bean id="jideOverlayService" class="org.bluebell.richclient.components.jideoss.JideOverlayService" />
+
+	<!-- 
+  TODO
+   -->
+	<bean id="defaultOverlayService" class="org.bluebell.richclient.components.swing.DefaultOverlayService" />
 
 	<!-- 
   TODO

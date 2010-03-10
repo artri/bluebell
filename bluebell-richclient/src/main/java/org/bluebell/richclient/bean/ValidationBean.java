@@ -28,7 +28,7 @@ import org.springframework.richclient.core.Severity;
  * 
  * @author <a href = "mailto:julio.arguello@gmail.com" >Julio Argüello (JAF)</a>
  */
-public class ProblemBean extends ApplicationServicesAccessor {
+public class ValidationBean extends ApplicationServicesAccessor {
 
     // TODO, (JAF), 20091229, to be removed
     /**
@@ -49,7 +49,7 @@ public class ProblemBean extends ApplicationServicesAccessor {
     /**
      * Crea el <em>bean</em> instanciando un nuevo {@link Problem}.
      */
-    public ProblemBean() {
+    public ValidationBean() {
 
         this.problem = new Problem();
     }
@@ -61,7 +61,7 @@ public class ProblemBean extends ApplicationServicesAccessor {
      *            objeto <code>Problem</code> envuelto.
      */
     @SuppressWarnings("deprecation")
-    public ProblemBean(Problem poblem) {
+    public ValidationBean(Problem poblem) {
 
         this.problem = poblem;
         // this.resources =
@@ -97,7 +97,7 @@ public class ProblemBean extends ApplicationServicesAccessor {
      * @param message
      *            el mensaje asociado al error.
      */
-    public ProblemBean(Severity severity, int code, String message) {
+    public ValidationBean(Severity severity, int code, String message) {
 
         this(new Problem(severity, code, message));
     }

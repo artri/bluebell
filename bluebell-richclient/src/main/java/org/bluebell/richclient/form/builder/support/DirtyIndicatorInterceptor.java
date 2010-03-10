@@ -19,7 +19,7 @@
 package org.bluebell.richclient.form.builder.support;
 
 import java.awt.BorderLayout;
-import java.awt.Insets;
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
@@ -31,18 +31,17 @@ import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.SwingConstants;
 
 import org.bluebell.binding.value.support.DirtyTrackingDCBCVM;
+import org.bluebell.richclient.components.OverlayService;
 import org.springframework.binding.form.FieldMetadata;
 import org.springframework.binding.form.FormModel;
 import org.springframework.binding.value.ValueModel;
 import org.springframework.binding.value.support.ValueModelWrapper;
 import org.springframework.context.MessageSource;
-import org.springframework.richclient.application.ApplicationServicesLocator;
+import org.springframework.richclient.application.Application;
 import org.springframework.richclient.factory.AbstractControlFactory;
 import org.springframework.richclient.form.builder.support.AbstractFormComponentInterceptor;
-import org.springframework.richclient.form.builder.support.InterceptorOverlayHelper;
 import org.springframework.richclient.image.IconSource;
 
 /**
@@ -151,172 +150,6 @@ public class DirtyIndicatorInterceptor extends AbstractFormComponentInterceptor 
     }
 
     /**
-     * Clase que crea el control para indicar si una propiedad ha cambiado o no su valor original.
-     * 
-     * @author Peter De Bruycker
-     * @author <a href = "mailto:julio.arguello@gmail.com" >Julio Argüello (JAF)</a>
-     */
-    private static class DirtyOverlay extends AbstractControlFactory {
-        /**
-         * La etiqueta con el mensaje.
-         */
-        private JLabel dirtyLabel;
-
-        /**
-         * El modelo del formulario.
-         */
-        private final FormModel formModel;
-
-        /**
-         * El manejador que gestiona el <em>overlay</em> y mantiene el estado de la propiedad.
-         */
-        private final OverlayHandler overlayHandler;
-
-        /**
-         * La propiedad objeto de <em>dirty tracking</em>.
-         */
-        private final String propertyName;
-
-        /**
-         * El botón de <em>rever</em>.
-         */
-        private JButton revertButton;
-
-        /**
-         * Construye la factoría.
-         * 
-         * @param formModel
-         *            el modelo del formulario.
-         * @param propertyName
-         *            el nombre de la propiedad a chequear.
-         * @param overlayHandler
-         *            el manejador que gestiona este control.
-         */
-        public DirtyOverlay(FormModel formModel, String propertyName, OverlayHandler overlayHandler) {
-
-            this.formModel = formModel;
-            this.propertyName = propertyName;
-            this.overlayHandler = overlayHandler;
-        }
-
-        /**
-         * Cambia la visibilidad del control.
-         * 
-         * @param visible
-         *            <code>flag</code> indicando la visibilidad del control, <code>true</code> es visible.
-         */
-        public void setVisible(boolean visible) {
-
-            this.getControl().setVisible(visible);
-            // manually set the size, otherwise sometimes the overlay is not
-            // shown (it has size 0,0)
-            this.getControl().setSize(this.getControl().getPreferredSize());
-
-            if (visible) {
-                final FormModel theFormModel = DirtyIndicatorInterceptor.DirtyOverlay.this.formModel;
-                final String thePropertyName = DirtyIndicatorInterceptor.DirtyOverlay.this.propertyName;
-                final MessageSource messageSource = (MessageSource) ApplicationServicesLocator.services().getService(
-                        MessageSource.class);
-                final Locale locale = Locale.getDefault();
-                final String displayName = theFormModel.getFieldFace(thePropertyName).getDisplayName();
-
-                Object originalValue = DirtyIndicatorInterceptor.//
-                DirtyOverlay.this.overlayHandler.originalValue;
-
-                // Si el valor original es nulo internacionalizar su valor (ej.:
-                // vacío).
-                if (originalValue == null) {
-                    originalValue = messageSource.getMessage(DirtyIndicatorInterceptor.NULL_MESSAGE_KEY, //
-                            new Object[] {}, locale);
-                }
-
-                // El dirtyTooltip
-                final String dirtyTooltip = messageSource.getMessage(//
-                        DirtyIndicatorInterceptor.DIRTY_MESSAGE_KEY, //
-                        new Object[] { displayName, originalValue }, locale);
-                this.dirtyLabel.setToolTipText(dirtyTooltip);
-
-                // El revertTooltip
-                final String revertTooltip = messageSource.getMessage(//
-                        DirtyIndicatorInterceptor.REVERT_MESSAGE_KEY, //
-                        new Object[] { displayName }, locale);
-                this.revertButton.setToolTipText(revertTooltip);
-            }
-        }
-
-        /**
-         * Creates the control.
-         * 
-         * @return the control.
-         */
-        @Override
-        protected JComponent createControl() {
-
-            final JPanel control = new JPanel(new BorderLayout()) {
-
-                /**
-                 * Es una clase <code>Serializable</code>.
-                 */
-                private static final long serialVersionUID = -4784028910581102377L;
-
-                @Override
-                public void repaint() {
-
-                    // hack for RCP-426: if the form component is on a tabbed
-                    // pane, when switching between tabs when the overlay is
-                    // visible, the overlay is not correctly repainted. When we
-                    // trigger a revalidate here, everything is ok.
-                    this.revalidate();
-                    super.repaint();
-                }
-            };
-
-            control.setName("dirtyOverlay");
-            control.setOpaque(true);
-            final IconSource iconSource = (IconSource) //
-            ApplicationServicesLocator.services().getService(IconSource.class);
-            final Icon icon = iconSource.getIcon(DirtyIndicatorInterceptor.DIRTY_ICON_KEY);
-            this.dirtyLabel = new JLabel(icon);
-            control.add(this.dirtyLabel, BorderLayout.CENTER);
-
-            this.createRevertButton();
-            control.add(this.revertButton, BorderLayout.LINE_END);
-
-            return control;
-        }
-
-        /**
-         * Crea el botón para deshacer los cambios sobre un campo.
-         */
-        private void createRevertButton() {
-
-            final int margin = -3;
-            final IconSource iconSource = (IconSource) //
-            ApplicationServicesLocator.services().getService(IconSource.class);
-            final Icon icon = iconSource.getIcon(//
-                    DirtyIndicatorInterceptor.REVERT_ICON_KEY);
-
-            this.revertButton = new JButton(icon);
-            this.revertButton.setBorderPainted(Boolean.FALSE);
-            this.revertButton.setContentAreaFilled(Boolean.FALSE);
-            this.revertButton.setFocusable(Boolean.FALSE);
-            this.revertButton.setMargin(new Insets(margin, margin, margin, margin));
-            this.revertButton.addActionListener(new ActionListener() {
-                public void actionPerformed(ActionEvent e) {
-
-                    final FormModel theFormModel = DirtyIndicatorInterceptor.DirtyOverlay.this.formModel;
-                    final String thePropertyName = DirtyIndicatorInterceptor.DirtyOverlay.this.propertyName;
-                    final Object originalValue = //
-                    DirtyIndicatorInterceptor.DirtyOverlay.this.overlayHandler.originalValue;
-
-                    // Establecer el nuevo valor original.
-                    theFormModel.getValueModel(thePropertyName).setValue(originalValue);
-                }
-            });
-        }
-    }
-
-    /**
      * Clase capaz de gestionar la visualización y contenidos de un control <em>overlay</em> que se debe mostrar cada
      * vez que cambie el valor de una propiedad.
      * 
@@ -348,6 +181,11 @@ public class DirtyIndicatorInterceptor extends AbstractFormComponentInterceptor 
         private Object originalValue;
 
         /**
+         * The overlayable control.
+         */
+        private final JComponent overlayable;
+
+        /**
          * El control ha mostrar en caso de que la propiedad haya variado su valor.
          */
         private final DirtyOverlay overlay;
@@ -375,14 +213,8 @@ public class DirtyIndicatorInterceptor extends AbstractFormComponentInterceptor 
             super();
 
             this.propertyName = propertyName;
-
-            // Pintar o no el overlay
-            final int xOffset = 5;
-            final int yOffset = 0;
-
             this.overlay = new DirtyOverlay(DirtyIndicatorInterceptor.this.getFormModel(), propertyName, this);
-            InterceptorOverlayHelper.attachOverlay(this.overlay.getControl(), component, SwingConstants.NORTH_WEST,
-                    xOffset, yOffset);
+            this.overlayable = component;
 
             this.objectChanged();
         }
@@ -477,22 +309,23 @@ public class DirtyIndicatorInterceptor extends AbstractFormComponentInterceptor 
 
             this.previousValue = value;
 
-            // HACK, (20080106), si se usa DirtyTrackingDCBCVM el comportamiento
-            // ha de ser diferente, ya que ante cambios de valores los eventos
-            // publican el mismo valor anterior y actual (una eventList)
-            // FIXME, (20080106), quizás la solución sea modificar la
-            // publicación de eventos de DirtyTrackingDCBCVM, de momento se
-            // mantiene este hack.
+            // HACK, (20080106), si se usa DirtyTrackingDCBCVM el comportamiento ha de ser diferente, ya que ante
+            // cambios de valores los eventos publican el mismo valor anterior y actual (una eventList)
+
+            // FIXME, (20080106), quizás la solución sea modificar la publicación de eventos de DirtyTrackingDCBCVM, de
+            // momento se mantiene este hack.
 
             final FormModel formModel = DirtyIndicatorInterceptor.this.getFormModel();
 
-            for (ValueModel vm = formModel.getValueModel(this.propertyName); //
-            vm instanceof ValueModelWrapper; //
-            vm = ((ValueModelWrapper) vm).getWrappedValueModel()) {
+            ValueModel vm = formModel.getValueModel(this.propertyName);
+            while (vm instanceof ValueModelWrapper) {
                 if (vm instanceof DirtyTrackingDCBCVM) {
-                    this.previousValue = ((DirtyTrackingDCBCVM) vm).getWrappedValueModel().getValue();
+
+                    final DirtyTrackingDCBCVM dirtyTrackingDCBCVM = (DirtyTrackingDCBCVM) vm;
+                    this.previousValue = dirtyTrackingDCBCVM.getWrappedValueModel().getValue();
                     break;
                 }
+                vm = ((ValueModelWrapper) vm).getWrappedValueModel();
             }
         }
 
@@ -509,11 +342,176 @@ public class DirtyIndicatorInterceptor extends AbstractFormComponentInterceptor 
             final FormModel formModel = DirtyIndicatorInterceptor.this.getFormModel();
             final FieldMetadata fieldMetadata = formModel.getFieldMetadata(this.overlay.propertyName);
 
-            final Boolean overlayEnabled = (fieldMetadata != null) ? //
-            !fieldMetadata.isReadOnly() || fieldMetadata.isEnabled() //
-                    : Boolean.TRUE;
+            Boolean overlayEnabled = Boolean.TRUE;
+            if (fieldMetadata != null) {
+                overlayEnabled = !fieldMetadata.isReadOnly() || fieldMetadata.isEnabled();
+            }
 
             this.overlay.setVisible(overlayEnabled && show);
+        }
+    }
+
+    /**
+     * Clase que crea el control para indicar si una propiedad ha cambiado o no su valor original.
+     * 
+     * @author Peter De Bruycker
+     * @author <a href = "mailto:julio.arguello@gmail.com" >Julio Argüello (JAF)</a>
+     */
+    private class DirtyOverlay extends AbstractControlFactory {
+        /**
+         * La etiqueta con el mensaje.
+         */
+        private JLabel dirtyLabel;
+
+        /**
+         * El manejador que gestiona el <em>overlay</em> y mantiene el estado de la propiedad.
+         */
+        private final OverlayHandler overlayHandler;
+
+        /**
+         * La propiedad objeto de <em>dirty tracking</em>.
+         */
+        private final String propertyName;
+
+        /**
+         * El botón de <em>rever</em>.
+         */
+        private JButton revertButton;
+
+        /**
+         * Construye la factoría.
+         * 
+         * @param formModel
+         *            el modelo del formulario.
+         * @param propertyName
+         *            el nombre de la propiedad a chequear.
+         * @param overlayHandler
+         *            el manejador que gestiona este control.
+         */
+        public DirtyOverlay(FormModel formModel, String propertyName, OverlayHandler overlayHandler) {
+
+            this.propertyName = propertyName;
+            this.overlayHandler = overlayHandler;
+        }
+
+        /**
+         * Cambia la visibilidad del control.
+         * 
+         * @param visible
+         *            <code>flag</code> indicando la visibilidad del control, <code>true</code> es visible.
+         */
+        public void setVisible(boolean visible) {
+
+            final OverlayService overlaySvc = (OverlayService) Application.services().getService(OverlayService.class);
+            final MessageSource messageSource = (MessageSource) Application.services().getService(MessageSource.class);
+
+            JComponent overlayTarget = DirtyIndicatorInterceptor.DirtyOverlay.this.overlayHandler.overlayable;
+
+            if (visible) {
+                overlaySvc.installOverlay(overlayTarget, this.getControl());
+            } else {
+                overlaySvc.uninstallOverlay(overlayTarget, this.getControl());
+            }
+
+            this.getControl().setVisible(visible);
+            // manually set the size, otherwise sometimes the overlay is not
+            // shown (it has size 0,0)
+            this.getControl().setSize(this.getControl().getPreferredSize());
+
+            if (visible) {
+
+                final Locale locale = Locale.getDefault();
+                final FormModel formModel = DirtyIndicatorInterceptor.this.getFormModel();
+                final String displayName = formModel.getFieldFace(this.propertyName).getDisplayName();
+
+                Object originalValue = DirtyIndicatorInterceptor.DirtyOverlay.this.overlayHandler.originalValue;
+
+                // Si el valor original es nulo internacionalizar su valor (ej.:
+                // vacío).
+                if (originalValue == null) {
+                    originalValue = messageSource.getMessage(DirtyIndicatorInterceptor.NULL_MESSAGE_KEY, //
+                            new Object[] {}, locale);
+                }
+
+                // El dirtyTooltip
+                final String dirtyTooltip = messageSource.getMessage(DirtyIndicatorInterceptor.DIRTY_MESSAGE_KEY, //
+                        new Object[] { displayName, originalValue }, locale);
+                this.dirtyLabel.setToolTipText(dirtyTooltip);
+
+                // El revertTooltip
+                final String revertTooltip = messageSource.getMessage(DirtyIndicatorInterceptor.REVERT_MESSAGE_KEY, //
+                        new Object[] { displayName }, locale);
+                this.revertButton.setToolTipText(revertTooltip);
+            }
+        }
+
+        /**
+         * Creates the control.
+         * 
+         * @return the control.
+         */
+        @Override
+        protected JComponent createControl() {
+
+            final IconSource iconSource = (IconSource) Application.services().getService(IconSource.class);
+
+            // Dirty Label
+            final Icon icon = iconSource.getIcon(DirtyIndicatorInterceptor.DIRTY_ICON_KEY);
+            this.dirtyLabel = new JLabel(icon);
+
+            // Revert button
+            this.createRevertButton();
+
+            final JPanel control = new JPanel(new BorderLayout()) {
+
+                /**
+                 * Es una clase <code>Serializable</code>.
+                 */
+                private static final long serialVersionUID = -4784028910581102377L;
+
+                @Override
+                public void repaint() {
+
+                    // hack for RCP-426: if the form component is on a tabbed pane, when switching between tabs when the
+                    // overlay is visible, the overlay is not correctly repainted. When we trigger a revalidate here,
+                    // everything is ok.
+                    this.revalidate();
+                    super.repaint();
+                }
+            };
+
+            control.add(this.dirtyLabel, BorderLayout.CENTER);
+            control.add(this.revertButton, BorderLayout.EAST);
+            control.setName("dirtyOverlay");
+            control.setOpaque(Boolean.FALSE);
+
+            return control;
+        }
+
+        /**
+         * Crea el botón para deshacer los cambios sobre un campo.
+         */
+        private void createRevertButton() {
+
+            final IconSource iconSource = (IconSource) Application.services().getService(IconSource.class);
+            final Icon icon = iconSource.getIcon(DirtyIndicatorInterceptor.REVERT_ICON_KEY);
+
+            this.revertButton = new JButton(icon);
+            this.revertButton.setBorderPainted(Boolean.FALSE);
+            this.revertButton.setContentAreaFilled(Boolean.FALSE);
+            this.revertButton.setFocusable(Boolean.FALSE);
+            this.revertButton.setPreferredSize(new Dimension(icon.getIconWidth(), icon.getIconHeight()));
+            this.revertButton.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent e) {
+
+                    final FormModel theFormModel = DirtyIndicatorInterceptor.this.getFormModel();
+                    final String thePropertyName = DirtyIndicatorInterceptor.DirtyOverlay.this.propertyName;
+                    final Object originalVal = DirtyIndicatorInterceptor.DirtyOverlay.this.overlayHandler.originalValue;
+
+                    // Establecer el nuevo valor original.
+                    theFormModel.getValueModel(thePropertyName).setValue(originalVal);
+                }
+            });
         }
     }
 }

@@ -40,7 +40,7 @@ import com.jidesoft.swing.JideTabbedPane;
 public class JideOssComponentFactory extends ComponentFactoryDecorator {
 
     /**
-     * 
+     * The key of the jide tabbed pane tab trailing image in the image source.
      */
     private static final String JIDE_TABBED_PANE_TAB_TRAILING_IMAGE = "jideTabbedPane.tabTrailingImage";
 

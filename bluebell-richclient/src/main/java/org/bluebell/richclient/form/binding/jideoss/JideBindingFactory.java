@@ -3,7 +3,6 @@
  */
 package org.bluebell.richclient.form.binding.jideoss;
 
-import java.awt.Insets;
 import java.util.Map;
 
 import javax.swing.JComponent;
@@ -200,11 +199,7 @@ public class JideBindingFactory extends SwingBindingFactory {
 
             if (!(control instanceof DefaultOverlayable)) {
 
-                final int insets = 5;
-
                 final DefaultOverlayable overlayable = new DefaultOverlayable(control);
-                overlayable.setOverlayLocationInsets(new Insets(insets, insets, insets, insets));
-                // overlayable.setOverlayLocation(component, SwingConstants.NORTH_WEST);
 
                 return overlayable;
             }

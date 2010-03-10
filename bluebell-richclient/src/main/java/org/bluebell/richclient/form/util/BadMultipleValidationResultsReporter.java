@@ -45,7 +45,7 @@ public class BadMultipleValidationResultsReporter implements ValidationResultsRe
     /**
      * Tabla de problemas que se empleara como contenedor para los errores de validación capturados.
      */
-    private final ProblemsTable messagesReceiver;
+    private final ValidationTable messagesReceiver;
 
     /** ResultsModel containing the messages. */
     private final ValidationResultsModel resultsModel;
@@ -61,7 +61,7 @@ public class BadMultipleValidationResultsReporter implements ValidationResultsRe
      *            tabla de errores en la que se registran los errores de validación.
      */
     public BadMultipleValidationResultsReporter(final String formId, final ValidationResultsModel resultsModel,
-            final ProblemsTable messagesReceiver) {
+            final ValidationTable messagesReceiver) {
 
         Assert.notNull(resultsModel, "resultsModel is required");
         Assert.notNull(messagesReceiver, "messagePane is required");
