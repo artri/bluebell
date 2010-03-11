@@ -213,8 +213,8 @@ public class DirtyIndicatorInterceptor extends AbstractFormComponentInterceptor 
             super();
 
             this.propertyName = propertyName;
-            this.overlay = new DirtyOverlay(DirtyIndicatorInterceptor.this.getFormModel(), propertyName, this);
             this.overlayable = component;
+            this.overlay = new DirtyOverlay(DirtyIndicatorInterceptor.this.getFormModel(), propertyName, this);
 
             this.objectChanged();
         }
@@ -392,6 +392,10 @@ public class DirtyIndicatorInterceptor extends AbstractFormComponentInterceptor 
 
             this.propertyName = propertyName;
             this.overlayHandler = overlayHandler;
+
+            final OverlayService overlaySvc = (OverlayService) Application.services().getService(OverlayService.class);
+            final JComponent overlayTarget = DirtyIndicatorInterceptor.DirtyOverlay.this.overlayHandler.overlayable;
+            overlaySvc.installOverlay(overlayTarget, this.getControl());
         }
 
         /**
@@ -405,17 +409,19 @@ public class DirtyIndicatorInterceptor extends AbstractFormComponentInterceptor 
             final OverlayService overlaySvc = (OverlayService) Application.services().getService(OverlayService.class);
             final MessageSource messageSource = (MessageSource) Application.services().getService(MessageSource.class);
 
-            JComponent overlayTarget = DirtyIndicatorInterceptor.DirtyOverlay.this.overlayHandler.overlayable;
+            final JComponent overlayTarget = DirtyIndicatorInterceptor.DirtyOverlay.this.overlayHandler.overlayable;
 
             if (visible) {
+                // FIXME, (JAF) 20100311, overlay needs to be installed every time due to overlay installation is done
+                // during interception (and unfortunately before JideBindingFactory proceeds). Solution is make
+                // installation after interception
                 overlaySvc.installOverlay(overlayTarget, this.getControl());
+                overlaySvc.showOverlay(overlayTarget, this.getControl());
             } else {
-                overlaySvc.uninstallOverlay(overlayTarget, this.getControl());
+                overlaySvc.hideOverlay(overlayTarget, this.getControl());
             }
 
-            this.getControl().setVisible(visible);
-            // manually set the size, otherwise sometimes the overlay is not
-            // shown (it has size 0,0)
+            // manually set the size, otherwise sometimes the overlay is not shown (it has size 0,0)
             this.getControl().setSize(this.getControl().getPreferredSize());
 
             if (visible) {

@@ -18,7 +18,8 @@
 		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-2.5.xsd">
 
 	<!--
-		The application context is used to configure components and services within the platform. The platform utilizes a
+		The application context is used to configure components and services within the platform.  
+		The platform utilizes a
 		number of services at runtime, and these must be configured here. The two key beans for this are the serviceLocator
 		and applicationServices. Many of the services have reasonable default implementations, meaning that you probably won't
 		need to define them here unless you have specific needs not addressed in the default implementation. Beyond the
@@ -34,7 +35,7 @@
 
 	<!--
 		<context:property-placeholder
-		location="classpath*:META-INF/spring/*.properties" />
+		      location="classpath*:META-INF/spring/*.properties" />
 	-->
 	<!--
 		Bean: propertyPlaceholderConfigurer Usage: platform required Description: This configures all placeholders defined in
@@ -139,7 +140,7 @@
 			<map>
 
 				<entry key="org.bluebell.richclient.components.OverlayService" value-ref="${richclient.overlayService}" />
-					
+
 				<entry key="org.springframework.richclient.command.CommandServices" value-ref="${richclient.commandServices}" />
 
 				<entry key="org.springframework.richclient.factory.MenuFactory" value-ref="${richclient.menuFactory}" />
@@ -248,10 +249,11 @@
 			<list>
 				<ref local="updateStatusBarInterceptorFactory" />
 				<ref local="colorValidationInterceptorFactory" />
-				<!--
-					TODO, esto rompe los tests <ref
-					local="overlayValidationInterceptorFactory" />
-				-->
+				
+<!--					TODO, esto rompe los tests -->
+<!--					<ref-->
+<!--					local="overlayValidationInterceptorFactory" />-->
+				
 				<ref local="checkBoxFormComponentInterceptorFactory" />
 				<ref local="comboBoxAutoCompletionInterceptorFactory" />
 				<ref local="toolTipInterceptorFactory" />
@@ -403,7 +405,8 @@
 	<bean class="org.springframework.richclient.text.SelectAllFormComponentInterceptorFactory" />
 	<bean id="updateStatusBarInterceptorFactory" class="org.bluebell.richclient.form.builder.support.UpdateStatusBarInterceptorFactory" />
 	<bean id="colorValidationInterceptorFactory" class="org.springframework.richclient.form.builder.support.ColorValidationInterceptorFactory" />
-	<bean id="overlayValidationInterceptorFactory" class="org.springframework.richclient.form.builder.support.OverlayValidationInterceptorFactory" />
+<!--	<bean id="overlayValidationInterceptorFactory" class="org.springframework.richclient.form.builder.support.OverlayValidationInterceptorFactory" />-->
+	<bean id="overlayValidationInterceptorFactory" class="org.bluebell.richclient.form.builder.support.BbOverlayValidationInterceptorFactory" />
 	<bean id="textComponentPopupInterceptorFactory" class="org.bluebell.richclient.text.TextComponentPopupInterceptorFactory" />
 	<bean id="checkBoxFormComponentInterceptorFactory" class="org.springframework.richclient.form.builder.support.CheckBoxFormComponentInterceptorFactory" />
 	<bean id="comboBoxAutoCompletionInterceptorFactory" class="org.springframework.richclient.list.ComboBoxAutoCompletionInterceptorFactory" />

@@ -3,6 +3,7 @@
  */
 package org.bluebell.richclient.form.binding.jideoss;
 
+import java.awt.Insets;
 import java.util.Map;
 
 import javax.swing.JComponent;
@@ -30,6 +31,11 @@ import com.jidesoft.swing.DefaultOverlayable;
  *      a recommended practice but works anyway...
  */
 public class JideBindingFactory extends SwingBindingFactory {
+
+    /**
+     * The default insets to be applied to components.
+     */
+    public static final Insets DEFAULT_INSETS = new Insets(5, 0, 0, 0);
 
     /**
      * Creates a binding factory given the target form model.
@@ -199,7 +205,9 @@ public class JideBindingFactory extends SwingBindingFactory {
 
             if (!(control instanceof DefaultOverlayable)) {
 
+                // Set a default overlay location insets to avoid overlayable bounds be changed after adding overlays
                 final DefaultOverlayable overlayable = new DefaultOverlayable(control);
+                overlayable.setOverlayLocationInsets(JideBindingFactory.DEFAULT_INSETS);
 
                 return overlayable;
             }

@@ -19,34 +19,80 @@ public interface OverlayService {
     /**
      * Installs an overlay on top of an overlayable component.
      * 
-     * @param overlayable
+     * @param targetComponent
      *            the target component.
      * @param overlay
      *            the overlay.
+     * 
+     * @return <code>true</code> if success and <code>false</code> in other case.
      */
-    void installOverlay(JComponent overlayable, JComponent overlay);
+    Boolean installOverlay(JComponent targetComponent, JComponent overlay);
 
     /**
      * Installs an overlay on top of an overlayable component.
      * 
-     * @param overlayable
+     * @param targetComponent
      *            the target component.
      * @param overlay
      *            the overlay.
      * @param position
      *            the overlay position.
      * @param insets
-     *            the overlay location insets
+     *            the target component location insets. A <code>null</code> value make no changes. Can be overriden
+     *            using {@link #showOverlay(JComponent, JComponent, Insets)} and
+     *            {@link #hideOverlay(JComponent, JComponent, Insets)} methods.
+     * 
+     * @return <code>true</code> if success and <code>false</code> in other case.
      */
-    void installOverlay(JComponent overlayable, JComponent overlay, int position, Insets insets);
+    Boolean installOverlay(JComponent targetComponent, JComponent overlay, int position, Insets insets);
 
     /**
      * Uninstalls an overlay.
      * 
-     * @param overlayable
+     * @param targetComponent
      *            the target component.
      * @param overlay
      *            the overlay.
+     * 
+     * @return <code>true</code> if success and <code>false</code> in other case.
      */
-    void uninstallOverlay(JComponent overlayable, JComponent overlay);
+    Boolean uninstallOverlay(JComponent targetComponent, JComponent overlay);
+
+    /**
+     * Uninstalls an overlay.
+     * 
+     * @param targetComponent
+     *            the target component.
+     * @param overlay
+     *            the overlay.
+     * @param insets
+     *            the target component location insets. A <code>null</code> value make no changes.
+     * 
+     * @return <code>true</code> if success and <code>false</code> in other case.
+     */
+    Boolean uninstallOverlay(JComponent targetComponent, JComponent overlay, Insets insets);
+
+    /**
+     * Shows an overlay on top of a given overlayable.
+     * 
+     * @param targetComponent
+     *            the target component.
+     * @param overlay
+     *            the overlay.,
+     * 
+     * @return <code>true</code> if success and <code>false</code> in other case.
+     */
+    Boolean showOverlay(JComponent targetComponent, JComponent overlay);
+
+    /**
+     * Hides an overlay on top of a given overlayable.
+     * 
+     * @param targetComponent
+     *            the target component.
+     * @param overlay
+     *            the overlay.,
+     * 
+     * @return <code>true</code> if success and <code>false</code> in other case.
+     */
+    Boolean hideOverlay(JComponent targetComponent, JComponent overlay);
 }

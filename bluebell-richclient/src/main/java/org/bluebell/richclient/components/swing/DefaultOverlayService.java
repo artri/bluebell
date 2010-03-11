@@ -25,28 +25,71 @@ public class DefaultOverlayService implements OverlayService, SwingConstants {
 
     /**
      * {@inheritDoc}
+     * 
+     * @see #installOverlay(JComponent, JComponent, int, Insets)
      */
     @Override
-    public void installOverlay(JComponent overlayable, JComponent overlay) {
+    public Boolean installOverlay(JComponent targetComponent, JComponent overlay) {
 
-        this.installOverlay(overlayable, overlay, SwingConstants.NORTH_WEST, DefaultOverlayService.DEFAULT_INSETS);
+        this.installOverlay(targetComponent, overlay, SwingConstants.NORTH_WEST, DefaultOverlayService.DEFAULT_INSETS);
+
+        return Boolean.TRUE;
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public void installOverlay(JComponent overlayable, JComponent overlay, int position, Insets insets) {
+    public Boolean installOverlay(JComponent targetComponent, JComponent overlay, int position, Insets insets) {
 
-        InterceptorOverlayHelper.attachOverlay(overlay, overlayable, position, insets.left, insets.top);
+        InterceptorOverlayHelper.attachOverlay(overlay, targetComponent, position, insets.left, insets.top);
         overlay.setVisible(Boolean.TRUE);
+
+        return Boolean.TRUE;
+    }
+
+    /**
+     * {@inheritDoc}
+     * 
+     * @see #uninstallOverlay(JComponent, JComponent, Insets)
+     */
+    public Boolean uninstallOverlay(JComponent targetComponent, JComponent overlay) {
+
+        this.uninstallOverlay(targetComponent, overlay, null);
+
+        return Boolean.TRUE;
     }
 
     /**
      * {@inheritDoc}
      */
-    public void uninstallOverlay(JComponent overlayable, JComponent overlay) {
+    @Override
+    public Boolean uninstallOverlay(JComponent targetComponent, JComponent overlay, Insets insets) {
 
         overlay.setVisible(Boolean.FALSE);
+
+        return Boolean.TRUE;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Boolean hideOverlay(JComponent targetComponent, JComponent overlay) {
+
+        // TODO
+
+        return Boolean.TRUE;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Boolean showOverlay(JComponent targetComponent, JComponent overlay) {
+
+        // TODO
+
+        return Boolean.TRUE;
     }
 }
