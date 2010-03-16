@@ -19,6 +19,7 @@
 
 	<modules>
 		<module>bluebell-richclient</module>
+		<module>bluebell-substance</module>
 	</modules>
 
 	<distributionManagement>
@@ -60,6 +61,14 @@
 			</snapshots>
 		</repository>
 		<repository>
+			<id>maven2-repository.dev.java.net</id>
+			<name>Java.net Repository for Maven</name>
+			<url>http://download.java.net/maven/2/</url>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+		</repository>
+		<repository>
 			<id>jboss.releases</id>
 			<name>JBoss releases</name>
 			<url>http://repository.jboss.org/maven2</url>
@@ -84,6 +93,23 @@
 
 		<pluginManagement>
 			<plugins>
+				<plugin>
+					<!--	
+						(JAF) 20100316: attach sources artifact to build lifecycle			
+					-->
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-source-plugin</artifactId>
+					<executions>
+						<execution>
+							<id>attach-sources</id>
+							<phase>verify</phase>
+							<goals>
+								<goal>jar</goal>
+							</goals>
+						</execution>
+					</executions>
+				</plugin>
+
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-site-plugin</artifactId>
@@ -195,7 +221,11 @@
 					<artifactId>maven-license-plugin</artifactId>
 					<version>1.5.0</version>
 					<configuration>
-						<header>src/etc/license.txt</header>
+						<header>${project.parent.basedir}/src/etc/license.txt</header>
+						<headerDefinitions>
+							<headerDefinition>${project.parent.basedir}/src/etc/licenseHeaders4Java.xml</headerDefinition>
+						</headerDefinitions>
+
 						<quiet>true</quiet>
 						<failIfMissing>true</failIfMissing>
 						<aggregate>true</aggregate>
@@ -229,6 +259,10 @@
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-source-plugin</artifactId>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-site-plugin</artifactId>
 			</plugin>
 			<plugin>
@@ -239,10 +273,12 @@
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>build-helper-maven-plugin</artifactId>
 			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-dependency-plugin</artifactId>
-			</plugin>
+
+			<!-- (JAF) 20100316 - Maven dependency plugin must be installed in child poms-->
+			<!--			<plugin>-->
+			<!--				<groupId>org.apache.maven.plugins</groupId>-->
+			<!--				<artifactId>maven-dependency-plugin</artifactId>-->
+			<!--			</plugin>-->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
@@ -255,10 +291,11 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
 			</plugin>
-			<plugin>
-				<groupId>com.mycila.maven-license-plugin</groupId>
-				<artifactId>maven-license-plugin</artifactId>
-			</plugin>
+			<!-- (JAF) 20100316 - Maven license plugin must be installed in child poms-->
+			<!--			<plugin>-->
+			<!--				<groupId>com.mycila.maven-license-plugin</groupId>-->
+			<!--				<artifactId>maven-license-plugin</artifactId>-->
+			<!--			</plugin>-->
 		</plugins>
 	</build>
 
@@ -393,6 +430,7 @@
 				<groupId>org.springframework</groupId>
 				<artifactId>org.springframework.aop</artifactId>
 				<version>${spring-version}</version>
+				<scope>runtime</scope>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework</groupId>
@@ -560,6 +598,22 @@
 				</exclusions>
 			</dependency>
 			<dependency>
+				<groupId>net.java.dev.glazedlists</groupId>
+				<artifactId>glazedlists_java15</artifactId>
+				<version>1.8.0</version>
+			</dependency>
+			<dependency>
+				<groupId>com.jidesoft</groupId>
+				<artifactId>jide-oss</artifactId>
+				<version>2.4.8</version>
+			</dependency>
+			<dependency>
+				<groupId>com.dryicons</groupId>
+				<artifactId>coquette</artifactId>
+				<version>1.0</version>
+				<scope>runtime</scope>
+			</dependency>
+			<dependency>
 				<groupId>org.pushingpixels</groupId>
 				<artifactId>substance</artifactId>
 				<version>${subtance-version}</version>
@@ -578,18 +632,29 @@
 			</dependency>
 			<dependency>
 				<groupId>org.pushingpixels</groupId>
+				<artifactId>substance-jide</artifactId>
+				<version>5.0</version>
+				<scope>runtime</scope>
+			</dependency>
+			<dependency>
+				<groupId>org.pushingpixels</groupId>
 				<artifactId>substance-swingx</artifactId>
 				<version>${subtance-version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.pushingpixels</groupId>
 				<artifactId>laf-plugin</artifactId>
-				<version>1.1-SNAPSHOT</version>
+				<version>1.0</version>
 			</dependency>
 			<dependency>
 				<groupId>org.pushingpixels</groupId>
 				<artifactId>laf-widget</artifactId>
-				<version>5.0-SNAPSHOT</version>
+				<version>4.3RC</version>
+			</dependency>
+			<dependency>
+				<groupId>com.vlsolutions</groupId>
+				<artifactId>vldocking</artifactId>
+				<version>3.0.0</version>
 			</dependency>
 
 			<!--
@@ -658,6 +723,6 @@
 		<spring-richclient-version>1.1.1-SNAPSHOT</spring-richclient-version>
 		<slf4j-version>1.5.10</slf4j-version>
 		<aspectj-version>1.6.3.RELEASE</aspectj-version>
-		<subtance-version>6.0-SNAPSHOT</subtance-version>
+		<subtance-version>5.3</subtance-version>
 	</properties>
 </project>
