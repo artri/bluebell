@@ -31,7 +31,7 @@
 	</appender>
 
 	<appender name="icons" class="org.apache.log4j.RollingFileAppender">
-		<param name="file" value="missing-icons.log" />
+		<param name="file" value="${user.home}/.bluebell/icons.log" />
 		<param name="MaxFileSize" value="100KB" />
 		<layout class="org.apache.log4j.PatternLayout">
 			<param name="ConversionPattern" value="%p %t %c - %m%n" />
@@ -39,7 +39,7 @@
 	</appender>
 
 	<appender name="objects" class="org.apache.log4j.RollingFileAppender">
-		<param name="file" value="missing-icons.log" />
+		<param name="file" value="${user.home}/.bluebell/objects.log" />
 		<param name="MaxFileSize" value="100KB" />
 		<layout class="org.apache.log4j.PatternLayout">
 			<param name="ConversionPattern" value="%p %t %c - %m%n" />

@@ -216,8 +216,7 @@ public class BbDockTabbedPane extends DockTabbedPane {
     private int calculatePosition(int before, int after, int current, int size) {
 
         // Comprobar el invariante
-        Assert.isTrue((before == BbDockTabbedPane.NOT_FOUND)//
-                || (after == BbDockTabbedPane.NOT_FOUND) //
+        Assert.isTrue((before == BbDockTabbedPane.NOT_FOUND) || (after == BbDockTabbedPane.NOT_FOUND) //
                 || (before < after));
 
         // Convertir after para simplificar los cálculos

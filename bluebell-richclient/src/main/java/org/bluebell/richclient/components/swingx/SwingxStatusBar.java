@@ -25,7 +25,6 @@ import javax.swing.BorderFactory;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 
-import org.bluebell.richclient.components.SubstanceSkinChooserComboBox;
 import org.jdesktop.swingx.JXStatusBar;
 import org.jdesktop.swingx.plaf.basic.BasicStatusBarUI;
 import org.springframework.richclient.application.statusbar.support.DefaultStatusBar;
@@ -77,7 +76,7 @@ public class SwingxStatusBar extends DefaultStatusBar {
         jxStatusBar.putClientProperty(BasicStatusBarUI.AUTO_ADD_SEPARATOR, false);
         jxStatusBar.add(this.getMessageLabel(), JXStatusBar.Constraint.ResizeBehavior.FILL);
         // jxStatusBar.add(new JSeparator(JSeparator.VERTICAL));
-        jxStatusBar.add(new SubstanceSkinChooserComboBox().getControl());
+        // jxStatusBar.add(new SubstanceSkinChooserComboBox().getControl());
 //        jxStatusBar.add(test.check.statusbar.FontSizePanel.getPanel());
         jxStatusBar.add(((StatusBarProgressMonitor) this.getProgressMonitor()).getControl());
 

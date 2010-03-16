@@ -21,6 +21,14 @@
 	<build>
 		<plugins>
 			<plugin>
+				<groupId>com.mycila.maven-license-plugin</groupId>
+				<artifactId>maven-license-plugin</artifactId>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-dependency-plugin</artifactId>
+			</plugin>
+			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>exec-maven-plugin</artifactId>
 				<configuration>
@@ -135,31 +143,6 @@
 		<dependency>
 			<groupId>com.dryicons</groupId>
 			<artifactId>coquette</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.pushingpixels</groupId>
-			<artifactId>substance</artifactId>
-		</dependency>
-		<!--		<dependency>-->
-		<!--			<groupId>org.pushingpixels</groupId>-->
-		<!--			<artifactId>substance</artifactId>-->
-		<!--			<type>test-jar</type>-->
-		<!--		</dependency> -->
-		<dependency>
-			<groupId>org.pushingpixels</groupId>
-			<artifactId>substance-jide</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.pushingpixels</groupId>
-			<artifactId>substance-extras</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.pushingpixels</groupId>
-			<artifactId>laf-plugin</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.pushingpixels</groupId>
-			<artifactId>laf-widget</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>com.vlsolutions</groupId>
