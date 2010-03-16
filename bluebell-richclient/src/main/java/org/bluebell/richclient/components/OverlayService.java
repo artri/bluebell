@@ -17,6 +17,17 @@ import javax.swing.JComponent;
 public interface OverlayService {
 
     /**
+     * Returns if the overlay is currently installed into the target component.
+     * 
+     * @param targetComponent
+     *            the target component.
+     * @param overlay
+     *            the overlay.
+     * @return <code>true</code> if installed and <code>false</code> in other case.
+     */
+    Boolean isOverlayInstalled(JComponent targetComponent, JComponent overlay);
+
+    /**
      * Installs an overlay on top of an overlayable component.
      * 
      * @param targetComponent

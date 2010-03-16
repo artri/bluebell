@@ -13,7 +13,7 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package org.bluebell.richclient.form.binding.jideoss;
+package org.bluebell.richclient.form.binding;
 
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.binding.form.FormModel;
@@ -24,15 +24,15 @@ import org.springframework.richclient.form.binding.BindingFactoryProvider;
 import org.springframework.richclient.util.Assert;
 
 /**
- * Provider that constructs instances of {@link JideBindingFactory} on demand using Spring Application instance as
- * object factory.
+ * Provider that constructs instances of {@link BindingFactory} on demand using Spring Application instance as object
+ * factory.
  * 
  * @author <a href = "mailto:julio.arguello@gmail.com" >Julio Argüello (JAF)</a>
  * 
  * @see org.springframework.richclient.application.ApplicationServices#getBindingFactory(FormModel)
  * @see org.springframework.richclient.application.ApplicationServices#getBindingFactoryProvider()
  */
-public class JideBindingFactoryProvider implements BindingFactoryProvider, ApplicationContextAware, InitializingBean {
+public class BbBindingFactoryProvider implements BindingFactoryProvider, ApplicationContextAware, InitializingBean {
 
     /**
      * The Spring application context.

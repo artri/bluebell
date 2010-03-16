@@ -59,6 +59,7 @@ public class PersonChildForm extends AbstractBbChildForm<Person> {
 
         final ValidatingFormModel formModel = BbFormModelHelper.createValidatingFormModel(new Person());
         formModel.setId(formId);
+        
         this.setFormModel(formModel);
     }
 
@@ -103,5 +104,5 @@ public class PersonChildForm extends AbstractBbChildForm<Person> {
         // TODO bind checkbox
 
         return formBuilder.getForm();
-    }
+    }   
 }

@@ -62,6 +62,19 @@ public class JideOverlayService implements OverlayService, SwingConstants {
 
     /**
      * {@inheritDoc}
+     */
+    public Boolean isOverlayInstalled(JComponent targetComponent, JComponent overlay) {
+
+        Assert.notNull(targetComponent, "targetComponent");
+        Assert.notNull(overlay, "overlay");
+
+        final DefaultOverlayable overlayable = this.findOverlayable(targetComponent);
+
+        return this.isOverlayInstalled(overlayable, overlay);
+    }
+
+    /**
+     * {@inheritDoc}
      * <p>
      * Employs a default position <code>SwingConstants.NORTH_WEST</code> and <code>null</code> insets to avoid changes.
      * 
@@ -84,27 +97,26 @@ public class JideOverlayService implements OverlayService, SwingConstants {
 
         final DefaultOverlayable overlayable = this.findOverlayable(targetComponent);
 
-        if (overlayable != null) {
+        if ((overlayable != null) && !this.isOverlayInstalled(overlayable, overlay)) {
 
-            // If overlay is not installed...
-            if (overlayable.getOverlayLocation(overlay) == JideOverlayService.NOT_FOUND) {
-
-                // Install overlay
-                overlayable.addOverlayComponent(overlay, position, -1);
-
-                // If location insets are not null then change them
-                if (insets != null) {
-                    overlayable.setOverlayLocationInsets(insets);
-                }
-
-                return Boolean.TRUE;
-            } else {
-                JideOverlayService.LOGGER.warn(JideOverlayService.ALREADY_INSTALLED_FMT.format(//
-                        new String[] { overlay.getName(), targetComponent.getName() }));
+            // Install overlay and set location insets
+            overlayable.addOverlayComponent(overlay, position, -1);
+            if (insets != null) {
+                overlayable.setOverlayLocationInsets(insets);
             }
-        }
 
-        return Boolean.FALSE;
+            return this.hideOverlay(targetComponent, overlay);
+        } else if (overlayable == null) {
+            JideOverlayService.LOGGER.warn(JideOverlayService.NOT_FOUND_FMT.format(//
+                    new String[] { targetComponent.getName() }));
+
+            return Boolean.FALSE;
+        } else {
+            JideOverlayService.LOGGER.warn(JideOverlayService.ALREADY_INSTALLED_FMT.format(//
+                    new String[] { overlay.getName(), targetComponent.getName() }));
+
+            return Boolean.FALSE;
+        }
     }
 
     /**
@@ -129,28 +141,29 @@ public class JideOverlayService implements OverlayService, SwingConstants {
 
         final DefaultOverlayable overlayable = this.findOverlayable(targetComponent);
 
-        if (overlayable != null) {
+        // If overlay is installed...
+        if ((overlayable != null) && this.isOverlayInstalled(overlayable, overlay)) {
 
-            // If overlay is installed...
-            if (overlayable.getOverlayLocation(overlay) != JideOverlayService.NOT_FOUND) {
+            // Uninstall overlay
+            overlayable.removeOverlayComponent(overlay);
 
-                // Uninstall overlay
-                overlayable.removeOverlayComponent(overlay);
-
-                // If location insets are not null then change them
-                if (insets != null) {
-                    overlayable.setOverlayLocationInsets(insets);
-                }
-
-                return Boolean.TRUE;
-
-            } else {
-                JideOverlayService.LOGGER.warn(JideOverlayService.NOT_INSTALLED_FMT.format(//
-                        new String[] { overlay.getName(), targetComponent.getName() }));
+            // If location insets are not null then change them
+            if (insets != null) {
+                overlayable.setOverlayLocationInsets(insets);
             }
-        }
 
-        return Boolean.FALSE;
+            return Boolean.TRUE;
+        } else if (overlayable == null) {
+            JideOverlayService.LOGGER.warn(JideOverlayService.NOT_FOUND_FMT.format(//
+                    new String[] { targetComponent.getName() }));
+
+            return Boolean.FALSE;
+        } else {
+            JideOverlayService.LOGGER.warn(JideOverlayService.NOT_INSTALLED_FMT.format(//
+                    new String[] { overlay.getName(), targetComponent.getName() }));
+
+            return Boolean.FALSE;
+        }
     }
 
     /**
@@ -176,6 +189,21 @@ public class JideOverlayService implements OverlayService, SwingConstants {
     }
 
     /**
+     * {@inheritDoc}
+     */
+    protected final Boolean isOverlayInstalled(DefaultOverlayable overlayable, JComponent overlay) {
+
+        Assert.notNull(overlay, "overlay");
+
+        if (overlayable != null) {
+
+            return (overlayable.getOverlayLocation(overlay) != JideOverlayService.NOT_FOUND);
+        }
+
+        return Boolean.FALSE;
+    }
+
+    /**
      * Tries to find a <code>DefaultOverlayable</code> given a target component.
      * 
      * @param targetComponent
@@ -191,10 +219,6 @@ public class JideOverlayService implements OverlayService, SwingConstants {
 
             return (DefaultOverlayable) parent;
         }
-
-        // Unexpected situation
-        JideOverlayService.LOGGER.warn(JideOverlayService.NOT_FOUND_FMT.format(//
-                new String[] { targetComponent.getName() }));
 
         return null;
     }
@@ -217,19 +241,14 @@ public class JideOverlayService implements OverlayService, SwingConstants {
         Assert.notNull(overlay, "overlay");
         Assert.notNull(show, "show");
 
-        final DefaultOverlayable overlayable = this.findOverlayable(targetComponent);
+        // If overlay is installed...
+        if (this.isOverlayInstalled(targetComponent, overlay)) {
 
-        if (overlayable != null) {
+            // Definitely show or hide overlay
+            overlay.setVisible(show);
+            overlay.repaint();
 
-            // If overlay is installed...
-            if (overlayable.getOverlayLocation(overlay) != JideOverlayService.NOT_FOUND) {
-
-                // Definitely show or hide overlay
-                overlay.setVisible(show);
-                overlay.repaint();
-
-                return Boolean.TRUE;
-            }
+            return Boolean.TRUE;
         }
 
         return Boolean.FALSE;

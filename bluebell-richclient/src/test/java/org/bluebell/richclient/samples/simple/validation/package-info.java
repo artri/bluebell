@@ -17,7 +17,7 @@
  */
 
 /**
- * Includes sample forms. 
+ * Includes sample rule sources. 
  */
-package org.bluebell.richclient.samples.simple.form;
+package org.bluebell.richclient.samples.simple.validation;
 

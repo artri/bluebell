@@ -193,7 +193,7 @@
 		of bound ShuttleList components
 	-->
 	<bean id="bindingFactoryProvider" class="org.springframework.richclient.form.binding.swing.SwingBindingFactoryProvider" />
-	<bean id="jideBindingFactoryProvider" class="org.bluebell.richclient.form.binding.jideoss.JideBindingFactoryProvider"
+	<bean id="jideBindingFactoryProvider" class="org.bluebell.richclient.form.binding.BbBindingFactoryProvider"
 		p:bindingFactoryBeanName="jideBindingFactory" />
 
 	<bean id="jideBindingFactory" class="org.bluebell.richclient.form.binding.jideoss.JideBindingFactory" scope="prototype">
@@ -251,8 +251,7 @@
 				<ref local="colorValidationInterceptorFactory" />
 				
 <!--					TODO, esto rompe los tests -->
-<!--					<ref-->
-<!--					local="overlayValidationInterceptorFactory" />-->
+				<ref local="overlayValidationInterceptorFactory" />
 				
 				<ref local="checkBoxFormComponentInterceptorFactory" />
 				<ref local="comboBoxAutoCompletionInterceptorFactory" />
@@ -413,7 +412,7 @@
 	<bean id="toolTipInterceptorFactory" class="org.springframework.richclient.form.builder.support.ToolTipInterceptorFactory" />
 	<bean id="showCaptionInStatusBarInterceptorFactory" class="org.springframework.richclient.form.builder.support.ShowCaptionInStatusBarInterceptorFactory" />
 	<bean id="searchableInterceptorFactory" class="org.bluebell.richclient.form.builder.jideoss.SearchableInterceptorFactory" />
-	<bean id="dirtyIndicatorInterceptorFactory" class="org.bluebell.richclient.form.builder.support.DirtyIndicatorInterceptorFactory">
+	<bean id="dirtyIndicatorInterceptorFactory" class="org.bluebell.richclient.form.builder.support.BbDirtyIndicatorInterceptorFactory">
 		<property name="excludedFormModelIds">
 			<list>
 				<value>credentials</value>

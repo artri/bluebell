@@ -19,10 +19,12 @@
 package org.bluebell.richclient.application.docking.vldocking.substance;
 
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.beans.PropertyChangeEvent;
 
 import javax.swing.JComponent;
+import javax.swing.JLabel;
 import javax.swing.UIManager;
 import javax.swing.plaf.ComponentUI;
 
@@ -107,7 +109,7 @@ public class SubstanceDockViewTitleBarUI extends DockViewTitleBarUI implements A
     public void paint(Graphics g, JComponent c) {
 
         this.installLabel(); // Re-install label in order to support font resizing
-        this.installBackground();
+        this.installBackground();       
     }
 
     /**
@@ -145,6 +147,20 @@ public class SubstanceDockViewTitleBarUI extends DockViewTitleBarUI implements A
             }
             dockViewTitleBar.setBackground(color);
         }
+    }
+    
+    /**
+     * {@inheritDoc}
+     * <p>
+     * Overriden to avoid changing the titleBar background every time.
+     */
+    protected void installLabel() {
+
+        final JLabel titleLabel = titleBar.getTitleLabel();
+        final Font font = UIManager.getFont("DockViewTitleBar.titleFont");
+        titleLabel.setFont(font);
+        // titleLabel.setForeground(notSelectedTextColor);
+        // titleBar.setBackground(notSelectedTitleColor);
     }
 
     /**

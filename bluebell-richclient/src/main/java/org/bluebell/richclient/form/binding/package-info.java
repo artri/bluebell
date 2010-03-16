@@ -17,7 +17,7 @@
  */
 
 /**
- * Includes sample forms. 
+ * Spring Richclient binding extension classes. 
  */
-package org.bluebell.richclient.samples.simple.form;
+package org.bluebell.richclient.form.binding;
 

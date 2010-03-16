@@ -23,6 +23,16 @@ public class DefaultOverlayService implements OverlayService, SwingConstants {
      */
     private static final Insets DEFAULT_INSETS = new Insets(0, 0, 0, 0);
 
+    /** 
+     * {@inheritDoc}
+     */
+    @Override
+    public Boolean isOverlayInstalled(JComponent targetComponent, JComponent overlay) {
+    
+        // TODO
+        return Boolean.FALSE;
+    }
+    
     /**
      * {@inheritDoc}
      * 

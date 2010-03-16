@@ -35,7 +35,7 @@ public class JideBindingFactory extends SwingBindingFactory {
     /**
      * The default insets to be applied to components.
      */
-    public static final Insets DEFAULT_INSETS = new Insets(5, 0, 0, 0);
+    public static final Insets DEFAULT_INSETS = new Insets(5, 0, 5, 0);
 
     /**
      * Creates a binding factory given the target form model.

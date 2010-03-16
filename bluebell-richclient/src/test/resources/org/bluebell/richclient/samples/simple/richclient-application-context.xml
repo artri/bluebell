@@ -64,5 +64,7 @@
 			</list>
 		</property>
 	</bean>
+
+	<bean id="personRulesSource" class="org.bluebell.richclient.samples.simple.validation.PersonRulesSource" />
 </beans>
 	
