@@ -27,7 +27,12 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
+import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
+import javax.swing.RowSorter;
+import javax.swing.SortOrder;
+import javax.swing.table.TableModel;
+import javax.swing.table.TableRowSorter;
 
 import junit.framework.TestCase;
 
@@ -38,7 +43,6 @@ import org.bluebell.richclient.samples.simple.bean.Person;
 import org.bluebell.richclient.samples.simple.form.PersonChildForm;
 import org.bluebell.richclient.samples.simple.form.PersonMasterForm;
 import org.bluebell.richclient.test.AbstractBbSamplesTests;
-import org.jdesktop.swingx.JXTable;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -118,7 +122,7 @@ public class TestAbstractBbTableMasterForm extends AbstractBbSamplesTests {
         TestAbstractBbTableMasterForm.PERSONS_3.add(new Person("E"));
     }
 
-    /** 
+    /**
      * {@inheritDoc}
      */
     @Test
@@ -233,9 +237,9 @@ public class TestAbstractBbTableMasterForm extends AbstractBbSamplesTests {
     public void testGetSelection() {
 
         final AbstractBbTableMasterForm<Person> masterForm = this.getBackingForm(this.getMasterView());
-        final JXTable masterTable = (JXTable) masterForm.getMasterTable();
+        final JTable masterTable = (JTable) masterForm.getMasterTable();
         final ListSelectionModel selectionModel = masterTable.getSelectionModel();
-        final int column = 0;
+         final int column = 0;
 
         // Show entities (randomly, ascendant and descendant ordered respectively)
         final List<Person> ranEntities = new ArrayList<Person>(TestAbstractBbTableMasterForm.PERSONS_1);
@@ -255,12 +259,13 @@ public class TestAbstractBbTableMasterForm extends AbstractBbSamplesTests {
         this.doTestGetSelection(masterForm, ranEntities, indexes);
 
         // Test #getSelection() works fine after toggling sort order
-        masterTable.toggleSortOrder(column);
+        this.sortTable(masterTable, column, Boolean.TRUE);
+
         selectionModel.setSelectionInterval(indexes.get(0), indexes.get(0));
         this.doTestGetSelection(masterForm, ascEntities, indexes);
 
         // Test #getSelection() works fine after toggling sort order again
-        masterTable.toggleSortOrder(column);
+        this.sortTable(masterTable, column, Boolean.FALSE);
         selectionModel.setSelectionInterval(indexes.get(0), indexes.get(0));
         this.doTestGetSelection(masterForm, desEntities, indexes);
 
@@ -435,6 +440,31 @@ public class TestAbstractBbTableMasterForm extends AbstractBbSamplesTests {
         masterForm.changeSelection(newSelection);
         TestCase.assertEquals(expectedCount, masterForm.getCount());
         TestCase.assertTrue(ListUtils.isEqualList(expectedSelection, masterForm.getSelection()));
+    }
+
+    /**
+     * Sort the given table in the given order.
+     * 
+     * @param table
+     *            the table.
+     * @param ascending
+     *            the order.
+     */
+    private void sortTable(JTable table, int column, final Boolean ascending) {
+
+        Assert.notNull(table, "table");
+        Assert.notNull(ascending, "ascending");
+        
+        // The sort keys
+        final List<RowSorter.SortKey> sortKeys = new ArrayList<RowSorter.SortKey>();
+        sortKeys.add(new RowSorter.SortKey(column,(ascending) ? SortOrder.ASCENDING : SortOrder.DESCENDING));                        
+
+        // The sorter
+        final RowSorter<TableModel> sorter = new TableRowSorter<TableModel>(table.getModel());
+        sorter.setSortKeys(sortKeys);
+
+        // Install the sorter
+        table.setRowSorter(sorter);
     }
 
     /**

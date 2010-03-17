@@ -20,6 +20,7 @@
 	<modules>
 		<module>bluebell-richclient</module>
 		<module>bluebell-substance</module>
+		<module>bluebell-jide-oss</module>
 	</modules>
 
 	<distributionManagement>

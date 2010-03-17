@@ -34,7 +34,6 @@ import org.apache.commons.collections.MapUtils;
 import org.bluebell.richclient.application.docking.vldocking.VLDockingUtils.DockViewType;
 import org.bluebell.richclient.components.RoundedBorder;
 
-import com.jidesoft.swing.PartialLineBorder;
 import com.vlsolutions.swing.docking.DockingConstants;
 import com.vlsolutions.swing.docking.ui.DockingUISettings;
 
@@ -99,9 +98,9 @@ public class DockingPreferencesWidgetExtension {
         /*
          * (JAF), 20100113, RoundedBorder does not work in this case. I do know why
          */
-        final Border outsideBorder = new PartialLineBorder(color, b, Boolean.TRUE, m);
-        // outsideBorder = BorderFactory.createMatteBorder(b, b, b, b, color);
+        // final Border outsideBorder = new PartialLineBorder(color, b, Boolean.TRUE, m);
         // outsideBorder = new RoundedBorder(m, b, color);
+        final Border outsideBorder = BorderFactory.createMatteBorder(b, b, b, b, color);
 
         final Border insideBorder;
 

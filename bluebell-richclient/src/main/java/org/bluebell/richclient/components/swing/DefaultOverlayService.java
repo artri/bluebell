@@ -41,16 +41,16 @@ public class DefaultOverlayService implements OverlayService, SwingConstants {
      */
     private static final Insets DEFAULT_INSETS = new Insets(0, 0, 0, 0);
 
-    /** 
+    /**
      * {@inheritDoc}
      */
     @Override
     public Boolean isOverlayInstalled(JComponent targetComponent, JComponent overlay) {
-    
+
         // TODO
         return Boolean.FALSE;
     }
-    
+
     /**
      * {@inheritDoc}
      * 
@@ -69,6 +69,10 @@ public class DefaultOverlayService implements OverlayService, SwingConstants {
      */
     @Override
     public Boolean installOverlay(JComponent targetComponent, JComponent overlay, int position, Insets insets) {
+
+        if (insets == null) { // TODO FIXME
+            insets = new Insets(0, 0, 0, 0);
+        }
 
         InterceptorOverlayHelper.attachOverlay(overlay, targetComponent, position, insets.left, insets.top);
         overlay.setVisible(Boolean.TRUE);

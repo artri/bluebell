@@ -33,7 +33,6 @@ import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
-import javax.swing.KeyStroke;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.TableModel;
@@ -59,11 +58,6 @@ import org.springframework.richclient.util.PopupMenuMouseListener;
 import org.springframework.util.Assert;
 
 import ca.odell.glazedlists.EventList;
-
-import com.jidesoft.swing.Searchable;
-import com.jidesoft.swing.SearchableBar;
-import com.jidesoft.swing.SearchableUtils;
-import com.jidesoft.swing.SearchableBar.Installer;
 
 /**
  * Binds a property of type <code>Collection</code> with a table capable of being edited 
@@ -478,25 +472,27 @@ public class TableBinding extends CustomBinding {
         jPanel.setLayout(new BorderLayout());
         jPanel.add(scroolPane, BorderLayout.CENTER);
         
-        final Searchable searchable =  SearchableUtils.installSearchable(this.getTable());
-        
-        SearchableBar.install(searchable, KeyStroke.getKeyStroke(KeyEvent.VK_F, KeyEvent.CTRL_DOWN_MASK),
-                new Installer() {
-            
-            @Override
-            public void openSearchBar(SearchableBar searchableBar) {
-                jPanel.add(searchableBar, BorderLayout.NORTH);
-                jPanel.invalidate();
-                jPanel.revalidate();             
-            }
-            
-            @Override
-            public void closeSearchBar(SearchableBar searchableBar) {
-                jPanel.remove(searchableBar);
-                jPanel.invalidate();
-                jPanel.revalidate();                
-            }
-        });
+
+        // TODO move this code to JIDE module
+        // final Searchable searchable = SearchableUtils.installSearchable(this.getTable());
+        //        
+        // SearchableBar.install(searchable, KeyStroke.getKeyStroke(KeyEvent.VK_F, KeyEvent.CTRL_DOWN_MASK),
+        // new Installer() {
+        //            
+        // @Override
+        // public void openSearchBar(SearchableBar searchableBar) {
+        // jPanel.add(searchableBar, BorderLayout.NORTH);
+        // jPanel.invalidate();
+        // jPanel.revalidate();
+        // }
+        //            
+        // @Override
+        // public void closeSearchBar(SearchableBar searchableBar) {
+        // jPanel.remove(searchableBar);
+        // jPanel.invalidate();
+        // jPanel.revalidate();
+        // }
+        // });
         
         jPanel.add(this.getButtonsCommandGroup().createButtonBar(), BorderLayout.SOUTH);
 

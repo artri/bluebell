@@ -27,7 +27,7 @@
 		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-2.5.xsd">
 
 
-	<bean id="personPropertyPlaceholderConfigurer" parent="propertyPlaceholderConfigurer"
+	<bean id="personPropertyPlaceholderConfigurer" parent="defaultPropertyPlaceholderConfigurer"
 		p:ignore-unresolvable-placeholders="true" p:ignore-resource-not-found="false" p:order="-1">
 		<property name="locations">
 			<list>

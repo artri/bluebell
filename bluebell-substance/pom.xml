@@ -133,6 +133,14 @@
 			<groupId>org.aspectj</groupId>
 			<artifactId>com.springsource.org.aspectj.weaver</artifactId>
 		</dependency>
+
+		<!-- 
+			Test
+		 -->
+		<dependency>
+			<groupId>org.junit</groupId>
+			<artifactId>com.springsource.org.junit</artifactId>
+		</dependency>
 	</dependencies>
 
 </project>

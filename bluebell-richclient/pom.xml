@@ -118,10 +118,6 @@
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.richclient</groupId>
-			<artifactId>spring-richclient-jideoss</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.richclient</groupId>
 			<artifactId>spring-richclient-vldocking</artifactId>
 		</dependency>
 
@@ -135,10 +131,6 @@
 		<dependency>
 			<groupId>net.java.dev.glazedlists</groupId>
 			<artifactId>glazedlists_java15</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>com.jidesoft</groupId>
-			<artifactId>jide-oss</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>com.dryicons</groupId>

@@ -17,7 +17,24 @@
  */
 
 /**
- * Bluebell Jide OSS components. 
+ * 
  */
-package org.bluebell.richclient.components.jideoss;
+package org.bluebell.richclient.application.docking.vldocking.substance;
 
+import org.junit.Test;
+
+/**
+ * TODO
+ * 
+ * @author <a href = "mailto:julio.arguello@gmail.com" >Julio Argüello (JAF)</a>
+ */
+public class TestSubstanceLookAndFeelConfigurer {
+
+    /**
+     * TODO.
+     */
+    @Test
+    public void todo() {
+
+    }
+}
