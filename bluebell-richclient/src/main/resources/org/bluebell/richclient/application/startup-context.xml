@@ -56,7 +56,7 @@
 		TODO, change broken image indicator
 	 -->
 	<bean id="imageSource" class="org.springframework.richclient.image.DefaultImageSource" p:brokenImageIndicator="/com/vlsolutions/swing/docking/close16v2.png">
-		<constructor-arg index="0" type="java.util.Map" ref="imageResourcesFactory" />
+		<constructor-arg index="0" type="java.util.Map" ref="${richclient.imageResourcesFactory}" />
 	</bean>
 
 
@@ -65,7 +65,7 @@
 		This specifies the component that is responsible for providing image resources locations. This factory uses the
 		specified properties files to map image resource keys to image locations.
 	-->
-	<bean id="imageResourcesFactory" class="org.springframework.context.support.ResourceMapFactoryBean">
+	<bean id="defaultImageResourcesFactory" class="org.springframework.context.support.ResourceMapFactoryBean">
 		<property name="locations">
 			<list>
 				<!--

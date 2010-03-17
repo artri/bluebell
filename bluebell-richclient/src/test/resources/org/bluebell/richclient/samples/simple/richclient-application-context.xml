@@ -67,7 +67,7 @@
 		</property>
 	</bean>
 
-	<bean id="personImageResourcesFactory" parent="imageResourcesFactory">
+	<bean id="personImageResourcesFactory" parent="defaultImageResourcesFactory">
 		<property name="locations">
 			<list merge="true">
 				<value>classpath:/org/bluebell/richclient/samples/simple/image/images.properties</value>

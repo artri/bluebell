@@ -19,11 +19,9 @@
 
 
 	<!--
-		Bean: jidePlaceholderConfigurer 
-		Usage: platform required 
-		Description: This configures all placeholders defined in the application context. 
-		Note "null" string is used for null values and system properties override those defined in properties files.
-		Note its priority is greater than "defaultPropertyPlaceholderConfigurer" priority.
+		Bean: jidePlaceholderConfigurer Usage: platform required Description: This configures all placeholders defined in the
+		application context. Note "null" string is used for null values and system properties override those defined in
+		properties files. Note its priority is greater than "defaultPropertyPlaceholderConfigurer" priority.
 	-->
 	<bean id="jidePropertyPlaceholderConfigurer" parent="defaultPropertyPlaceholderConfigurer" p:order="1000">
 		<property name="locations">
@@ -52,6 +50,26 @@
 	-->
 	<bean id="jideOssComponentFactory" class="org.bluebell.richclient.components.jideoss.JideOssComponentFactory"
 		p:decoratedComponentFactory-ref="swingxComponentFactory" />
+
+
+	<!--
+		Bean: imageResourcesFactory Usage: platform required (if you are using the DefaultImageSource, see below) Description:
+		This specifies the component that is responsible for providing image resources locations. This factory uses the
+		specified properties files to map image resource keys to image locations.
+	-->
+	<bean id="imageResourcesFactory" class="org.springframework.context.support.ResourceMapFactoryBean">
+		<property name="locations">
+			<list>
+				<!--
+					<value>classpath:/org/springframework/richclient/image/images.properties</value>
+					<value>classpath:/org/bluebell/richclient/image/images.properties</value>
+				-->
+				<value>classpath:/org/bluebell/richclient/image/images.properties</value>
+				<value>classpath:/org/bluebell/richclient/image/jide-images.properties</value>
+				<value>classpath:/org/bluebell/richclient/image/coquete-images.properties</value>
+			</list>
+		</property>
+	</bean>
 
 	<!--
 		Bean: formComponentInterceptorFactory Usage: platform optional Description: This specifies the list of interceptors to

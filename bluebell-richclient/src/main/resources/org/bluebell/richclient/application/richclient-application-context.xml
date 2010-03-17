@@ -292,7 +292,7 @@
 		This specifies the component that is responsible for providing image resources locations. This factory uses the
 		specified properties files to map image resource keys to image locations.
 	-->
-	<bean id="imageResourcesFactory" class="org.springframework.context.support.ResourceMapFactoryBean">
+	<bean id="defaultImageResourcesFactory" class="org.springframework.context.support.ResourceMapFactoryBean">
 		<property name="locations">
 			<list>
 				<!--
@@ -300,7 +300,6 @@
 					<value>classpath:/org/bluebell/richclient/image/images.properties</value>
 				-->
 				<value>classpath:/org/bluebell/richclient/image/images.properties</value>
-				<value>classpath:/org/bluebell/richclient/image/jide-images.properties</value>
 				<value>classpath:/org/bluebell/richclient/image/coquete-images.properties</value>
 			</list>
 		</property>
