@@ -30,6 +30,14 @@
 		</layout>
 	</appender>
 
+	<appender name="root" class="org.apache.log4j.RollingFileAppender">
+		<param name="file" value="${user.home}/.bluebell/root.log" />
+		<param name="MaxFileSize" value="100KB" />
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern" value="%p %t %c - %m%n" />
+		</layout>
+	</appender>
+
 	<appender name="icons" class="org.apache.log4j.RollingFileAppender">
 		<param name="file" value="${user.home}/.bluebell/icons.log" />
 		<param name="MaxFileSize" value="100KB" />
@@ -58,7 +66,7 @@
 
 	<root>
 		<priority value="debug" />
-		<appender-ref ref="console" />
+		<appender-ref ref="root" />
 	</root>
 
 </log4j:configuration>

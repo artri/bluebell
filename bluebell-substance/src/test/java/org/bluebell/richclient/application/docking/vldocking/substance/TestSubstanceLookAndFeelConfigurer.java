@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2009 Julio Argüello <julio.arguello@gmail.com>
  *
- * This file is part of Bluebell Rich Client.
+ * This file is part of Bluebell Substance.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.

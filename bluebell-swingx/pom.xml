@@ -13,7 +13,6 @@
 
 	<groupId>org.bluebell</groupId>
 	<artifactId>bluebell-swingx</artifactId>
-	<version>0.1</version>
 	<packaging>jar</packaging>
 	<name>Bluebell SwingX</name>
 	<description>SwingX integration module</description>
@@ -54,10 +53,16 @@
 			Bluebell 
  		-->
 		<dependency>
-			<groupId>org.bluebell</groupId>
+			<groupId>${project.groupId}</groupId>
 			<artifactId>bluebell-richclient</artifactId>
-			<version>0.1</version>
-			<!--	TODO (JAF) 20100316: manage module versions		-->
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>bluebell-richclient</artifactId>
+			<version>${project.version}</version>
+			<type>test-jar</type>
+			<scope>test</scope>
 		</dependency>
 
 		<!-- 
@@ -65,23 +70,7 @@
 	 	-->
 		<dependency>
 			<groupId>org.springframework</groupId>
-			<artifactId>org.springframework.beans</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework</groupId>
 			<artifactId>org.springframework.core</artifactId>
-		</dependency>
-
-		<!-- 
-			Apache Commons
-		 -->
-		<dependency>
-			<groupId>org.apache.commons</groupId>
-			<artifactId>com.springsource.org.apache.commons.collections</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.commons</groupId>
-			<artifactId>com.springsource.org.apache.commons.lang</artifactId>
 		</dependency>
 
 		<!-- 
@@ -96,42 +85,9 @@
 			Other swing components
  		-->
 		<dependency>
-			<groupId>org.pushingpixels</groupId>
-			<artifactId>substance</artifactId>
-		</dependency>
-		<!--		<dependency>-->
-		<!--			<groupId>org.pushingpixels</groupId>-->
-		<!--			<artifactId>substance</artifactId>-->
-		<!--			<type>test-jar</type>-->
-		<!--		</dependency> -->
-		<dependency>
-			<groupId>org.pushingpixels</groupId>
-			<artifactId>substance-jide</artifactId>
-			<optional>true</optional>
-		</dependency>
-		<dependency>
-			<groupId>org.pushingpixels</groupId>
-			<artifactId>substance-extras</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.pushingpixels</groupId>
-			<artifactId>laf-plugin</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.pushingpixels</groupId>
-			<artifactId>laf-widget</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>com.vlsolutions</groupId>
-			<artifactId>vldocking</artifactId>
-		</dependency>
-
-		<!-- 
-			Others
-		 -->
-		<dependency>
-			<groupId>org.aspectj</groupId>
-			<artifactId>com.springsource.org.aspectj.weaver</artifactId>
+			<groupId>org.swinglabs</groupId>
+			<artifactId>swingx</artifactId>
+			<!-- There is a dependence in ColorValidationInterceptor -->
 		</dependency>
 
 		<!-- 

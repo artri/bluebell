@@ -13,7 +13,6 @@
 
 	<groupId>org.bluebell</groupId>
 	<artifactId>bluebell-richclient</artifactId>
-	<version>0.1</version>
 	<packaging>jar</packaging>
 	<name>Bluebell Rich Client</name>
 	<description>Desktop module</description>
@@ -127,7 +126,7 @@
 		<dependency>
 			<groupId>org.swinglabs</groupId>
 			<artifactId>swingx</artifactId>
-			<optional>true</optional>
+			<scope>runtime</scope>			
 			<!-- There is a dependence in ColorValidationInterceptor -->
 		</dependency>
 		<dependency>

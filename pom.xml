@@ -25,16 +25,16 @@
 	</modules>
 
 	<distributionManagement>
-		<!--		<site>-->
-		<!--			<id>bluebell.googlecode.com.site.deploy</id>-->
-		<!--			<name>Google Code Maven Site For Bluebell</name>-->
-		<!--			<url>svn:https://bluebell.googlecode.com/svn/www/${pom.version}</url>-->
-		<!--		</site>-->
 		<site>
 			<id>bluebell.googlecode.com.site.deploy</id>
 			<name>Google Code Maven Site For Bluebell</name>
-			<url>file://C:/yo</url>
+			<url>svn:https://bluebell.googlecode.com/svn/www/${pom.version}</url>
 		</site>
+		<!--		<site>-->
+		<!--			<id>bluebell.googlecode.com.site.deploy</id>-->
+		<!--			<name>Google Code Maven Site For Bluebell</name>-->
+		<!--			<url>file://C:/yo</url>-->
+		<!--		</site>-->
 	</distributionManagement>
 
 	<repositories>
@@ -96,8 +96,23 @@
 		<pluginManagement>
 			<plugins>
 				<plugin>
+					<!--
+						(JAF), 20100321: attach tests artifact installation to build lifecycle
+					-->
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-jar-plugin</artifactId>
+					<version>2.2</version>
+					<executions>
+						<execution>
+							<goals>
+								<goal>test-jar</goal>
+							</goals>
+						</execution>
+					</executions>
+				</plugin>
+				<plugin>
 					<!--	
-						(JAF) 20100316: attach sources artifact to build lifecycle			
+						(JAF), 20100316: attach sources artifact installation to build lifecycle			
 					-->
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-source-plugin</artifactId>

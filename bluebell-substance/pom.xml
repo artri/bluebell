@@ -13,7 +13,6 @@
 
 	<groupId>org.bluebell</groupId>
 	<artifactId>bluebell-substance</artifactId>
-	<version>0.1</version>
 	<packaging>jar</packaging>
 	<name>Bluebell Substance</name>
 	<description>Substance integration module</description>
@@ -54,10 +53,16 @@
 			Bluebell 
  		-->
 		<dependency>
-			<groupId>org.bluebell</groupId>
+			<groupId>${project.groupId}</groupId>
 			<artifactId>bluebell-richclient</artifactId>
-			<version>0.1</version>
-			<!--	TODO (JAF) 20100316: manage module versions		-->
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>bluebell-richclient</artifactId>
+			<version>${project.version}</version>
+			<type>test-jar</type>		
+			<scope>test</scope>
 		</dependency>
 
 		<!-- 

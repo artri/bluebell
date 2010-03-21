@@ -75,7 +75,6 @@ public class DefaultOverlayService implements OverlayService, SwingConstants {
         }
 
         InterceptorOverlayHelper.attachOverlay(overlay, targetComponent, position, insets.left, insets.top);
-        overlay.setVisible(Boolean.TRUE);
 
         return Boolean.TRUE;
     }
@@ -109,7 +108,7 @@ public class DefaultOverlayService implements OverlayService, SwingConstants {
     @Override
     public Boolean hideOverlay(JComponent targetComponent, JComponent overlay) {
 
-        // TODO
+        overlay.setVisible(Boolean.FALSE);
 
         return Boolean.TRUE;
     }
@@ -120,7 +119,7 @@ public class DefaultOverlayService implements OverlayService, SwingConstants {
     @Override
     public Boolean showOverlay(JComponent targetComponent, JComponent overlay) {
 
-        // TODO
+        overlay.setVisible(Boolean.TRUE);
 
         return Boolean.TRUE;
     }
