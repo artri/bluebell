@@ -28,7 +28,7 @@
 
 
 	<bean id="personPropertyPlaceholderConfigurer" parent="defaultPropertyPlaceholderConfigurer"
-		p:ignore-unresolvable-placeholders="true" p:ignore-resource-not-found="false" p:order="-1">
+		p:ignore-unresolvable-placeholders="true" p:ignore-resource-not-found="false" p:order="100000">
 		<property name="locations">
 			<list>
 				<value>classpath*:META-INF/spring/person/*.properties</value>
@@ -67,7 +67,7 @@
 		</property>
 	</bean>
 
-	<bean id="personImageResourcesFactory" parent="defaultImageResourcesFactory">
+	<bean id="personImageResourcesFactory" parent="${personImageResourcesFactory.parent}">
 		<property name="locations">
 			<list merge="true">
 				<value>classpath:/org/bluebell/richclient/samples/simple/image/images.properties</value>

@@ -100,7 +100,8 @@
 		p:window-command-bar-definitions="${richclient.windowCommandBarDefinitions}" p:starting-page-id="${richclient.startingPageId}"
 		p:status-bar-ref="${richclient.statusBar}" />
 
-	<bean id="statusBar" class="org.bluebell.richclient.components.swingx.SwingxStatusBar" />
+	<bean id="defaultStatusBar" class="org.springframework.richclient.application.statusbar.support.DefaultStatusBar" />
+
 
 	<!--
 		############################################################# Known Application Services (ordered by level tree
@@ -194,8 +195,7 @@
 	<!--
 		TODO
 	-->
-	<bean id="swingxComponentFactory" class="org.bluebell.richclient.components.swingx.SwingxComponentFactory"
-		p:decoratedComponentFactory-ref="defaultComponentFactory" />
+	
 
 	<!--
 		Bean: conversionService Usage: platform optional Description: This specifies the component that will supply converters

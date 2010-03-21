@@ -127,6 +127,8 @@
 		<dependency>
 			<groupId>org.swinglabs</groupId>
 			<artifactId>swingx</artifactId>
+			<optional>true</optional>
+			<!-- There is a dependence in ColorValidationInterceptor -->
 		</dependency>
 		<dependency>
 			<groupId>net.java.dev.glazedlists</groupId>
