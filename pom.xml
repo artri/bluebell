@@ -21,6 +21,7 @@
 		<module>bluebell-richclient</module>
 		<module>bluebell-substance</module>
 		<module>bluebell-jide-oss</module>
+		<module>bluebell-swingx</module>
 	</modules>
 
 	<distributionManagement>
