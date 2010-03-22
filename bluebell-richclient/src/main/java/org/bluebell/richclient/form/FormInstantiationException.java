@@ -177,7 +177,7 @@ public class FormInstantiationException extends BbApplicationException {
      * @param formId
      *            the form id to set.
      */
-    protected void setFormId(String formId) {
+    protected final void setFormId(String formId) {
 
         Assert.notNull(formId, "[Assertion failed] - \"formId\" is required; it must not be null");
 

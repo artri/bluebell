@@ -141,7 +141,15 @@ public class TableBinder extends AbstractBinder implements InitializingBean {
      */
     public void setColumnPropertyNames(String[] columnPropertyNames) {
 
-        this.columnPropertyNames = columnPropertyNames;
+        // Avoid PMD warning:
+        // Security - Array is stored directly : The user-supplied array 'viewDescriptors' is stored directly.
+        // Constructors and methods receiving arrays should clone objects and store the copy. This prevents that future
+        // changes from the user affect the internal functionality.
+
+        this.columnPropertyNames = new String[columnPropertyNames.length];
+        for (int i = 0; i < columnPropertyNames.length; ++i) {
+            this.columnPropertyNames[i] = columnPropertyNames[i]; // Since String are inmutable no copy is needed
+        }
     }
 
     /**

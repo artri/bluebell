@@ -91,7 +91,7 @@ public abstract class ComponentFactoryDecorator extends ApplicationServicesAcces
      * 
      * @return the decorated component factory.
      */
-    public ComponentFactory getDecoratedComponentFactory() {
+    public final ComponentFactory getDecoratedComponentFactory() {
 
         return this.decoratedComponentFactory;
     }
@@ -102,7 +102,7 @@ public abstract class ComponentFactoryDecorator extends ApplicationServicesAcces
      * @param decoratedComponentFactory
      *            the decorated component factory to set.
      */
-    public void setDecoratedComponentFactory(ComponentFactory decoratedComponentFactory) {
+    public final void setDecoratedComponentFactory(ComponentFactory decoratedComponentFactory) {
 
         Assert.notNull(decoratedComponentFactory, "decoratedComponentFactory");
 
@@ -113,7 +113,7 @@ public abstract class ComponentFactoryDecorator extends ApplicationServicesAcces
      * {@inheritDoc}
      */
     @Override
-    public void afterPropertiesSet() throws Exception {
+    public void afterPropertiesSet() {
 
         Assert.notNull(this.getDecoratedComponentFactory(), "this.getDecoratedComponentFactory()");
     }

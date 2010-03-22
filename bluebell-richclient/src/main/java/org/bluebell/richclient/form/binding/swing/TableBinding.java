@@ -206,10 +206,10 @@ public class TableBinding extends CustomBinding {
         super(formModel, formPropertyPath, null);
 
         Assert.notNull(tableModel);
-        
-        this.setTable(this.getComponentFactory().createTable(tableModel));               
+
+        this.setTable(this.getComponentFactory().createTable(tableModel));
     }
-    
+
     /**
      * Construye el <em>binding</em> a partir de la tabla a utilizar, el modelo del formulario, la propiedad a la que
      * hace referencia y los nombres de las columnas a representar en la tabla.
@@ -259,7 +259,15 @@ public class TableBinding extends CustomBinding {
      */
     public void setColumnPropertyNames(String[] columnPropertyNames) {
 
-        this.columnPropertyNames = columnPropertyNames;
+        // Avoid PMD warning:
+        // Security - Array is stored directly : The user-supplied array 'viewDescriptors' is stored directly.
+        // Constructors and methods receiving arrays should clone objects and store the copy. This prevents that future
+        // changes from the user affect the internal functionality.
+
+        this.columnPropertyNames = new String[columnPropertyNames.length];
+        for (int i = 0; i < columnPropertyNames.length; ++i) {
+            this.columnPropertyNames[i] = columnPropertyNames[i]; // Since String are inmutable no copy is needed
+        }
     }
 
     /**
@@ -471,7 +479,6 @@ public class TableBinding extends CustomBinding {
         final JPanel jPanel = new JPanel();
         jPanel.setLayout(new BorderLayout());
         jPanel.add(scroolPane, BorderLayout.CENTER);
-        
 
         // TODO move this code to JIDE module
         // final Searchable searchable = SearchableUtils.installSearchable(this.getTable());
@@ -493,7 +500,7 @@ public class TableBinding extends CustomBinding {
         // jPanel.revalidate();
         // }
         // });
-        
+
         jPanel.add(this.getButtonsCommandGroup().createButtonBar(), BorderLayout.SOUTH);
 
         return jPanel;
