@@ -24,8 +24,6 @@ package org.bluebell.richclient.components.substance;
 import javax.swing.JTabbedPane;
 
 import org.bluebell.richclient.factory.ComponentFactoryDecorator;
-import org.jvnet.lafwidget.LafWidget;
-import org.jvnet.lafwidget.tabbed.DefaultTabPreviewPainter;
 import org.springframework.richclient.factory.ComponentFactory;
 
 /**
@@ -60,9 +58,11 @@ public class SubstanceComponentFactory extends ComponentFactoryDecorator {
     @Override
     public JTabbedPane createTabbedPane() {
 
+        // This is just an example
         final JTabbedPane tabbedPane = super.createTabbedPane();
-        
-        tabbedPane.putClientProperty(LafWidget.TABBED_PANE_PREVIEW_PAINTER, new DefaultTabPreviewPainter());
+
+        // This is already done at SubstanceLookAndFeelConfigurer
+        // tabbedPane.putClientProperty(LafWidget.TABBED_PANE_PREVIEW_PAINTER, new DefaultTabPreviewPainter());
 
         return tabbedPane;
     }
