@@ -34,8 +34,7 @@ public class RcpMain extends Main {
     /**
      * La ubicación por defecto del contexto de aplicación.
      */
-    public static final String DEFAULT_APPLICATION_CONTEXT_PATH = //
-    "classpath*:/**/richclient/**/richclient-*-context.xml";
+    public static final String DEFAULT_APP_CONTEXT_PATH = "classpath*:/**/richclient/**/richclient-*-context.xml";
 
     /**
      * La ubicación por defecto de los comandos del contexto de aplicación.
@@ -45,14 +44,14 @@ public class RcpMain extends Main {
     /**
      * La ubicación por defecto del contexto de arranque de la aplicación.
      */
-    public static final String DEFAULT_STARTUP_CONTEXT_PATH = "classpath*:/**/richclient/**/startup-context.xml";
+    public static final String DEFAULT_STARTUP_CONTEXT_PATH = "classpath*:/**/richclient/**/startup-*-context.xml";
 
     /**
      * The first application context file to be loaded (order is important due to bean dependence hierarchy). This
      * avoids "depend-on" abuse.
      */
-    public static final String MAIN_APPLICATION_CONTEXT_PATH = //
-    "classpath*:/org/bluebell/richclient/application/richclient-application-context.xml";
+    public static final String MAIN_APP_CONTEXT_PATH = "classpath*:/org/bluebell/richclient/application/"
+            + "richclient-application-context.xml";
 
     /**
      * El <em>logger</em>.
@@ -67,25 +66,25 @@ public class RcpMain extends Main {
     @Override
     public void launch(Main main, String[] args, final String[] configLocations, final String[] baseDirs) {
 
-        // main debe ser una instancia de RcpMain
+        // main must be an instance of RcpMain
         Assert.isInstanceOf(RcpMain.class, main);
         final RcpMain rcpMain = (RcpMain) main;
 
-        // Lanzar definitivamente la aplicación
+        // Launch applicaiton definitely
         rcpMain.launch(configLocations, baseDirs);
     }
 
     /**
      * Obtiene la ubicación del contexto de la aplicación.
      * <p>
-     * Por defecto es {@value #DEFAULT_APPLICATION_CONTEXT_PATH}.
+     * Por defecto es {@value #DEFAULT_APP_CONTEXT_PATH}.
      * 
      * @return la ubicación.
      */
     @Override
     protected String[] getConfigLocations() {
 
-        return new String[] { RcpMain.MAIN_APPLICATION_CONTEXT_PATH, RcpMain.DEFAULT_APPLICATION_CONTEXT_PATH };
+        return new String[] { RcpMain.MAIN_APP_CONTEXT_PATH, RcpMain.DEFAULT_APP_CONTEXT_PATH };
     }
 
     /**
