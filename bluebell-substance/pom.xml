@@ -26,24 +26,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-dependency-plugin</artifactId>
-			</plugin>
-			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>exec-maven-plugin</artifactId>
-				<configuration>
-					<mainClass>org.bluebell.richclient.application.RcpMain</mainClass>
-					<classpathScope>test</classpathScope>
-					<systemProperties>
-						<systemProperty>
-							<key>richclient.startingPageId</key>
-							<value>personPageDescriptor</value>
-						</systemProperty>
-					</systemProperties>
-					<commandlineArgs>
-						-class org.bluebell.richclient.application.RcpMain
-					</commandlineArgs>
-				</configuration>
-			</plugin>
+			</plugin>		
 		</plugins>
 	</build>
 
@@ -61,7 +44,7 @@
 			<groupId>${project.groupId}</groupId>
 			<artifactId>bluebell-richclient</artifactId>
 			<version>${project.version}</version>
-			<type>test-jar</type>		
+			<type>test-jar</type>
 			<scope>test</scope>
 		</dependency>
 

@@ -19,7 +19,6 @@
 
 	<aop:aspectj-autoproxy />
 
-
 	<bean id="substanceLookAndFeelConfigurer" class="org.bluebell.richclient.application.config.substance.SubstanceLookAndFeelConfigurer">
 		<constructor-arg index="0" value="org.jvnet.substance.skin.SubstanceDustLookAndFeel" />
 		<property name="progressMonitorProxyBean">
