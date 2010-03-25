@@ -152,13 +152,13 @@
 		the I18N support.
 	-->
 	<bean id="applicationObjectConfigurer" depends-on="serviceLocator"
-		class="org.bluebell.richclient.application.BbApplicationObjectConfigurer" />
+		class="org.bluebell.richclient.application.BbApplicationObjectConfigurer" />	
 
-	<!--
+
+<!--
 		Bean: applicationPageFactory Type: platform optional Description: TODO
 	-->
-	<bean id="applicationPageFactory" class="org.bluebell.richclient.application.docking.vldocking.BbVLDockingApplicationPageFactory"
-		p:reuse-pages="true" />
+	<bean id="defaultApplicationPageFactory" class="org.bluebell.richclient.application.support.BbApplicationPageFactory" />
 
 	<!--
 		TODO Instances of ApplicationSecurityManager are responsible for performing the security operations of user login and

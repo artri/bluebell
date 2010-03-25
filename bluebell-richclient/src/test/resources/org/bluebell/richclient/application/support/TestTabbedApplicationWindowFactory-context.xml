@@ -27,7 +27,7 @@
 	<!--
 		A page descriptor (1) useful for testing
 	-->
-	<bean id="pageDescriptor1" parent="abstractVlDockingPageDescriptor">
+	<bean id="pageDescriptor1" parent="abstractPageDescriptor">
 		<property name="viewDescriptors">
 			<list>
 				<value>personMasterViewDescriptor</value>
@@ -38,7 +38,7 @@
 	<!--
 		A page descriptor (2) useful for testing
 	-->
-	<bean id="pageDescriptor2" parent="abstractVlDockingPageDescriptor">
+	<bean id="pageDescriptor2" parent="abstractPageDescriptor">
 		<property name="viewDescriptors">
 			<list>
 				<value>personDetailViewDescriptor</value>
@@ -49,7 +49,7 @@
 	<!--
 		A page descriptor (3) useful for testing
 	-->
-	<bean id="pageDescriptor3" parent="abstractVlDockingPageDescriptor">
+	<bean id="pageDescriptor3" parent="abstractPageDescriptor">
 		<property name="viewDescriptors">
 			<list>
 				<value>personSearchViewDescriptor</value>

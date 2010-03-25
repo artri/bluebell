@@ -19,13 +19,12 @@
 /**
  * 
  */
-package org.bluebell.richclient.application.docking.vldocking;
+package org.bluebell.richclient.application.support;
 
 import java.lang.reflect.Constructor;
 import java.text.MessageFormat;
 import java.util.Map;
 
-import org.bluebell.richclient.application.support.FormBackedView;
 import org.bluebell.richclient.form.FormInstantiationException;
 import org.springframework.beans.BeanInstantiationException;
 import org.springframework.beans.BeanUtils;
@@ -38,11 +37,11 @@ import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ApplicationEventMulticaster;
 import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.richclient.application.View;
-import org.springframework.richclient.application.docking.vldocking.VLDockingViewDescriptor;
+import org.springframework.richclient.application.support.DefaultViewDescriptor;
 import org.springframework.richclient.form.AbstractForm;
 
 /**
- * Descriptor de vista, especialización de {@link VLDockingViewDescriptor} que permite crear vistas a partir de un
+ * Descriptor de vista, especialización de {@link DefaultViewDescriptor} que permite crear vistas a partir de un
  * formulario.
  * <p>
  * Instancia los formularios utilizando su constructor por defecto o, si se han establecido las propiedades
@@ -53,7 +52,7 @@ import org.springframework.richclient.form.AbstractForm;
  * 
  * @author <a href = "mailto:julio.arguello@gmail.com" >Julio Argüello (JAF)</a>
  */
-public class FormBackedVLDockingViewDescriptor<T extends AbstractForm> extends VLDockingViewDescriptor {
+public class FormBackedViewDescriptor<T extends AbstractForm> extends DefaultViewDescriptor {
 
     /**
      * Mensaje asociado a la excepción que se produce si no es posible instanciar el formulario.
@@ -100,7 +99,7 @@ public class FormBackedVLDockingViewDescriptor<T extends AbstractForm> extends V
     /**
      * Construye el descriptor de la vista y establece que la clase de la vista es {@link FormBackedView}.
      */
-    public FormBackedVLDockingViewDescriptor() {
+    public FormBackedViewDescriptor() {
 
         super();
         this.setViewClass(FormBackedView.class);
@@ -343,24 +342,24 @@ public class FormBackedVLDockingViewDescriptor<T extends AbstractForm> extends V
             }
         } catch (final SecurityException e) {
             throw new FormInstantiationException(//
-                    FormBackedVLDockingViewDescriptor.NO_CONSTRUCTOR_ERROR_MESSAGE.format(//
+                    FormBackedViewDescriptor.NO_CONSTRUCTOR_ERROR_MESSAGE.format(//
                             new Object[] { parameterTypes.length }), e, clazz.getName());
         } catch (final NoSuchMethodException e) {
             throw new FormInstantiationException(//
-                    FormBackedVLDockingViewDescriptor.NO_CONSTRUCTOR_ERROR_MESSAGE.format(//
+                    FormBackedViewDescriptor.NO_CONSTRUCTOR_ERROR_MESSAGE.format(//
                             new Object[] { parameterTypes.length }), clazz.getName());
         } catch (final BeanInstantiationException e) {
             throw new FormInstantiationException(//
-                    FormBackedVLDockingViewDescriptor.INSTANTIATION_ERROR_MESSAGE, e, clazz.getName());
+                    FormBackedViewDescriptor.INSTANTIATION_ERROR_MESSAGE, e, clazz.getName());
         } catch (final InvalidPropertyException e) {
             throw new FormInstantiationException(//
-                    FormBackedVLDockingViewDescriptor.PROPERTY_ERROR_MESSAGE, e, clazz.getName());
+                    FormBackedViewDescriptor.PROPERTY_ERROR_MESSAGE, e, clazz.getName());
         } catch (final PropertyBatchUpdateException e) {
             throw new FormInstantiationException(//
-                    FormBackedVLDockingViewDescriptor.PROPERTY_ERROR_MESSAGE, e, clazz.getName());
+                    FormBackedViewDescriptor.PROPERTY_ERROR_MESSAGE, e, clazz.getName());
         } catch (final PropertyAccessException e) {
             throw new FormInstantiationException(//
-                    FormBackedVLDockingViewDescriptor.PROPERTY_ERROR_MESSAGE, e, clazz.getName());
+                    FormBackedViewDescriptor.PROPERTY_ERROR_MESSAGE, e, clazz.getName());
         }
 
         return instance;

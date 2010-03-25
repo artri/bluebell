@@ -36,6 +36,7 @@ import org.springframework.richclient.application.ApplicationPage;
 import org.springframework.richclient.application.ApplicationWindow;
 import org.springframework.richclient.application.PageDescriptor;
 import org.springframework.richclient.application.WindowManager;
+import org.springframework.richclient.application.support.AbstractPageDescriptor;
 import org.springframework.richclient.application.support.EmptyPageDescriptor;
 import org.springframework.richclient.command.ActionCommand;
 import org.springframework.richclient.command.CommandManager;
@@ -234,7 +235,10 @@ public class TestTabbedApplicationWindowFactory extends AbstractBbSamplesTests {
         TestCase.assertTrue(window.getPages().isEmpty());
 
         // Add an unknow page
-        window.showPage(new EmptyPageDescriptor());
+        final AbstractPageDescriptor pageDescriptor = new EmptyPageDescriptor();
+        pageDescriptor.setId(TabbedApplicationWindow.EMPTY_PAGE_DESCRIPTOR_ID);
+        
+        window.showPage(pageDescriptor);
         TestCase.assertTrue("Page added successfully", Boolean.TRUE);
     }
 
@@ -292,7 +296,7 @@ public class TestTabbedApplicationWindowFactory extends AbstractBbSamplesTests {
     }
 
     /**
-     * Tests everything works ok in spite of removing a page with an unknown descriptor.
+     * Tests everything works ok when removing a page with an unknown descriptor.
      */
     @Test
     public void testRemoveUnknownPageDescriptor() {
@@ -303,7 +307,10 @@ public class TestTabbedApplicationWindowFactory extends AbstractBbSamplesTests {
         TestCase.assertTrue(window.getPages().isEmpty());
 
         // Add an unknow page
-        window.showPage(new EmptyPageDescriptor());
+        final AbstractPageDescriptor pageDescriptor = new EmptyPageDescriptor();
+        pageDescriptor.setId(TabbedApplicationWindow.EMPTY_PAGE_DESCRIPTOR_ID);
+        
+        window.showPage(pageDescriptor);
 
         // Remove the page with unknown descriptor
         final ApplicationPage page = window.getPage();

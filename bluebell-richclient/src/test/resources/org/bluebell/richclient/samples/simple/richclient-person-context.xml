@@ -26,7 +26,7 @@
 		</property>
 	</bean>
 
-	<bean id="personPageDescriptor" parent="abstractVlDockingPageDescriptor" p:initial-layout="classpath:/org/bluebell/richclient/samples/layout/personLayout.xml">
+	<bean id="personPageDescriptor" parent="abstractPageDescriptor">
 		<property name="viewDescriptors">
 			<list>
 				<value>personMasterViewDescriptor</value>
@@ -39,11 +39,7 @@
 
 	<bean id="personMasterViewDescriptor" parent="abstractViewDescriptor" p:form-class="org.bluebell.richclient.samples.simple.form.PersonMasterForm" />
 
-	<bean id="personSearchViewDescriptor" parent="abstractViewDescriptor" p:form-class="org.bluebell.richclient.samples.simple.form.PersonSearchForm">
-		<property name="autoHideBorder">
-			<util:constant static-field="com.vlsolutions.swing.docking.DockingConstants.HIDE_RIGHT" />
-		</property>
-	</bean>
+	<bean id="personSearchViewDescriptor" parent="abstractViewDescriptor" p:form-class="org.bluebell.richclient.samples.simple.form.PersonSearchForm" />
 
 	<bean id="personDetailViewDescriptor" parent="abstractViewDescriptor" p:form-class="org.bluebell.richclient.samples.simple.form.PersonChildForm" />
 

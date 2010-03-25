@@ -27,7 +27,7 @@
 	<!--
 		A page descriptor containing a master view descriptor.
 	-->
-	<bean id="masterViewPageDescriptor" parent="abstractVlDockingPageDescriptor">
+	<bean id="masterViewPageDescriptor" parent="abstractPageDescriptor">
 		<property name="viewDescriptors">
 			<list>
 				<value>personMasterViewDescriptor</value>
@@ -38,7 +38,7 @@
 	<!--
 		A page descriptor containing a detail view descriptor.
 	-->
-	<bean id="detailViewPageDescriptor" parent="abstractVlDockingPageDescriptor">
+	<bean id="detailViewPageDescriptor" parent="abstractPageDescriptor">
 		<property name="viewDescriptors">
 			<list>
 				<value>personDetailViewDescriptor</value>
@@ -49,7 +49,7 @@
 	<!--
 		A page descriptor containing a search view descriptor.
 	-->
-	<bean id="searchViewPageDescriptor" parent="abstractVlDockingPageDescriptor">
+	<bean id="searchViewPageDescriptor" parent="abstractPageDescriptor">
 		<property name="viewDescriptors">
 			<list>
 				<value>personSearchViewDescriptor</value>
@@ -60,7 +60,7 @@
 	<!--
 		A page descriptor containing a validation view descriptor.
 	-->
-	<bean id="validationViewPageDescriptor" parent="abstractVlDockingPageDescriptor">
+	<bean id="validationViewPageDescriptor" parent="abstractPageDescriptor">
 		<property name="viewDescriptors">
 			<list>
 				<value>validationViewDescriptor</value>
@@ -71,7 +71,7 @@
 	<!--
 		A page descriptor containing a master and a detail view descriptors.
 	-->
-	<bean id="masterAndDetailViewsPageDescriptor" parent="abstractVlDockingPageDescriptor">
+	<bean id="masterAndDetailViewsPageDescriptor" parent="abstractPageDescriptor">
 		<property name="viewDescriptors">
 			<list>
 				<value>personMasterViewDescriptor</value>
@@ -83,7 +83,7 @@
 	<!--
 		A page descriptor containing a master and a detail view descriptors (reverse order).
 	-->
-	<bean id="rMasterAndDetailViewsPageDescriptor" parent="abstractVlDockingPageDescriptor">
+	<bean id="rMasterAndDetailViewsPageDescriptor" parent="abstractPageDescriptor">
 		<property name="viewDescriptors">
 			<list>
 				<value>personDetailViewDescriptor</value>
@@ -95,7 +95,7 @@
 	<!--
 		A page descriptor containing a master and a search view descriptors.
 	-->
-	<bean id="masterAndSearchViewsPageDescriptor" parent="abstractVlDockingPageDescriptor">
+	<bean id="masterAndSearchViewsPageDescriptor" parent="abstractPageDescriptor">
 		<property name="viewDescriptors">
 			<list>
 				<value>personMasterViewDescriptor</value>
@@ -107,7 +107,7 @@
 	<!--
 		A page descriptor containing a master and a search view descriptors (reverse order).
 	-->
-	<bean id="rMasterAndSearchViewsPageDescriptor" parent="abstractVlDockingPageDescriptor">
+	<bean id="rMasterAndSearchViewsPageDescriptor" parent="abstractPageDescriptor">
 		<property name="viewDescriptors">
 			<list>
 				<value>personSearchViewDescriptor</value>
@@ -119,7 +119,7 @@
 	<!--
 		A page descriptor containing all kind of views.
 	-->
-	<bean id="fullPageDescriptor" parent="abstractVlDockingPageDescriptor">
+	<bean id="fullPageDescriptor" parent="abstractPageDescriptor">
 		<property name="viewDescriptors">
 			<list>
 				<value>personMasterViewDescriptor</value>
@@ -133,7 +133,7 @@
 	<!--
 		A page descriptor containing all kind of views (reverse order).
 	-->
-	<bean id="rFullPageDescriptor" parent="abstractVlDockingPageDescriptor">
+	<bean id="rFullPageDescriptor" parent="abstractPageDescriptor">
 		<property name="viewDescriptors">
 			<list>
 				<value>validationViewDescriptor</value>

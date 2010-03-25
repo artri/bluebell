@@ -224,6 +224,10 @@ public class TabbedApplicationWindowFactory implements ApplicationWindowFactory 
             Assert.notNull(page, "page");
             Assert.notNull(page.getId(), "page.getId()");
 
+            if (this.isEmptyPage(page)) {
+                return;
+            }
+
             final int indexOfPage = this.getIndexOfPage(page);
 
             if (indexOfPage < 0) {
@@ -317,7 +321,8 @@ public class TabbedApplicationWindowFactory implements ApplicationWindowFactory 
          */
         private Boolean isEmptyPage(ApplicationPage page) {
 
-            return (page != null) && page.getId().equals(this.getEmptyPageDescriptor().getId());
+            return (page != null) && (page.getId() != null)
+                    && page.getId().equals(this.getEmptyPageDescriptor().getId());
         }
 
         /**

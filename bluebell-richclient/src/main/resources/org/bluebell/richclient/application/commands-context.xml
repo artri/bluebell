@@ -124,6 +124,7 @@
 				<ref bean="windowMenu" />
 				<ref bean="helpMenu" />
 				<bean class="org.springframework.richclient.command.support.ShowPageMenu" />
+				<bean class="org.springframework.richclient.command.support.ShowViewMenu" />
 			</list>
 		</property>
 	</bean>
@@ -182,7 +183,6 @@
 		<property name="members">
 			<list>
 				<ref bean="newWindowCommand" />
-				<ref bean="resetPerspectiveCommand" />
 			</list>
 		</property>
 	</bean>
@@ -210,12 +210,7 @@
 	<bean id="aboutCommand"
 		class="org.springframework.richclient.command.support.AboutCommand" />
 
-	<!-- 
-		TODO
-	-->
-	<bean id="resetPerspectiveCommand"
-		class="org.bluebell.richclient.command.support.ResetPerspectiveCommand" />
-
+	
 	<!-- 
 		TODO		
 		Permite refrescar la vista durante el debug 

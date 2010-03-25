@@ -27,7 +27,7 @@
 	<!--
 		A page descriptor useful for testing.
 	-->
-	<bean id="pageDescriptor" parent="abstractVlDockingPageDescriptor">
+	<bean id="pageDescriptor" parent="abstractPageDescriptor">
 		<property name="viewDescriptors">
 			<list>
 				<value>mockPersonMasterViewDescriptor</value>

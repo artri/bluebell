@@ -26,9 +26,6 @@ import javax.swing.JTable;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
-import org.bluebell.richclient.application.docking.vldocking.BbVLDockingApplicationPage;
-import org.springframework.richclient.application.ApplicationPage;
-import org.springframework.richclient.application.ApplicationWindow;
 import org.springframework.richclient.command.support.ShowPageCommand;
 
 /**
@@ -159,6 +156,8 @@ public abstract class ExtendedShowPageCommand<T, U> extends ShowPageCommand impl
     @Override
     protected void doExecuteCommand() {
 
+        // TODO FIXME
+        
         // final ApplicationWindow window = this.getApplicationWindow();
 
         // 1. Obtener las entidades seleccionadas en origen
@@ -198,10 +197,10 @@ public abstract class ExtendedShowPageCommand<T, U> extends ShowPageCommand impl
     // @SuppressWarnings("unchecked")
     protected Collection<T> getSelectedEntities() {
 
-        final ApplicationWindow window = this.getApplicationWindow();
-        final ApplicationPage previousApplicationPage = window.getPage();
+        // final ApplicationWindow window = this.getApplicationWindow();
+        // final ApplicationPage previousApplicationPage = window.getPage();
 
-        org.springframework.util.Assert.isInstanceOf(BbVLDockingApplicationPage.class, previousApplicationPage);
+//        org.springframework.util.Assert.isInstanceOf(BbVLDockingApplicationPage.class, previousApplicationPage);
 
         return null; // FIXME
         // return (((BbVLDockingApplicationPage<T>)

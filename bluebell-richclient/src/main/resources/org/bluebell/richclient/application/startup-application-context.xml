@@ -58,7 +58,7 @@
 	<!-- 
 		TODO, change broken image indicator
 	 -->
-	<bean id="imageSource" class="org.springframework.richclient.image.DefaultImageSource" p:brokenImageIndicator="/com/vlsolutions/swing/docking/close16v2.png">
+	<bean id="imageSource" class="org.springframework.richclient.image.DefaultImageSource" p:brokenImageIndicator="${richclient.brokenImageIndicator}">
 		<constructor-arg index="0" type="java.util.Map" ref="${richclient.imageResourcesFactory}" />
 	</bean>
 
