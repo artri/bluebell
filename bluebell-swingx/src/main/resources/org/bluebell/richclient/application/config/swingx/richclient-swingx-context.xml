@@ -29,7 +29,7 @@
 
 
 	<!--
-		Bean: jidePlaceholderConfigurer Usage: platform required Description: This configures all placeholders defined in the
+		Bean: swingxPropertyPlaceholderConfigurer Usage: platform required Description: This configures all placeholders defined in the
 		application context. Note "null" string is used for null values and system properties override those defined in
 		properties files. Note its priority is greater than "defaultPropertyPlaceholderConfigurer" priority.
 	-->
