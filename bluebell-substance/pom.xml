@@ -42,6 +42,11 @@
 		</dependency>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
+			<artifactId>bluebell-vldocking</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
 			<artifactId>bluebell-richclient</artifactId>
 			<version>${project.version}</version>
 			<type>test-jar</type>
@@ -112,6 +117,7 @@
 		<dependency>
 			<groupId>com.vlsolutions</groupId>
 			<artifactId>vldocking</artifactId>
+			<optional>true</optional>
 		</dependency>
 
 		<!-- 
