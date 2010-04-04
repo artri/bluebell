@@ -23,10 +23,10 @@ package org.bluebell.richclient.form.util;
 
 import junit.framework.TestCase;
 
-import org.bluebell.richclient.form.AbstractBb2TableMasterForm;
+import org.bluebell.richclient.application.support.DefaultApplicationPageConfigurer;
+import org.bluebell.richclient.form.AbstractB2TableMasterForm;
 import org.bluebell.richclient.form.AbstractBbChildForm;
 import org.bluebell.richclient.form.AbstractBbSearchForm;
-import org.bluebell.richclient.form.BbPageComponentsConfigurer;
 import org.bluebell.richclient.form.BbValidationForm;
 import org.bluebell.richclient.samples.simple.bean.Person;
 import org.bluebell.richclient.test.AbstractBbSamplesTests;
@@ -36,7 +36,7 @@ import org.springframework.richclient.application.PageDescriptor;
 import org.springframework.test.context.ContextConfiguration;
 
 /**
- * Tests the correct behaviour of {@link BbPageComponentsConfigurer}.
+ * Tests the correct behaviour of {@link DefaultApplicationPageConfigurer}.
  * 
  * @author <a href = "mailto:julio.arguello@gmail.com" >Julio Argüello (JAF)</a>
  */
@@ -243,10 +243,10 @@ public class TestBbPageComponentsConfigurer extends AbstractBbSamplesTests {
         this.testFullPageReverse();
         this.assertViewDescriptors(Boolean.FALSE, Boolean.FALSE, Boolean.FALSE, Boolean.FALSE);
 
-        new BbPageComponentsConfigurer<Object>().configureApplicationPage(this.getApplicationPage());
+        new DefaultApplicationPageConfigurer<Object>().configureApplicationPage(this.getApplicationPage());
         this.assertViewDescriptors(Boolean.FALSE, Boolean.FALSE, Boolean.FALSE, Boolean.FALSE);
 
-        new BbPageComponentsConfigurer<Object>().configureApplicationPage(this.getApplicationPage());
+        new DefaultApplicationPageConfigurer<Object>().configureApplicationPage(this.getApplicationPage());
         this.assertViewDescriptors(Boolean.FALSE, Boolean.FALSE, Boolean.FALSE, Boolean.FALSE);
     }
 
@@ -272,7 +272,7 @@ public class TestBbPageComponentsConfigurer extends AbstractBbSamplesTests {
         TestCase.assertTrue(validationViewIsNull == (this.getValidationView() == null));
 
         // Master form related assertions
-        final AbstractBb2TableMasterForm<Person> masterForm = this.getBackingForm(this.getMasterView());
+        final AbstractB2TableMasterForm<Person> masterForm = this.getBackingForm(this.getMasterView());
         final AbstractBbChildForm<Person> detailForm = this.getBackingForm(this.getDetailView());
         final AbstractBbSearchForm<Person, ?> searchForm = this.getBackingForm(this.getSearchView());
         final BbValidationForm<Person> validationForm = this.getBackingForm(this.getValidationView());
