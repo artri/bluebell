@@ -97,7 +97,7 @@ import org.springframework.util.StringUtils;
  * 
  * @author <a href = "mailto:julio.arguello@gmail.com" >Julio Argüello (JAF)</a>
  */
-public abstract class AbstractBb2TableMasterForm<T extends Object> extends AbstractBbTableMasterForm<T> implements
+public abstract class AbstractB2TableMasterForm<T extends Object> extends AbstractBbTableMasterForm<T> implements
         GlobalCommandsAccessor {
 
     /**
@@ -174,7 +174,7 @@ public abstract class AbstractBb2TableMasterForm<T extends Object> extends Abstr
      * @param detailType
      *            la clase del tipo detalle.
      */
-    public AbstractBb2TableMasterForm(String formId, Class<T> detailType) {
+    public AbstractB2TableMasterForm(String formId, Class<T> detailType) {
     
         super(formId, detailType);
     
@@ -224,6 +224,17 @@ public abstract class AbstractBb2TableMasterForm<T extends Object> extends Abstr
         searchForm.setMasterForm(this);
         this.searchForms.add(searchForm);
     }
+
+    /**
+         * Gets the dispatcher form.
+         * 
+         * @return the dispatcher form.
+         */
+        @SuppressWarnings("unchecked")
+       public BbDispatcherForm<T> getDispatcherForm() {
+        
+            return (BbDispatcherForm<T>) super.getDetailForm();
+        }
 
     /**
      * Obtiene la relación de formularios hijos de este formulario.
@@ -533,7 +544,7 @@ public abstract class AbstractBb2TableMasterForm<T extends Object> extends Abstr
         final String commandId = this.getFilterCommandFaceDescriptorId();
 
         // Crear el comando
-        final ActionCommand command = new FilterCommand(commandId, AbstractBb2TableMasterForm.this.getMasterTable());
+        final ActionCommand command = new FilterCommand(commandId, AbstractB2TableMasterForm.this.getMasterTable());
 
         // Configurar el comando
         return this.configureCommand(command, Boolean.FALSE);
@@ -610,7 +621,7 @@ public abstract class AbstractBb2TableMasterForm<T extends Object> extends Abstr
             @Override
             protected void doExecuteCommand() {
 
-                AbstractBb2TableMasterForm.this.getMasterTable().selectAll();
+                AbstractB2TableMasterForm.this.getMasterTable().selectAll();
             }
         };
 
@@ -633,7 +644,7 @@ public abstract class AbstractBb2TableMasterForm<T extends Object> extends Abstr
         for (T entity : selection) {
 
             // Eliminar la entidad y retonar null en caso de fallo.
-            final boolean success = (AbstractBb2TableMasterForm.this.doDelete(entity) != null);
+            final boolean success = (AbstractB2TableMasterForm.this.doDelete(entity) != null);
             if (!success) {
 
                 new String("Avoid CS warning");
@@ -641,10 +652,10 @@ public abstract class AbstractBb2TableMasterForm<T extends Object> extends Abstr
             }
 
             // Actualizar la tabla maestra.
-            AbstractBb2TableMasterForm.this.getMasterEventList().remove(entity);
+            AbstractB2TableMasterForm.this.getMasterEventList().remove(entity);
 
             // Publicar el evento de notificación de borrado.
-            AbstractBb2TableMasterForm.this.publishApplicationEvent(EventType.DELETED, entity);
+            AbstractB2TableMasterForm.this.publishApplicationEvent(EventType.DELETED, entity);
         }
     }
 
@@ -690,7 +701,7 @@ public abstract class AbstractBb2TableMasterForm<T extends Object> extends Abstr
      */
     protected String getCancelCommandFaceDescriptorId() {
 
-        return this.getCommandName(AbstractBb2TableMasterForm.CANCEL_COMMAND_ID);
+        return this.getCommandName(AbstractB2TableMasterForm.CANCEL_COMMAND_ID);
     }
 
     /**
@@ -728,7 +739,7 @@ public abstract class AbstractBb2TableMasterForm<T extends Object> extends Abstr
      */
     protected String getFilterCommandFaceDescriptorId() {
 
-        return this.getCommandName(AbstractBb2TableMasterForm.FILTER_COMMAND_ID);
+        return this.getCommandName(AbstractB2TableMasterForm.FILTER_COMMAND_ID);
     }
 
     /**
@@ -741,7 +752,7 @@ public abstract class AbstractBb2TableMasterForm<T extends Object> extends Abstr
     @Override
     protected String getNewFormObjectCommandId() {
 
-        return this.getCommandName(AbstractBb2TableMasterForm.NEW_FORM_OBJECT_COMMAND_ID);
+        return this.getCommandName(AbstractB2TableMasterForm.NEW_FORM_OBJECT_COMMAND_ID);
     }
 
     /**
@@ -949,17 +960,6 @@ public abstract class AbstractBb2TableMasterForm<T extends Object> extends Abstr
     }
 
     /**
-     * Gets the dispatcher form.
-     * 
-     * @return the dispatcher form.
-     */
-    @SuppressWarnings("unchecked")
-    BbDispatcherForm<T> getDispatcherForm() {
-    
-        return (BbDispatcherForm<T>) super.getDetailForm();
-    }
-
-    /**
      * Sets the searchForms.
      * 
      * @param searchForms
@@ -1051,7 +1051,7 @@ public abstract class AbstractBb2TableMasterForm<T extends Object> extends Abstr
         protected void onMultiSelection(List<Integer> modelIndexes, List<Integer> viewIndexes, List<T> selection) {
 
             // Shortcut para acceder al formulario maestro
-            final AbstractBb2TableMasterForm<T> thisForm = AbstractBb2TableMasterForm.this;
+            final AbstractB2TableMasterForm<T> thisForm = AbstractB2TableMasterForm.this;
 
             // Gestión add-hoc PREVIA al cambio de los elementos seleccionados
             // por parte del formulario maestro
@@ -1081,7 +1081,7 @@ public abstract class AbstractBb2TableMasterForm<T extends Object> extends Abstr
         protected void onNoSelection() {
 
             // Shortcut para acceder al formulario maestro
-            final AbstractBb2TableMasterForm<T> thisForm = AbstractBb2TableMasterForm.this;
+            final AbstractB2TableMasterForm<T> thisForm = AbstractB2TableMasterForm.this;
 
             // Realizar la gestión general de la deselección y comprobar si el
             // usuario la ha confirmado.
@@ -1090,7 +1090,7 @@ public abstract class AbstractBb2TableMasterForm<T extends Object> extends Abstr
             // El índice del elemento seleccionado después de la confirmación
             // del usuario. Determina si se ha de
             // proceder o no con el cambio.
-            final int currentIndex = AbstractBb2TableMasterForm.this.getDetailForm().getSelectedIndex();
+            final int currentIndex = AbstractB2TableMasterForm.this.getDetailForm().getSelectedIndex();
 
             final Boolean proceed = (currentIndex == -1);
             if (proceed) {
@@ -1120,7 +1120,7 @@ public abstract class AbstractBb2TableMasterForm<T extends Object> extends Abstr
         protected void onSingleSelection(int originalIdx, int filteredIdx, T selection) {
 
             // Shortcut para acceder al formulario maestro
-            final AbstractBb2TableMasterForm<T> thisForm = AbstractBb2TableMasterForm.this;
+            final AbstractB2TableMasterForm<T> thisForm = AbstractB2TableMasterForm.this;
 
             // Gestión ad hoc PREVIA al cambio del elemento seleccionado por
             // parte del formulario maestro y formularios

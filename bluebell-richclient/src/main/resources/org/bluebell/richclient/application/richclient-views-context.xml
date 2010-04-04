@@ -24,12 +24,20 @@
 	<!--
 		TODO
 	-->
-	<bean id="abstractViewDescriptor" abstract="true" class="org.bluebell.richclient.application.support.FormBackedViewDescriptor" />
+	<bean id="abstractViewDescriptor" abstract="true"
+		class="org.springframework.richclient.application.support.DefaultViewDescriptor" p:view-class="org.bluebell.richclient.application.support.FormBackedView" />
 
 	<!--
 		View Descriptor para visualizar los errores de validación existentes en una página.
 	-->
-	<bean id="validationViewDescriptor" parent="abstractViewDescriptor" p:form-class="org.bluebell.richclient.form.BbValidationForm" />
+	<bean id="validationViewDescriptor" parent="abstractViewDescriptor">
+		<property name="viewProperties">
+			<util:map>
+				<entry key="formClass" value="org.bluebell.richclient.form.BbValidationForm" />
+			</util:map>
+		</property>
+
+	</bean>
 
 	<!--
 	-->

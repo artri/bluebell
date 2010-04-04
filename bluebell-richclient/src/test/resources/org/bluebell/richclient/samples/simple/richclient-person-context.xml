@@ -37,11 +37,29 @@
 		</property>
 	</bean>
 
-	<bean id="personMasterViewDescriptor" parent="abstractViewDescriptor" p:form-class="org.bluebell.richclient.samples.simple.form.PersonMasterForm" />
+	<bean id="personMasterViewDescriptor" parent="abstractViewDescriptor">
+		<property name="viewProperties">
+			<util:map>
+				<entry key="formClass" value="org.bluebell.richclient.samples.simple.form.PersonMasterForm" />
+			</util:map>
+		</property>
+	</bean>
 
-	<bean id="personSearchViewDescriptor" parent="abstractViewDescriptor" p:form-class="org.bluebell.richclient.samples.simple.form.PersonSearchForm" />
+	<bean id="personSearchViewDescriptor" parent="abstractViewDescriptor">
+		<property name="viewProperties">
+			<util:map>
+				<entry key="formClass" value="org.bluebell.richclient.samples.simple.form.PersonSearchForm" />
+			</util:map>
+		</property>
+	</bean>
 
-	<bean id="personDetailViewDescriptor" parent="abstractViewDescriptor" p:form-class="org.bluebell.richclient.samples.simple.form.PersonChildForm" />
+	<bean id="personDetailViewDescriptor" parent="abstractViewDescriptor">
+		<property name="viewProperties">
+			<util:map>
+				<entry key="formClass" value="org.bluebell.richclient.samples.simple.form.PersonChildForm" />
+			</util:map>
+		</property>
+	</bean>
 
 	<bean id="personMessageSource" class="org.springframework.context.support.ResourceBundleMessageSource">
 		<property name="basenames">

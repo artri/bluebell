@@ -33,9 +33,9 @@
 	<aop:aspectj-autoproxy />
 
 	<!--
-		Bean: defaultPropertyPlaceholderConfigurer Usage: platform required Description: This configures all placeholders defined in
-		the application context. Note "null" string is used for null values and system properties override those defined in
-		properties files.
+		Bean: defaultPropertyPlaceholderConfigurer Usage: platform required Description: This configures all placeholders
+		defined in the application context. Note "null" string is used for null values and system properties override those
+		defined in properties files.
 	-->
 	<bean id="defaultPropertyPlaceholderConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer"
 		p:ignore-resource-not-found="true" p:ignore-unresolvable-placeholders="true" p:null-value="null">
@@ -142,6 +142,8 @@
 				<entry key="org.springframework.richclient.factory.MenuFactory" value-ref="${richclient.menuFactory}" />
 
 				<entry key="org.springframework.richclient.application.ApplicationWindowFactory" value-ref="${richclient.applicationWindowFactory}" />
+
+				<entry key="org.bluebell.richclient.application.ApplicationPageConfigurer" value-ref="${richclient.applicationPageConfigurer}" />
 			</map>
 		</property>
 	</bean>
@@ -152,10 +154,10 @@
 		the I18N support.
 	-->
 	<bean id="applicationObjectConfigurer" depends-on="serviceLocator"
-		class="org.bluebell.richclient.application.BbApplicationObjectConfigurer" />	
+		class="org.bluebell.richclient.application.BbApplicationObjectConfigurer" />
 
 
-<!--
+	<!--
 		Bean: applicationPageFactory Type: platform optional Description: TODO
 	-->
 	<bean id="defaultApplicationPageFactory" class="org.bluebell.richclient.application.support.BbApplicationPageFactory" />
@@ -195,7 +197,7 @@
 	<!--
 		TODO
 	-->
-	
+
 
 	<!--
 		Bean: conversionService Usage: platform optional Description: This specifies the component that will supply converters
@@ -219,11 +221,11 @@
 
 
 	<!--
-		Bean: defaultFormComponentInterceptorFactory Usage: platform optional Description: This specifies the list of interceptors to
-		attach to controls constructed by the platform. This allows for a declarative model for specifying "additional"
-		functionality to be added to various components. The configuration below adds interceptors to overlay validation error
-		images and background color changes, provide popup menus in text fields, and autocompletion (as you type) for
-		comboboxes.
+		Bean: defaultFormComponentInterceptorFactory Usage: platform optional Description: This specifies the list of
+		interceptors to attach to controls constructed by the platform. This allows for a declarative model for specifying
+		"additional" functionality to be added to various components. The configuration below adds interceptors to overlay
+		validation error images and background color changes, provide popup menus in text fields, and autocompletion (as you
+		type) for comboboxes.
 	-->
 	<bean id="defaultFormComponentInterceptorFactory" class="org.springframework.richclient.form.builder.support.ChainedInterceptorFactory">
 		<property name="interceptorFactories">
@@ -315,6 +317,12 @@
    -->
 	<bean id="applicationWindowFactory" class="org.bluebell.richclient.application.support.TabbedApplicationWindowFactory" />
 
+	<!--
+
+		Bean: defaultApplicationPageConfigurer Usage: magic Description: This bean is an aspect capable of intercepting every
+		page creation to configure pages linking well knows page components.
+	-->
+	<bean id="defaultApplicationPageConfigurer" class="org.bluebell.richclient.application.support.DefaultApplicationPageConfigurer" />
 
 
 	<!-- 
@@ -338,12 +346,6 @@
    -->
 	<bean id="toolBarButtonConfigurer" class="org.bluebell.richclient.command.config.BbToolBarCommandButtonConfigurer"
 		p:useLargeIcons="true" p:showText="true" p:textBelowIcon="true" />
-
-	<!--
-		Bean: bbPageConfigurer Usage: magic Description: This bean is an aspect capable of intercepting every page creation to
-		configure pages linking well knows page components.
-	-->
-	<bean id="bbPageComponentsConfigurer" class="org.bluebell.richclient.form.BbPageComponentsConfigurer" />
 
 	<!--
 		Bean: applicationEventMulticaster Type: magic Usage: platform required Description: This defines the object

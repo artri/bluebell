@@ -106,7 +106,7 @@ public class BbDispatcherForm<T> extends AbstractBbDetailForm<T> {
      * @param valueModel
      *            <em>value model</em> a partir del cual crear el modelo de este formulario.
      */
-    public BbDispatcherForm(AbstractBb2TableMasterForm<T> masterForm, ValueModel valueModel) {
+    public BbDispatcherForm(AbstractB2TableMasterForm<T> masterForm, ValueModel valueModel) {
 
         super(masterForm, BbDispatcherForm.FORM_ID, valueModel);
 

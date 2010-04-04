@@ -59,14 +59,14 @@ public class BbValidationForm<T> extends ApplicationWindowAwareForm {
     /**
      * The associated master form.
      */
-    private AbstractBb2TableMasterForm<T> masterForm;
+    private AbstractB2TableMasterForm<T> masterForm;
 
     /**
      * Gets the masterForm.
      * 
      * @return the masterForm
      */
-    public AbstractBb2TableMasterForm<T> getMasterForm() {
+    public AbstractB2TableMasterForm<T> getMasterForm() {
 
         return this.masterForm;
     }
@@ -77,7 +77,7 @@ public class BbValidationForm<T> extends ApplicationWindowAwareForm {
      * @param masterForm
      *            the masterForm to set
      */
-    public void setMasterForm(AbstractBb2TableMasterForm<T> masterForm) {
+    public void setMasterForm(AbstractB2TableMasterForm<T> masterForm) {
 
         Assert.notNull(masterForm, "masterForm");
 

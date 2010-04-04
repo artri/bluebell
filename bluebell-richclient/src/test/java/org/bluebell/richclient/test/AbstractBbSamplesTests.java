@@ -26,11 +26,11 @@ import java.lang.reflect.InvocationTargetException;
 
 import junit.framework.TestCase;
 
+import org.bluebell.richclient.application.support.DefaultApplicationPageConfigurer;
 import org.bluebell.richclient.application.support.FormBackedView;
-import org.bluebell.richclient.form.AbstractBb2TableMasterForm;
+import org.bluebell.richclient.form.AbstractB2TableMasterForm;
 import org.bluebell.richclient.form.AbstractBbChildForm;
 import org.bluebell.richclient.form.AbstractBbSearchForm;
-import org.bluebell.richclient.form.BbPageComponentsConfigurer;
 import org.bluebell.richclient.form.BbValidationForm;
 import org.bluebell.richclient.samples.simple.bean.Person;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -116,7 +116,7 @@ public abstract class AbstractBbSamplesTests extends AbstractBbRichClientTests {
     /**
      * The master view to be tested.
      */
-    private FormBackedView<AbstractBb2TableMasterForm<Person>> masterView;
+    private FormBackedView<AbstractB2TableMasterForm<Person>> masterView;
 
     /**
      * The detail view to be tested.
@@ -184,7 +184,7 @@ public abstract class AbstractBbSamplesTests extends AbstractBbRichClientTests {
         this.getActiveWindow().showPage(this.getApplicationPage());
 
         // Retrieve page components
-        this.setMasterView((FormBackedView<AbstractBb2TableMasterForm<Person>>) //
+        this.setMasterView((FormBackedView<AbstractB2TableMasterForm<Person>>) //
                 this.getApplicationPage().getView(AbstractBbSamplesTests.MASTER_VIEW_DESCRIPTOR_BEAN_NAME));
         this.setSearchView((FormBackedView<AbstractBbSearchForm<Person, Person>>) //
                 this.getApplicationPage().getView(AbstractBbSamplesTests.SEARCH_VIEW_DESCRIPTOR_BEAN_NAME));
@@ -270,7 +270,7 @@ public abstract class AbstractBbSamplesTests extends AbstractBbRichClientTests {
      */
     protected final <T extends Form> ValidatingFormModel getBackingFormModel(FormBackedView<T> view) {
 
-        return (view != null) ? BbPageComponentsConfigurer.getBackingForm(view).getFormModel() : null;
+        return (view != null) ? DefaultApplicationPageConfigurer.getBackingForm(view).getFormModel() : null;
     }
 
     /**
@@ -318,7 +318,7 @@ public abstract class AbstractBbSamplesTests extends AbstractBbRichClientTests {
      * 
      * @return the masterView
      */
-    protected FormBackedView<AbstractBb2TableMasterForm<Person>> getMasterView() {
+    protected FormBackedView<AbstractB2TableMasterForm<Person>> getMasterView() {
 
         return this.masterView;
     }
@@ -385,7 +385,7 @@ public abstract class AbstractBbSamplesTests extends AbstractBbRichClientTests {
      * @param masterView
      *            the masterView to set
      */
-    private void setMasterView(FormBackedView<AbstractBb2TableMasterForm<Person>> masterView) {
+    private void setMasterView(FormBackedView<AbstractB2TableMasterForm<Person>> masterView) {
 
         this.masterView = masterView;
     }
