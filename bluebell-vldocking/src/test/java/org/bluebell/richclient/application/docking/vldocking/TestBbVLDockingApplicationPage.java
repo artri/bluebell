@@ -21,7 +21,6 @@
  */
 package org.bluebell.richclient.application.docking.vldocking;
 
-import org.bluebell.richclient.test.AbstractBbSamplesTests;
 import org.junit.Test;
 
 /**
@@ -29,7 +28,8 @@ import org.junit.Test;
  * 
  * @author <a href = "mailto:julio.arguello@gmail.com" >Julio Argüello (JAF)</a>
  */
-public class TestBbVLDockingApplicationPage extends AbstractBbSamplesTests {
+public class TestBbVLDockingApplicationPage {
+    // extends AbstractBbSamplesTests {
 
     /**
      * TODO.
