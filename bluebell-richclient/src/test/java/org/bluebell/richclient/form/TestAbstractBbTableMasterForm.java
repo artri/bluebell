@@ -375,7 +375,7 @@ public class TestAbstractBbTableMasterForm extends AbstractBbSamplesTests {
      * {@inheritDoc}
      */
     @Override
-    protected FormBackedView<AbstractBb2TableMasterForm<Person>> getMasterView() {
+    protected FormBackedView<AbstractB2TableMasterForm<Person>> getMasterView() {
 
         return this.getApplicationPage().getView(TestAbstractBbTableMasterForm.MOCK_MASTER_VIEW_DESCRIPTOR_BEAN_NAME);
     }

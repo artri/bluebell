@@ -18,6 +18,10 @@
 
 package org.bluebell.richclient.application.support;
 
+import java.lang.reflect.Constructor;
+import java.text.MessageFormat;
+import java.util.Map;
+
 import javax.swing.BorderFactory;
 import javax.swing.JComponent;
 import javax.swing.JScrollPane;
@@ -25,7 +29,19 @@ import javax.swing.border.Border;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
+import org.bluebell.richclient.form.FormInstantiationException;
 import org.bluebell.richclient.form.GlobalCommandsAccessor;
+import org.springframework.beans.BeanInstantiationException;
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.BeanWrapper;
+import org.springframework.beans.BeanWrapperImpl;
+import org.springframework.beans.InvalidPropertyException;
+import org.springframework.beans.PropertyAccessException;
+import org.springframework.beans.PropertyBatchUpdateException;
+import org.springframework.context.ApplicationEvent;
+import org.springframework.context.ApplicationListener;
+import org.springframework.context.event.ApplicationEventMulticaster;
+import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.richclient.application.PageComponentContext;
 import org.springframework.richclient.application.support.AbstractView;
 import org.springframework.richclient.command.ActionCommand;
@@ -49,19 +65,46 @@ import org.springframework.util.Assert;
 public class FormBackedView<T extends Form> extends AbstractView {
 
     /**
+     * Mensaje asociado a la excepción que se produce si no es posible instanciar el formulario.
+     */
+    private static final String INSTANTIATE_ERROR_MSG = "Error while trying to instantiate form";
+
+    /**
+     * Mensaje asociado a la excepción que se produce si no hay un constructor apropiado.
+     */
+    private static final MessageFormat NO_CONSTRUCTOR_ERROR_MSG = new MessageFormat(
+            "No constructor with {0} parameters found");
+
+    /**
+     * Mensaje asociado a la excepción que se produce si no es posible establecer alguna propiedad.
+     */
+    private static final String PROPERTY_ERROR_MSG = "Cannot stablish property";
+
+    /**
      * Un borde vacío con espacios.
      */
     private static final Border EMPTY_BORDER_WITH_GAPS = BorderFactory.createEmptyBorder(3, 3, 3, 3);
 
     /**
+     * The form class.
+     */
+    private Class<T> formClass;
+
+    /**
+     * Un mapa con las propiedades del formulario a instanciar; la clave es el nombre de la propiedad y su valor la
+     * referencia a establecer.
+     */
+    private Map<String, Object> formProperties;
+
+    /**
+     * <code>ApplicationEventMulticaster</code> para el registro de los eventos.
+     */
+    private final ApplicationEventMulticaster applicationEventMulticaster;
+
+    /**
      * El formulario sobre el que se construye la vista.
      */
     private T backingForm;
-
-    /**
-     * El borde a aplicar sobre el formulario.
-     */
-    private Border border;
 
     /**
      * El <em>accesor</em> para la obtención de los comandos globales.
@@ -74,6 +117,22 @@ public class FormBackedView<T extends Form> extends AbstractView {
     public FormBackedView() {
 
         super();
+
+        this.applicationEventMulticaster = (ApplicationEventMulticaster) //
+        this.getApplicationContext().getBean(AbstractApplicationContext.APPLICATION_EVENT_MULTICASTER_BEAN_NAME);
+    }
+
+    /**
+     * Sets the form class.
+     * 
+     * @param formClass
+     *            the form class to set.
+     */
+    public final void setFormClass(Class<T> formClass) {
+
+        Assert.notNull(formClass, "formClass");
+
+        this.formClass = formClass;
     }
 
     /**
@@ -81,24 +140,20 @@ public class FormBackedView<T extends Form> extends AbstractView {
      * 
      * @return el formulario.
      */
-    public T getBackingForm() {
+    public final T getBackingForm() {
 
         return this.backingForm;
     }
 
     /**
-     * Obtiene el borde a aplicar sobre el formulario y si no existe lo crea con valor {@link #EMPTY_BORDER_WITH_GAPS}.
+     * Establece las propiedades del formulario.
      * 
-     * @return el borde.
+     * @param formProperties
+     *            las propieades del formulario.
      */
-    public Border getBorder() {
+    public final void setFormProperties(Map<String, Object> formProperties) {
 
-        // TODO, (JAF), study if this method should be configurable (UIManager)
-        if (this.border == null) {
-            this.setBorder(FormBackedView.EMPTY_BORDER_WITH_GAPS);
-        }
-
-        return this.border;
+        this.formProperties = formProperties;
     }
 
     /**
@@ -106,31 +161,9 @@ public class FormBackedView<T extends Form> extends AbstractView {
      * 
      * @return the globalCommandsAccessor
      */
-    public GlobalCommandsAccessor getGlobalCommandsAccessor() {
-
+    public final GlobalCommandsAccessor getGlobalCommandsAccessor() {
+    
         return this.globalCommandsAccessor;
-    }
-
-    /**
-     * Establece el formulario.
-     * 
-     * @param backingForm
-     *            el formulario.
-     */
-    public void setBackingForm(T backingForm) {
-
-        this.backingForm = backingForm;
-    }
-
-    /**
-     * Establece el borde a aplicar sobre el formulario.
-     * 
-     * @param border
-     *            el borde.
-     */
-    public void setBorder(Border border) {
-
-        this.border = border;
     }
 
     /**
@@ -142,7 +175,7 @@ public class FormBackedView<T extends Form> extends AbstractView {
      * @param globalCommandsAccessor
      *            el <em>accesor</em>.
      */
-    public void setGlobalCommandsAccessor(GlobalCommandsAccessor globalCommandsAccessor) {
+    public final void setGlobalCommandsAccessor(GlobalCommandsAccessor globalCommandsAccessor) {
 
         Assert.notNull(globalCommandsAccessor, "globalCommandsAccessor");
         Assert.notNull(this.getContext(), "this.getContext()");
@@ -162,36 +195,6 @@ public class FormBackedView<T extends Form> extends AbstractView {
     }
 
     /**
-     * Crea el control a partir del formulario.
-     * <p>
-     * Produce una excepción en el caso de que el <em>backing form</em> sea nulo.
-     * 
-     * @return el control del formulario.
-     */
-    @Override
-    protected JComponent createControl() {
-
-        Assert.notNull(this.getBackingForm());
-        // this.registerLocalCommandExecutors(this.getContext());
-
-        // Envolver el control en un JScrollPane
-        final JComponent control = this.getBackingForm().getControl();
-        final JScrollPane scrollPane = new JScrollPane(control);
-
-        // TODO, this code is substance dependent!!
-        scrollPane.putClientProperty("substancelaf.componentFlat", Boolean.TRUE);
-        control.putClientProperty("substancelaf.componentFlat", Boolean.FALSE);
-
-        // Añadir los bordes
-        // FIXME, (JAF), with substance this border can take a different color
-        // from form one.
-        control.setBorder(this.getBorder());
-        scrollPane.setBorder(this.getBorder());
-
-        return scrollPane;
-    }
-
-    /**
      * Registra los <em>command executor</em> locales para los comandos globales.
      * <p>
      * Para ello obtiene los comandos a partir de un {@link GlobalCommandsAccessor}.
@@ -205,12 +208,10 @@ public class FormBackedView<T extends Form> extends AbstractView {
     @Override
     protected void registerLocalCommandExecutors(PageComponentContext context) {
 
-        // FIXME, no tengo claro que el registro de comandos globales funcione
-        // sólo con esto, aunque puede que sí!!
+        // FIXME, no tengo claro que el registro de comandos globales funcione sólo con esto, aunque puede que sí!!
 
-        // TODO, (JAF), 20090919, esto debería de ir a la nueva clase que
-        // sincroniza los componentes de la página.
-        // Eso no está claro!!!!
+        // TODO, (JAF), 20090919, esto debería de ir a la nueva clase que sincroniza los componentes de la página. Eso
+        // no está claro!!!!
         if (this.getGlobalCommandsAccessor() != null) {
             context.register(GlobalCommandIds.PROPERTIES, this.getGlobalCommandsAccessor().getNewFormObjectCommand());
             context.register(GlobalCommandIds.SAVE, this.getGlobalCommandsAccessor().getSaveCommand());
@@ -237,6 +238,63 @@ public class FormBackedView<T extends Form> extends AbstractView {
     }
 
     /**
+     * Crea el control a partir del formulario.
+     * <p>
+     * Produce una excepción en el caso de que el <em>backing form</em> sea nulo.
+     * 
+     * @return el control del formulario.
+     */
+    @SuppressWarnings("unchecked")
+    @Override
+    protected JComponent createControl() {
+
+        // Obtener el formulario y establecer su formulario y accesor.
+        final T form = this.createForm();
+        this.setBackingForm(form);
+
+        // Se registran listeners para los formularios que implementan el interface ApplicationListener
+        if (form instanceof ApplicationListener<?>) {
+            final ApplicationListener<ApplicationEvent> applicationListener = (ApplicationListener) form;
+            this.applicationEventMulticaster.addApplicationListener(applicationListener);
+        }
+
+        // Envolver el control en un JScrollPane
+        final JComponent control = this.getBackingForm().getControl();
+        final JScrollPane scrollPane = new JScrollPane(control);
+
+        // Añadir los bordes
+        // FIXME, (JAF), with substance this border can take a different color from form one.
+        control.setBorder(FormBackedView.EMPTY_BORDER_WITH_GAPS);
+        scrollPane.setBorder(FormBackedView.EMPTY_BORDER_WITH_GAPS);
+
+        // TODO, this code is substance dependent!!
+        scrollPane.putClientProperty("substancelaf.componentFlat", Boolean.TRUE);
+        control.putClientProperty("substancelaf.componentFlat", Boolean.FALSE);
+
+        return scrollPane;
+    }
+
+    /**
+     * Obtiene la clase del formulario.
+     * 
+     * @return la clase del formulario.
+     */
+    protected final Class<T> getFormClass() {
+
+        return this.formClass;
+    }
+
+    /**
+     * Obtiene las propiedades del formulario.
+     * 
+     * @return las propiedades del formulario.
+     */
+    protected final Map<String, Object> getFormProperties() {
+
+        return this.formProperties;
+    }
+
+    /**
      * Obtiene la implementación del comando global {@value GlobalCommandIds#UNDO} dado el <em>backing form</em>.
      * 
      * @param backingForm
@@ -244,7 +302,7 @@ public class FormBackedView<T extends Form> extends AbstractView {
      * @return la implementación del comando, <code>null</code> para los formularios maestros y formularios que no
      *         implementen <code>AbstractForm</code>.
      */
-    private ActionCommand getRevertCommand(Form backingForm) {
+    protected final ActionCommand getRevertCommand(Form backingForm) {
 
         if (backingForm instanceof AbstractMasterForm) {
             return null;
@@ -253,5 +311,78 @@ public class FormBackedView<T extends Form> extends AbstractView {
         }
 
         return null;
+    }
+
+    /**
+     * Establece el formulario.
+     * 
+     * @param backingForm
+     *            el formulario.
+     */
+    private void setBackingForm(T backingForm) {
+
+        this.backingForm = backingForm;
+    }
+
+    /**
+     * Instancia un formulario utilizando un constructor sin parámetros.
+     * <p>
+     * También establece las propiedades especificadas en {@link #formProperties} utilizando la convención
+     * <em>javabean</em>.
+     * 
+     * @return el formulario.
+     * 
+     * @see #instantiate(Class[], Object[])
+     */
+    private T createForm() {
+
+        return this.instantiate(this.getFormClass(), new Class[] {}, new Object[] {});
+    }
+
+    /**
+     * Instancia un formulario de tipo <code>T</code> dados los tipos de los parámetros de su constructor y sus valores.
+     * <p>
+     * En caso de producirse una excepción la envuelve y eleva utilizando una {@link FormInstantiationException} con el
+     * mensaje apropiado.
+     * 
+     * @param clazz
+     *            la clase del formulario a instanciar.
+     * @param parameterTypes
+     *            los tipos de los parámetros.
+     * @param parameterValues
+     *            los valores de los parámetros.
+     * @return el formulario.
+     */
+    private T instantiate(Class<T> clazz, Class<?>[] parameterTypes, Object[] parameterValues) {
+
+        T instance = null;
+        try {
+            final Constructor<T> constructor = clazz.getConstructor(parameterTypes);
+
+            // Instanciar el formulario
+            instance = (T) BeanUtils.instantiateClass(constructor, parameterValues);
+
+            // Establecer las propiedades del formulario
+            if (this.getFormProperties() != null) {
+                final BeanWrapper wrapper = new BeanWrapperImpl(instance);
+                wrapper.setPropertyValues(this.getFormProperties());
+            }
+        } catch (final SecurityException e) {
+            throw new FormInstantiationException(FormBackedView.NO_CONSTRUCTOR_ERROR_MSG.format(//
+                    new Object[] { parameterTypes.length }), e, clazz.getName());
+        } catch (final NoSuchMethodException e) {
+            throw new FormInstantiationException(FormBackedView.NO_CONSTRUCTOR_ERROR_MSG.format(//
+                    new Object[] { parameterTypes.length }), clazz.getName());
+        } catch (final BeanInstantiationException e) {
+            throw new FormInstantiationException(FormBackedView.INSTANTIATE_ERROR_MSG, e, clazz.getName());
+        } catch (final InvalidPropertyException e) {
+            throw new FormInstantiationException(FormBackedView.PROPERTY_ERROR_MSG, e, clazz.getName());
+        } catch (final PropertyBatchUpdateException e) {
+            throw new FormInstantiationException(FormBackedView.PROPERTY_ERROR_MSG, e, clazz.getName());
+        } catch (final PropertyAccessException e) {
+            throw new FormInstantiationException(FormBackedView.PROPERTY_ERROR_MSG, e, clazz.getName());
+        }
+
+        return instance;
     }
 }
