@@ -19,10 +19,10 @@
 
 	<modules>
 		<module>bluebell-richclient</module>
+		<module>bluebell-vldocking</module>
 		<module>bluebell-substance</module>
 		<module>bluebell-jide-oss</module>
 		<module>bluebell-swingx</module>
-		<module>bluebell-vldocking</module>
 		<module>bluebell-samples</module>
 	</modules>
 
