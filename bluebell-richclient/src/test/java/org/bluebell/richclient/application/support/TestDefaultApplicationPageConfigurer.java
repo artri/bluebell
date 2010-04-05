@@ -19,7 +19,7 @@
 /**
  * 
  */
-package org.bluebell.richclient.form.util;
+package org.bluebell.richclient.application.support;
 
 import junit.framework.TestCase;
 
@@ -41,7 +41,7 @@ import org.springframework.test.context.ContextConfiguration;
  * @author <a href = "mailto:julio.arguello@gmail.com" >Julio Argüello (JAF)</a>
  */
 @ContextConfiguration
-public class TestBbPageComponentsConfigurer extends AbstractBbSamplesTests {
+public class TestDefaultApplicationPageConfigurer extends AbstractBbSamplesTests {
 
     /**
      * A page descriptor containing a master view descriptor.

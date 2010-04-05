@@ -24,11 +24,12 @@ package org.bluebell.richclient.application.support;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.collections.ListUtils;
+import org.apache.commons.lang.ClassUtils;
 import org.aspectj.lang.annotation.AfterReturning;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
@@ -45,12 +46,16 @@ import org.bluebell.richclient.form.MultipleValidationResultsReporter;
 import org.bluebell.richclient.swing.util.SwingUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.DirectFieldAccessor;
+import org.springframework.beans.PropertyAccessor;
 import org.springframework.binding.form.FormModel;
 import org.springframework.richclient.application.ApplicationPage;
 import org.springframework.richclient.application.ApplicationWindow;
 import org.springframework.richclient.application.PageComponent;
+import org.springframework.richclient.application.PageComponentDescriptor;
 import org.springframework.richclient.application.View;
 import org.springframework.richclient.application.config.ApplicationWindowAware;
+import org.springframework.richclient.application.support.DefaultViewDescriptor;
 import org.springframework.richclient.application.support.MultiViewPageDescriptor;
 import org.springframework.richclient.form.Form;
 import org.springframework.util.Assert;
@@ -106,6 +111,11 @@ public class DefaultApplicationPageConfigurer<T> implements ApplicationPageConfi
     private static final Logger LOGGER = LoggerFactory.getLogger(DefaultApplicationPageConfigurer.class);
 
     /**
+     * The form class string key employed in <code>DefaultViewDescriptor#viewProperties</code>.
+     */
+    private static final String FORM_CLASS_KEY = "formClass";
+
+    /**
      * Message format required for debug information during page creation.
      */
     private static final MessageFormat PAGE_CREATION_FMT = new MessageFormat(
@@ -118,41 +128,10 @@ public class DefaultApplicationPageConfigurer<T> implements ApplicationPageConfi
             "View  processing ignored for view id \"{0}\" ");
 
     /**
-     * The master view.
+     * Message format required for debug information during form class retrieval
      */
-    private FormBackedView<AbstractB2TableMasterForm<T>> masterView;
-
-    /**
-     * Page detail views.
-     */
-    private List<FormBackedView<AbstractBbChildForm<T>>> detailViews;
-
-    /**
-     * The search views.
-     */
-    private List<FormBackedView<AbstractBbSearchForm<T, ?>>> searchViews;
-
-    /**
-     * The validation view.
-     */
-    private FormBackedView<BbValidationForm<T>> validationView;
-
-    /**
-     * Other page components used on the page different from well knows page components.
-     */
-    private List<PageComponent> unknownPageComponents;
-
-    /**
-     * The global commands accessor.
-     * <p>
-     * Normally will be the same than <code>masterView#getBackingForm()</code>.
-     */
-    private GlobalCommandsAccessor globalCommandsAccessor;
-
-    /**
-     * The dispatcher form.
-     */
-    private BbDispatcherForm<T> dispatcherForm;
+    private static final MessageFormat UNKNOWN_FORM_CLASS_FMT = new MessageFormat(
+            "Form class \"{0}\" not found. Employing default \"org.springframework.richclient.form.Form\"");
 
     /**
      * Constructs the configurer.
@@ -160,9 +139,6 @@ public class DefaultApplicationPageConfigurer<T> implements ApplicationPageConfi
     public DefaultApplicationPageConfigurer() {
 
         super();
-        this.setDetailViews(new ArrayList<FormBackedView<AbstractBbChildForm<T>>>());
-        this.setSearchViews(new ArrayList<FormBackedView<AbstractBbSearchForm<T, ?>>>());
-        this.setUnknownPageComponents(new ArrayList<PageComponent>());
     }
 
     /**
@@ -256,35 +232,15 @@ public class DefaultApplicationPageConfigurer<T> implements ApplicationPageConfi
     }
 
     /**
-     * Configures an application page, iterating all over its page components in two consecutives steps.
-     * <p>
-     * As result of this method every page component should be aware of its respectives "neighbours".
-     * <p>
-     * Since this method writes state its execution must be <code>synchronized</code>.
-     * 
-     * @param applicationPage
-     *            the page to be configured.
+     * {@inheritDoc}
      */
-    public final synchronized void configureApplicationPage(ApplicationPage applicationPage) {
+    public void configureApplicationPage(ApplicationPage applicationPage) {
 
-        // Reset state
-        this.reset();
-
-        // 1st pass: recognition
-        for (final PageComponent pageComponent : applicationPage.getPageComponents()) {
-            this.processPageComponent(pageComponent);
-        }
-
-        // 2nd pass: association
-        for (final PageComponent pageComponent : applicationPage.getPageComponents()) {
-            this.processPageComponent(pageComponent);
-        }
+        this.doConfigureApplicationPage(applicationPage);
     }
 
     /**
      * Classify page components according to Bluebell criteria.
-     * <p>
-     * Since this method writes state its execution must be <code>synchronized</code>.
      * 
      * @param applicationPage
      *            the page to be classified.
@@ -295,35 +251,45 @@ public class DefaultApplicationPageConfigurer<T> implements ApplicationPageConfi
      */
     @SuppressWarnings("unchecked")
     @Override
-    public synchronized Map<String, List<? extends PageComponent>> classifyApplicationPage(
-            ApplicationPage applicationPage) {
+    public Map<String, List<? extends PageComponent>> classifyApplicationPage(ApplicationPage applicationPage) {
 
         Assert.notNull(applicationPage, "applicationPage");
 
         // Configuration is repeatable, idempotent and fast.
-        this.configureApplicationPage(applicationPage);
+        final State<T> state = this.doConfigureApplicationPage(applicationPage);
 
         final Map<String, List<? extends PageComponent>> classification = new HashMap<String, List<? extends PageComponent>>();
 
-        classification.put(BbViewType.MASTER.name(), Arrays.asList(this.getMasterView()));
-        classification.put(BbViewType.SEARCH.name(), this.getSearchViews());
-        classification.put(BbViewType.DETAIL.name(), this.getDetailViews());
-        classification.put(BbViewType.VALIDATION.name(), Arrays.asList(this.getValidationView()));
-        classification.put(BbViewType.UNKNOWN.name(), this.getUnknownPageComponents());
+        classification.put(BbViewType.MASTER.name(), Arrays.asList(state.masterView));
+        classification.put(BbViewType.SEARCH.name(), ListUtils.unmodifiableList(state.searchViews));
+        classification.put(BbViewType.DETAIL.name(), ListUtils.unmodifiableList(state.detailViews));
+        classification.put(BbViewType.VALIDATION.name(), Arrays.asList(state.validationView));
+        classification.put(BbViewType.UNKNOWN.name(), ListUtils.unmodifiableList(state.unknownPageComponents));
 
         return classification;
     }
 
     /**
      * {@inheritDoc}
+     * 
+     * @see #getViewType(Class)
      */
     @Override
-    public String getPageComponentType(PageComponent pageComponent) {
+    public String getPageComponentType(PageComponentDescriptor pageComponentDescriptor) {
 
-        Assert.notNull(pageComponent, "pageComponent");
+        Assert.notNull(pageComponentDescriptor, "pageComponentDescriptor");
 
-        if (pageComponent instanceof View) {
-            return this.getViewType((View) pageComponent).name();
+        // If argument is a DefaultViewDescriptor for a FormBackedView then obtain the form class
+        if (pageComponentDescriptor instanceof DefaultViewDescriptor) {
+
+            final DefaultViewDescriptor defaultViewDescriptor = (DefaultViewDescriptor) pageComponentDescriptor;
+            final Class<?> viewClass = defaultViewDescriptor.getViewClass();
+
+            if (FormBackedView.class.isAssignableFrom(viewClass)) {
+
+                final Class<? extends Form> formClass = this.getFormClass(defaultViewDescriptor);
+                return this.getViewType(formClass).name();
+            }
         }
 
         return BbViewType.UNKNOWN.name();
@@ -342,90 +308,37 @@ public class DefaultApplicationPageConfigurer<T> implements ApplicationPageConfi
 
         if (view instanceof FormBackedView<?>) {
 
-            final Form form = DefaultApplicationPageConfigurer.getBackingForm((FormBackedView<?>) view);
+            final FormBackedView<?> formBackedView = (FormBackedView<?>) view;
+            final Form form = DefaultApplicationPageConfigurer.backingForm(formBackedView);
 
-            if (form instanceof AbstractBbTableMasterForm<?>) {
-                return BbViewType.MASTER;
-            } else if (form instanceof BbValidationForm<?>) {
-                return BbViewType.VALIDATION;
-            } else if (form instanceof AbstractBbChildForm<?>) {
-                return BbViewType.DETAIL;
-            } else if (form instanceof AbstractBbSearchForm<?, ?>) {
-                return BbViewType.SEARCH;
-            }
+            return this.getViewType(form.getClass());
         }
 
         return BbViewType.UNKNOWN;
     }
 
     /**
-     * Gets the master view.
+     * Gets the view type
      * 
-     * @return the master view
+     * @param form
+     *            the form class of the backing form view.
+     * @return the type.
      */
-    public final FormBackedView<AbstractB2TableMasterForm<T>> getMasterView() {
+    protected BbViewType getViewType(Class<? extends Form> formClass) {
 
-        return this.masterView;
-    }
+        Assert.notNull(formClass, FORM_CLASS_KEY);
 
-    /**
-     * Gets the detail views.
-     * 
-     * @return the detail views
-     */
-    public final List<FormBackedView<AbstractBbChildForm<T>>> getDetailViews() {
+        if (AbstractBbTableMasterForm.class.isAssignableFrom(formClass)) {
+            return BbViewType.MASTER;
+        } else if (BbValidationForm.class.isAssignableFrom(formClass)) {
+            return BbViewType.VALIDATION;
+        } else if (AbstractBbChildForm.class.isAssignableFrom(formClass)) {
+            return BbViewType.DETAIL;
+        } else if (AbstractBbSearchForm.class.isAssignableFrom(formClass)) {
+            return BbViewType.SEARCH;
+        }
 
-        return Collections.unmodifiableList(this.detailViews);
-    }
-
-    /**
-     * Gets the search views.
-     * 
-     * @return the search views
-     */
-    public final List<FormBackedView<AbstractBbSearchForm<T, ?>>> getSearchViews() {
-
-        return Collections.unmodifiableList(this.searchViews);
-    }
-
-    /**
-     * Gets the validation view.
-     * 
-     * @return the validation view
-     */
-    public final FormBackedView<BbValidationForm<T>> getValidationView() {
-
-        return this.validationView;
-    }
-
-    /**
-     * Gets the unknown page components.
-     * 
-     * @return the unknown page components
-     */
-    public final List<PageComponent> getUnknownPageComponents() {
-
-        return Collections.unmodifiableList(this.unknownPageComponents);
-    }
-
-    /**
-     * Gets the globalCommandsAccesor.
-     * 
-     * @return the globalCommandsAccesor
-     */
-    public final GlobalCommandsAccessor getGlobalCommandsAccessor() {
-
-        return this.globalCommandsAccessor;
-    }
-
-    /**
-     * Gets the dispatcherForm.
-     * 
-     * @return the dispatcherForm
-     */
-    public final BbDispatcherForm<T> getDispatcherForm() {
-
-        return this.dispatcherForm;
+        return BbViewType.UNKNOWN;
     }
 
     /**
@@ -433,13 +346,15 @@ public class DefaultApplicationPageConfigurer<T> implements ApplicationPageConfi
      * 
      * @param pageComponent
      *            el componente de página a configurar.
+     * @param state
+     *            the processing state.
      */
-    protected final void processPageComponent(PageComponent pageComponent) {
+    protected void processPageComponent(PageComponent pageComponent, State<T> state) {
 
         if (pageComponent instanceof FormBackedView<?>) {
-            this.processFormBackedView((FormBackedView<?>) pageComponent);
+            this.processFormBackedView((FormBackedView<?>) pageComponent, state);
         } else {
-            this.processUnknownPageComponent(pageComponent);
+            this.processUnknownPageComponent(pageComponent, state);
         }
     }
 
@@ -448,9 +363,11 @@ public class DefaultApplicationPageConfigurer<T> implements ApplicationPageConfi
      * 
      * @param view
      *            la vista a configurar.
+     * @param state
+     *            the processing state.
      */
     @SuppressWarnings("unchecked")
-    protected void processFormBackedView(FormBackedView<?> view) {
+    protected void processFormBackedView(FormBackedView<?> view, State<T> state) {
 
         /*
          * Form processing by type
@@ -458,16 +375,16 @@ public class DefaultApplicationPageConfigurer<T> implements ApplicationPageConfi
         final BbViewType viewType = this.getViewType(view);
         switch (viewType) {
             case MASTER:
-                this.processMasterView((FormBackedView<AbstractB2TableMasterForm<T>>) view);
+                this.processMasterView((FormBackedView<AbstractB2TableMasterForm<T>>) view, state);
                 break;
             case DETAIL:
-                this.processDetailView((FormBackedView<AbstractBbChildForm<T>>) view);
+                this.processDetailView((FormBackedView<AbstractBbChildForm<T>>) view, state);
                 break;
             case SEARCH:
-                this.processSearchView((FormBackedView<AbstractBbSearchForm<T, ?>>) view);
+                this.processSearchView((FormBackedView<AbstractBbSearchForm<T, ?>>) view, state);
                 break;
             case VALIDATION:
-                this.processValidatingView((FormBackedView<BbValidationForm<T>>) view);
+                this.processValidatingView((FormBackedView<BbValidationForm<T>>) view, state);
                 break;
             default:
                 if (DefaultApplicationPageConfigurer.LOGGER.isDebugEnabled()) {
@@ -484,10 +401,10 @@ public class DefaultApplicationPageConfigurer<T> implements ApplicationPageConfi
          * Global commands accessor processing
          */
         if (form instanceof GlobalCommandsAccessor) {
-            this.processGlobalCommandsAccessor((GlobalCommandsAccessor) form);
+            this.processGlobalCommandsAccessor((GlobalCommandsAccessor) form, state);
         }
-        if (this.getGlobalCommandsAccessor() != null) {
-            view.setGlobalCommandsAccessor(this.getGlobalCommandsAccessor());
+        if (state.globalCommandsAccessor != null) {
+            view.setGlobalCommandsAccessor(state.globalCommandsAccessor);
         }
 
         /*
@@ -515,28 +432,26 @@ public class DefaultApplicationPageConfigurer<T> implements ApplicationPageConfi
      * 
      * @param masterView
      *            la vista a configurar.
+     * @param state
+     *            the processing state.
      */
-    protected void processMasterView(FormBackedView<AbstractB2TableMasterForm<T>> masterView) {
+    protected void processMasterView(FormBackedView<AbstractB2TableMasterForm<T>> masterView, State<T> state) {
 
         // Validation checks
         Assert.notNull(masterView, "masterView");
 
-        final AbstractB2TableMasterForm<T> targetMasterForm = DefaultApplicationPageConfigurer
-                .getBackingForm(masterView);
+        final AbstractB2TableMasterForm<T> targetMasterForm = DefaultApplicationPageConfigurer.backingForm(masterView);
 
-        DefaultApplicationPageConfigurer.assertNotAlreadySet(this.getMasterView(), masterView);
+        this.assertNotAlreadySet(state.masterView, masterView);
 
         // Attach a "change active component" command interceptor and set the master view
-        if (this.getMasterView() == null) {
-            // final ActionCommand newFormObjectCommand =
-            // targetMasterForm.getNewFormObjectCommand();
-            // final ApplicationPage applicationPage =
-            // masterView.getContext().getPage();
-            // newFormObjectCommand.addCommandInterceptor(new
-            // ChangeActiveComponentCommandInterceptor(applicationPage));
+        if (state.masterView == null) {
+            // final ActionCommand newFormObjectCommand =targetMasterForm.getNewFormObjectCommand();
+            // final ApplicationPage applicationPage = masterView.getContext().getPage();
+            // newFormObjectCommand.addCommandInterceptor(new ChangeActiveComponentCommandInterceptor(applicationPage));
 
-            this.setMasterView(masterView);
-            this.setDispatcherForm(targetMasterForm.getDispatcherForm());
+            state.masterView = masterView;
+            state.dispatcherForm = targetMasterForm.getDispatcherForm();
         }
     }
 
@@ -548,18 +463,19 @@ public class DefaultApplicationPageConfigurer<T> implements ApplicationPageConfi
      * 
      * @param detailView
      *            la vista a configurar.
+     * @param state
+     *            the processing state.
      */
-    protected void processDetailView(final FormBackedView<AbstractBbChildForm<T>> detailView) {
+    protected void processDetailView(final FormBackedView<AbstractBbChildForm<T>> detailView, State<T> state) {
 
         // Validation checks
         Assert.notNull(detailView, "detailView");
 
-        final AbstractBbChildForm<T> targetDetailForm = DefaultApplicationPageConfigurer.getBackingForm(detailView);
-        final AbstractB2TableMasterForm<T> masterForm = DefaultApplicationPageConfigurer.getBackingForm(this
-                .getMasterView());
+        final AbstractBbChildForm<T> targetDetailForm = DefaultApplicationPageConfigurer.backingForm(detailView);
+        final AbstractB2TableMasterForm<T> masterForm = DefaultApplicationPageConfigurer.backingForm(state.masterView);
         final AbstractB2TableMasterForm<T> targetMasterForm = targetDetailForm.getMasterForm();
 
-        DefaultApplicationPageConfigurer.assertNotAlreadySet(targetMasterForm, masterForm);
+        this.assertNotAlreadySet(targetMasterForm, masterForm);
 
         // Link master form and new detail form
         if ((masterForm != null) && (targetMasterForm == null)) {
@@ -567,8 +483,8 @@ public class DefaultApplicationPageConfigurer<T> implements ApplicationPageConfi
         }
 
         // Add a new detail view
-        if (!this.detailViews.contains(detailView)) {
-            this.detailViews.add(detailView);
+        if (!state.detailViews.contains(detailView)) {
+            state.detailViews.add(detailView);
         }
     }
 
@@ -580,26 +496,27 @@ public class DefaultApplicationPageConfigurer<T> implements ApplicationPageConfi
      * 
      * @param searchView
      *            la vista a configurar.
+     * @param state
+     *            the processing state.
      */
-    protected void processSearchView(final FormBackedView<AbstractBbSearchForm<T, ?>> searchView) {
+    protected void processSearchView(final FormBackedView<AbstractBbSearchForm<T, ?>> searchView, State<T> state) {
 
         // Validation checks
         Assert.notNull(searchView, "searchView");
 
-        final AbstractBbTableMasterForm<T> masterForm = //
-        DefaultApplicationPageConfigurer.getBackingForm(this.getMasterView());
-        final AbstractBbSearchForm<T, ?> targetSearchForm = DefaultApplicationPageConfigurer.getBackingForm(searchView);
+        final AbstractBbTableMasterForm<T> masterForm = DefaultApplicationPageConfigurer.backingForm(state.masterView);
+        final AbstractBbSearchForm<T, ?> targetSearchForm = DefaultApplicationPageConfigurer.backingForm(searchView);
         final AbstractBbTableMasterForm<T> targetMasterForm = targetSearchForm.getMasterForm();
 
-        DefaultApplicationPageConfigurer.assertNotAlreadySet(targetMasterForm, masterForm);
+        this.assertNotAlreadySet(targetMasterForm, masterForm);
 
         // Link master form and new search form
         if ((masterForm != null) && (targetMasterForm == null)) {
             ((AbstractB2TableMasterForm<T>) masterForm).addSearchForm(targetSearchForm);
         }
 
-        if (!this.searchViews.contains(searchView)) {
-            this.searchViews.add(searchView);
+        if (!state.searchViews.contains(searchView)) {
+            state.searchViews.add(searchView);
         }
     }
 
@@ -611,20 +528,20 @@ public class DefaultApplicationPageConfigurer<T> implements ApplicationPageConfi
      * 
      * @param validationView
      *            la vista a configurar.
+     * @param state
+     *            the processing state.
      */
-    protected void processValidatingView(final FormBackedView<BbValidationForm<T>> validationView) {
+    protected void processValidatingView(final FormBackedView<BbValidationForm<T>> validationView, State<T> state) {
 
         // Validation checks
         Assert.notNull(validationView, "validationView");
 
-        final AbstractBbTableMasterForm<T> masterForm = DefaultApplicationPageConfigurer.getBackingForm(this
-                .getMasterView());
-        final BbDispatcherForm<T> theDispatcherForm = this.getDispatcherForm();
-        final BbValidationForm<T> targetValidationForm = DefaultApplicationPageConfigurer
-                .getBackingForm(validationView);
+        final AbstractBbTableMasterForm<T> masterForm = DefaultApplicationPageConfigurer.backingForm(state.masterView);
+        final BbDispatcherForm<T> theDispatcherForm = state.dispatcherForm;
+        final BbValidationForm<T> targetValidationForm = DefaultApplicationPageConfigurer.backingForm(validationView);
         final AbstractBbTableMasterForm<T> targetMasterForm = targetValidationForm.getMasterForm();
 
-        DefaultApplicationPageConfigurer.assertNotAlreadySet(targetMasterForm, masterForm);
+        this.assertNotAlreadySet(targetMasterForm, masterForm);
 
         // Link master form and validation form
         if ((theDispatcherForm != null) && (targetMasterForm == null) && (masterForm != null)) {
@@ -637,9 +554,8 @@ public class DefaultApplicationPageConfigurer<T> implements ApplicationPageConfi
         }
 
         // Subscribe for validation events and set the validation view
-        if (this.getValidationView() == null) {
-
-            this.setValidationView(validationView);
+        if (state.validationView == null) {
+            state.validationView = validationView;
         }
     }
 
@@ -648,13 +564,15 @@ public class DefaultApplicationPageConfigurer<T> implements ApplicationPageConfi
      * 
      * @param pageComponent
      *            el componente de página a configurar.
+     * @param state
+     *            the processing state.
      */
-    protected void processUnknownPageComponent(PageComponent pageComponent) {
+    protected void processUnknownPageComponent(PageComponent pageComponent, State<T> state) {
 
         // Validation checks
         Assert.notNull(pageComponent, "pageComponent");
 
-        this.unknownPageComponents.add(pageComponent);
+        state.unknownPageComponents.add(pageComponent);
     }
 
     /**
@@ -665,114 +583,93 @@ public class DefaultApplicationPageConfigurer<T> implements ApplicationPageConfi
      * 
      * @param globalCommandsAccessor
      *            la vista a configurar.
+     * @param state
+     *            the processing state.
      */
-    protected void processGlobalCommandsAccessor(GlobalCommandsAccessor globalCommandsAccessor) {
+    protected void processGlobalCommandsAccessor(GlobalCommandsAccessor globalCommandsAccessor, State<T> state) {
 
         // Validation checks
         Assert.notNull(globalCommandsAccessor, "globalCommandsAccesor");
 
-        DefaultApplicationPageConfigurer.assertNotAlreadySet(this.getGlobalCommandsAccessor(), globalCommandsAccessor);
+        this.assertNotAlreadySet(state.globalCommandsAccessor, globalCommandsAccessor);
 
         // Sets the globalCommandAccessor
-        if (this.getGlobalCommandsAccessor() == null) {
-            this.setGlobalCommandsAccessor(globalCommandsAccessor);
+        if (state.globalCommandsAccessor == null) {
+            state.globalCommandsAccessor = globalCommandsAccessor;
         }
     }
 
     /**
-     * Resets the process state.
+     * Configures an application page, iterating all over its page components in two consecutives steps.
+     * <p>
+     * As result of this method every page component should be aware of its respectives "neighbours".
+     * 
+     * @param applicationPage
+     *            the page to be configured.
      */
-    private void reset() {
+    private State<T> doConfigureApplicationPage(ApplicationPage applicationPage) {
 
-        this.setMasterView(null);
-        this.setValidationView(null);
-        this.setGlobalCommandsAccessor(null);
-        this.detailViews.clear();
-        this.searchViews.clear();
-        this.unknownPageComponents.clear();
+        final State<T> state = new State<T>();
+
+        // 1st pass: recognition
+        for (final PageComponent pageComponent : applicationPage.getPageComponents()) {
+            this.processPageComponent(pageComponent, state);
+        }
+
+        // 2nd pass: association
+        for (final PageComponent pageComponent : applicationPage.getPageComponents()) {
+            this.processPageComponent(pageComponent, state);
+        }
+
+        return state;
     }
 
     /**
-     * Sets the masterView.
+     * Asserts that the target object is null or different from the candidate one.
      * 
-     * @param masterView
-     *            the masterView to set
+     * @param current
+     *            the target object
+     * @param candidate
+     *            the candidate
      */
-    private void setMasterView(FormBackedView<AbstractB2TableMasterForm<T>> masterView) {
+    private void assertNotAlreadySet(Object current, Object candidate) {
 
-        this.masterView = masterView;
+        if ((current != null) && (candidate != null) && !current.equals(candidate)) {
+            // candidate may be null after multiple processings depending on view descriptors order
+            throw new IllegalStateException(); // TODO crear una excepción para esto.
+        }
     }
 
     /**
-     * Sets the detailViews.
+     * Gets the
      * 
-     * @param detailViews
-     *            the detailViews to set
+     * @param viewDescriptor
+     * @return
      */
-    private void setDetailViews(List<FormBackedView<AbstractBbChildForm<T>>> detailViews) {
+    @SuppressWarnings("unchecked")
+    private Class<? extends Form> getFormClass(DefaultViewDescriptor viewDescriptor) {
 
-        Assert.notNull(detailViews, "detailViews");
+        Assert.notNull(viewDescriptor, "viewDescriptor");
 
-        this.detailViews = detailViews;
-    }
+        Class<Form> formClass = Form.class;
 
-    /**
-     * Sets the searchViews.
-     * 
-     * @param searchViews
-     *            the searchViews to set
-     */
-    private void setSearchViews(List<FormBackedView<AbstractBbSearchForm<T, ?>>> searchViews) {
+        final PropertyAccessor propertyAccessor = new DirectFieldAccessor(viewDescriptor);
+        final Map<String, Object> viewProps = (Map<String, Object>) propertyAccessor.getPropertyValue("viewProperties");
+        final String formClassName = (String) viewProps.get(DefaultApplicationPageConfigurer.FORM_CLASS_KEY);
 
-        Assert.notNull(searchViews, "searchViews");
+        if (formClassName != null) {
+            try {
+                formClass = ClassUtils.getClass(formClassName);
+            } catch (ClassNotFoundException e) {
+                if (DefaultApplicationPageConfigurer.LOGGER.isDebugEnabled()) {
+                    DefaultApplicationPageConfigurer.LOGGER.debug(//
+                            DefaultApplicationPageConfigurer.UNKNOWN_FORM_CLASS_FMT
+                                    .format(new String[] { formClassName }));
+                }
+            }
+        }
 
-        this.searchViews = searchViews;
-    }
-
-    /**
-     * Sets the validationView.
-     * 
-     * @param validationView
-     *            the validationView to set
-     */
-    private void setValidationView(FormBackedView<BbValidationForm<T>> validationView) {
-
-        this.validationView = validationView;
-    }
-
-    /**
-     * Sets the unknownPageComponents.
-     * 
-     * @param unknownPageComponents
-     *            the unknownPageComponents to set
-     */
-    private void setUnknownPageComponents(List<PageComponent> unknownPageComponents) {
-
-        Assert.notNull(unknownPageComponents, "unknownPageComponents");
-
-        this.unknownPageComponents = unknownPageComponents;
-    }
-
-    /**
-     * Sets the globalCommandsAccessor.
-     * 
-     * @param globalCommandsAccessor
-     *            the globalCommandsAccessor to set
-     */
-    private void setGlobalCommandsAccessor(GlobalCommandsAccessor globalCommandsAccessor) {
-
-        this.globalCommandsAccessor = globalCommandsAccessor;
-    }
-
-    /**
-     * Sets the dispatcherForm.
-     * 
-     * @param dispatcherForm
-     *            the dispatcherForm to set
-     */
-    private void setDispatcherForm(BbDispatcherForm<T> dispatcherForm) {
-
-        this.dispatcherForm = dispatcherForm;
+        return formClass;
     }
 
     /**
@@ -786,7 +683,7 @@ public class DefaultApplicationPageConfigurer<T> implements ApplicationPageConfi
      *            the view.
      * @return the backing form.
      */
-    public static final <Q extends Form> Q getBackingForm(FormBackedView<Q> view) {
+    public static final <Q extends Form> Q backingForm(FormBackedView<Q> view) {
 
         final Q form = (view != null) ? view.getBackingForm() : null;
 
@@ -805,142 +702,184 @@ public class DefaultApplicationPageConfigurer<T> implements ApplicationPageConfi
      *            the view.
      * @return the backing form model.
      * 
-     * @see #getBackingForm(FormBackedView)
+     * @see #backingForm(FormBackedView)
      */
-    public static final <Q extends Form> FormModel getBackingFormModel(FormBackedView<Q> view) {
+    public static final <Q extends Form> FormModel backingFormModel(FormBackedView<Q> view) {
 
-        return (view != null) ? DefaultApplicationPageConfigurer.getBackingForm(view).getFormModel() : null;
+        return (view != null) ? DefaultApplicationPageConfigurer.backingForm(view).getFormModel() : null;
     }
 
     /**
-     * Asserts that the target object is null or different from the candidate one.
+     * VO that stores internal processing state.
      * 
-     * @param current
-     *            the target object
-     * @param candidate
-     *            the candidate
+     * @param <Q>
+     *            the type of the entities to be managed.
+     * 
+     * @author <a href = "mailto:julio.arguello@gmail.com" >Julio Argüello (JAF)</a>
      */
-    private static void assertNotAlreadySet(Object current, Object candidate) {
+    private static class State<Q> {
 
-        if ((current != null) && (candidate != null) && !current.equals(candidate)) {
-            // candidate may be null after multiple processings depending on view descriptors order
-            throw new IllegalStateException(); // TODO crear una excepción para esto.
+        /**
+         * The master view.
+         */
+        private FormBackedView<AbstractB2TableMasterForm<Q>> masterView;
+
+        /**
+         * Page detail views.
+         */
+        private List<FormBackedView<AbstractBbChildForm<Q>>> detailViews;
+
+        /**
+         * The search views.
+         */
+        private List<FormBackedView<AbstractBbSearchForm<Q, ?>>> searchViews;
+
+        /**
+         * The validation view.
+         */
+        private FormBackedView<BbValidationForm<Q>> validationView;
+
+        /**
+         * Other page components used on the page different from well knows page components.
+         */
+        private List<PageComponent> unknownPageComponents;
+
+        /**
+         * The global commands accessor.
+         * <p>
+         * Normally will be the same than <code>masterView#getBackingForm()</code>.
+         */
+        private GlobalCommandsAccessor globalCommandsAccessor;
+
+        /**
+         * The dispatcher form.
+         */
+        private BbDispatcherForm<Q> dispatcherForm;
+
+        /**
+         * Constructs the VO.
+         */
+        private State() {
+
+            this.detailViews = new ArrayList<FormBackedView<AbstractBbChildForm<Q>>>();
+            this.searchViews = new ArrayList<FormBackedView<AbstractBbSearchForm<Q, ?>>>();
+            this.unknownPageComponents = new ArrayList<PageComponent>();
         }
     }
-
-    // TODO revisar
-    // /**
-    // * Gives back the focus to the first detail view.
-    // *
-    // * @author <a href = "mailto:julio.arguello@gmail.com" >Julio Argüello
-    // (JAF)</a>
-    // */
-    // private class ChangeActiveComponentCommandInterceptor implements
-    // ActionCommandInterceptor {
-    //
-    // private final ApplicationPage applicationPage;
-    //
-    // /**
-    // *
-    // */
-    // public ChangeActiveComponentCommandInterceptor(ApplicationPage
-    // applicationPage) {
-    //
-    // super();
-    // this.applicationPage = applicationPage;
-    // }
-    //
-    // /**
-    // * {@inheritDoc}
-    // */
-    // public void postExecution(ActionCommand command) {
-    //
-    // if (BbPageComponentsConfigurer.this.getDetailViews().isEmpty()) {
-    //
-    // final PageComponent activeComponent =
-    // BbPageComponentsConfigurer.this.getDetailViews().iterator()
-    // .next();
-    // this.applicationPage.setActiveComponent(activeComponent);
-    // }
-    //
-    // }
-    //
-    // /**
-    // * {@inheritDoc}
-    // */
-    // public boolean preExecution(ActionCommand command) {
-    //
-    // return Boolean.TRUE;
-    // }
-    // }
-
-    // TODO revisar
-    // /**
-    // * @author <a href = "mailto:julio.arguello@gmail.com" >Julio Argüello
-    // (JAF)</a>
-    // */
-    // private final class PageComponentActivation implements PageListener {
-    // /**
-    // *
-    // */
-    // private final ApplicationPage applicationPage;
-    //
-    // /**
-    // * @param applicationPage
-    // */
-    // private PageComponentActivation(ApplicationPage applicationPage) {
-    //
-    // this.applicationPage = applicationPage;
-    // }
-    //
-    // public void pageClosed(ApplicationPage page) {
-    //
-    // // Nothing to do
-    // }
-    //
-    // public void pageOpened(ApplicationPage page) {
-    //
-    // if (page == this.applicationPage) {
-    // final PageComponent activePageComponent = page.getActiveComponent();
-    //
-    // if ((activePageComponent == null) && !page.getPageComponents().isEmpty())
-    // {
-    // // TODO change
-    // page.setActiveComponent(page.getPageComponents().get(0));
-    // }
-    // // Intrusive code...
-    // // else {
-    // // BbVLDockingApplicationPage.this.giveFocusTo(activePageComponent);
-    // // BbVLDockingApplicationPage.this.fireFocusGained(activePageComponent);
-    // // }
-    // }
-    // }
-    // }
-
-    // /**
-    // * Da el foco al primer formulario hijo.
-    // *
-    // * FIXME, (JAF), 20081013, esto es aún provisional.
-    // */
-    // private void giveFocusToFirstChildForm() {
-    //
-    // if (this.getFirstChildForm() == null) {
-    // return;
-    // }
-    //
-    // final SingleDockableContainer sdc =
-    // DockingUtilities.findSingleDockableContainerAncestor(//
-    // this.getFirstChildForm().getControl());
-    //
-    // if (sdc == null) {
-    // return;
-    // }
-    //
-    // final Dockable dockable = sdc.getDockable();
-    // final TabbedDockableContainer tdc =
-    // DockingUtilities.findTabbedDockableContainer(dockable);
-    //
-    // if (tdc != null) {
-    // tdc.setSelectedDockable(dockable);
-    // }
 }
+
+// TODO revisar
+// /**
+// * Gives back the focus to the first detail view.
+// *
+// * @author <a href = "mailto:julio.arguello@gmail.com" >Julio Argüello
+// (JAF)</a>
+// */
+// private class ChangeActiveComponentCommandInterceptor implements
+// ActionCommandInterceptor {
+//
+// private final ApplicationPage applicationPage;
+//
+// /**
+// *
+// */
+// public ChangeActiveComponentCommandInterceptor(ApplicationPage
+// applicationPage) {
+//
+// super();
+// this.applicationPage = applicationPage;
+// }
+//
+// /**
+// * {@inheritDoc}
+// */
+// public void postExecution(ActionCommand command) {
+//
+// if (BbPageComponentsConfigurer.this.getDetailViews().isEmpty()) {
+//
+// final PageComponent activeComponent =
+// BbPageComponentsConfigurer.this.getDetailViews().iterator()
+// .next();
+// this.applicationPage.setActiveComponent(activeComponent);
+// }
+//
+// }
+//
+// /**
+// * {@inheritDoc}
+// */
+// public boolean preExecution(ActionCommand command) {
+//
+// return Boolean.TRUE;
+// }
+// }
+
+// TODO revisar
+// /**
+// * @author <a href = "mailto:julio.arguello@gmail.com" >Julio Argüello
+// (JAF)</a>
+// */
+// private final class PageComponentActivation implements PageListener {
+// /**
+// *
+// */
+// private final ApplicationPage applicationPage;
+//
+// /**
+// * @param applicationPage
+// */
+// private PageComponentActivation(ApplicationPage applicationPage) {
+//
+// this.applicationPage = applicationPage;
+// }
+//
+// public void pageClosed(ApplicationPage page) {
+//
+// // Nothing to do
+// }
+//
+// public void pageOpened(ApplicationPage page) {
+//
+// if (page == this.applicationPage) {
+// final PageComponent activePageComponent = page.getActiveComponent();
+//
+// if ((activePageComponent == null) && !page.getPageComponents().isEmpty())
+// {
+// // TODO change
+// page.setActiveComponent(page.getPageComponents().get(0));
+// }
+// // Intrusive code...
+// // else {
+// // BbVLDockingApplicationPage.this.giveFocusTo(activePageComponent);
+// // BbVLDockingApplicationPage.this.fireFocusGained(activePageComponent);
+// // }
+// }
+// }
+// }
+
+// /**
+// * Da el foco al primer formulario hijo.
+// *
+// * FIXME, (JAF), 20081013, esto es aún provisional.
+// */
+// private void giveFocusToFirstChildForm() {
+//
+// if (this.getFirstChildForm() == null) {
+// return;
+// }
+//
+// final SingleDockableContainer sdc =
+// DockingUtilities.findSingleDockableContainerAncestor(//
+// this.getFirstChildForm().getControl());
+//
+// if (sdc == null) {
+// return;
+// }
+//
+// final Dockable dockable = sdc.getDockable();
+// final TabbedDockableContainer tdc =
+// DockingUtilities.findTabbedDockableContainer(dockable);
+//
+// if (tdc != null) {
+// tdc.setSelectedDockable(dockable);
+// }

@@ -21,10 +21,12 @@
  */
 package org.bluebell.richclient.util;
 
-import java.lang.reflect.Field;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
+
+import org.springframework.beans.DirectFieldAccessor;
 import org.springframework.beans.PropertyAccessor;
-import org.springframework.richclient.beans.DefaultMemberPropertyAccessor;
 import org.springframework.util.Assert;
 import org.springframework.util.ReflectionUtils;
 
@@ -59,41 +61,26 @@ public final class ObjectUtil {
         Assert.notNull(source, "source");
         Assert.notNull(target, "target");
 
-        final PropertyAccessor sourceAccessor = ObjectUtil.createPropertyAccesor(source);
-        final PropertyAccessor targetAccessor = ObjectUtil.createPropertyAccesor(target);
+        final PropertyAccessor sourceAccessor = new DirectFieldAccessor(source);
+        final PropertyAccessor targetAccessor = new DirectFieldAccessor(target);
 
         // Try to copy every property
         ReflectionUtils.doWithFields(source.getClass(), new ReflectionUtils.FieldCallback() {
 
-            /** 
+            /**
              * {@inheritDoc}
              */
             @Override
             public void doWith(Field field) throws IllegalArgumentException, IllegalAccessException {
 
                 final String name = field.getName();
-                if ((sourceAccessor.isReadableProperty(name)) && (targetAccessor.isWritableProperty(name))) {
+
+                if (!Modifier.isFinal(field.getModifiers()) && (targetAccessor.isWritableProperty(name))) {
+                    
                     final Object value = sourceAccessor.getPropertyValue(name);
                     targetAccessor.setPropertyValue(name, value);
                 }
             }
         });
-    }
-
-    /**
-     * Creates a suitable property accessor for the given object.
-     * 
-     * @param object
-     *            the target object.
-     * @return the property accessor.
-     */
-    private static PropertyAccessor createPropertyAccesor(Object object) {
-
-        Assert.notNull(object, "target");
-
-        final PropertyAccessor propertyAccessor = new DefaultMemberPropertyAccessor(//
-                object.getClass(), object, Boolean.TRUE, Boolean.FALSE);
-
-        return propertyAccessor;
     }
 }

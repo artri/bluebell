@@ -270,7 +270,7 @@ public abstract class AbstractBbSamplesTests extends AbstractBbRichClientTests {
      */
     protected final <T extends Form> ValidatingFormModel getBackingFormModel(FormBackedView<T> view) {
 
-        return (view != null) ? DefaultApplicationPageConfigurer.getBackingForm(view).getFormModel() : null;
+        return (view != null) ? DefaultApplicationPageConfigurer.backingForm(view).getFormModel() : null;
     }
 
     /**
