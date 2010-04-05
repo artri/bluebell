@@ -45,7 +45,7 @@
 		class="org.springframework.richclient.application.docking.vldocking.VLDockingViewDescriptor" p:auto-hide-enabled="true"
 		p:close-enabled="true" p:float-enabled="true" p:maximize-enabled="true"
 		p:viewClass="org.bluebell.richclient.application.support.FormBackedView">
-		<property name="autoHideBorder" >
+		<property name="autoHideBorder">
 			<util:constant static-field="com.vlsolutions.swing.docking.DockingConstants.HIDE_LEFT" />
 		</property>
 	</bean>
@@ -76,12 +76,17 @@
 	</bean>
 
 
-	<bean id="vlDockingBeanPostProcessor" class="org.bluebell.richclient.application.docking.vldocking.VLDockingBeanPostProcessor"
-		p:masterViewDescriptorTemplate-ref="${richclient.masterVldockingViewDescriptorTemplate}"
-		p:searchViewDescriptorTemplate-ref="${richclient.searchVldockingViewDescriptorTemplate}"
-		p:detailViewDescriptorTemplate-ref="${richclient.detailVldockingViewDescriptorTemplate}"
-		p:validationViewDescriptorTemplate-ref="${richclient.validationVldockingViewDescriptorTemplate}"
-		p:unknownViewDescriptorTemplate-ref="${richclient.unknownVldockingViewDescriptorTemplate}" />
+	<bean id="vlDockingBeanPostProcessor" class="org.bluebell.richclient.application.docking.vldocking.VLDockingBeanPostProcessor">
+		<property name="viewDescriptorsTemplates">
+			<util:map>
+				<entry key="MASTER" value="${richclient.masterVldockingViewDescriptorTemplate}" />
+				<entry key="DETAIL" value="${richclient.detailVldockingViewDescriptorTemplate}" />
+				<entry key="SEARCH" value="${richclient.searchVldockingViewDescriptorTemplate}" />
+				<entry key="VALIDATION" value="${richclient.validationVldockingViewDescriptorTemplate}" />
+				<entry key="UNKNOWN" value="${richclient.unknownVldockingViewDescriptorTemplate}" />
+			</util:map>
+		</property>
+	</bean>
 
 
 	<!--

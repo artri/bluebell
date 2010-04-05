@@ -21,6 +21,11 @@
  */
 package org.bluebell.richclient.application.docking.vldocking;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import org.apache.commons.lang.ArrayUtils;
+import org.bluebell.richclient.application.ApplicationPageConfigurer;
 import org.bluebell.richclient.util.ObjectUtil;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.InitializingBean;
@@ -29,6 +34,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.richclient.application.ViewDescriptor;
 import org.springframework.richclient.application.docking.vldocking.VLDockingViewDescriptor;
+import org.springframework.richclient.application.support.ApplicationServicesAccessor;
 import org.springframework.util.Assert;
 
 /**
@@ -37,22 +43,23 @@ import org.springframework.util.Assert;
  * 
  * @author <a href = "mailto:julio.arguello@gmail.com" >Julio Argüello (JAF)</a>
  */
-public class VLDockingBeanPostProcessor implements BeanPostProcessor, InitializingBean, ApplicationContextAware {
+public class VLDockingBeanPostProcessor extends ApplicationServicesAccessor implements BeanPostProcessor,
+        InitializingBean, ApplicationContextAware {
 
     /**
      * The application context.
      */
     private ApplicationContext applicationContext;
 
-    private VLDockingViewDescriptor masterViewDescriptorTemplate;
-
-    private VLDockingViewDescriptor detailViewDescriptorTemplate;
-
-    private VLDockingViewDescriptor searchViewDescriptorTemplate;
-
-    private VLDockingViewDescriptor validationViewDescriptorTemplate;
-
-    private VLDockingViewDescriptor unknownViewDescriptorTemplate;
+    /**
+     * The mapping between page components types and view descriptor templates.
+     * <p>
+     * The key is the page component type and the value the name of the prototype bean with the VLDocking view
+     * descriptor template.
+     * 
+     * @see ApplicationPageConfigurer#getPageComponentType(org.springframework.richclient.application.PageComponentDescriptor)
+     */
+    private Map<String, String> viewDescriptorsTemplates;
 
     /**
      * {@inheritDoc}
@@ -75,10 +82,7 @@ public class VLDockingBeanPostProcessor implements BeanPostProcessor, Initializi
             return bean;
         } else if (bean instanceof ViewDescriptor) {
             final ViewDescriptor sourceViewDescriptor = (ViewDescriptor) bean;
-            final ViewDescriptor targetViewDescriptor = new VLDockingViewDescriptor();
-
-            // Copy template properties
-            ObjectUtil.shallowCopy(this.searchViewDescriptorTemplate, targetViewDescriptor);
+            final ViewDescriptor targetViewDescriptor = this.getTemplate(sourceViewDescriptor);
 
             // Copy source state
             ObjectUtil.shallowCopy(sourceViewDescriptor, targetViewDescriptor);
@@ -95,11 +99,7 @@ public class VLDockingBeanPostProcessor implements BeanPostProcessor, Initializi
     @Override
     public void afterPropertiesSet() throws Exception {
 
-        Assert.notNull(this.getMasterViewDescriptorTemplate(), "this.getMasterViewDescriptorTemplate()");
-        Assert.notNull(this.getDetailViewDescriptorTemplate(), "this.getDetailViewDescriptorTemplate()");
-        Assert.notNull(this.getSearchViewDescriptorTemplate(), "this.getSearchViewDescriptorTemplate()");
-        Assert.notNull(this.getValidationViewDescriptorTemplate(), "this.getValidationViewDescriptorTemplate()");
-        Assert.notNull(this.getUnknownViewDescriptorTemplate(), "this.getUnknownViewDescriptorTemplate()");
+        Assert.notNull(this.getViewDescriptorsTemplates(), "this.getViewDescriptorsTemplates");
     }
 
     /**
@@ -114,118 +114,16 @@ public class VLDockingBeanPostProcessor implements BeanPostProcessor, Initializi
     }
 
     /**
-     * Sets the master view descriptor template.
+     * Sets the view descriptors templates mapping.
      * 
-     * @param masterViewDescriptorTemplate
-     *            the master view descriptor template to set.
+     * @param viewDescriptorsTemplates
+     *            the mapping.
      */
-    public final void setMasterViewDescriptorTemplate(VLDockingViewDescriptor masterViewDescriptorTemplate) {
+    public final void setViewDescriptorsTemplates(Map<String, String> viewDescriptorsTemplates) {
 
-        Assert.notNull(masterViewDescriptorTemplate, "masterViewDescriptorTemplate");
+        Assert.notNull(viewDescriptorsTemplates, "viewDescriptorsTemplates");
 
-        this.masterViewDescriptorTemplate = masterViewDescriptorTemplate;
-    }
-
-    /**
-     * Sets the search view descriptor template.
-     * 
-     * @param searchViewDescriptorTemplate
-     *            the search viewDescriptor template to set.
-     */
-    public final void setSearchViewDescriptorTemplate(VLDockingViewDescriptor searchViewDescriptorTemplate) {
-
-        Assert.notNull(searchViewDescriptorTemplate, "searchViewDescriptorTemplate");
-
-        this.searchViewDescriptorTemplate = searchViewDescriptorTemplate;
-    }
-
-    /**
-     * Sets the detail view descriptor template.
-     * 
-     * @param detailViewDescriptorTemplate
-     *            the detail view descriptor template to set.
-     */
-    public final void setDetailViewDescriptorTemplate(VLDockingViewDescriptor detailViewDescriptorTemplate) {
-
-        Assert.notNull(detailViewDescriptorTemplate, "detailViewDescriptorTemplate");
-
-        this.detailViewDescriptorTemplate = detailViewDescriptorTemplate;
-    }
-
-    /**
-     * Sets the validation view descriptor template.
-     * 
-     * @param validationViewDescriptorTemplate
-     *            the validation view descriptor template to set.
-     */
-    public final void setValidationViewDescriptorTemplate(VLDockingViewDescriptor validationViewDescriptorTemplate) {
-
-        Assert.notNull(validationViewDescriptorTemplate, "validationViewDescriptorTemplate");
-
-        this.validationViewDescriptorTemplate = validationViewDescriptorTemplate;
-    }
-
-    /**
-     * Sets the unknown view descriptor template.
-     * 
-     * @param unknownViewDescriptorTemplate
-     *            the unknown view descriptor template to set.
-     */
-    public final void setUnknownViewDescriptorTemplate(VLDockingViewDescriptor unknownViewDescriptorTemplate) {
-
-        Assert.notNull(unknownViewDescriptorTemplate, "unknownViewDescriptorTemplate");
-
-        this.unknownViewDescriptorTemplate = unknownViewDescriptorTemplate;
-    }
-
-    /**
-     * Gets the master view descriptor template.
-     * 
-     * @return the master view descriptor template.
-     */
-    protected final VLDockingViewDescriptor getMasterViewDescriptorTemplate() {
-
-        return this.masterViewDescriptorTemplate;
-    }
-
-    /**
-     * Gets the search view descriptor template.
-     * 
-     * @return the search view descriptor template.
-     */
-    protected final VLDockingViewDescriptor getSearchViewDescriptorTemplate() {
-
-        return this.searchViewDescriptorTemplate;
-    }
-
-    /**
-     * Gets the detail view descriptor template.
-     * 
-     * @return the detail view descriptor template.
-     */
-    protected final VLDockingViewDescriptor getDetailViewDescriptorTemplate() {
-
-        return this.detailViewDescriptorTemplate;
-    }
-
-    /**
-     * Gets the validation view descriptor template.
-     * 
-     * @return the validation view descriptor template.
-     */
-    protected final VLDockingViewDescriptor getValidationViewDescriptorTemplate() {
-
-        return this.validationViewDescriptorTemplate;
-    }
-
-    /**
-     * Gets the unknown view descriptor template.
-     * 
-     * @return the unknown view descriptor template.
-     */
-    protected final VLDockingViewDescriptor getUnknownViewDescriptorTemplate() {
-
-        return this.unknownViewDescriptorTemplate;
+        this.viewDescriptorsTemplates = viewDescriptorsTemplates;
     }
 
     /**
@@ -236,5 +134,52 @@ public class VLDockingBeanPostProcessor implements BeanPostProcessor, Initializi
     protected final ApplicationContext getApplicationContext() {
 
         return this.applicationContext;
+    }
+
+    /**
+     * Gets the view descriptors templates mapping.
+     * 
+     * @return the mapping.
+     */
+    protected final Map<String, String> getViewDescriptorsTemplates() {
+
+        if (this.viewDescriptorsTemplates == null) {
+            this.viewDescriptorsTemplates = new HashMap<String, String>();
+        }
+
+        return this.viewDescriptorsTemplates;
+    }
+
+    /**
+     * Gets the configured template for the given view descriptor.
+     * 
+     * @param viewDescriptor
+     *            the view descriptor.
+     * @return the more suitable template.
+     */
+    private VLDockingViewDescriptor getTemplate(ViewDescriptor viewDescriptor) {
+
+        Assert.notNull(viewDescriptor, "viewDescriptor");
+
+        final VLDockingViewDescriptor vlDockingViewDescriptor;
+
+        // Obtain the page component type
+        final ApplicationPageConfigurer<?> applicationPageConfigurer = // 
+        (ApplicationPageConfigurer<?>) this.getService(ApplicationPageConfigurer.class);
+
+        final String pageComponentType = applicationPageConfigurer.getPageComponentType(viewDescriptor);
+
+        // Obtain the template name
+        final String templateName = this.getViewDescriptorsTemplates().get(pageComponentType);
+
+        if (templateName != null) {
+            // ApplicationContext#getBean(String, Object[]) ensures target bean scope is prototype
+            vlDockingViewDescriptor = (VLDockingViewDescriptor) //
+            this.getApplicationContext().getBean(templateName, ArrayUtils.EMPTY_OBJECT_ARRAY);
+        } else {
+            vlDockingViewDescriptor = new VLDockingViewDescriptor();
+        }
+
+        return vlDockingViewDescriptor;
     }
 }
