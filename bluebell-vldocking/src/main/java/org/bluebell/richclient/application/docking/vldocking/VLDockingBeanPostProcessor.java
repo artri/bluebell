@@ -114,6 +114,20 @@ public class VLDockingBeanPostProcessor extends ApplicationServicesAccessor impl
     }
 
     /**
+     * Gets the view descriptors templates mapping.
+     * 
+     * @return the mapping.
+     */
+    public final Map<String, String> getViewDescriptorsTemplates() {
+    
+        if (this.viewDescriptorsTemplates == null) {
+            this.viewDescriptorsTemplates = new HashMap<String, String>();
+        }
+    
+        return this.viewDescriptorsTemplates;
+    }
+
+    /**
      * Sets the view descriptors templates mapping.
      * 
      * @param viewDescriptorsTemplates
@@ -134,20 +148,6 @@ public class VLDockingBeanPostProcessor extends ApplicationServicesAccessor impl
     protected final ApplicationContext getApplicationContext() {
 
         return this.applicationContext;
-    }
-
-    /**
-     * Gets the view descriptors templates mapping.
-     * 
-     * @return the mapping.
-     */
-    protected final Map<String, String> getViewDescriptorsTemplates() {
-
-        if (this.viewDescriptorsTemplates == null) {
-            this.viewDescriptorsTemplates = new HashMap<String, String>();
-        }
-
-        return this.viewDescriptorsTemplates;
     }
 
     /**
