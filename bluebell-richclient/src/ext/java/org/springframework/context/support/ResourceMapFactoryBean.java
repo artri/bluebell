@@ -45,11 +45,15 @@ import org.springframework.core.io.ResourceLoader;
  * @author <a href = "mailto:julio.arguello@gmail.com" >Julio Argüello (JAF)</a>: copied from
  *         org.springframework:org.springframework.context:2.5.6.A since 3.0.0-RELEASE has intentionally forgotten this
  *         file.
+ * 
  * @since 1.0.2
  * @see org.springframework.core.io.DefaultResourceLoader
  * @see <a href="http://forum.springsource.org/showthread.php?t=75807">Spring Forum Issue Report</a>
  */
 public class ResourceMapFactoryBean extends PropertiesFactoryBean implements ResourceLoaderAware, Transformer {
+
+    // TODO, (JAF), 20100406, once Spring RCP version 1.1.0 were released this class should dissapear according to
+    // http://jira.springframework.org/browse/RCP-630
 
     /**
      * A base path to prepend to each resource location value in the properties file.

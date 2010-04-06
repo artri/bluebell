@@ -34,17 +34,29 @@ public class RcpMain extends Main {
     /**
      * La ubicación por defecto del contexto de aplicación.
      */
-    public static final String DEFAULT_APP_CONTEXT_PATH = "classpath*:/**/richclient/**/richclient-*-context.xml";
+    public static final String DEFAULT_APP_CONTEXT_PATH = "classpath*:/org/**/richclient/**/richclient-*-context.xml";
+
+    // FIXME, (JAF), 20100406: classpath*:/**/richclient/**/richclient-*-context.xml is preferred but doesn't work due
+    // to
+    // http://static.springsource.org/spring/docs/3.0.x/spring-framework-reference/html/resources.html#resources-wildcards-in-path-other-stuff
 
     /**
      * La ubicación por defecto de los comandos del contexto de aplicación.
      */
-    public static final String DEFAULT_COMMANDS_CONTEXT_PATH = "classpath*:/**/richclient/**/commands-context.xml";
+    public static final String DEFAULT_COMMANDS_CONTEXT_PATH = "classpath*:/org/**/richclient/**/commands-context.xml";
+
+    // FIXME, (JAF), 20100406: classpath*:/**/richclient/**/commands-context.xml is preferred but doesn't work due
+    // to
+    // http://static.springsource.org/spring/docs/3.0.x/spring-framework-reference/html/resources.html#resources-wildcards-in-path-other-stuff
 
     /**
      * La ubicación por defecto del contexto de arranque de la aplicación.
      */
-    public static final String DEFAULT_STARTUP_CONTEXT_PATH = "classpath*:/**/richclient/**/startup-*-context.xml";
+    public static final String DEFAULT_STARTUP_CONTEXT_PATH = "classpath*:/org/**/richclient/**/startup-*-context.xml";
+
+    // FIXME, (JAF), 20100406: classpath*:/**/richclient/**/startup-*-context.xml is preferred but doesn't work due
+    // to
+    // http://static.springsource.org/spring/docs/3.0.x/spring-framework-reference/html/resources.html#resources-wildcards-in-path-other-stuff
 
     /**
      * The first application context file to be loaded (order is important due to bean dependence hierarchy). This

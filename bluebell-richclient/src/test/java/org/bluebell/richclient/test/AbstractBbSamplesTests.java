@@ -41,6 +41,8 @@ import org.springframework.richclient.application.ApplicationPageFactory;
 import org.springframework.richclient.application.ApplicationServicesLocator;
 import org.springframework.richclient.application.ApplicationWindow;
 import org.springframework.richclient.application.PageDescriptor;
+import org.springframework.richclient.application.ViewDescriptor;
+import org.springframework.richclient.application.support.AbstractView;
 import org.springframework.richclient.application.support.MultiViewPageDescriptor;
 import org.springframework.richclient.form.Form;
 import org.springframework.util.Assert;
@@ -98,6 +100,11 @@ public abstract class AbstractBbSamplesTests extends AbstractBbRichClientTests {
     protected static final String VALIDATION_VIEW_DESCRIPTOR_BEAN_NAME = "validationViewDescriptor";
 
     /**
+     * The initial view descriptor bean name.
+     */
+    protected static final String INITIAL_VIEW_DESCRIPTOR_BEAN_NAME = "initialViewDescriptor";
+
+    /**
      * The application page to be tested.
      */
     private ApplicationPage applicationPage;
@@ -134,6 +141,11 @@ public abstract class AbstractBbSamplesTests extends AbstractBbRichClientTests {
     private FormBackedView<BbValidationForm<Person>> validationView;
 
     /**
+     * The initial view.
+     */
+    private AbstractView initialView;
+
+    /**
      * Creates the test indicating that protected variables should be populated.
      */
     protected AbstractBbSamplesTests() {
@@ -159,6 +171,7 @@ public abstract class AbstractBbSamplesTests extends AbstractBbRichClientTests {
         TestCase.assertNotNull(this.getSearchView());
         TestCase.assertNotNull(this.getDetailView());
         TestCase.assertNotNull(this.getValidationView());
+        TestCase.assertNotNull(this.getInitialView());
     }
 
     /**
@@ -192,6 +205,9 @@ public abstract class AbstractBbSamplesTests extends AbstractBbRichClientTests {
                 this.getApplicationPage().getView(AbstractBbSamplesTests.DETAIL_VIEW_DESCRIPTOR_BEAN_NAME));
         this.setValidationView((FormBackedView<BbValidationForm<Person>>) //
                 this.getApplicationPage().getView(AbstractBbSamplesTests.VALIDATION_VIEW_DESCRIPTOR_BEAN_NAME));
+        this.setInitialView((AbstractView) this.getApplication().getApplicationContext().getBean(
+                AbstractBbSamplesTests.INITIAL_VIEW_DESCRIPTOR_BEAN_NAME, ViewDescriptor.class).createPageComponent());
+
     }
 
     /**
@@ -201,16 +217,16 @@ public abstract class AbstractBbSamplesTests extends AbstractBbRichClientTests {
      * {@link #initializeVariables(PageDescriptor)} could be preferred instead.
      */
     protected final void initializeApplicationAndWait() {
-    
+
         // Retrieve application page factory
         this.setApplicationPageFactory(this.getService(ApplicationPageFactory.class));
-    
+
         try {
             EventQueue.invokeAndWait(new Runnable() {
-    
+
                 @Override
                 public void run() {
-    
+
                     // Nothing to do, just waiting for page creation to be completed
                     new String("Avoid Checkstyle warning");
                 }
@@ -354,6 +370,16 @@ public abstract class AbstractBbSamplesTests extends AbstractBbRichClientTests {
     }
 
     /**
+     * Gets the initial view.
+     * 
+     * @return the initial view.
+     */
+    protected AbstractView getInitialView() {
+
+        return this.initialView;
+    }
+
+    /**
      * Sets the applicationPage.
      * 
      * @param applicationPage
@@ -421,5 +447,16 @@ public abstract class AbstractBbSamplesTests extends AbstractBbRichClientTests {
     private void setValidationView(FormBackedView<BbValidationForm<Person>> validationView) {
 
         this.validationView = validationView;
+    }
+
+    /**
+     * Sets the initial view.
+     * 
+     * @param initialView
+     *            the initial view to set
+     */
+    private void setInitialView(AbstractView initialView) {
+
+        this.initialView = initialView;
     }
 }

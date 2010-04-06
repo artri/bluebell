@@ -17,19 +17,29 @@
 		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.5.xsd
 		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-2.5.xsd">
 
+		
 	<!--
-		The application context is used to configure components and services within the platform. The platform utilizes a
-		number of services at runtime, and these must be configured here. The two key beans for this are the serviceLocator
-		and applicationServices. Many of the services have reasonable default implementations, meaning that you probably won't
-		need to define them here unless you have specific needs not addressed in the default implementation. Beyond the
-		services, you will define the various components that make up your application, like the application descriptor,
-		views, lifecycle advisor, validation rules, etc. This may look a little daunting at first, but hang in there. The good
-		news is that you don't have to change many of the bean configurations provided here when you are setting up your
-		application. Typically, you would change the following: 1. The startingPageId on the lifecycleAdvisor. 2. The
-		eventExceptionHandler on the lifecycleAdvisor (or remove it if you don't want to use it). 3. Specify the location of
-		your resource bundle in the messageSource. 4. Specify the mapping properties files for images in
-		imageResourcesFactory. 5. Specify your rulesSource class, if you're using one. 6. Configure your view beans.
+		The application context is used to configure components and services within the platform. 
+		
+		The platform utilizes a number of services at runtime, and these must be configured here. 
+		The two key beans for this are the serviceLocator and applicationServices. 
+		Many of the services have reasonable default implementations, meaning that you probably won't need to define 
+		them here unless you have specific needs not addressed in the default implementation. 
+		Beyond the services, you will define the various components that make up your application, like the application
+		descriptor, views, lifecycle advisor, validation rules, etc. This may look a little daunting at first, but hang
+		in there. 
+		The good news is that you don't have to change many of the bean configurations provided here when you are 
+		setting up your application. 
+		
+		Typically, you would change the following: 
+			1. The startingPageId on the lifecycleAdvisor. 
+			2. The eventExceptionHandler on the lifecycleAdvisor (or remove it if you don't want to use it). 
+			3. Specify the location of your resource bundle in the messageSource. 
+			4. Specify the mapping properties files for images in imageResourcesFactory. 
+			5. Specify your rulesSource class, if you're using one. 
+			6. Configure your view beans.
 	-->
+	
 	<aop:aspectj-autoproxy />
 
 	<!--
