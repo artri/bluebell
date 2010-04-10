@@ -36,7 +36,7 @@
 	<bean id="jideOssPropertyPlaceholderConfigurer" parent="defaultPropertyPlaceholderConfigurer" p:order="1000">
 		<property name="locations">
 			<list>
-				<value>classpath*:META-INF/spring/jideoss/*.properties</value>
+				<value>classpath*:META-INF/spring/root/jideoss/*.properties</value>
 			</list>
 		</property>
 	</bean>
@@ -69,7 +69,7 @@
 	<bean id="jideOssImageResourcesFactory" parent="defaultImageResourcesFactory">
 		<property name="locations" >
 			<list merge="true">
-				<value>classpath:/org/bluebell/richclient/image/jide-images.properties</value>				
+				<value>classpath:/org/bluebell/richclient/image/jideoss-images.properties</value>				
 			</list>
 		</property>
 	</bean>
