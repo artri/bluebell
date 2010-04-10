@@ -25,7 +25,9 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.swing.JComponent;
 import javax.xml.parsers.ParserConfigurationException;
@@ -36,15 +38,22 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.SystemUtils;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
+import org.apache.velocity.app.VelocityEngine;
+import org.bluebell.richclient.application.ApplicationPageConfigurer;
 import org.bluebell.richclient.application.ApplicationPageException;
+import org.bluebell.richclient.application.support.DefaultApplicationPageConfigurer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.richclient.application.ApplicationWindow;
+import org.springframework.richclient.application.PageComponent;
 import org.springframework.richclient.application.PageDescriptor;
 import org.springframework.richclient.application.docking.vldocking.VLDockingApplicationPage;
 import org.springframework.richclient.application.docking.vldocking.VLDockingPageDescriptor;
+import org.springframework.ui.velocity.VelocityEngineUtils;
 import org.springframework.util.Assert;
 import org.xml.sax.SAXException;
 
@@ -53,6 +62,11 @@ import com.vlsolutions.swing.docking.DockingDesktop;
 
 /**
  * VLDocking application page implementation with support for saving user layouts.
+ * <p>
+ * Distinguishes between <em>initial</em> and <em>user</em> layout, the first one is the specificed as property of the
+ * page descriptor; the second one is the resultant after saving that. If no initial layout is found then a default one
+ * is provided.
+ * 
  * 
  * @param <T>
  *            the type of entities managed by this page.
@@ -61,7 +75,7 @@ import com.vlsolutions.swing.docking.DockingDesktop;
  * 
  * @author <a href = "mailto:julio.arguello@gmail.com" >Julio Argüello (JAF)</a>
  */
-public class BbVLDockingApplicationPage<T> extends VLDockingApplicationPage {
+public class BbVLDockingApplicationPage<T> extends VLDockingApplicationPage  {
 
     /**
      * Message for page creation exceptions.
@@ -81,7 +95,7 @@ public class BbVLDockingApplicationPage<T> extends VLDockingApplicationPage {
      * Follows this convention:
      * 
      * <pre>
-     * ${user_home}/.${application}/${filename}
+     * ${user_home}/.${application}/layouts/${pageId}.xml
      * </pre>
      * 
      * <dl>
@@ -89,11 +103,28 @@ public class BbVLDockingApplicationPage<T> extends VLDockingApplicationPage {
      * <dd>The user home.
      * <dt>application
      * <dd>The application name.
-     * <dt>filename
-     * <dd>The filename.
+     * <dt>pageId
+     * <dd>The descriptor id.
      * </dl>
      */
-    private static final MessageFormat USER_LAYOUT_LOCATION_FMT = new MessageFormat("{0}/.{1}/{2}");
+    private static final MessageFormat USER_LAYOUT_LOCATION_FMT = new MessageFormat("{0}/.{1}/layouts/{2}.xml");
+
+    /**
+     * Message format for building default layout locations.
+     * <p>
+     * Follows this convention:
+     * 
+     * <pre>
+     * /META_INF/layouts/${page_descriptor_id}.xml
+     * </pre>
+     * 
+     * <dl>
+     * <dt>page_descriptor_id
+     * <dd>The page descriptor identifier.
+     * </dl>
+     * 
+     */
+    private static final MessageFormat INITIAL_LAYOUT_LOCATION_FMT = new MessageFormat("/META-INF/layouts/{0}.xml");
 
     /**
      * The identifier of the page to be used when page descriptor identifier is null.
@@ -113,7 +144,7 @@ public class BbVLDockingApplicationPage<T> extends VLDockingApplicationPage {
     /**
      * The user layout resource.
      */
-    private Resource userLayout;
+    private Resource userLayout;   
 
     /**
      * Creates the page given its window and page descriptor.
@@ -164,7 +195,7 @@ public class BbVLDockingApplicationPage<T> extends VLDockingApplicationPage {
 
         try {
             // Force an exception if file doesn't exist
-            layout.getFile();
+            // layout.getFile();
 
             // Read layout file
             final InputStream in = layout.getInputStream();
@@ -288,12 +319,12 @@ public class BbVLDockingApplicationPage<T> extends VLDockingApplicationPage {
      */
     protected Resource getLayout() {
 
-        final Resource theUserLayout = this.getUserLayout();
-        if ((theUserLayout != null) && theUserLayout.exists()) {
-            return theUserLayout;
-        }
+        final Resource initialLayout = this.getInitialLayout();
+        final Resource userLayout = this.getUserLayout();
 
-        return this.getInitialLayout();
+        final Resource layout = ((userLayout != null) && userLayout.exists()) ? userLayout : initialLayout;
+
+        return layout;
     }
 
     /**
@@ -301,13 +332,55 @@ public class BbVLDockingApplicationPage<T> extends VLDockingApplicationPage {
      * 
      * @return the initial layout.
      */
-    protected Resource getInitialLayout() {
+    protected final Resource getInitialLayout() {
 
-        if ((this.initialLayout == null) && (this.getPageDescriptor() instanceof VLDockingPageDescriptor)) {
-            this.initialLayout = ((VLDockingPageDescriptor) this.getPageDescriptor()).getInitialLayout();
+        if (this.initialLayout == null) {
+            this.initialLayout = this.createInitialLayout();
         }
 
         return this.initialLayout;
+    }
+
+    /**
+     * Gets the initial layout.
+     * <p>
+     * Ensures initial layout exists.
+     * 
+     * @return the initial layout.
+     */
+    protected Resource createInitialLayout() {
+
+        Resource layout;
+
+        if (this.getPageDescriptor() instanceof VLDockingPageDescriptor) {
+            layout = ((VLDockingPageDescriptor) this.getPageDescriptor()).getInitialLayout();
+        } else {
+            layout = new ClassPathResource(BbVLDockingApplicationPage.INITIAL_LAYOUT_LOCATION_FMT.format(//
+                    new String[] { this.getPageDescriptor().getId() }));
+        }
+
+        if (!layout.exists()) {
+            final ApplicationPageConfigurer<?> applicationPageConfigurer = (ApplicationPageConfigurer) this
+                    .getService(ApplicationPageConfigurer.class);
+
+            // TODO, (JAF), 20100408, applicationPageConfigurer is not compulsory
+            final Map<String, List<? extends PageComponent>> classification = applicationPageConfigurer
+                    .classifyApplicationPage(this);
+
+            final Map<String, Object> context = new HashMap<String, Object>();
+            context.put("classification", classification);
+            context.put("MASTER_TYPE", DefaultApplicationPageConfigurer.BbViewType.MASTER.name());
+            context.put("DETAIL_TYPE", DefaultApplicationPageConfigurer.BbViewType.DETAIL.name());
+            context.put("SEARCH_TYPE", DefaultApplicationPageConfigurer.BbViewType.SEARCH.name());
+            context.put("VALIDATION_TYPE", DefaultApplicationPageConfigurer.BbViewType.VALIDATION.name());
+            context.put("UNKNOWN_TYPE", DefaultApplicationPageConfigurer.BbViewType.UNKNOWN.name());
+
+            final String sb = this.velocityTest(context);
+
+            layout = new ByteArrayResource(sb.getBytes());
+        }
+
+        return layout;
     }
 
     /**
@@ -322,13 +395,9 @@ public class BbVLDockingApplicationPage<T> extends VLDockingApplicationPage {
         if ((this.userLayout == null) && (this.getInitialLayout() != null)) {
             final String userHome = SystemUtils.getUserHome().getAbsolutePath();
             final String applicationName = this.getApplication().getName();
-            String filename = StringUtils.EMPTY;
-            if (this.getInitialLayout() != null) {
-                filename = this.getInitialLayout().getFilename();
-            }
 
             final String userLayoutLocation = BbVLDockingApplicationPage.USER_LAYOUT_LOCATION_FMT.format(//
-                    new String[] { userHome, applicationName, filename });
+                    new String[] { userHome, applicationName, this.getPageDescriptor().getId() });
 
             this.userLayout = new FileSystemResource(userLayoutLocation);
         }
@@ -417,6 +486,17 @@ public class BbVLDockingApplicationPage<T> extends VLDockingApplicationPage {
         }
 
         return success;
+    }
+
+    public final String velocityTest(Map<String, Object> context) {
+
+        // "layout.vm"
+
+        // No me gusta esta forma de obtener el contexto
+        final VelocityEngine velocityEngine = this.getApplicationContext().getBean("velocityEngine", VelocityEngine.class);
+        
+        return VelocityEngineUtils.mergeTemplateIntoString(velocityEngine, "layout.vm", context);
+        // return null;
     }
 }
 

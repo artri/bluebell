@@ -153,4 +153,6 @@ public class TestVLDockingBeanPostProcessor extends AbstractBbSamplesTests {
         TestCase.assertEquals(expected.isFloatEnabled(), target.isFloatEnabled());
         TestCase.assertEquals(expected.isMaximizeEnabled(), target.isMaximizeEnabled());
     }
+
+    // TODO, (JAF), 20100407, probar un view descriptor que ya sea de tipo vldocking
 }
