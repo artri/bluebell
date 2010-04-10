@@ -595,7 +595,10 @@ public class BbDirtyIndicatorInterceptor extends AbstractOverlayFormComponentInt
                 button.setBorderPainted(Boolean.FALSE);
                 button.setContentAreaFilled(Boolean.FALSE);
                 button.setFocusable(Boolean.FALSE);
-                button.setPreferredSize(new Dimension(icon.getIconWidth(), icon.getIconHeight()));
+                if (icon != null) {
+                    button.setPreferredSize(new Dimension(icon.getIconWidth(), icon.getIconHeight()));
+                }
+
                 this.setRevertButton(button);
             }
 

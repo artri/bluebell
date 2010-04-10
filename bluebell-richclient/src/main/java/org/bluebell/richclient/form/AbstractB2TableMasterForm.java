@@ -26,7 +26,6 @@ import java.util.Collections;
 import java.util.List;
 
 import javax.swing.JPanel;
-import javax.swing.event.ListSelectionListener;
 
 import org.bluebell.richclient.application.config.FilterCommand;
 import org.bluebell.richclient.command.support.CommandUtils;
@@ -175,9 +174,9 @@ public abstract class AbstractB2TableMasterForm<T extends Object> extends Abstra
      *            la clase del tipo detalle.
      */
     public AbstractB2TableMasterForm(String formId, Class<T> detailType) {
-    
+
         super(formId, detailType);
-    
+
         this.setSearchForms(new ArrayList<AbstractBbSearchForm<T, ?>>());
     }
 
@@ -195,11 +194,11 @@ public abstract class AbstractB2TableMasterForm<T extends Object> extends Abstra
     @SuppressWarnings("unchecked")
     @Override
     public final void addChildForm(Form childForm) {
-    
+
         Assert.notNull(childForm);
         Assert.notNull(this.getDetailForm());
         Assert.isInstanceOf(AbstractBbChildForm.class, childForm);
-    
+
         // Añadir el formulario hijo e indicarle cual es su maestro
         ((AbstractBbChildForm<T>) childForm).setMasterForm(this);
         this.getDetailForm().addChildForm(childForm);
@@ -212,29 +211,29 @@ public abstract class AbstractB2TableMasterForm<T extends Object> extends Abstra
      *            the search form.
      */
     public final void addSearchForm(AbstractBbSearchForm<T, ?> searchForm) {
-    
+
         Assert.notNull(searchForm, "searchForm");
-    
+
         if (this.getSearchForms().contains(searchForm)) {
             throw new IllegalStateException(); // TODO cambiar la excepción
         } else if (searchForm.getMasterForm() != null) {
             throw new IllegalStateException(); // TODO cambiar la excepción
         }
-    
+
         searchForm.setMasterForm(this);
         this.searchForms.add(searchForm);
     }
 
     /**
-         * Gets the dispatcher form.
-         * 
-         * @return the dispatcher form.
-         */
-        @SuppressWarnings("unchecked")
-       public BbDispatcherForm<T> getDispatcherForm() {
-        
-            return (BbDispatcherForm<T>) super.getDetailForm();
-        }
+     * Gets the dispatcher form.
+     * 
+     * @return the dispatcher form.
+     */
+    @SuppressWarnings("unchecked")
+    public BbDispatcherForm<T> getDispatcherForm() {
+
+        return (BbDispatcherForm<T>) super.getDetailForm();
+    }
 
     /**
      * Obtiene la relación de formularios hijos de este formulario.
@@ -243,7 +242,7 @@ public abstract class AbstractB2TableMasterForm<T extends Object> extends Abstra
      */
     @SuppressWarnings("unchecked")
     public Collection<AbstractBbChildForm<T>> getDetailForms() {
-    
+
         return ((BbDispatcherForm<T>) this.getDetailForm()).getChildForms();
     }
 
@@ -253,7 +252,7 @@ public abstract class AbstractB2TableMasterForm<T extends Object> extends Abstra
      * @return the searchForms
      */
     public List<AbstractBbSearchForm<T, ?>> getSearchForms() {
-    
+
         return Collections.unmodifiableList(this.searchForms);
     }
 
@@ -269,11 +268,11 @@ public abstract class AbstractB2TableMasterForm<T extends Object> extends Abstra
      */
     @Override
     public final void removeChildForm(Form childForm) {
-    
+
         // Comprobar los parámetros
         Assert.notNull(childForm);
         Assert.notNull(this.getDetailForm());
-    
+
         // Eliminar el formulario hijo
         this.getDetailForm().removeChildForm(childForm);
     }
@@ -292,17 +291,15 @@ public abstract class AbstractB2TableMasterForm<T extends Object> extends Abstra
      */
     @Override
     public final void showEntities(List<T> entities, Boolean attach) {
-    
+
         super.showEntities(entities, attach);
-    
-        // Si una vez establecido el listado de entidades no hay ninguna
-        // seleccionada entonces notificar a los
+
+        // Si una vez establecido el listado de entidades no hay ninguna seleccionada entonces notificar a los
         // formularios hijos.
-        // Esto se hace necesario porque el método en super desinstala el
-        // selectionHandler
+        // Esto se hace necesario porque el método en super desinstala el selectionHandler
         // (JAF), 20081001, esta comprobación debería ser siempre true
         if (this.getMasterTable().getSelectionModel().getMaxSelectionIndex() < 0) {
-            ((ListSelectionHandler) this.getSelectionHandler()).onNoSelection();
+            this.onNoSelection();
         }
     }
 
@@ -381,7 +378,7 @@ public abstract class AbstractB2TableMasterForm<T extends Object> extends Abstra
      * Por el momento limpia la selección de la tabla maestra y resetea los formularios hijos.
      */
     public void keepAliveAfterFailure() {
-    
+
         this.changeSelection(null);
         this.getDetailForm().reset();
     }
@@ -391,7 +388,7 @@ public abstract class AbstractB2TableMasterForm<T extends Object> extends Abstra
      */
     @Override
     public ActionCommandExecutor getRefreshCommand() {
-    
+
         // FIXME
         return this.getNewFormObjectCommand();
     }
@@ -415,7 +412,7 @@ public abstract class AbstractB2TableMasterForm<T extends Object> extends Abstra
      *            el objeto desencadenante del evento.
      */
     protected final void publishApplicationEvent(EventType eventType, T source) {
-    
+
         final ApplicationEvent applicationEvent = new LifecycleApplicationEvent(eventType.toString(), source);
         this.getApplicationContext().publishEvent(applicationEvent);
     }
@@ -433,9 +430,9 @@ public abstract class AbstractB2TableMasterForm<T extends Object> extends Abstra
      * @see CommandUtils#getCommandFaceDescriptorId(String, String)
      */
     protected final String getCommandName(String defaultCommandName) {
-    
+
         final String detailType = StringUtils.capitalize(ClassUtils.getShortName(this.getDetailType()));
-    
+
         return CommandUtils.getCommandFaceDescriptorId(defaultCommandName, detailType);
     }
 
@@ -448,13 +445,13 @@ public abstract class AbstractB2TableMasterForm<T extends Object> extends Abstra
      */
     @Override
     protected void updateControlsForState() {
-    
+
         super.updateControlsForState();
-    
+
         // v2.5.18: el comando se activa si hay alguna fila seleccionada
         // final Boolean enabled = !this.getSelectedEntities().isEmpty();
         // this.getRefreshCommand().setEnabled(enabled);
-    
+
         // this.getRefreshCommand().setEnabled(this.getDeleteCommand().isEnabled());
     }
 
@@ -466,7 +463,7 @@ public abstract class AbstractB2TableMasterForm<T extends Object> extends Abstra
      * @see #getCommandName(String)
      */
     protected String getRefreshCommandFaceDescriptorId() {
-    
+
         return this.getCommandName(GlobalCommandsAccessor.REFRESH);
     }
 
@@ -483,7 +480,7 @@ public abstract class AbstractB2TableMasterForm<T extends Object> extends Abstra
      * @see CommandUtils#configureCommand(ActionCommand, org.springframework.binding.form.ValidatingFormModel)
      */
     protected ActionCommand configureCommand(ActionCommand command, Boolean longRunningCommand) {
-    
+
         return CommandUtils.configureCommand(command, this.getFormModel(), longRunningCommand);
     }
 
@@ -870,40 +867,28 @@ public abstract class AbstractB2TableMasterForm<T extends Object> extends Abstra
      * 
      * @return el componente con el formulario maestro excluyendo el formulario detalle.
      */
-//    @Override
-//    protected final JComponent createFormControl() {
-//
-//        // Obtener el control del formulario maestro.
-//        final JPanel panel = (JPanel) super.createFormControl();
-//
-//        // El formulario maestro consta de una tabla y botones.
-//        // final JPanel panel = new JPanel(new BorderLayout());
-//        // panel.add(new JScrollPane(this.getMasterTable()), BorderLayout.CENTER);
-//        // panel.add(this.createButtonBar(), BorderLayout.SOUTH);
-//        // panel.setBorder(BorderFactory.createTitledBorder(//
-//        // BorderFactory.createEtchedBorder()));
-//
-//        // Dar la oportunidad a la clase hija de modificar el control.
-//        this.onCreateFormControl(panel);
-//
-//        // Actualizar los controles en función del estado.
-//        super.updateControlsForState();
-//        this.setEnabled(true);
-//
-//        return panel;
-//    }
-
-    /**
-     * Crea un <em>list selection listener</em> para la tabla maestra de tipo
-     * {@link AbstractBbTableMasterForm.ListSelectionHandler}.
-     * 
-     * @return el <em>listener</em>.
-     */
-    @Override
-    protected ListSelectionListener createSelectionHandler() {
-
-        return new ListSelectionHandler();
-    }
+    // @Override
+    // protected final JComponent createFormControl() {
+    //
+    // // Obtener el control del formulario maestro.
+    // final JPanel panel = (JPanel) super.createFormControl();
+    //
+    // // El formulario maestro consta de una tabla y botones.
+    // // final JPanel panel = new JPanel(new BorderLayout());
+    // // panel.add(new JScrollPane(this.getMasterTable()), BorderLayout.CENTER);
+    // // panel.add(this.createButtonBar(), BorderLayout.SOUTH);
+    // // panel.setBorder(BorderFactory.createTitledBorder(//
+    // // BorderFactory.createEtchedBorder()));
+    //
+    // // Dar la oportunidad a la clase hija de modificar el control.
+    // this.onCreateFormControl(panel);
+    //
+    // // Actualizar los controles en función del estado.
+    // super.updateControlsForState();
+    // this.setEnabled(true);
+    //
+    // return panel;
+    // }
 
     /**
      * Método al que es posible invocar con el objetivo de modificar el control del formulario antes de su creación
@@ -984,20 +969,20 @@ public abstract class AbstractB2TableMasterForm<T extends Object> extends Abstra
      * @author <a href = "mailto:julio.arguello@gmail.com" >Julio Argüello (JAF)</a>
      */
     public static class KeepAliveAfterFailureExceptionHandlerDelegate implements ExceptionHandlerDelegate {
-    
+
         /**
          * {@inheritDoc}
          */
         public boolean hasAppropriateHandler(Throwable thrownTrowable) {
-    
+
             // final ApplicationWindow window =
             // Application.instance().getActiveWindow();
             // final ApplicationPage page = window != null ? window.getPage() //
             // : null;
-    
+
             // TODO, 20090919, me da que haciendolo con hilos ya no habría estos
             // problemas
-    
+
             // if (page != null && page instanceof BbVLDockingApplicationPage) {
             //
             // final BbVLDockingApplicationPage<Object> tPage =
@@ -1009,140 +994,60 @@ public abstract class AbstractB2TableMasterForm<T extends Object> extends Abstra
             // masterForm.keepAliveAfterFailure();
             // }
             // }
-    
+
             return Boolean.FALSE;
         }
-    
+
         /**
          * {@inheritDoc}
          */
         public void uncaughtException(Thread t, Throwable e) {
-    
+
             // Nothing to do
         }
     }
 
     /**
-     * Obtiene un <code>ListSelectionListener</code> que extiende {@link AbstractBbTableMasterForm.ListSelectionHandler}
-     * añadiéndole la capacidad de invocar a {@link #onSelectionChange(int, Object)} sobre este formulario, y a
-     * {@link AbstractBbChildForm#onSelectionChange(int, Object)} sobre cada uno de los formulario hijos, antes de
-     * proceder con el comportamiento heredado, cada vez que se produzca una selección simple.
-     * 
-     * @return el <em>listener</em>.
-     * 
-     * @see #onSelectionChange(int, Object)
-     * @see AbstractBbChildForm#onSelectionChange(int, Object)
+     * {@inheritDoc}
      */
-    protected class ListSelectionHandler extends AbstractBbTableMasterForm<T>.MasterFormListSelectionHandler {
+    @Override
+    protected void onNoSelection() {
 
-        /**
-         * Invoca a {@link AbstractBbChildForm#onSelectionChange(int[], Object[])} en cada formulario hijo.
-         * 
-         * @param modelIndexes
-         *            los índices de los elementos seleccionados relativos al modelo original.
-         * @param viewIndexes
-         *            los índices de los elementos seleccionados relativos al modelo de filtrado.
-         * @param selection
-         *            las entidades seleccionadas.
-         * 
-         * @see MasterFormListSelectionHandler#onMultiSelection(int[], int[], Object[])
-         */
-        @Override
-        protected void onMultiSelection(List<Integer> modelIndexes, List<Integer> viewIndexes, List<T> selection) {
+        super.onNoSelection();
 
-            // Shortcut para acceder al formulario maestro
-            final AbstractB2TableMasterForm<T> thisForm = AbstractB2TableMasterForm.this;
+        // Notify detail forms about empty selection
+        for (final AbstractBbChildForm<T> childForm : this.getDetailForms()) {
+            childForm.onNoSelection();
+        }
+    }
 
-            // Gestión add-hoc PREVIA al cambio de los elementos seleccionados
-            // por parte del formulario maestro
-            // selection = thisForm.beforeSelectionChange(originalIdxs, selection);
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected final List<T> beforeSelectionChange(List<Integer> modelIndexes, List<T> selection) {
 
-            // Gestión general del cambio del elemento seleccionado
-            super.onMultiSelection(modelIndexes, viewIndexes, selection);
+        final List<T> newSelection = super.beforeSelectionChange(modelIndexes, selection);
 
-            // Gestión ad hoc del cambio del elemento seleccionado por parte de
-            // los formularios hijos
-            for (final AbstractBbChildForm<T> childForm : thisForm.getDetailForms()) {
-                childForm.onSelectionChange(modelIndexes, selection);
-            }
-
-            // Gestión ad hoc POSTERIOR al cambio del elemento seleccionado por
-            // parte del formulario maestro
-            // thisForm.afterSelectionChange(originalIdxs, selection);
+        // Notify detail forms about selection
+        for (final AbstractBbChildForm<T> childForm : this.getDetailForms()) {
+            childForm.beforeSelectionChange(modelIndexes, newSelection);
         }
 
-        /**
-         * Notifica a los formularios hijos de que no hay ninguna entidad seleccionada siempre y cuando el usuario lo
-         * haya confirmado.
-         * 
-         * @see org.springframework.richclient.form.AbstractMasterForm.ListSelectionHandler#onNoSelection()
-         */
-        @Override
-        protected void onNoSelection() {
+        return newSelection;
+    }
 
-            // Shortcut para acceder al formulario maestro
-            final AbstractB2TableMasterForm<T> thisForm = AbstractB2TableMasterForm.this;
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected final void afterSelectionChange(List<Integer> modelIndexes, List<T> selection) {
 
-            // Realizar la gestión general de la deselección y comprobar si el
-            // usuario la ha confirmado.
-            super.onNoSelection();
+        super.afterSelectionChange(modelIndexes, selection);
 
-            // El índice del elemento seleccionado después de la confirmación
-            // del usuario. Determina si se ha de
-            // proceder o no con el cambio.
-            final int currentIndex = AbstractB2TableMasterForm.this.getDetailForm().getSelectedIndex();
-
-            final Boolean proceed = (currentIndex == -1);
-            if (proceed) {
-                // Gestión add-hoc de la deselección.
-                for (final AbstractBbChildForm<T> childForm : thisForm.getDetailForms()) {
-                    childForm.onNoSelection();
-                }
-            }
-        }
-
-        /**
-         * Invoca a {@link #onSelectionChange(int, Object)} sobre el formulario maestro y
-         * {@link AbstractBbChildForm#onSelectionChange(int, Object)} sobre los formularios hijos cada vez que se
-         * produce una selección simple. Finalmente invoca a
-         * {@link AbstractBbTableMasterForm.ListSelectionHandler#onSingleSelection(int)} .
-         * 
-         * @param originalIdx
-         *            el índice del elemento seleccionado relativo al modelo original.
-         * @param filteredIdx
-         *            el índice del elemento seleccionado relativo al modelo de filtrado.
-         * @param selection
-         *            la entidad seleccionada.
-         * 
-         * @see MasterFormListSelectionHandler#onSingleSelection(int, int, Object)
-         */
-        @Override
-        protected void onSingleSelection(int originalIdx, int filteredIdx, T selection) {
-
-            // Shortcut para acceder al formulario maestro
-            final AbstractB2TableMasterForm<T> thisForm = AbstractB2TableMasterForm.this;
-
-            // Gestión ad hoc PREVIA al cambio del elemento seleccionado por
-            // parte del formulario maestro y formularios
-            // hijos
-
-            // TODO, revisar esto para que los formularios hijos reciban la nueva selección
-            // final T newSelection = thisForm.beforeSelectionChange(originalIdx, selection);
-            final T newSelection = selection;
-            for (final AbstractBbChildForm<T> childForm : thisForm.getDetailForms()) {
-                childForm.beforeSelectionChange(originalIdx, newSelection);
-            }
-
-            // Gestión general del cambio del elemento seleccionado
-            super.onSingleSelection(originalIdx, filteredIdx, newSelection);
-
-            // Gestión ad hoc POSTERIOR al cambio del elemento seleccionado por
-            // parte del formulario maestro y
-            // formularios hijos
-            // thisForm.afterSelectionChange(originalIdx, newSelection);
-            for (final AbstractBbChildForm<T> childForm : thisForm.getDetailForms()) {
-                childForm.afterSelectionChange(originalIdx, newSelection);
-            }
+        // Notify detail forms about selection
+        for (final AbstractBbChildForm<T> childForm : this.getDetailForms()) {
+            childForm.afterSelectionChange(modelIndexes, selection);
         }
     }
 }

@@ -21,9 +21,10 @@
  */
 package org.bluebell.richclient.application.support;
 
+import javax.annotation.Resource;
+
 import junit.framework.TestCase;
 
-import org.bluebell.richclient.application.support.DefaultApplicationPageConfigurer;
 import org.bluebell.richclient.form.AbstractB2TableMasterForm;
 import org.bluebell.richclient.form.AbstractBbChildForm;
 import org.bluebell.richclient.form.AbstractBbSearchForm;
@@ -31,7 +32,6 @@ import org.bluebell.richclient.form.BbValidationForm;
 import org.bluebell.richclient.samples.simple.bean.Person;
 import org.bluebell.richclient.test.AbstractBbSamplesTests;
 import org.junit.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.richclient.application.PageDescriptor;
 import org.springframework.test.context.ContextConfiguration;
 
@@ -46,72 +46,71 @@ public class TestDefaultApplicationPageConfigurer extends AbstractBbSamplesTests
     /**
      * A page descriptor containing a master view descriptor.
      */
-    @Autowired
-    private PageDescriptor masterViewPageDescriptor;
-    
+    @Resource
+    public PageDescriptor masterViewPageDescriptor;
+
     /**
      * A page descriptor containing a detail view descriptor.
      */
-    @Autowired
-    private PageDescriptor detailViewPageDescriptor;
-    
+    @Resource
+    public PageDescriptor detailViewPageDescriptor;
+
     /**
      * A page descriptor containing a search view descriptor.
      */
-    @Autowired
-    private PageDescriptor searchViewPageDescriptor;
-   
+    @Resource
+    public PageDescriptor searchViewPageDescriptor;
+
     /**
      * A page descriptor containing a validation view descriptor.
      */
-    @Autowired
-    private PageDescriptor validationViewPageDescriptor;
-    
+    @Resource
+    public PageDescriptor validationViewPageDescriptor;
+
     /**
      * A page descriptor containing a master and a detail view descriptors.
      */
-    @Autowired
-    private PageDescriptor masterAndDetailViewsPageDescriptor;
+    @Resource
+    public PageDescriptor masterAndDetailViewsPageDescriptor;
 
     /**
      * A page descriptor containing a master and a detail view descriptors (reverse order).
      */
-    @Autowired
-    private PageDescriptor rMasterAndDetailViewsPageDescriptor;
+    @Resource
+    public PageDescriptor rMasterAndDetailViewsPageDescriptor;
 
     /**
      * A page descriptor containing a master and a search view descriptors.
      */
-    @Autowired
-    private PageDescriptor masterAndSearchViewsPageDescriptor;
+    @Resource
+    public PageDescriptor masterAndSearchViewsPageDescriptor;
 
     /**
      * A page descriptor containing a master and a search view descriptors (reverse order).
      */
-    @Autowired
+    @Resource
     private PageDescriptor rMasterAndSearchViewsPageDescriptor;
 
     /**
      * A page descriptor containing all kind of views.
      */
-    @Autowired
+    @Resource
     private PageDescriptor fullPageDescriptor;
-    
+
     /**
      * A page descriptor containing all kind of views (reverse order).
      */
-    @Autowired
+    @Resource
     private PageDescriptor rFullPageDescriptor;
-    
-    
-    /** 
+
+    /**
      * {@inheritDoc}
      */
     @Override
     public void testDependencyInjection() {
-         
+
         super.testDependencyInjection();
-        
+
         TestCase.assertNotNull("masterViewPageDescriptor", this.masterViewPageDescriptor);
         TestCase.assertNotNull("detailViewPageDescriptor", this.detailViewPageDescriptor);
         TestCase.assertNotNull("searchViewPageDescriptor", this.searchViewPageDescriptor);
@@ -123,7 +122,7 @@ public class TestDefaultApplicationPageConfigurer extends AbstractBbSamplesTests
         TestCase.assertNotNull("fullPageDescriptor", this.fullPageDescriptor);
         TestCase.assertNotNull("rFullPageDescriptor", this.rFullPageDescriptor);
     }
-    
+
     /**
      * Case that tests pages with a single master view descriptor.
      */

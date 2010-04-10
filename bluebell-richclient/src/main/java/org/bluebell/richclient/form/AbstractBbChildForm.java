@@ -106,20 +106,12 @@ public abstract class AbstractBbChildForm<T extends Object> extends ApplicationW
     }
 
     /**
-     * Manejador posterior al cambio del elemento seleccionado.
+     * Manejador para aquellos casos en los que no se seleccione ningún elemento.
      * <p>
      * Esta implementación no realiza ninguna tarea. Las subclases pueden sobreescribirla para llevar a cabo un
-     * comportamiento adicional posterior al cambio del elemento seleccionado.
-     * <p>
-     * Un caso típico de uso para este método es la activación de <em>listeners</em> durante la selección de una entidad
-     * o la modificación del estado de los controles en función del objeto siendo editado.
-     * 
-     * @param selectedIndex
-     *            el índice del elemento seleccionado.
-     * @param selectedObject
-     *            el objeto seleccionado.
+     * comportamiento adicional cada vez que se cambie el elemento seleccionado.
      */
-    protected void afterSelectionChange(int selectedIndex, T selectedObject) {
+    protected void onNoSelection() {
 
         // Nothing to do.
     }
@@ -133,12 +125,31 @@ public abstract class AbstractBbChildForm<T extends Object> extends ApplicationW
      * Un caso típico de uso para este método es la desactivación de <em>listeners</em> durante la selección de una
      * entidad.
      * 
-     * @param selectedIndex
-     *            el índice del elemento a seleccionar.
-     * @param selectedObject
-     *            el objeto a seleccionar.
+     * @param modelIndexes
+     *            master event list relative indexes of the selection.
+     * @param selection
+     *            the selected entities.
      */
-    protected void beforeSelectionChange(int selectedIndex, T selectedObject) {
+    protected void beforeSelectionChange(List<Integer> modelIndexes, List<T> selection) {
+
+        // Nothing to do.
+    }
+
+    /**
+     * Manejador posterior al cambio del elemento seleccionado.
+     * <p>
+     * Esta implementación no realiza ninguna tarea. Las subclases pueden sobreescribirla para llevar a cabo un
+     * comportamiento adicional posterior al cambio del elemento seleccionado.
+     * <p>
+     * Un caso típico de uso para este método es la activación de <em>listeners</em> durante la selección de una entidad
+     * o la modificación del estado de los controles en función del objeto siendo editado.
+     * 
+     * @param modelIndexes
+     *            master event list relative indexes of the selection.
+     * @param selection
+     *            the selected entities.
+     */
+    protected void afterSelectionChange(List<Integer> modelIndexes, List<T> selection) {
 
         // Nothing to do.
     }
@@ -179,36 +190,6 @@ public abstract class AbstractBbChildForm<T extends Object> extends ApplicationW
     protected AbstractBbChildForm<T> getSiblingForm(String formId) {
 
         return this.detailForm.getChildForm(formId);
-    }
-
-    /**
-     * Manejador para aquellos casos en los que no se seleccione ningún elemento.
-     * <p>
-     * Esta implementación no realiza ninguna tarea. Las subclases pueden sobreescribirla para llevar a cabo un
-     * comportamiento adicional cada vez que se cambie el elemento seleccionado.
-     */
-    protected void onNoSelection() {
-
-        // Nothing to do.
-    }
-
-    /**
-     * Manejador para los cambios del elemento seleccionado.
-     * <p>
-     * Esta implementación no realiza ninguna tarea. Las subclases pueden sobreescribirla para llevar a cabo un
-     * comportamiento adicional posterior al cambio del elemento seleccionado.
-     * <p>
-     * Un caso típico de uso para este método es la modificación del estado de los controles en función de los objetos
-     * siendo editados.
-     * 
-     * @param selectedIndexes
-     *            los índices de los elementos seleccionados.
-     * @param selectedObjects
-     *            el objeto seleccionado.
-     */
-    protected void onSelectionChange(List<Integer> selectedIndexes, List<T> selectedObjects) {
-
-        // Nothing to do.
     }
 
     /**

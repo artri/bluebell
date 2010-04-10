@@ -25,45 +25,57 @@ import org.springframework.richclient.application.ApplicationLauncher;
 import org.springframework.util.Assert;
 
 /**
- * Clase <code>main</code> genérica para el arranque de aplicaciones Spring RCP.
+ * Generic main implementation capable of launching Bluebell RCP clients.
+ * <p>
+ * Includes a well known set of default application context locations (AKA Bluebell CoC) consisting on:
+ * <dl>
+ * <dt>{@value #DEFAULT_APP_CONTEXT_PATH}
+ * <dd>The default application context path.
+ * <dt>{@value #DEFAULT_COMMANDS_CONTEXT_PATH}
+ * <dd>The default commands context path.
+ * <dt>{@value #DEFAULT_STARTUP_CONTEXT_PATH}
+ * <dd>The default startup context path.
+ * <dt>{@value #MAIN_APP_CONTEXT_PATH}
+ * <dd>The prior application context path.
+ * </dl>
+ * 
+ * <p>
+ * <b>Note</b> quoted Spring Documentation paragraph:
+ * 
+ * <pre>
+ * "Please note that "classpath*:" when combined with Ant-style patterns will only work reliably with at least one
+ * root directory before the pattern starts, unless the actual target files reside in the file system"
+ * </pre>
+ * 
+ * @see ApplicationLauncher
+ * @see <a
+ *      href="http://static.springsource.org/spring/docs/3.0.x/spring-framework-reference/html/resources.html#resources-wildcards-in-path-other-stuff">Resources
+ *      wildcards</a>
  * 
  * @author <a href = "mailto:julio.arguello@gmail.com" >Julio Argüello (JAF)</a>
  */
 public class RcpMain extends Main {
 
     /**
-     * La ubicación por defecto del contexto de aplicación.
+     * The default application context path.
      */
-    public static final String DEFAULT_APP_CONTEXT_PATH = "classpath*:/org/**/richclient/**/richclient-*-context.xml";
-
-    // FIXME, (JAF), 20100406: classpath*:/**/richclient/**/richclient-*-context.xml is preferred but doesn't work due
-    // to
-    // http://static.springsource.org/spring/docs/3.0.x/spring-framework-reference/html/resources.html#resources-wildcards-in-path-other-stuff
+    public static final String DEFAULT_APP_CONTEXT_PATH = "classpath*:/META-INF/spring/root/**/*-context.xml";
 
     /**
-     * La ubicación por defecto de los comandos del contexto de aplicación.
+     * The default commands context path.
      */
-    public static final String DEFAULT_COMMANDS_CONTEXT_PATH = "classpath*:/org/**/richclient/**/commands-context.xml";
-
-    // FIXME, (JAF), 20100406: classpath*:/**/richclient/**/commands-context.xml is preferred but doesn't work due
-    // to
-    // http://static.springsource.org/spring/docs/3.0.x/spring-framework-reference/html/resources.html#resources-wildcards-in-path-other-stuff
+    public static final String DEFAULT_COMMANDS_CONTEXT_PATH = "classpath*:/META-INF/spring/commands/*-context.xml";
 
     /**
      * La ubicación por defecto del contexto de arranque de la aplicación.
      */
-    public static final String DEFAULT_STARTUP_CONTEXT_PATH = "classpath*:/org/**/richclient/**/startup-*-context.xml";
-
-    // FIXME, (JAF), 20100406: classpath*:/**/richclient/**/startup-*-context.xml is preferred but doesn't work due
-    // to
-    // http://static.springsource.org/spring/docs/3.0.x/spring-framework-reference/html/resources.html#resources-wildcards-in-path-other-stuff
+    public static final String DEFAULT_STARTUP_CONTEXT_PATH = "classpath*:/META-INF/spring/startup/*-context.xml";
 
     /**
      * The first application context file to be loaded (order is important due to bean dependence hierarchy). This
      * avoids "depend-on" abuse.
      */
-    public static final String MAIN_APP_CONTEXT_PATH = "classpath*:/org/bluebell/richclient/application/"
-            + "richclient-application-context.xml";
+    public static final String MAIN_APP_CONTEXT_PATH = "classpath*:/META-INF/spring/root/bluebell-application-context.xml";
 
     /**
      * El <em>logger</em>.
@@ -87,11 +99,11 @@ public class RcpMain extends Main {
     }
 
     /**
-     * Obtiene la ubicación del contexto de la aplicación.
+     * Gets the application context config locations.
      * <p>
-     * Por defecto es {@value #DEFAULT_APP_CONTEXT_PATH}.
+     * Default value is {@value #DEFAULT_APP_CONTEXT_PATH}.
      * 
-     * @return la ubicación.
+     * @return the config locations.
      */
     @Override
     protected String[] getConfigLocations() {
@@ -100,11 +112,11 @@ public class RcpMain extends Main {
     }
 
     /**
-     * Obtiene la ubicación del contexto de arranque de la aplicación.
+     * Gets the startup config location.
      * <p>
-     * Por defecto es {@value #DEFAULT_STARTUP_CONTEXT_PATH}.
+     * Default value is {@value #DEFAULT_STARTUP_CONTEXT_PATH}.
      * 
-     * @return la ubicación.
+     * @return the startup locations.
      */
     protected String getStartupLocation() {
 
@@ -112,16 +124,12 @@ public class RcpMain extends Main {
     }
 
     /**
-     * Arranca la aplicación. Para ello utilizando las ubicaciones devueltas por:
-     * <ul>
-     * <li>{@link #getConfigLocations()}
-     * <li>{@link #getStartupLocation()}
-     * </ul>
+     * Launch application.
      * 
      * @param configLocations
-     *            las ubicaciones con los ficheros de configuración de Spring.
+     *            application context config locations.
      * @param baseDirs
-     *            los directorios base desde los que cargar la configuración específica del entorno.
+     *            base dirs for loading environment specific application context.
      */
     protected void launch(String[] configLocations, String[] baseDirs) {
 
@@ -147,11 +155,10 @@ public class RcpMain extends Main {
     }
 
     /**
-     * Maneja las excepciones de tipo <code>Throwable</code> delegando en el manejador de excepciones registrado en el
-     * contexto de aplicación.
+     * Handles any kind of exception employing the registered exception handler.
      * 
      * @param t
-     *            la excepción a tratar.
+     *            the throwable to be handled.
      */
     public static void handleException(Throwable t) {
 
@@ -160,18 +167,16 @@ public class RcpMain extends Main {
     }
 
     /**
-     * Maneja los fallos en el arranque de la aplicación.
+     * Handles a failure during application startup.
      * <p>
-     * <b>Nótese</b> que este tratamiento no puede beneficiarse del tratamiento de excepciones proveido por el
-     * framework, ya que muy probablemente, una vez llegados a este punto, no se haya cargado el contexto de aplicación.
+     * <b>Note</b> this method does not employ registerable exception handler since this may be not loaded.
      * 
      * @param e
-     *            la excepción que provocó el fallo.
+     *            the exception.
      */
     private static void handleLaunchFailure(Throwable e) {
 
-        // TODO, (JAF), 20080610, quizás haya que tratar esta excepción de una
-        // forma diferente.
+        // TODO, (JAF), 20080610, quizás haya que tratar esta excepción de una forma diferente.
         RcpMain.LOGGER.info("Rcp Application will exit");
         RcpMain.LOGGER.error(e.getMessage(), e);
 

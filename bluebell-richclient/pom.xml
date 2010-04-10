@@ -52,6 +52,10 @@
 		</dependency>
 		<dependency>
 			<groupId>org.springframework</groupId>
+			<artifactId>org.springframework.context.support</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
 			<artifactId>org.springframework.test</artifactId>
 		</dependency>
 		<dependency>
@@ -97,7 +101,7 @@
 		<dependency>
 			<groupId>org.springframework.richclient</groupId>
 			<artifactId>spring-richclient-sandbox</artifactId>
-		</dependency>		
+		</dependency>
 
 		<!-- 
 			Other swing components
@@ -105,7 +109,7 @@
 		<dependency>
 			<groupId>org.swinglabs</groupId>
 			<artifactId>swingx</artifactId>
-			<scope>runtime</scope>			
+			<scope>runtime</scope>
 			<!-- There is a dependence in ColorValidationInterceptor -->
 		</dependency>
 		<dependency>
@@ -139,6 +143,10 @@
 		<dependency>
 			<groupId>org.aspectj</groupId>
 			<artifactId>com.springsource.org.aspectj.weaver</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.velocity</groupId>
+			<artifactId>velocity</artifactId>
 		</dependency>
 
 		<!-- 

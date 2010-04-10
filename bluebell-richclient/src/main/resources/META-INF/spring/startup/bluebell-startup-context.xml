@@ -34,7 +34,7 @@
 		</property>
 		<property name="locations">
 			<list>
-				<value>classpath*:META-INF/spring/*.properties</value>
+				<value>classpath*:META-INF/spring/root/*.properties</value>
 			</list>
 		</property>
 	</bean>	
@@ -45,7 +45,7 @@
 		TODO DOC
 	-->
 	<bean id="macOsxSplashScreen" class="org.springframework.richclient.application.splash.MacOSXSplashScreen"
-		p:icon-resource-path="/org/bluebell/richclient/images/bluebell/bluebell-transparente-74x34.png" />
+		p:icon-resource-path="/bluebell-icons-set/png/bluebell-transparente-74x34.png" />
 	<!--		p:icon-resource-path="${richclient.icon}" />-->
 
 

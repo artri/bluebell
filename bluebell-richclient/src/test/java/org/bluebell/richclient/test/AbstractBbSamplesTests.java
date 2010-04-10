@@ -26,6 +26,7 @@ import java.lang.reflect.InvocationTargetException;
 
 import junit.framework.TestCase;
 
+import org.bluebell.richclient.application.RcpMain;
 import org.bluebell.richclient.application.support.DefaultApplicationPageConfigurer;
 import org.bluebell.richclient.application.support.FormBackedView;
 import org.bluebell.richclient.form.AbstractB2TableMasterForm;
@@ -45,6 +46,7 @@ import org.springframework.richclient.application.ViewDescriptor;
 import org.springframework.richclient.application.support.AbstractView;
 import org.springframework.richclient.application.support.MultiViewPageDescriptor;
 import org.springframework.richclient.form.Form;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.util.Assert;
 
 /**
@@ -72,6 +74,7 @@ import org.springframework.util.Assert;
  * 
  * @author <a href = "mailto:julio.arguello@gmail.com" >Julio Argüello (JAF)</a>
  */
+@ContextConfiguration(locations = {RcpMain.DEFAULT_APP_CONTEXT_PATH})
 public abstract class AbstractBbSamplesTests extends AbstractBbRichClientTests {
 
     /**

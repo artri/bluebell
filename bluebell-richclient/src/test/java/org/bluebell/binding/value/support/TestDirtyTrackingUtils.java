@@ -56,7 +56,7 @@ public class TestDirtyTrackingUtils extends AbstractBbRichClientTests {
     /**
      * The internationalization properties.
      */
-    @Resource()
+    @Resource
     private Properties testDirtyTrackingUtilsProperties;
 
     /**

@@ -21,7 +21,7 @@
 		p:ignore-unresolvable-placeholders="true" p:ignore-resource-not-found="false" p:order="100000">
 		<property name="locations">
 			<list>
-				<value>classpath*:META-INF/spring/person/*.properties</value>
+				<value>classpath*:META-INF/spring/root/person/*.properties</value>
 			</list>
 		</property>
 	</bean>
@@ -61,11 +61,9 @@
 		</property>
 	</bean>
 
-	<bean id="personMessageSource" class="org.springframework.context.support.ResourceBundleMessageSource">
+	<bean id="personMessageSource" parent="richclientMessageSource">
 		<property name="basenames">
-			<list>
-				<value>org.bluebell.richclient.application.messages</value>
-				<value>org.springframework.richclient.application.messages</value>
+			<list merge="true">
 				<value>org.bluebell.richclient.samples.simple.messages</value>
 			</list>
 		</property>

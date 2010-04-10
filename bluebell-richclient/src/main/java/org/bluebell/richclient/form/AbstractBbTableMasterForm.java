@@ -111,6 +111,11 @@ public abstract class AbstractBbTableMasterForm<T extends Object> extends Abstra
     private static final Logger LOGGER = LoggerFactory.getLogger(AbstractBbTableMasterForm.class);
 
     /**
+     * Debug message for <code>#onNoSelection</code>.
+     */
+    private static final MessageFormat ON_EMPTY_SELECTION_FMT = new MessageFormat("Empty selection on {1}");
+
+    /**
      * Debug message for <code>#beforeSelection</code>.
      */
     private static final MessageFormat BEFORE_SELECTION_FMT = //
@@ -399,6 +404,9 @@ public abstract class AbstractBbTableMasterForm<T extends Object> extends Abstra
         final List<Integer> oldViewIndexes = TableUtils.getSelectedViewIndexes(this.getMasterTable());
         final List<Integer> oldModelIndexes = TableUtils.getModelIndexes(this.getMasterTable(), newViewIndexes);
 
+        /*
+         * Do changes silently (uninstall selection handler before and install later)
+         */
         this.uninstallSelectionHandler();
 
         if (this.shouldProceed()) {
@@ -434,9 +442,12 @@ public abstract class AbstractBbTableMasterForm<T extends Object> extends Abstra
 
         TableUtils.changeSelection(this.getMasterTable(), this.getMasterTableModel(), selection);
 
-        // If is single selection the detail form needs to be aware of it
+        // If this is a single selection the detail form needs to be aware of it
+        final Boolean isEmptySelection = (selection.isEmpty());
         final Boolean isSingleSelection = (selection.size() == 1);
-        if (isSingleSelection) {
+        if (isEmptySelection) {
+            this.onNoSelection();
+        } else if (isSingleSelection) {
             this.getDetailForm().setSelectedIndex(newModelIndexes.get(0));
             DirtyTrackingUtils.clearDirty(AbstractBbTableMasterForm.this.getDetailForm().getFormModel());
         }
@@ -464,6 +475,17 @@ public abstract class AbstractBbTableMasterForm<T extends Object> extends Abstra
             this.getSelectionModel().clearSelection();
         } else {
             TableUtils.changeSelection(this.getMasterTable(), oldViewIndexes);
+        }
+    }
+
+    /**
+     * Handles empty selection change events.
+     */
+    protected void onNoSelection() {
+
+        if (AbstractBbTableMasterForm.LOGGER.isDebugEnabled()) {
+            AbstractBbTableMasterForm.LOGGER.debug(AbstractBbTableMasterForm.ON_EMPTY_SELECTION_FMT.format(//
+                    new Object[] { this.getId() }));
         }
     }
 
