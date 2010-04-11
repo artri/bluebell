@@ -65,6 +65,10 @@
 		</dependency>
 		<dependency>
 			<groupId>org.springframework</groupId>
+			<artifactId>org.springframework.context.support</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
 			<artifactId>org.springframework.test</artifactId>
 		</dependency>
 
@@ -110,6 +114,14 @@
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>com.springsource.slf4j.api</artifactId>
+		</dependency>
+
+		<!-- 
+			Others
+		 -->
+		<dependency>
+			<groupId>org.apache.velocity</groupId>
+			<artifactId>com.springsource.org.apache.velocity</artifactId>
 		</dependency>
 
 		<!-- 
