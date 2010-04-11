@@ -59,17 +59,17 @@ public class RcpMain extends Main {
     /**
      * The default application context path.
      */
-    public static final String DEFAULT_APP_CONTEXT_PATH = "classpath*:/META-INF/spring/root/**/*-context.xml";
+    public static final String DEFAULT_APP_CONTEXT_PATH = "classpath*:/META-INF/spring/**/root/**/*-context.xml";
 
     /**
      * The default commands context path.
      */
-    public static final String DEFAULT_COMMANDS_CONTEXT_PATH = "classpath*:/META-INF/spring/commands/**/*-context.xml";
+    public static final String DEFAULT_COMMANDS_CONTEXT_PATH = "classpath*:/META-INF/spring/**/commands/**/*-context.xml";
 
     /**
      * La ubicación por defecto del contexto de arranque de la aplicación.
      */
-    public static final String DEFAULT_STARTUP_CONTEXT_PATH = "classpath*:/META-INF/spring/startup/**/*-context.xml";
+    public static final String DEFAULT_STARTUP_CONTEXT_PATH = "classpath*:/META-INF/spring/**/startup/**/*-context.xml";
 
     /**
      * The first application context file to be loaded (order is important due to bean dependence hierarchy). This
