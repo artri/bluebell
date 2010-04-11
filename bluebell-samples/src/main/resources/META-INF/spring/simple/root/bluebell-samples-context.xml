@@ -36,7 +36,7 @@
 	<bean id="samplesPropertyPlaceholderConfigurer" parent="defaultPropertyPlaceholderConfigurer" p:order="-1">
 		<property name="locations">
 			<list>
-				<value>classpath*:META-INF/spring/samples/*.properties</value>
+				<value>classpath*:META-INF/spring/simple/root/*.properties</value>
 			</list>
 		</property>
 	</bean>
