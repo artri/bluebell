@@ -146,7 +146,7 @@
 		</dependency>
 		<dependency>
 			<groupId>org.apache.velocity</groupId>
-			<artifactId>velocity</artifactId>
+			<artifactId>com.springsource.org.apache.velocity</artifactId>
 		</dependency>
 
 		<!-- 

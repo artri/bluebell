@@ -41,6 +41,7 @@
 	-->
 	
 	<aop:aspectj-autoproxy />
+	<context:annotation-config/>	
 
 	<!--
 		Bean: defaultPropertyPlaceholderConfigurer Usage: platform required Description: This configures all placeholders
