@@ -260,6 +260,7 @@
 							<exclude>**/src/etc/**</exclude>
 							<exclude>**/src/ext/**</exclude>
 							<exclude>**/lib/**</exclude>
+							<exclude>**/*.vm</exclude>
 						</excludes>
 					</configuration>
 					<executions>
@@ -438,6 +439,11 @@
 						<artifactId>commons-logging</artifactId>
 					</exclusion>
 				</exclusions>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework</groupId>
+				<artifactId>org.springframework.context.support</artifactId>
+				<version>${spring-version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework</groupId>
@@ -712,6 +718,11 @@
 				<artifactId>com.springsource.org.aspectj.runtime</artifactId>
 				<version>${aspectj-version}</version>
 			</dependency>
+			<dependency>
+				<groupId>org.apache.velocity</groupId>
+				<artifactId>com.springsource.org.apache.velocity</artifactId>
+				<version>${velocity-version}</version>				
+			</dependency>
 
 			<!-- 
 				Test
@@ -738,10 +749,12 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.inputEncoding>UTF-8</project.reporting.inputEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+
 		<spring-version>3.0.0.RELEASE</spring-version>
 		<spring-richclient-version>1.1.1-SNAPSHOT</spring-richclient-version>
 		<slf4j-version>1.5.10</slf4j-version>
 		<aspectj-version>1.6.3.RELEASE</aspectj-version>
 		<subtance-version>5.3</subtance-version>
+		<velocity-version>1.6.2</velocity-version>
 	</properties>
 </project>
