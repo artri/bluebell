@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+	<!--
+
+		Copyright (C) 2009 Julio Argüello <julio.arguello@gmail.com> This file is part of Bluebell VLDocking. Licensed under
+		the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You
+		may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or
+		agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+		CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and
+		limitations under the License.
+	-->
+
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:p="http://www.springframework.org/schema/p" xmlns:util="http://www.springframework.org/schema/util"
+	xmlns:context="http://www.springframework.org/schema/context" xmlns:aop="http://www.springframework.org/schema/aop"
+	xsi:schemaLocation="http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.5.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.5.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-2.5.xsd">
+
+
+	<!--
+		Bean: vldockingPropertyPlaceholderConfigurer Usage: platform required Description: This configures all placeholders
+		defined in the application context. Note "null" string is used for null values and system properties override those
+		defined in properties files. Note its priority is greater than "defaultPropertyPlaceholderConfigurer" priority.
+	-->
+	<bean id="vldockingPropertyPlaceholderConfigurer" parent="defaultPropertyPlaceholderConfigurer" p:order="2000">
+		<property name="locations">
+			<list>
+				<value>classpath:/META-INF/spring/vldocking/root/*.properties</value>
+			</list>
+		</property>
+	</bean>
+
+	<bean id="vlDockingMessageSource" parent="${vlDockingMessageSource.parent}">
+		<property name="basenames">
+			<list merge="true">
+				<value>org.bluebell.richclient.application.docking.vldocking.messages</value>
+			</list>
+		</property>
+	</bean>
+
+	<!--
+		Bean: applicationPageFactory 
+		Type: platform optional Description: TODO
+	-->
+	<bean id="vldockingApplicationPageFactory" class="org.bluebell.richclient.application.docking.vldocking.BbVLDockingApplicationPageFactory" />
+
+
+	<!--
+		TODO
+	-->
+	<bean id="abstractVldockingViewDescriptor" abstract="true"
+		class="org.springframework.richclient.application.docking.vldocking.VLDockingViewDescriptor" p:auto-hide-enabled="true"
+		p:close-enabled="true" p:float-enabled="true" p:maximize-enabled="true"
+		p:viewClass="org.bluebell.richclient.application.support.FormBackedView">
+		<property name="autoHideBorder">
+			<util:constant static-field="com.vlsolutions.swing.docking.DockingConstants.HIDE_LEFT" />
+		</property>
+	</bean>
+
+	<!-- 
+		View descriptor templates. Use a prototype scope to restrict instantation to "under demand".
+	 -->
+	<bean id="masterVldockingViewDescriptorTemplate" parent="abstractVldockingViewDescriptor" scope="prototype">
+		<property name="autoHideBorder">
+			<util:constant static-field="com.vlsolutions.swing.docking.DockingConstants.HIDE_TOP" />
+		</property>
+	</bean>
+	
+	<bean id="searchVldockingViewDescriptorTemplate" parent="abstractVldockingViewDescriptor" scope="prototype">
+		<property name="autoHideBorder">
+			<util:constant static-field="com.vlsolutions.swing.docking.DockingConstants.HIDE_RIGHT" />
+		</property>
+	</bean>
+	
+	<bean id="detailVldockingViewDescriptorTemplate" parent="abstractVldockingViewDescriptor" scope="prototype" />
+	
+	<bean id="validationVldockingViewDescriptorTemplate" parent="abstractVldockingViewDescriptor" scope="prototype">
+		<property name="autoHideBorder">
+			<util:constant static-field="com.vlsolutions.swing.docking.DockingConstants.HIDE_BOTTOM" />
+		</property>
+	</bean>
+	
+	<bean id="unknownVldockingViewDescriptorTemplate" parent="abstractVldockingViewDescriptor" scope="prototype">
+		<property name="autoHideBorder">
+			<util:constant static-field="com.vlsolutions.swing.docking.DockingConstants.HIDE_BOTTOM" />
+		</property>
+	</bean>
+
+
+	<bean id="vlDockingBeanPostProcessor" class="org.bluebell.richclient.application.docking.vldocking.VLDockingBeanPostProcessor">
+		<property name="viewDescriptorsTemplates">
+			<util:map>
+				<entry key="MASTER" value="${richclient.masterVldockingViewDescriptorTemplate}" />
+				<entry key="DETAIL" value="${richclient.detailVldockingViewDescriptorTemplate}" />
+				<entry key="SEARCH" value="${richclient.searchVldockingViewDescriptorTemplate}" />
+				<entry key="VALIDATION" value="${richclient.validationVldockingViewDescriptorTemplate}" />
+				<entry key="UNKNOWN" value="${richclient.unknownVldockingViewDescriptorTemplate}" />
+			</util:map>
+		</property>
+	</bean>
+
+</beans>
+
+	
