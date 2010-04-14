@@ -36,7 +36,7 @@
 	<bean id="swingxPropertyPlaceholderConfigurer" parent="defaultPropertyPlaceholderConfigurer" p:order="2000">
 		<property name="locations">
 			<list>
-				<value>classpath*:META-INF/spring/swingx/root/*.properties</value>
+				<value>classpath:/META-INF/spring/swingx/root/*.properties</value>
 			</list>
 		</property>
 	</bean>
