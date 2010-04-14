@@ -119,11 +119,11 @@ public class VLDockingBeanPostProcessor extends ApplicationServicesAccessor impl
      * @return the mapping.
      */
     public final Map<String, String> getViewDescriptorsTemplates() {
-    
+
         if (this.viewDescriptorsTemplates == null) {
             this.viewDescriptorsTemplates = new HashMap<String, String>();
         }
-    
+
         return this.viewDescriptorsTemplates;
     }
 
@@ -174,8 +174,8 @@ public class VLDockingBeanPostProcessor extends ApplicationServicesAccessor impl
 
         if (templateName != null) {
             // ApplicationContext#getBean(String, Object[]) ensures target bean scope is prototype
-            vlDockingViewDescriptor = (VLDockingViewDescriptor) //
-            this.getApplicationContext().getBean(templateName, ArrayUtils.EMPTY_OBJECT_ARRAY);
+            vlDockingViewDescriptor = (VLDockingViewDescriptor) this.getApplicationContext().getBean(//
+                    templateName, ArrayUtils.EMPTY_OBJECT_ARRAY);
         } else {
             vlDockingViewDescriptor = new VLDockingViewDescriptor();
         }

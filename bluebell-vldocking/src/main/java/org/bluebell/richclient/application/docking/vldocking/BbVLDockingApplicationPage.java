@@ -25,7 +25,9 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -63,10 +65,13 @@ import com.vlsolutions.swing.docking.DockingDesktop;
 /**
  * VLDocking application page implementation with support for saving user layouts.
  * <p>
- * Distinguishes between <em>initial</em> and <em>user</em> layout, the first one is the specificed as property of the
- * page descriptor; the second one is the resultant after saving that. If no initial layout is found then a default one
- * is provided.
- * 
+ * Distinguishes between the following (priority ordered) layouts:
+ * <ol>
+ * <li><b>User layout</b>: the last -user specific- remembered layout.
+ * <li><b>Explicit initial layout</b>: a layout specified by the user within the page descriptor.
+ * <li><b>Implicit initial layout</b>: a layout in a conventioned location.
+ * <li><b>Auto layout</b>: an automatically build layout using Velocity engine.
+ * </ol>
  * 
  * @param <T>
  *            the type of entities managed by this page.
@@ -75,13 +80,13 @@ import com.vlsolutions.swing.docking.DockingDesktop;
  * 
  * @author <a href = "mailto:julio.arguello@gmail.com" >Julio Argüello (JAF)</a>
  */
-public class BbVLDockingApplicationPage<T> extends VLDockingApplicationPage  {
+public class BbVLDockingApplicationPage<T> extends VLDockingApplicationPage {
 
     /**
      * Message for page creation exceptions.
      */
-    private static final MessageFormat PAGE_BUILDING_FAILED_FMT = new MessageFormat(
-            "Failed to build page with id \"{0}\" using layout \"{1}\"");
+    private static final MessageFormat PAGE_CREATION_FAILED_FMT = new MessageFormat(
+            "Failed to build page with id \"{0}\"");
 
     /**
      * Message for page closing exception.
@@ -90,12 +95,18 @@ public class BbVLDockingApplicationPage<T> extends VLDockingApplicationPage  {
             "Failed to close page with id \"{0}\" using layout \"{1}\"");
 
     /**
+     * Message for layout building exceptions.
+     */
+    private static final MessageFormat LAYOUT_BUILDING_FAILED_FMT = new MessageFormat(
+            "Error reading workspace layout \"{0}\"");
+
+    /**
      * Message format for building user layout locations.
      * <p>
      * Follows this convention:
      * 
      * <pre>
-     * ${user_home}/.${application}/layouts/${pageId}.xml
+     * ${user_home}/.${application}/vldocking/${pageId}.xml
      * </pre>
      * 
      * <dl>
@@ -107,7 +118,7 @@ public class BbVLDockingApplicationPage<T> extends VLDockingApplicationPage  {
      * <dd>The descriptor id.
      * </dl>
      */
-    private static final MessageFormat USER_LAYOUT_LOCATION_FMT = new MessageFormat("{0}/.{1}/layouts/{2}.xml");
+    private static final MessageFormat USER_LAYOUT_FMT = new MessageFormat("{0}/.{1}/vldocking/{2}.xml");
 
     /**
      * Message format for building default layout locations.
@@ -124,7 +135,7 @@ public class BbVLDockingApplicationPage<T> extends VLDockingApplicationPage  {
      * </dl>
      * 
      */
-    private static final MessageFormat INITIAL_LAYOUT_LOCATION_FMT = new MessageFormat("/META-INF/layouts/{0}.xml");
+    private static final MessageFormat INITIAL_LAYOUT_FMT = new MessageFormat("/META-INF/vldocking/{0}.xml");
 
     /**
      * The identifier of the page to be used when page descriptor identifier is null.
@@ -137,14 +148,24 @@ public class BbVLDockingApplicationPage<T> extends VLDockingApplicationPage  {
     private static final Logger LOGGER = LoggerFactory.getLogger(BbVLDockingApplicationPage.class);
 
     /**
+     * The successfully build layout resource.
+     */
+    private Resource layout;
+
+    /**
+     * The user layout resource.
+     */
+    private Resource userLayout;
+
+    /**
      * The initial layout resource.
      */
     private Resource initialLayout;
 
     /**
-     * The user layout resource.
+     * The auto layout resource.
      */
-    private Resource userLayout;   
+    private Resource autoLayout;
 
     /**
      * Creates the page given its window and page descriptor.
@@ -160,59 +181,110 @@ public class BbVLDockingApplicationPage<T> extends VLDockingApplicationPage  {
     }
 
     /**
-     * Resets the page layout saving actual state and restoring the initial one.
+     * Gets the layout.
+     * 
+     * @return the layout.
      */
-    public void resetLayout() {
+    public final Resource getLayout() {
 
-        Assert.state(this.isControlCreated(), "this.isControlCreated() should be true");
-
-        final DockingDesktop dockingDesktop = (DockingDesktop) this.getControl();
-
-        if (this.getUserLayout() != null) {
-            this.saveLayout(dockingDesktop, this.getUserLayout());
-        }
-        this.buildLayout(dockingDesktop, this.getInitialLayout());
+        return this.layout;
     }
 
     /**
-     * Builds a desktop layout given the appropiate resource configuration.
+     * Builds a desktop layout given a list of candidate resources.
+     * 
+     * @param dockingDesktop
+     *            the docking desktop.
+     * @param layouts
+     *            the list of candidate layouts to be used.
+     * @param exceptions
+     *            the exceptions registered from previous invocations.
+     * 
+     * @return <code>true</code> if success and <code>false</code> in other case.
+     * 
+     * @see #buildLayout(DockingDesktop, Resource, List)
+     */
+    public Boolean buildLayout(DockingDesktop dockingDesktop, List<Resource> layouts, List<Exception> exceptions) {
+
+        Assert.notNull(layouts, "layouts");
+
+        Boolean layoutSuccess = Boolean.FALSE;
+
+        final Iterator<Resource> itr = layouts.iterator();
+        while (itr.hasNext() && !layoutSuccess) {
+
+            final Resource layout = itr.next();
+            if ((layout == null) || layout.exists()) {
+                layoutSuccess = this.buildLayout(dockingDesktop, layout, exceptions);
+            }
+        }
+
+        return layoutSuccess;
+    }
+
+    /**
+     * Builds a desktop layout given the appropiate resource.
      * <p />
-     * If an exception is raised then its envolved and rethrown using an <code>ApplicationPageException</code>.
+     * If an exception is raised then it's wrapped and rethrown using an <code>ApplicationPageException</code>.
      * 
      * @param dockingDesktop
      *            the docking desktop.
      * @param layout
      *            the layout to be used.
+     * @param exceptions
+     *            the exceptions registered from previous invocations.
+     * 
+     * @return <code>true</code> if success and <code>false</code> in other case.
+     * 
      */
-    public void buildLayout(DockingDesktop dockingDesktop, Resource layout) {
+    public Boolean buildLayout(DockingDesktop dockingDesktop, Resource layout, List<Exception> exceptions) {
 
         Assert.notNull(dockingDesktop, "dockingDesktop");
+        Assert.notNull(exceptions, "exceptions");
 
         if (layout == null) {
             this.getPageDescriptor().buildInitialLayout(this);
-            return;
+
+            return Boolean.TRUE;
         }
 
         try {
-            // Force an exception if file doesn't exist
-            // layout.getFile();
+            // (JAF), 20100411, deprecated, resource may be a ByteArrayResource
+            // layout.getFile(); // Force an exception if file doesn't exist
 
             // Read layout file
             final InputStream in = layout.getInputStream();
             dockingDesktop.getContext().readXML(in);
             in.close();
 
+            // Register the employed layout (useful for testing purposes)
+            this.setLayout(layout);
+
         } catch (IOException e) {
-            throw new ApplicationPageException("Error reading workspace layout \"" + layout + "\"", e, this.getId());
+            final String msg = BbVLDockingApplicationPage.LAYOUT_BUILDING_FAILED_FMT.format(new Object[] { layout });
+            exceptions.add(new ApplicationPageException(msg, e, this.getId()));
+
+            return Boolean.FALSE;
+
         } catch (SAXException e) {
-            throw new ApplicationPageException("Error reading workspace layout \"" + layout + "\"", e, this.getId());
+            final String msg = BbVLDockingApplicationPage.LAYOUT_BUILDING_FAILED_FMT.format(new Object[] { layout });
+            exceptions.add(new ApplicationPageException(msg, e, this.getId()));
+
+            return Boolean.FALSE;
+
         } catch (ParserConfigurationException e) {
-            throw new ApplicationPageException("Error reading workspace layout \"" + layout + "\"", e, this.getId());
+            final String msg = BbVLDockingApplicationPage.LAYOUT_BUILDING_FAILED_FMT.format(new Object[] { layout });
+            exceptions.add(new ApplicationPageException(msg, e, this.getId()));
+
+            return Boolean.FALSE;
+
         } finally {
             if (ArrayUtils.isEmpty(dockingDesktop.getDockables())) {
                 this.getPageDescriptor().buildInitialLayout(this);
             }
         }
+
+        return Boolean.TRUE;
     }
 
     /**
@@ -247,6 +319,38 @@ public class BbVLDockingApplicationPage<T> extends VLDockingApplicationPage  {
     }
 
     /**
+     * Resets the page layout saving actual state and restoring the initial one.
+     * <p>
+     * <b>Note</b> when there is no initial layout then auto layout must be remembered from the beginning (since
+     * re-calculating it may don't take into account all the page components).
+     * 
+     * @see #saveLayout(DockingDesktop, Resource)
+     * @see #buildLayout(DockingDesktop, List, List)
+     */
+    public void resetLayout() {
+
+        Assert.state(this.isControlCreated(), "this.isControlCreated() should be true");
+
+        final List<Exception> exceptions = new ArrayList<Exception>();
+
+        final DockingDesktop dockingDesktop = (DockingDesktop) this.getControl();
+
+        // 1.Save current layout
+        if (this.getUserLayout() != null) {
+            this.saveLayout(dockingDesktop, this.getUserLayout());
+        }
+
+        // 2.Restore layout
+        final List<Resource> layouts = Arrays.asList(//
+                new Resource[] { this.getInitialLayout(), this.getAutoLayout(), null });
+
+        final Boolean layoutSuccess = this.buildLayout(dockingDesktop, layouts, exceptions);
+        if (!layoutSuccess && !exceptions.isEmpty()) {
+            throw new ApplicationPageException(exceptions.get(0), this.getId());
+        }
+    }
+
+    /**
      * {@inheritDoc}
      */
     @Override
@@ -255,6 +359,18 @@ public class BbVLDockingApplicationPage<T> extends VLDockingApplicationPage  {
         final String id = super.getId();
 
         return (id != null) ? id : BbVLDockingApplicationPage.PAGE_ID_IF_NULL;
+    }
+
+    /**
+     * Sets the initial layout.
+     * 
+     * @param initialLayout
+     *            the initial layout to set.
+     */
+    public void setInitialLayout(Resource initialLayout) {
+
+        this.initialLayout = initialLayout;
+        super.setInitialLayout(initialLayout);
     }
 
     /**
@@ -278,95 +394,122 @@ public class BbVLDockingApplicationPage<T> extends VLDockingApplicationPage  {
     }
 
     /**
-     * Creates the control using three attempts.
-     * <p />
-     * It follows this order:
+     * Creates the page control. Later tries to build the layout in the following order:
      * <ol>
-     * <li>{@link #getLayout()}
+     * <li>{@link #getUserLayout()}
      * <li>{@link #getInitialLayout()}
+     * <li>{@link #getAutoLayout()}
      * <li><code>null</code>
      * </ol>
      * 
      * @return the page control.
      * 
      * @see VLDockingApplicationPage#createControl
+     * @see #buildLayout(DockingDesktop, List, List)
      */
     @Override
     protected JComponent createControl() {
 
-        final List<Exception> errors = new ArrayList<Exception>();
+        final List<Exception> exceptions = new ArrayList<Exception>();
 
-        DockingDesktop dockingDesktop = this.doCreateControl(this.getLayout(), errors);
-        if (dockingDesktop == null) {
-            dockingDesktop = this.doCreateControl(this.getInitialLayout(), errors);
-        }
-        if (dockingDesktop == null) {
-            dockingDesktop = this.doCreateControl(null, errors);
-        }
-        if (dockingDesktop == null) {
-            if (!errors.isEmpty()) {
-                throw new ApplicationPageException(errors.get(0), this.getId());
+        // 1.Create the page control (AKA docking desktop)
+        final DockingDesktop dockingDesktop = this.doCreateControl(exceptions);
+        if (dockingDesktop != null) {
+
+            // 2.Build page layouts
+            final List<Resource> layouts = Arrays.asList(//
+                    new Resource[] { this.getUserLayout(), this.getInitialLayout(), this.getAutoLayout(), null });
+
+            final Boolean layoutSuccess = this.buildLayout(dockingDesktop, layouts, exceptions);
+            if (!layoutSuccess && !exceptions.isEmpty()) {
+                throw new ApplicationPageException(exceptions.get(0), this.getId());
             }
+
+        } else if (!exceptions.isEmpty()) {
+            throw new ApplicationPageException(exceptions.get(0), this.getId());
         }
 
         return dockingDesktop;
     }
 
     /**
-     * If user layout exists then returns it, else returns the initial layout.
+     * Gets the user layout.
+     * <p>
+     * Never returns <code>null</code> but note returned resource may not exist.
      * 
-     * @return the layout to be used, may be <code>null</code> if initial layout is not set.
+     * @return the user layout.
+     * 
+     * @see #USER_LAYOUT_LOCATION_FMT
      */
-    protected Resource getLayout() {
+    protected final Resource getUserLayout() {
 
-        final Resource initialLayout = this.getInitialLayout();
-        final Resource userLayout = this.getUserLayout();
+        if (this.userLayout == null) {
+            final String userHome = SystemUtils.getUserHome().getAbsolutePath();
+            final String applicationName = this.getApplication().getName();
 
-        final Resource layout = ((userLayout != null) && userLayout.exists()) ? userLayout : initialLayout;
+            final String userLayoutLocation = BbVLDockingApplicationPage.USER_LAYOUT_FMT.format(//
+                    new String[] { userHome, applicationName, this.getPageDescriptor().getId() });
 
-        return layout;
+            this.setUserLayout(new FileSystemResource(userLayoutLocation));
+        }
+
+        return this.userLayout;
     }
 
     /**
      * Gets the initial layout.
+     * <p>
+     * Never returns <code>null</code> but note returned resource may not exist.
      * 
      * @return the initial layout.
      */
     protected final Resource getInitialLayout() {
 
+        if ((this.initialLayout == null) && (this.getPageDescriptor() instanceof VLDockingPageDescriptor)) {
+
+            this.setInitialLayout(((VLDockingPageDescriptor) this.getPageDescriptor()).getInitialLayout());
+        }
+
+        // If initial layout goes on being null
         if (this.initialLayout == null) {
-            this.initialLayout = this.createInitialLayout();
+            final String location = BbVLDockingApplicationPage.INITIAL_LAYOUT_FMT.format(//
+                    new String[] { this.getPageDescriptor().getId() });
+
+            this.setInitialLayout(new ClassPathResource(location));
         }
 
         return this.initialLayout;
     }
 
     /**
-     * Gets the initial layout.
+     * Gets the auto layout.
      * <p>
-     * Ensures initial layout exists.
+     * Never returns <code>null</code>.
      * 
-     * @return the initial layout.
+     * @return the auto layout.
      */
-    protected Resource createInitialLayout() {
+    protected final Resource getAutoLayout() {
 
-        Resource layout;
+        if (this.autoLayout == null) {
 
-        if (this.getPageDescriptor() instanceof VLDockingPageDescriptor) {
-            layout = ((VLDockingPageDescriptor) this.getPageDescriptor()).getInitialLayout();
-        } else {
-            layout = new ClassPathResource(BbVLDockingApplicationPage.INITIAL_LAYOUT_LOCATION_FMT.format(//
-                    new String[] { this.getPageDescriptor().getId() }));
-        }
-
-        if (!layout.exists()) {
-            final ApplicationPageConfigurer<?> applicationPageConfigurer = (ApplicationPageConfigurer) this
-                    .getService(ApplicationPageConfigurer.class);
+            // No me gusta esta forma de obtener el contexto
+            final VelocityEngine vm = this.getApplicationContext().getBean("velocityEngine", VelocityEngine.class);
+            final ApplicationPageConfigurer<?> applicationPageConfigurer = (ApplicationPageConfigurer<?>) //
+            this.getService(ApplicationPageConfigurer.class);
 
             // TODO, (JAF), 20100408, applicationPageConfigurer is not compulsory
             final Map<String, List<? extends PageComponent>> classification = applicationPageConfigurer
                     .classifyApplicationPage(this);
 
+            /*
+             * Trait unknown views as master views: *This code should be moved to the template*
+             */
+            final List<PageComponent> newMasterViews = new ArrayList<PageComponent>();
+            newMasterViews.addAll(classification.get(DefaultApplicationPageConfigurer.BbViewType.MASTER.name()));
+            newMasterViews.addAll(classification.get(DefaultApplicationPageConfigurer.BbViewType.UNKNOWN.name()));
+            classification.put(DefaultApplicationPageConfigurer.BbViewType.MASTER.name(), newMasterViews);
+
+            // Merge context
             final Map<String, Object> context = new HashMap<String, Object>();
             context.put("classification", classification);
             context.put("MASTER_TYPE", DefaultApplicationPageConfigurer.BbViewType.MASTER.name());
@@ -375,80 +518,57 @@ public class BbVLDockingApplicationPage<T> extends VLDockingApplicationPage  {
             context.put("VALIDATION_TYPE", DefaultApplicationPageConfigurer.BbViewType.VALIDATION.name());
             context.put("UNKNOWN_TYPE", DefaultApplicationPageConfigurer.BbViewType.UNKNOWN.name());
 
-            final String sb = this.velocityTest(context);
+            final String layout = VelocityEngineUtils.mergeTemplateIntoString(vm, "vldocking_layout.vm", context);
 
-            layout = new ByteArrayResource(sb.getBytes());
+            this.setAutoLayout(new ByteArrayResource(layout.getBytes()));
         }
 
-        return layout;
+        return this.autoLayout;
     }
 
     /**
-     * Gets the user layout.
+     * Creates the page control without layout building.
      * 
-     * @return the user layout.
-     * 
-     * @see #USER_LAYOUT_LOCATION_FMT
-     */
-    protected Resource getUserLayout() {
-
-        if ((this.userLayout == null) && (this.getInitialLayout() != null)) {
-            final String userHome = SystemUtils.getUserHome().getAbsolutePath();
-            final String applicationName = this.getApplication().getName();
-
-            final String userLayoutLocation = BbVLDockingApplicationPage.USER_LAYOUT_LOCATION_FMT.format(//
-                    new String[] { userHome, applicationName, this.getPageDescriptor().getId() });
-
-            this.userLayout = new FileSystemResource(userLayoutLocation);
-        }
-
-        return this.userLayout;
-    }
-
-    /**
-     * Creates the page control with the given layout.
-     * 
-     * @param layout
-     *            the layout.
      * @param exceptions
      *            the exceptions registered from previous invocations.
      * 
      * @return the page control.
      */
     @SuppressWarnings("unchecked")
-    private DockingDesktop doCreateControl(Resource layout, List<Exception> exceptions) {
+    private DockingDesktop doCreateControl(List<Exception> exceptions) {
+
+        Assert.notNull(exceptions, "exceptions");
+
+        DockingDesktop control = null;
 
         // Recover from previous failures
         final DockingContext dockingContext = this.getDockingContext();
         final List<DockingDesktop> dockingDesktops = new ArrayList<DockingDesktop>(dockingContext.getDesktopList());
-        for (final DockingDesktop dockingDesktop : dockingDesktops) {
-            dockingContext.removeDesktop(dockingDesktop);
+        for (final DockingDesktop oldDockingDesktop : dockingDesktops) {
+            dockingContext.removeDesktop(oldDockingDesktop);
         }
 
-        // 20091223, HACK, set temporally a null initial layout before calling
-        // super and restore the value later.
-        // This will avoid reading the same layout twice.
+        // 20091223, HACK, set temporally a null initial layout before calling super and restore the value later.
+        // This will avoid reading the same layout resource twice.
+        final Resource layout = this.getInitialLayout();
         super.setInitialLayout(null);
-
-        DockingDesktop dockingDesktop = null;
         try {
-            dockingDesktop = (DockingDesktop) super.createControl();
-            this.buildLayout(dockingDesktop, this.getLayout());
+            // (JAF), 20100411, super.createControl() does not trigger layout building since initial layout is
+            // intentionally set to null. Instead an explicit layout is specified throw #buildLayout
+            control = (DockingDesktop) super.createControl();
         } catch (Exception e) {
-
-            final String resourceDescription = (layout != null) ? layout.getDescription() : StringUtils.EMPTY;
-            final String message = BbVLDockingApplicationPage.PAGE_BUILDING_FAILED_FMT.format(//
-                    new String[] { this.getPageDescriptor().getId(), resourceDescription });
+            final String pageId = this.getPageDescriptor().getId();
+            final String message = BbVLDockingApplicationPage.PAGE_CREATION_FAILED_FMT.format(new String[] { pageId });
 
             BbVLDockingApplicationPage.LOGGER.error(message, e);
 
-            // (JAF), 20090720, register exception to be handled later
+            // (JAF), 20090720, remember exception to be handled later
             exceptions.add(e);
         } finally {
-            this.setInitialLayout(this.getInitialLayout());
+            this.setInitialLayout(layout);
         }
 
-        return dockingDesktop;
+        return control;
     }
 
     /**
@@ -465,7 +585,7 @@ public class BbVLDockingApplicationPage<T> extends VLDockingApplicationPage  {
         }
 
         // HACK, set temporally a null initial layout before calling super#close and restore the value later.
-        // This will avoid writing the layout twice.
+        // This will avoid writing the layout resource twice.
         super.setInitialLayout(null);
 
         final Resource layout = this.getUserLayout();
@@ -488,15 +608,44 @@ public class BbVLDockingApplicationPage<T> extends VLDockingApplicationPage  {
         return success;
     }
 
-    public final String velocityTest(Map<String, Object> context) {
+    /**
+     * Sets the layout.
+     * 
+     * @param layout
+     *            the layout to set.
+     */
+    private void setLayout(Resource layout) {
 
-        // "layout.vm"
+        // May be null
+        // Assert.notNull(layout, "layout");
 
-        // No me gusta esta forma de obtener el contexto
-        final VelocityEngine velocityEngine = this.getApplicationContext().getBean("velocityEngine", VelocityEngine.class);
-        
-        return VelocityEngineUtils.mergeTemplateIntoString(velocityEngine, "layout.vm", context);
-        // return null;
+        this.layout = layout;
+    }
+
+    /**
+     * Sets the user layout.
+     * 
+     * @param user
+     *            layout the user layout to set.
+     */
+    private void setUserLayout(Resource userLayout) {
+
+        Assert.notNull(userLayout, "userLayout");
+
+        this.userLayout = userLayout;
+    }
+
+    /**
+     * Sets the auto layout.
+     * 
+     * @param auto
+     *            layout the auto layout to set.
+     */
+    private void setAutoLayout(Resource autoLayout) {
+
+        Assert.notNull(autoLayout, "autoLayout");
+
+        this.autoLayout = autoLayout;
     }
 }
 
