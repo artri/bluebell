@@ -21,25 +21,100 @@
  */
 package org.bluebell.richclient.application.docking.vldocking;
 
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.Resource;
+import javax.swing.JComponent;
+
 import junit.framework.TestCase;
 
+import org.bluebell.richclient.application.ApplicationPageException;
 import org.bluebell.richclient.application.support.DefaultApplicationPageConfigurer;
+import org.bluebell.richclient.application.support.DefaultApplicationPageConfigurer.BbViewType;
+import org.bluebell.richclient.samples.simple.form.PersonChildForm;
+import org.bluebell.richclient.samples.simple.form.PersonSearchForm;
 import org.bluebell.richclient.test.AbstractBbSamplesTests;
+import org.junit.Before;
 import org.junit.Test;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.richclient.application.Application;
+import org.springframework.richclient.application.PageComponent;
+import org.springframework.richclient.application.PageDescriptor;
+import org.springframework.richclient.application.support.MultiViewPageDescriptor;
+import org.springframework.richclient.exceptionhandling.AbstractLoggingExceptionHandler;
+import org.springframework.richclient.exceptionhandling.RegisterableExceptionHandler;
+import org.springframework.richclient.form.AbstractForm;
+import org.springframework.test.context.ContextConfiguration;
 
 /**
  * 
  * 
  * @author <a href = "mailto:julio.arguello@gmail.com" >Julio Argüello (JAF)</a>
  */
+@ContextConfiguration
 public class TestBbVLDockingApplicationPage extends AbstractBbSamplesTests {
 
     /**
      * The default application page configurer implementation.
      */
-    @Autowired
+    @Resource
     public DefaultApplicationPageConfigurer<?> defaultApplicationPageConfigurer;
+
+    /**
+     * A page descriptor containing a failed view descriptor.
+     * 
+     * @see #testCreateControlThrowsException()
+     */
+    @Resource
+    public PageDescriptor failedViewPageDescriptor;
+
+    /**
+     * A page descriptor with a valid explicit layout set.
+     * 
+     * @see #testBuildValidExplicitInitialLayout()
+     */
+    @Resource
+    public PageDescriptor validExplicitLayoutPageDescriptor;
+
+    /**
+     * A page descriptor with an invalid explicit layout set.
+     * 
+     * @see #testBuildInvalidExplicitInitialLayout()
+     */
+    @Resource
+    public PageDescriptor invalidExplicitLayoutPageDescriptor;
+
+    /**
+     * A page descriptor with a valid implicit layout.
+     * 
+     * @see #testBuildValidImplicitInitialLayout()
+     */
+    @Resource
+    public PageDescriptor validImplicitLayoutPageDescriptor;
+
+    /**
+     * A page descriptor with an invalid implicit layout.
+     * 
+     * @see #testBuildInvalidImplicitInitialLayout()
+     */
+    @Resource
+    public PageDescriptor invalidImplicitLayoutPageDescriptor;
+
+    /**
+     * A page descriptor with no components.
+     * 
+     * @see #testBuildEmptyPageAutoLayout()
+     */
+    @Resource
+    public PageDescriptor emptyPageDescriptor;
+
+    /**
+     * A page descriptor with multiple components, including to detail view descriptors and two search vies descriptors.
+     * 
+     * @see #testBuildWholePageAutoLayout()
+     */
+    @Resource
+    public PageDescriptor wholePageDescriptor;
 
     /**
      * {@inheritDoc}
@@ -50,37 +125,282 @@ public class TestBbVLDockingApplicationPage extends AbstractBbSamplesTests {
         super.testDependencyInjection();
 
         TestCase.assertNotNull(this.defaultApplicationPageConfigurer);
+        TestCase.assertNotNull(this.failedViewPageDescriptor);
+        TestCase.assertNotNull(this.validExplicitLayoutPageDescriptor);
+        TestCase.assertNotNull(this.invalidExplicitLayoutPageDescriptor);
+        TestCase.assertNotNull(this.validImplicitLayoutPageDescriptor);
+        TestCase.assertNotNull(this.invalidImplicitLayoutPageDescriptor);
+        TestCase.assertNotNull(this.emptyPageDescriptor);
+        TestCase.assertNotNull(this.wholePageDescriptor);
     }
 
     /**
      * TODO test perspective saving.
      */
-    @Test
-    public void todo() {
 
+    /**
+     * Tests page control creation throws an exception when there is a failure during any page component control
+     * creation.
+     */
+    @Test
+    public void testCreateControlFailed() {
+
+        final String pageId = this.failedViewPageDescriptor.getId();
+
+        // Raise page control creation
+        this.initializeVariables(this.failedViewPageDescriptor);
+
+        // Ensure expected exception is thrown
+        final Throwable cause = RememberExceptionHandler.getLastThrowable();
+        TestCase.assertNotNull("cause", cause);
+        TestCase.assertTrue(cause instanceof ApplicationPageException);
+        TestCase.assertEquals(((ApplicationPageException) cause).getPageId(), pageId);
+
+        // Ensure employed layout is the expected one
+        final BbVLDockingApplicationPage<?> vlPage = (BbVLDockingApplicationPage<?>) this.getApplicationPage();
+        TestCase.assertEquals(vlPage.getAutoLayout(), vlPage.getLayout());
     }
 
+    /**
+     * Tests everything works fine after trying to build a page with a valid explicit layout.
+     */
     @Test
-    public void testVelocity() {
+    public void testBuildValidExplicitInitialLayout() {
 
-        // TODO, (JAF), 20100410, review this test
+        // Raise page control creation
+        this.initializeVariables(this.validExplicitLayoutPageDescriptor);
 
-        // this.initializeVariables(this.getPersonPageDescriptor());
-        //        
-        // final Map<String, List<? extends PageComponent>> classification = //
-        // this.defaultApplicationPageConfigurer.classifyApplicationPage(this.getApplicationPage());
-        //
-        // final Map<String, Object> context = new HashMap<String, Object>();
-        // context.put("classification", classification);
-        // context.put("MASTER_TYPE", DefaultApplicationPageConfigurer.BbViewType.MASTER.name());
-        // context.put("DETAIL_TYPE", DefaultApplicationPageConfigurer.BbViewType.DETAIL.name());
-        // context.put("SEARCH_TYPE", DefaultApplicationPageConfigurer.BbViewType.SEARCH.name());
-        // context.put("VALIDATION_TYPE", DefaultApplicationPageConfigurer.BbViewType.VALIDATION.name());
-        // context.put("UNKNOWN_TYPE", DefaultApplicationPageConfigurer.BbViewType.UNKNOWN.name());
-        //        
-        //
-        // final StringBuffer sb = BbVLDockingApplicationPage.velocityTest(context);
-        // System.out.println(sb);
+        // Ensure no exception is thrown
+        final Throwable cause = RememberExceptionHandler.getLastThrowable();
+        TestCase.assertNull("cause", cause);
+
+        // Ensure employed layout is the expected one
+        final BbVLDockingApplicationPage<?> vlPage = (BbVLDockingApplicationPage<?>) this.getApplicationPage();
+        TestCase.assertEquals(vlPage.getInitialLayout(), vlPage.getLayout());
     }
 
+    /**
+     * Tests non exception is thrown after trying to build a non existing explicit layout.
+     */
+    @Test
+    public void testBuildInvalidExplicitInitialLayout() {
+
+        // Raise page control creation
+        this.initializeVariables(this.invalidExplicitLayoutPageDescriptor);
+
+        // Ensure no exception is thrown
+        final Throwable cause = RememberExceptionHandler.getLastThrowable();
+        TestCase.assertNull("cause", cause);
+
+        // Ensure employed layout is the expected one
+        final BbVLDockingApplicationPage<?> vlPage = (BbVLDockingApplicationPage<?>) this.getApplicationPage();
+        TestCase.assertEquals(vlPage.getAutoLayout(), vlPage.getLayout());
+    }
+
+    /**
+     * Tests everything works fine after trying to build a page with a valid implicit layout.
+     */
+    @Test
+    public void testBuildValidImplicitInitialLayout() {
+
+        // Raise page control creation
+        this.initializeVariables(this.validImplicitLayoutPageDescriptor);
+
+        // Ensure no exception is thrown
+        final Throwable cause = RememberExceptionHandler.getLastThrowable();
+        TestCase.assertNull("cause", cause);
+
+        // Ensure employed layout is the expected one
+        final BbVLDockingApplicationPage<?> vlPage = (BbVLDockingApplicationPage<?>) this.getApplicationPage();
+        TestCase.assertEquals(vlPage.getInitialLayout(), vlPage.getLayout());
+    }
+
+    /**
+     * Tests everything works fine after trying to build a page with an invalid implicit layout.
+     */
+    @Test
+    public void testBuildInvalidImplicitInitialLayout() {
+
+        // Raise page control creation
+        this.initializeVariables(this.invalidImplicitLayoutPageDescriptor);
+
+        // Ensure no exception is thrown
+        final Throwable cause = RememberExceptionHandler.getLastThrowable();
+        TestCase.assertNull("cause", cause);
+
+        // Ensure employed layout is the expected one
+        final BbVLDockingApplicationPage<?> vlPage = (BbVLDockingApplicationPage<?>) this.getApplicationPage();
+        TestCase.assertEquals(vlPage.getAutoLayout(), vlPage.getLayout());
+    }
+
+    /**
+     * Tests everything works fine after trying to build an empty page with an auto layout.
+     */
+    @Test
+    public void testBuildEmptyPageAutoLayout() {
+
+        // Raise page control creation
+        this.initializeVariables(this.emptyPageDescriptor);
+
+        // Ensure this page description is really empty
+        final MultiViewPageDescriptor multiViewPageDescriptor = (MultiViewPageDescriptor) this.emptyPageDescriptor;
+        TestCase.assertTrue(multiViewPageDescriptor.getViewDescriptors().isEmpty());
+
+        // Ensure no exception is thrown
+        final Throwable cause = RememberExceptionHandler.getLastThrowable();
+        TestCase.assertNull("cause", cause);
+
+        // Ensure employed layout is the expected one
+        final BbVLDockingApplicationPage<?> vlPage = (BbVLDockingApplicationPage<?>) this.getApplicationPage();
+        TestCase.assertEquals(vlPage.getAutoLayout(), vlPage.getLayout());
+    }
+
+    /**
+     * Tests everything works fine after trying to build an whole page with an auto layout.
+     */
+    @Test
+    public void testBuildWholePageAutoLayout() {
+
+        // Raise page control creation
+        this.initializeVariables(this.wholePageDescriptor);
+
+        // Ensure this page description is really whole
+        final Map<String, List<? extends PageComponent>> classification = //
+        this.defaultApplicationPageConfigurer.classifyApplicationPage(this.getApplicationPage());
+
+        TestCase.assertTrue(classification.get(BbViewType.DETAIL.name()).size() == 2);
+        TestCase.assertTrue(classification.get(BbViewType.SEARCH.name()).size() == 2);
+
+        // Ensure no exception is thrown
+        final Throwable cause = RememberExceptionHandler.getLastThrowable();
+        TestCase.assertNull("cause", cause);
+
+        // Ensure employed layout is the expected one
+        final BbVLDockingApplicationPage<?> vlPage = (BbVLDockingApplicationPage<?>) this.getApplicationPage();
+        TestCase.assertEquals(vlPage.getAutoLayout(), vlPage.getLayout());
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void afterPropertiesSet() throws Exception {
+
+        super.afterPropertiesSet();
+
+        final RegisterableExceptionHandler exceptionHandler = //
+        Application.instance().getLifecycleAdvisor().getRegisterableExceptionHandler();
+
+        TestCase.assertTrue("exceptionHandler instanceof RethrowRegisterableExceptionHandler", //
+                exceptionHandler instanceof RememberExceptionHandler);
+    }
+
+    /**
+     * Ensures last exception thrown is <code>null</code> before test execution.
+     */
+    @Before
+    public final void resetLastThrowable() {
+
+        TestBbVLDockingApplicationPage.RememberExceptionHandler.reset();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void initializeVariables(PageDescriptor pageDescriptor) {
+
+        super.initializeVariables(pageDescriptor);
+    }
+
+    /**
+     * Form implementation equals to {@link PersonChildForm} except on identifier.
+     * 
+     * @author <a href = "mailto:julio.arguello@gmail.com" >Julio Argüello (JAF)</a>
+     */
+    public static class PersonDetailFormBis extends PersonChildForm {
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public String getId() {
+
+            return PersonDetailFormBis.class.getName();
+        }
+    }
+
+    /**
+     * Form implementation equals to {@link PersonSearchForm} except on identifier.
+     * 
+     * @author <a href = "mailto:julio.arguello@gmail.com" >Julio Argüello (JAF)</a>
+     */
+    public static class PersonSearchFormBis extends PersonSearchForm {
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public String getId() {
+
+            return PersonSearchFormBis.class.getName();
+        }
+    }
+
+    /**
+     * Form implementation that raises an exception during form control creation.
+     * 
+     * @author <a href = "mailto:julio.arguello@gmail.com" >Julio Argüello (JAF)</a>
+     */
+    public static class FailedForm extends AbstractForm {
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        protected JComponent createFormControl() {
+
+            throw new IllegalStateException("IllegalStateException forced");
+        }
+    }
+
+    /**
+     * Registerable exception handler that remembers last exception thrown.
+     * 
+     * @author <a href = "mailto:julio.arguello@gmail.com" >Julio Argüello (JAF)</a>
+     */
+    public static class RememberExceptionHandler extends AbstractLoggingExceptionHandler {
+
+        /**
+         * The last throwable thrown.
+         */
+        private static Throwable lastThrowable;
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public void notifyUserAboutException(Thread thread, Throwable throwable) {
+
+            RememberExceptionHandler.lastThrowable = throwable;
+        }
+
+        /**
+         * Gets the last throwable thrown.
+         * 
+         * @return the last throwable thrown.
+         */
+        public static Throwable getLastThrowable() {
+
+            return RememberExceptionHandler.lastThrowable;
+        }
+
+        /**
+         * Resets the last throwable thrown.
+         */
+        public static void reset() {
+
+            RememberExceptionHandler.lastThrowable = null;
+        }
+    }
 }

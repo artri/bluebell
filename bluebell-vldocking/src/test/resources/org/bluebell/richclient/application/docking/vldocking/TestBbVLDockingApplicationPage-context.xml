@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    Copyright (C) 2009 Julio Argüello <julio.arguello@gmail.com>
+
+    This file is part of Bluebell VLDocking.
+
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+            http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+
+-->
+
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:util="http://www.springframework.org/schema/util" xmlns:p="http://www.springframework.org/schema/p"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
+		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.0.xsd">
+	<!--
+		Bean: defaultPropertyPlaceholderConfigurer Usage: platform required Description: This configures all placeholders
+		defined in the application context. Note "null" string is used for null values and system properties override those
+		defined in properties files.
+	-->
+	<bean id="testPropertyPlaceholderConfigurer" parent="defaultPropertyPlaceholderConfigurer" p:order="5"
+		p:location="classpath:/org/bluebell/richclient/application/docking/vldocking/TestBbVLDockingApplicationPage.properties" />
+
+	<!--
+		An exception handler that remembers last exception thrown.
+	-->
+	<bean id="rememberExceptionHandler"
+		class="org.bluebell.richclient.application.docking.vldocking.TestBbVLDockingApplicationPage$RememberExceptionHandler"
+		p:exceptionPurger-ref="${richclient.exceptionPurger}" />
+
+	<!--
+		A page descriptor containing a failed view descriptor.
+	-->
+	<bean id="failedViewPageDescriptor" parent="abstractPageDescriptor">
+		<property name="viewDescriptors">
+			<list>
+				<value>failedViewDescriptor</value>
+			</list>
+		</property>
+	</bean>
+
+	<!--
+		A page descriptor with a valid explicit layout.
+	-->
+	<bean id="validExplicitLayoutPageDescriptor" class="org.springframework.richclient.application.docking.vldocking.VLDockingPageDescriptor"
+		parent="personPageDescriptor" p:initialLayout="classpath:/org/bluebell/richclient/application/docking/vldocking/personPageDescriptor.xml" />
+
+	<!--
+		A page descriptor with a invalid explicit layout.
+	-->
+	<bean id="invalidExplicitLayoutPageDescriptor" class="org.springframework.richclient.application.docking.vldocking.VLDockingPageDescriptor"
+		parent="personPageDescriptor" p:initialLayout="this_file_does_not_exist" />
+
+	<!--
+		A page descriptor with a valid explicit layout.
+	-->
+	<bean id="validImplicitLayoutPageDescriptor" class="org.springframework.richclient.application.docking.vldocking.VLDockingPageDescriptor"
+		parent="personPageDescriptor" />
+
+	<!--
+		A page descriptor with a invalid explicit layout.
+	-->
+	<bean id="invalidImplicitLayoutPageDescriptor" class="org.springframework.richclient.application.docking.vldocking.VLDockingPageDescriptor"
+		parent="personPageDescriptor" />
+
+
+	<!--
+		An page descriptor with no components.
+	-->
+	<bean id="emptyPageDescriptor" class="org.springframework.richclient.application.docking.vldocking.VLDockingPageDescriptor"
+		parent="personPageDescriptor">
+		<property name="viewDescriptors">
+			<list merge="false">
+			</list>
+		</property>
+	</bean>
+
+	<!--
+		A whole page descriptor with two detail views and two search views.
+	-->
+	<bean id="wholePageDescriptor" class="org.springframework.richclient.application.docking.vldocking.VLDockingPageDescriptor"
+		parent="personPageDescriptor">
+		<property name="viewDescriptors">
+			<list merge="true">
+				<idref bean="personDetailViewDescriptorBis" />
+				<idref bean="personSearchViewDescriptorBis" />
+			</list>
+		</property>
+	</bean>
+
+	<!--
+		A view descriptor that fails form control creation.
+	-->
+	<bean id="failedViewDescriptor" parent="abstractViewDescriptor">
+		<property name="viewProperties">
+			<util:map>
+				<entry key="formClass" value="org.bluebell.richclient.application.docking.vldocking.TestBbVLDockingApplicationPage$FailedForm" />
+			</util:map>
+		</property>
+	</bean>
+
+	<!--
+		A view descriptor equals to personDetailViewDescriptor.
+	-->
+	<bean id="personDetailViewDescriptorBis" parent="personDetailViewDescriptor">
+		<property name="viewProperties">
+			<util:map>
+				<entry key="formClass"
+					value="org.bluebell.richclient.application.docking.vldocking.TestBbVLDockingApplicationPage$PersonDetailFormBis" />
+			</util:map>
+		</property>
+	</bean>
+
+	<!--
+		A view descriptor equals to personSearchViewDescriptor.
+	-->
+	<bean id="personSearchViewDescriptorBis" parent="personSearchViewDescriptor">
+		<property name="viewProperties">
+			<util:map>
+				<entry key="formClass"
+					value="org.bluebell.richclient.application.docking.vldocking.TestBbVLDockingApplicationPage$PersonSearchFormBis" />
+			</util:map>
+		</property>
+	</bean>
+
+</beans>
