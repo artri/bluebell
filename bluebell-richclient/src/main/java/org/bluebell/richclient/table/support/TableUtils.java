@@ -266,19 +266,25 @@ public final class TableUtils {
      * 
      * @param <Q>
      *            the type of the rows.
-     * @param tableModel
-     *            the table model.
+     * @param table
+     *            the table.
      * 
      * @return the visible entities.
      */
     @SuppressWarnings("unchecked")
-    public static <Q> List<Q> getVisibleEntities(GlazedTableModel tableModel) {
+    public static <Q> List<Q> getVisibleEntities(JTable table) {
 
-        Assert.notNull(tableModel, "tableModel");
+        Assert.notNull(table, "table");
+        Assert.notNull(table.getModel(), "table.getModel()");
+        Assert.isTrue(table.getModel() instanceof GlazedTableModel, "table.getModel() instanceof GlazedTableModel");
 
-        final List<Q> rows = new ArrayList<Q>(tableModel.getRowCount());
-        for (int i = 0; i < tableModel.getRowCount(); ++i) {
-            rows.add((Q) tableModel.getElementAt(i));
+        final GlazedTableModel tableModel = (GlazedTableModel) table.getModel();
+
+        final List<Q> rows = new ArrayList<Q>(table.getRowCount());
+        for (int i = 0; i < table.getRowCount(); ++i) {
+
+            // JAF, 20100411, fixed a bug retrieving elements: rows.add((Q) tableModel.getElementAt(i));
+            rows.add((Q) tableModel.getElementAt(TableUtils.getModelIndex(table, i)));
         }
 
         return rows;
@@ -311,10 +317,10 @@ public final class TableUtils {
         // Proceed only if ...
         final Boolean proceed;
         if (attach) {
-            // ... must attach and entities is not contained in eventList or...
+            // ... must attach and entities are not contained in eventList or...
             proceed = !CollectionUtils.isSubCollection(entities, eventList);
         } else {
-            // ... must replace and entities is not equals to eventList
+            // ... must replace and entities are not equals to eventList
             proceed = !CollectionUtils.isEqualCollection(entities, eventList);
         }
 
@@ -422,7 +428,7 @@ public final class TableUtils {
                 final Boolean proceed = !CollectionUtils.isEqualCollection(currentSelection, newSelection);
 
                 if (proceed) {
-                    final List<Q> visibleEntities = TableUtils.getVisibleEntities(tableModel);
+                    final List<Q> visibleEntities = TableUtils.getVisibleEntities(table);
 
                     table.clearSelection();
 

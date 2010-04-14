@@ -83,7 +83,7 @@ public class TabbedApplicationWindowFactory implements ApplicationWindowFactory 
         /**
          * The identifier of the empty page descriptor to be used when tab count is zero.
          */
-        public static final String EMPTY_PAGE_DESCRIPTOR_ID = "emptyPageDescriptor";
+        public static final String EMPTY_PAGE_DESCRIPTOR_ID = "_oOo_emptyPageDescriptor_oOo_";
 
         /**
          * The name of the tab control client property with the application page.

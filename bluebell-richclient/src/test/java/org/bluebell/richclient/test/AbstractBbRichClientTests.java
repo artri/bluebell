@@ -20,6 +20,7 @@ package org.bluebell.richclient.test;
 
 import java.awt.Component;
 
+import javax.annotation.PostConstruct;
 import javax.swing.JTextField;
 
 import org.bluebell.richclient.swing.util.SwingUtils;
@@ -47,6 +48,25 @@ public abstract class AbstractBbRichClientTests extends AbstractJUnit4SpringCont
     private Application application;
 
     /**
+     * The application launcher.
+     */
+    private static Boolean INITIALIZED = Boolean.FALSE;
+
+    /**
+     * Launchs the application, just once.
+     */
+    @PostConstruct
+    public void launch() {
+
+        if (!AbstractBbRichClientTests.INITIALIZED) {
+            new ApplicationLauncher(this.applicationContext);
+
+            AbstractBbRichClientTests.INITIALIZED = Boolean.TRUE;
+        }
+
+    }
+
+    /**
      * {@inheritDoc}
      */
     @Override
@@ -55,8 +75,6 @@ public abstract class AbstractBbRichClientTests extends AbstractJUnit4SpringCont
         // org.springframework.util.Assert is preferred (i.e.: over junit.framework.Assert)to avoid get binded to a
         // specific test framework
         Assert.notNull(this.applicationContext, "this.applicationContext");
-
-        new ApplicationLauncher(this.applicationContext);
     }
 
     /**

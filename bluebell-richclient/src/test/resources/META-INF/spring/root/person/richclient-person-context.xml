@@ -33,6 +33,7 @@
 				<value>personSearchViewDescriptor</value>
 				<value>personDetailViewDescriptor</value>
 				<value>validationViewDescriptor</value>
+				<value>initialViewDescriptor</value>
 			</list>
 		</property>
 	</bean>
@@ -61,7 +62,7 @@
 		</property>
 	</bean>
 
-	<bean id="personMessageSource" parent="richclientMessageSource">
+	<bean id="personMessageSource" parent="${personMessageSource.parent}">
 		<property name="basenames">
 			<list merge="true">
 				<value>org.bluebell.richclient.samples.simple.messages</value>

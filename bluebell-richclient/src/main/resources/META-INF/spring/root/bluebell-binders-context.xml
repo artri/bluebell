@@ -29,17 +29,17 @@
 	<!-- 
 		TODO
 	-->
-	<util:list id="bindersForPropertyNames" />
+	<util:list id="defaultBindersForPropertyNames" />
 
 	<!-- 
 		TODO
 	-->
-	<util:map id="bindersForPropertyTypes" key-type="java.lang.Class" />
+	<util:map id="defaultBindersForPropertyTypes" key-type="java.lang.Class" />
 	
 	<!--
 		TODO 
 	-->
-	<util:map id="bindersForControlTypes" key-type="java.lang.Class">
+	<util:map id="defaultBindersForControlTypes" key-type="java.lang.Class">
 		<entry key="org.springframework.richclient.components.ShuttleList" value-ref="shuttleListBinder" />
 	</util:map>
 

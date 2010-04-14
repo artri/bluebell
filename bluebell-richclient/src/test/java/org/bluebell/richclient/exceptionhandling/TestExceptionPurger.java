@@ -37,7 +37,7 @@ public class TestExceptionPurger extends AbstractBbRichClientTests {
      * The exception purger to be tested.
      */
     @Autowired
-    private ExceptionPurger exceptionPurger;
+    private ExceptionPurger defaultExceptionPurger;
 
     /**
      * Test the correct behaviour of dependency injection.
@@ -45,7 +45,7 @@ public class TestExceptionPurger extends AbstractBbRichClientTests {
     @Test
     public void testDependencyInjection() {
 
-        TestCase.assertNotNull(this.exceptionPurger);
+        TestCase.assertNotNull(this.defaultExceptionPurger);
     }
 
     /**
@@ -62,12 +62,12 @@ public class TestExceptionPurger extends AbstractBbRichClientTests {
 
         // Unwrapped RuntimeException
         runtimeException = new RuntimeException();
-        purged = this.exceptionPurger.purge(runtimeException);
+        purged = this.defaultExceptionPurger.purge(runtimeException);
         TestCase.assertTrue(runtimeException == purged);
 
         // Wrapped RuntimeException
         runtimeException = new RuntimeException(applicationException);
-        purged = this.exceptionPurger.purge(runtimeException);
+        purged = this.defaultExceptionPurger.purge(runtimeException);
         TestCase.assertTrue(applicationException == purged);
     }
 }

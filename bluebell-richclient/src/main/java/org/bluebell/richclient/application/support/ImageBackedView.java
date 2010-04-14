@@ -70,7 +70,7 @@ public class ImageBackedView extends AbstractView {
 
         return this.image;
     }
-    
+
     /**
      * {@inheritDoc}
      */

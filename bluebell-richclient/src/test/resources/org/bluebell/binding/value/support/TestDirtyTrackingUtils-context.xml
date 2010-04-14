@@ -27,7 +27,7 @@
 
 	<util:properties id="testDirtyTrackingUtilsProperties" location="classpath:/org/bluebell/binding/value/support/TestDirtyTrackingUtils.properties" />
 	
-	<bean id="messageSource" parent="richclientMessageSource">
+	<bean id="messageSource" parent="defaultMessageSource">
 		<property name="parentMessageSource">
 			<bean class="org.springframework.context.support.ResourceBundleMessageSource" p:basename="org.bluebell.binding.value.support.TestDirtyTrackingUtils" />
 		</property>

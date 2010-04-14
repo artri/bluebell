@@ -402,7 +402,7 @@ public abstract class AbstractBbTableMasterForm<T extends Object> extends Abstra
 
         // Old view and model indexes
         final List<Integer> oldViewIndexes = TableUtils.getSelectedViewIndexes(this.getMasterTable());
-        final List<Integer> oldModelIndexes = TableUtils.getModelIndexes(this.getMasterTable(), newViewIndexes);
+        final List<Integer> oldModelIndexes = TableUtils.getModelIndexes(this.getMasterTable(), oldViewIndexes);
 
         /*
          * Do changes silently (uninstall selection handler before and install later)

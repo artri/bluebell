@@ -258,12 +258,21 @@ public class DefaultApplicationPageConfigurer<T> implements ApplicationPageConfi
         // Configuration is repeatable, idempotent and fast.
         final State<T> state = this.doConfigureApplicationPage(applicationPage);
 
-        final Map<String, List<? extends PageComponent>> classification = new HashMap<String, List<? extends PageComponent>>();
+        // 
+        List<? extends PageComponent> masterViews = new ArrayList<PageComponent>();
+        List<? extends PageComponent> validationViews = new ArrayList<PageComponent>();
+        if (state.masterView != null) {
+            masterViews = Arrays.asList(state.masterView);
+        }
+        if (state.validationView != null) {
+            validationViews = Arrays.asList(state.validationView);
+        }
 
-        classification.put(BbViewType.MASTER.name(), Arrays.asList(state.masterView));
+        final Map<String, List<? extends PageComponent>> classification = new HashMap<String, List<? extends PageComponent>>();
+        classification.put(BbViewType.MASTER.name(), masterViews);
         classification.put(BbViewType.SEARCH.name(), ListUtils.unmodifiableList(state.searchViews));
         classification.put(BbViewType.DETAIL.name(), ListUtils.unmodifiableList(state.detailViews));
-        classification.put(BbViewType.VALIDATION.name(), Arrays.asList(state.validationView));
+        classification.put(BbViewType.VALIDATION.name(), validationViews);
         classification.put(BbViewType.UNKNOWN.name(), ListUtils.unmodifiableList(state.unknownPageComponents));
 
         return classification;
@@ -393,8 +402,6 @@ public class DefaultApplicationPageConfigurer<T> implements ApplicationPageConfi
                 }
         }
 
-        // FIXME, (JAF), 20090919, I would like forms were beans, in such a case application window injection could be
-        // done in a more natural way
         final Form form = view.getBackingForm();
 
         /*
@@ -572,7 +579,9 @@ public class DefaultApplicationPageConfigurer<T> implements ApplicationPageConfi
         // Validation checks
         Assert.notNull(pageComponent, "pageComponent");
 
-        state.unknownPageComponents.add(pageComponent);
+        if(!state.unknownPageComponents.contains(pageComponent)) {
+            state.unknownPageComponents.add(pageComponent);
+        }
     }
 
     /**
@@ -663,8 +672,8 @@ public class DefaultApplicationPageConfigurer<T> implements ApplicationPageConfi
             } catch (ClassNotFoundException e) {
                 if (DefaultApplicationPageConfigurer.LOGGER.isDebugEnabled()) {
                     DefaultApplicationPageConfigurer.LOGGER.debug(//
-                            DefaultApplicationPageConfigurer.UNKNOWN_FORM_CLASS_FMT
-                                    .format(new String[] { formClassName }));
+                            DefaultApplicationPageConfigurer.UNKNOWN_FORM_CLASS_FMT.format(//
+                                    new String[] { formClassName }));
                 }
             }
         }

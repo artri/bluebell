@@ -104,6 +104,14 @@ public class TestDefaultApplicationPageConfigurer extends AbstractBbSamplesTests
     private PageDescriptor rFullPageDescriptor;
 
     /**
+     * 
+     */
+    public TestDefaultApplicationPageConfigurer() {
+
+        // TODO Auto-generated constructor stub
+    }
+    
+    /**
      * {@inheritDoc}
      */
     @Override

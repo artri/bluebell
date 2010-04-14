@@ -239,7 +239,7 @@ public class TestAbstractBbTableMasterForm extends AbstractBbSamplesTests {
         final AbstractBbTableMasterForm<Person> masterForm = this.getBackingForm(this.getMasterView());
         final JTable masterTable = (JTable) masterForm.getMasterTable();
         final ListSelectionModel selectionModel = masterTable.getSelectionModel();
-         final int column = 0;
+        final int column = 0;
 
         // Show entities (randomly, ascendant and descendant ordered respectively)
         final List<Person> ranEntities = new ArrayList<Person>(TestAbstractBbTableMasterForm.PERSONS_1);
@@ -331,7 +331,7 @@ public class TestAbstractBbTableMasterForm extends AbstractBbSamplesTests {
         // EXPECTED: [1, 2, 3, -->[D]4<--]
         oldSelection = newSelection;
         newSelection = Arrays.asList(//
-                TestAbstractBbTableMasterForm.PERSONS_1.get(2), TestAbstractBbTableMasterForm.PERSONS_1.get(pos03));
+                TestAbstractBbTableMasterForm.PERSONS_1.get(pos03), TestAbstractBbTableMasterForm.PERSONS_1.get(2));
         this.doTestRequestUserConfirmation(masterForm, Boolean.FALSE, newSelection, ++requestCount, oldSelection);
 
         // Confirm multiple selection
@@ -454,10 +454,10 @@ public class TestAbstractBbTableMasterForm extends AbstractBbSamplesTests {
 
         Assert.notNull(table, "table");
         Assert.notNull(ascending, "ascending");
-        
+
         // The sort keys
         final List<RowSorter.SortKey> sortKeys = new ArrayList<RowSorter.SortKey>();
-        sortKeys.add(new RowSorter.SortKey(column,(ascending) ? SortOrder.ASCENDING : SortOrder.DESCENDING));                        
+        sortKeys.add(new RowSorter.SortKey(column, (ascending) ? SortOrder.ASCENDING : SortOrder.DESCENDING));
 
         // The sorter
         final RowSorter<TableModel> sorter = new TableRowSorter<TableModel>(table.getModel());
