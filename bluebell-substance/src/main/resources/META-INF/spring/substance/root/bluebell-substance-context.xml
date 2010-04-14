@@ -36,7 +36,7 @@
 	<bean id="substancePropertyPlaceholderConfigurer" parent="defaultPropertyPlaceholderConfigurer" p:order="5">
 		<property name="locations">
 			<list>
-				<value>classpath*:META-INF/spring/substance/root/*.properties</value>
+				<value>classpath:/META-INF/spring/substance/root/*.properties</value>
 			</list>
 		</property>
 	</bean>
