@@ -18,14 +18,19 @@
 
 package org.bluebell.richclient.application.docking.vldocking;
 
+import java.awt.Dialog;
+import java.awt.Frame;
+import java.awt.Window;
+
 import com.vlsolutions.swing.docking.DefaultDockableContainerFactory;
+import com.vlsolutions.swing.docking.FloatingDockableContainer;
 import com.vlsolutions.swing.docking.TabbedDockableContainer;
 
 /**
- * 
  * Improved implementation of the <code>DockableContainerFactory</code>.
  * 
  * @see BbDockTabbedPane
+ * @see BbFloatingDialog
  * 
  * @author <a href = "mailto:julio.arguello@gmail.com" >Julio Argüello (JAF)</a>
  */
@@ -38,5 +43,18 @@ public class BbDockableContainerFactory extends DefaultDockableContainerFactory 
     public TabbedDockableContainer createTabbedDockableContainer() {
 
         return new BbDockTabbedPane();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public FloatingDockableContainer createFloatingDockableContainer(Window owner) {
+
+        if (owner instanceof Dialog) {
+            return new BbFloatingDialog((Dialog) owner);
+        } else {
+            return new BbFloatingDialog((Frame) owner);
+        }
     }
 }

@@ -26,8 +26,7 @@ import java.util.Map;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.bluebell.richclient.application.ApplicationPageConfigurer;
-import org.bluebell.richclient.util.ObjectUtil;
-import org.springframework.beans.BeansException;
+import org.bluebell.richclient.util.ObjectUtils;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.context.ApplicationContext;
@@ -57,7 +56,8 @@ public class VLDockingBeanPostProcessor extends ApplicationServicesAccessor impl
      * The key is the page component type and the value the name of the prototype bean with the VLDocking view
      * descriptor template.
      * 
-     * @see ApplicationPageConfigurer#getPageComponentType(org.springframework.richclient.application.PageComponentDescriptor)
+     * @see ApplicationPageConfigurer
+     *      #getPageComponentType(org.springframework.richclient.application.PageComponentDescriptor)
      */
     private Map<String, String> viewDescriptorsTemplates;
 
@@ -65,7 +65,9 @@ public class VLDockingBeanPostProcessor extends ApplicationServicesAccessor impl
      * {@inheritDoc}
      */
     @Override
-    public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
+    public Object postProcessBeforeInitialization(Object bean, String beanName) {
+
+        // throws BeansException {
 
         return bean;
     }
@@ -76,7 +78,9 @@ public class VLDockingBeanPostProcessor extends ApplicationServicesAccessor impl
      * Replaces those view descriptors not implementing {@link VLDockingViewDescriptor}.
      */
     @Override
-    public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
+    public Object postProcessAfterInitialization(Object bean, String beanName) {
+
+        // throws BeansException {
 
         if (bean instanceof VLDockingViewDescriptor) {
             return bean;
@@ -85,7 +89,7 @@ public class VLDockingBeanPostProcessor extends ApplicationServicesAccessor impl
             final ViewDescriptor targetViewDescriptor = this.getTemplate(sourceViewDescriptor);
 
             // Copy source state
-            ObjectUtil.shallowCopy(sourceViewDescriptor, targetViewDescriptor);
+            ObjectUtils.shallowCopy(sourceViewDescriptor, targetViewDescriptor);
 
             return targetViewDescriptor;
         }
@@ -106,7 +110,9 @@ public class VLDockingBeanPostProcessor extends ApplicationServicesAccessor impl
      * {@inheritDoc}
      */
     @Override
-    public final void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+    public final void setApplicationContext(ApplicationContext applicationContext) {
+
+        // throws BeansException {
 
         Assert.notNull(applicationContext, "applicationContext");
 

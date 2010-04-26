@@ -26,12 +26,13 @@ import java.awt.Color;
 import javax.swing.UIManager;
 
 import org.apache.commons.lang.StringUtils;
+import org.bluebell.richclient.application.config.vldocking.WidgetDesktopStyle;
 import org.springframework.richclient.util.Assert;
 
 /**
  * Utility class for dealing with VLDocking.
  * 
- * @see DockingPreferencesWidgetExtension
+ * @see WidgetDesktopStyle
  * 
  * @author <a href = "mailto:julio.arguello@gmail.com" >Julio Argüello (JAF)</a>
  */
@@ -89,29 +90,23 @@ public final class VLDockingUtils {
         /**
          * The active widget color.
          */
-        ACTIVE_WIDGET("VLDocking.activeWidgetColor", Color.DARK_GRAY), //
-        /**
-         * The background color.
-         */
-        BACKGROUND("DockingDesktop.backgroundColor", Color.WHITE), // "controlShadow",
-        // "VLDocking.shadow"
-        /**
-         * The highlight color.
-         */
-        HIGHLIGHT("controlLtHighlight", Color.BLACK), // "VLDocking.highlight"
+        ACTIVE_WIDGET("Bluebell.activeWidgetColor"), // instead of "activeCaption"
         /**
          * The inactive widget color.
          */
-        INACTIVE_WIDGET("VLDocking.inactiveWidgetColor", Color.LIGHT_GRAY), //
+        INACTIVE_WIDGET("Bluebell.inactiveWidgetColor"), // instead of ""controlLtHighlight""
+        /**
+         * The background color.
+         */
+        BACKGROUND("Bluebell.backgroundColor"), // instead of control "DockingDesktop.backgroundColor"
+        /**
+         * The highlight color.
+         */
+        HIGHLIGHT("Bluebell.highlightColor"), // instead of "controlHighlight"
         /**
          * The shadow color.
          */
-        SHADOW("controlDkShadow", Color.GRAY);
-
-        /**
-         * The default color to be used if other is not found.
-         */
-        private Color defaultColor;
+        SHADOW("Bluebell.shadowColor"); // controlDkShadow
 
         /**
          * The key to query the UIManager for getting the associated color.
@@ -123,13 +118,10 @@ public final class VLDockingUtils {
          * 
          * @param key
          *            the key to query the UIManager.
-         * @param defaultColor
-         *            the default color if none found.
          */
-        private DockingColor(String key, Color defaultColor) {
+        private DockingColor(String key) {
 
             this.setKey(key);
-            this.setDefaultColor(defaultColor);
         }
 
         /**
@@ -143,16 +135,6 @@ public final class VLDockingUtils {
         }
 
         /**
-         * Gets the default color.
-         * 
-         * @return the default color.
-         */
-        public Color getDefaultColor() {
-
-            return this.defaultColor;
-        }
-
-        /**
          * Gets the key.
          * 
          * @return the key
@@ -160,19 +142,6 @@ public final class VLDockingUtils {
         public String getKey() {
 
             return this.key;
-        }
-
-        /**
-         * Sets the default color.
-         * 
-         * @param defaultColor
-         *            the default color to set.
-         */
-        private void setDefaultColor(Color defaultColor) {
-
-            Assert.notNull(defaultColor, "defaultColor");
-
-            this.defaultColor = defaultColor;
         }
 
         /**

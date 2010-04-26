@@ -43,13 +43,13 @@ public class TestVLDockingBeanPostProcessor extends AbstractBbSamplesTests {
      * The bean instance to test.
      */
     @Autowired
-    public VLDockingBeanPostProcessor vlDockingBeanPostProcessor;
+    private VLDockingBeanPostProcessor vlDockingBeanPostProcessor;
 
     /**
      * The default application page configurer implementation.
      */
     @Autowired
-    public DefaultApplicationPageConfigurer<?> defaultApplicationPageConfigurer;
+    private DefaultApplicationPageConfigurer<?> defaultApplicationPageConfigurer;
 
     /**
      * {@inheritDoc}

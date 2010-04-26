@@ -19,35 +19,42 @@
 /**
  * 
  */
-package org.bluebell.richclient.application.docking.vldocking;
+package org.bluebell.richclient.application.config.vldocking;
 
 import java.awt.Color;
+import java.awt.Font;
+import java.awt.Window;
 import java.util.HashMap;
 import java.util.Map;
 
 import javax.swing.BorderFactory;
 import javax.swing.JComponent;
+import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.border.Border;
 
 import org.apache.commons.collections.MapUtils;
 import org.bluebell.richclient.application.docking.vldocking.VLDockingUtils;
 import org.bluebell.richclient.application.docking.vldocking.VLDockingUtils.DockViewType;
+import org.bluebell.richclient.application.docking.vldocking.ui.BAutoHideExpandPanelUI;
+import org.bluebell.richclient.application.docking.vldocking.ui.BbAutoHideButtonUI;
+import org.bluebell.richclient.application.docking.vldocking.ui.BbDockViewTitleBarUI;
+import org.bluebell.richclient.application.docking.vldocking.ui.BbDockViewUI;
+import org.bluebell.richclient.application.docking.vldocking.ui.BbDockingSplitPaneUI;
 import org.bluebell.richclient.components.RoundedBorder;
 
 import com.vlsolutions.swing.docking.DockingConstants;
 import com.vlsolutions.swing.docking.ui.DockingUISettings;
 
 /**
- * <code>DockingPreferences</code> extension capable of setting a widget like style.
+ * <code>DockingPreferences</code> extension capable of setting a widget like style. Replaces static methods using an OO
+ * approach.
  * <p />
- * It's designed with inheritance support thanks to a template method approach and for customization using UIManager
- * methods. There are protected non final methods designed for easy extension of this class.
- * <p />
+ * It's designed with inheritance support thanks to template methods.
  * 
  * @author <a href = "mailto:julio.arguello@gmail.com" >Julio Argüello (JAF)</a>
  */
-public class DockingPreferencesWidgetExtension {
+public class WidgetDesktopStyle {
 
     /**
      * The default border size.
@@ -64,21 +71,72 @@ public class DockingPreferencesWidgetExtension {
     public static final Integer MARGIN_SIZE = 5;
 
     /**
-     * The singleton instance.
-     */
-    private static final DockingPreferencesWidgetExtension INSTANCE = new DockingPreferencesWidgetExtension();
-
-    /**
      * The widget like desktop style defaults map.
      */
     private final Map<String, Object> defaults = new HashMap<String, Object>();
 
     /**
-     * In spite of being a singleton this class can be extended for customization, so constructor is protected.
+     * Creates the style.
      */
-    protected DockingPreferencesWidgetExtension() {
+    public WidgetDesktopStyle() {
 
         super();
+    }
+
+    /**
+     * Convenience method to use a widget like desktop style.
+     * <p>
+     * The "widget style" uses a flat style and rounded corners that remembers Web 2.0 style.
+     * <p>
+     * Proceeds according to <a href= "http://www.vlsolutions.com/en/documentation/docking/tutorial/tutorial8.php"
+     * >VLDocking Tutorial</a>:
+     * <p>
+     * <div> Please note that to avoid having your own UI settings beeing erased by the default ones, you will have to
+     * follow the pattern :
+     * <ol>
+     * <li>pre-install the default ui settings in you main() method, or any method prior DockingDesktop usage
+     * <li>put your new settings as UIManager properties
+     * </ol>
+     * 
+     * <pre>
+     *  public static void main(String[] args){ // first, preload the UI to avoid erasing your own customizations
+     * 
+     *          DockingUISettings.getInstance().installUI(); 
+     * 
+     *          // declare your border
+     *          Border myBorder = ... 
+     * 
+     *          // and start customizing...
+     *          UIManager.put(&quot;DockView.maximizedDockableBorder&quot;, myBorder); ... }
+     * </pre>
+     * 
+     * </div>
+     */
+    public final void setWidgetDesktopStyle() {
+
+        // Install VLDocking defaults
+        DockingUISettings.getInstance().installUI();
+
+        // Install widget desktop style defaults
+        for (Map.Entry<String, Object> entry : this.getDefaultsMap().entrySet()) {
+            UIManager.put(entry.getKey(), entry.getValue());
+        }
+
+        // Update component tree UI for all windows
+        for (Window window : Window.getWindows()) {
+            SwingUtilities.updateComponentTreeUI(window);
+        }
+    }
+
+    /**
+     * Uninstall previously installed widget desktop style properties.
+     * <p/>
+     * This method is equivalent to call <code>UIManaget.put(key, null)</code> for every single property.
+     */
+    public final void uninstallWidgetDesktopStyle() {
+
+        // Clear custom defaults
+        this.getDefaultsMap().clear();
     }
 
     /**
@@ -185,7 +243,7 @@ public class DockingPreferencesWidgetExtension {
      */
     protected Integer desktopBorderSize() {
 
-        return DockingPreferencesWidgetExtension.BORDER_SIZE;
+        return WidgetDesktopStyle.BORDER_SIZE;
     }
 
     /**
@@ -195,7 +253,7 @@ public class DockingPreferencesWidgetExtension {
      */
     protected Integer desktopMarginSize() {
 
-        return DockingPreferencesWidgetExtension.MARGIN_SIZE;
+        return WidgetDesktopStyle.MARGIN_SIZE;
     }
 
     /**
@@ -218,8 +276,12 @@ public class DockingPreferencesWidgetExtension {
 
         switch (type) {
             case DOCKED:
-                final Color color = active ? VLDockingUtils.DockingColor.ACTIVE_WIDGET.getColor()//
-                        : VLDockingUtils.DockingColor.INACTIVE_WIDGET.getColor();
+                final Color color;
+                if (active) {
+                    color = VLDockingUtils.DockingColor.ACTIVE_WIDGET.getColor();
+                } else {
+                    color = VLDockingUtils.DockingColor.INACTIVE_WIDGET.getColor();
+                }
 
                 return new RoundedBorder(m, b, color);
                 // return new PartialLineBorder(color, b, Boolean.TRUE, m);
@@ -286,11 +348,24 @@ public class DockingPreferencesWidgetExtension {
      * 
      * @return a map indexed by property name.
      */
-    protected Map<String, Object> getDefaults() {
+    protected Map<String, Object> getDefaultsMap() {
+
+        final Font internalFrameTitleFont = UIManager.getFont("InternalFrame.titleFont");
 
         if (!MapUtils.isEmpty(this.defaults)) {
             return this.defaults;
         }
+
+        // Request focus on tab selection, otherwise activation will not be triggered correctly
+        this.defaults.put("TabbedContainer.requestFocusOnTabSelection", Boolean.TRUE);
+
+        // UI Delegates
+        this.defaults.put("AutoHideButtonUI", BbAutoHideButtonUI.class.getName());
+        this.defaults.put("AutoHideExpandPanelUI", BAutoHideExpandPanelUI.class.getName());
+        this.defaults.put("DetachedDockViewUI", BbDockViewUI.class.getName());
+        this.defaults.put("DockViewUI", BbDockViewUI.class.getName());
+        this.defaults.put("DockViewTitleBarUI", BbDockViewTitleBarUI.class.getName());
+        this.defaults.put("DockingSplitPaneUI", BbDockingSplitPaneUI.class.getName());
 
         // AutoHideButton: expand border
         this.defaults.put("AutoHideButton.expandBorderTop", //
@@ -301,19 +376,20 @@ public class DockingPreferencesWidgetExtension {
                 this.autoHideButtonExpandBorder(DockingConstants.INT_HIDE_BOTTOM));
         this.defaults.put("AutoHideButton.expandBorderRight", //
                 this.autoHideButtonExpandBorder(DockingConstants.INT_HIDE_RIGHT));
-        // Employ a Substance managed font in order to support resizing: @see
-        // SubstanceLookAndFeel#initFontDefaults
-        this.defaults.put("AutoHideButton.font", UIManager.getFont("InternalFrame.titleFont"));
+
+        // Employ a Substance managed font in order to support resizing:
+        // @see SubstanceLookAndFeel#initFontDefaults
+        this.defaults.put("AutoHideButton.font", internalFrameTitleFont);
 
         // AutoHideButtonPanel: border
         this.defaults.put("AutoHideButtonPanel.topBorder", //
                 this.autoHideButtonPanelBorder(DockingConstants.INT_HIDE_TOP));
         this.defaults.put("AutoHideButtonPanel.leftBorder", //
                 this.autoHideButtonPanelBorder(DockingConstants.INT_HIDE_LEFT));
-        this.defaults.put("AutoHideButtonPanel.bottomBorder", this
-                .autoHideButtonPanelBorder(DockingConstants.INT_HIDE_BOTTOM));
-        this.defaults.put("AutoHideButtonPanel.rightBorder", this
-                .autoHideButtonPanelBorder(DockingConstants.INT_HIDE_RIGHT));
+        this.defaults.put("AutoHideButtonPanel.bottomBorder", //
+                this.autoHideButtonPanelBorder(DockingConstants.INT_HIDE_BOTTOM));
+        this.defaults.put("AutoHideButtonPanel.rightBorder", //
+                this.autoHideButtonPanelBorder(DockingConstants.INT_HIDE_RIGHT));
 
         // AutoHideExpandPanel: dragger border
         this.defaults.put("AutoHideExpandPanel.topDraggerBorder", //
@@ -357,51 +433,26 @@ public class DockingPreferencesWidgetExtension {
 
         // DockViewTitleBar: border and title font
         this.defaults.put("DockViewTitleBar.border", this.dockViewTitleBarBorder());
-        // Employ a Substance managed font in order to support resizing: @see
-        // SubstanceLookAndFeel#initFontDefaults
-        this.defaults.put("DockViewTitleBar.titleFont", UIManager.getFont("InternalFrame.titleFont"));
 
-        // FloatingDialog: border and titled border
-        this.defaults.put("FloatingDialog.dialogBorder", this.floatingDialogBorder());
-        this.defaults.put("FloatingDialog.titleBorder", this.floatingDialogTitleBorder());
+        // Employ a (Substance) managed font in order to support resizing:
+        // @see SubstanceLookAndFeel#initFontDefaults
+        // In spite of being a Substance related topic this is no dependant, so keep it here
+        this.defaults.put("DockViewTitleBar.titleFont", internalFrameTitleFont);
+
+        // BbFloatingDialog: border and titled border
+        this.defaults.put("BbFloatingDialog.dialogBorder", this.floatingDialogBorder());
+        this.defaults.put("BbFloatingDialog.titleBorder", this.floatingDialogTitleBorder());
 
         // SplitContainer: border and divider size
         this.defaults.put("SplitContainer.border", this.externalBorder());
         this.defaults.put("SplitContainer.dividerSize", this.desktopMarginSize());
 
-        // Employ a Substance managed font in order to support resizing: @see
-        // SubstanceLookAndFeel#initFontDefaults
-        this.defaults.put("JTabbedPaneSmartIcon.font", UIManager.getFont("InternalFrame.titleFont"));
+        // Employ a (Substance) managed font in order to support resizing:
+        // @see SubstanceLookAndFeel#initFontDefaults
+        // In spite of being a Substance related topic this is no dependant, so keep it here
+        this.defaults.put("JTabbedPaneSmartIcon.font", internalFrameTitleFont);
 
         return this.defaults;
-    }
-
-    /**
-     * Convenience method to use a widget like desktop style.
-     * <p>
-     * The "widget style" uses a flat style and rounded corners that remembers Web 2.0 style.
-     */
-    public static void setWidgetDesktopStyle() {
-
-        // Install VLDocking defaults
-        DockingUISettings.getInstance().installUI();
-
-        // Install widget desktop style defaults
-        final DockingPreferencesWidgetExtension thiz = DockingPreferencesWidgetExtension.INSTANCE;
-        for (Map.Entry<String, Object> entry : thiz.getDefaults().entrySet()) {
-            UIManager.put(entry.getKey(), entry.getValue());
-        }
-    }
-
-    /**
-     * Uninstall previously installed widget desktop style properties.
-     * <p/>
-     * This method is equivalent to call <code>UIManaget.put(key, null)</code> for every single property.
-     */
-    public static void uninstallWidgetDesktopStyle() {
-
-        // Clear custom defaults
-        DockingPreferencesWidgetExtension.INSTANCE.getDefaults().clear();
     }
 
     /**

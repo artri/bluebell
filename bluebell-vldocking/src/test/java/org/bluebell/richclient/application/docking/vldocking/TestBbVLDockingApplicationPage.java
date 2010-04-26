@@ -58,7 +58,7 @@ public class TestBbVLDockingApplicationPage extends AbstractBbSamplesTests {
      * The default application page configurer implementation.
      */
     @Resource
-    public DefaultApplicationPageConfigurer<?> defaultApplicationPageConfigurer;
+    private DefaultApplicationPageConfigurer<?> defaultApplicationPageConfigurer;
 
     /**
      * A page descriptor containing a failed view descriptor.
@@ -66,7 +66,7 @@ public class TestBbVLDockingApplicationPage extends AbstractBbSamplesTests {
      * @see #testCreateControlThrowsException()
      */
     @Resource
-    public PageDescriptor failedViewPageDescriptor;
+    private PageDescriptor failedViewPageDescriptor;
 
     /**
      * A page descriptor with a valid explicit layout set.
@@ -74,7 +74,7 @@ public class TestBbVLDockingApplicationPage extends AbstractBbSamplesTests {
      * @see #testBuildValidExplicitInitialLayout()
      */
     @Resource
-    public PageDescriptor validExplicitLayoutPageDescriptor;
+    private PageDescriptor validExplicitLayoutPageDescriptor;
 
     /**
      * A page descriptor with an invalid explicit layout set.
@@ -82,7 +82,7 @@ public class TestBbVLDockingApplicationPage extends AbstractBbSamplesTests {
      * @see #testBuildInvalidExplicitInitialLayout()
      */
     @Resource
-    public PageDescriptor invalidExplicitLayoutPageDescriptor;
+    private PageDescriptor invalidExplicitLayoutPageDescriptor;
 
     /**
      * A page descriptor with a valid implicit layout.
@@ -90,7 +90,7 @@ public class TestBbVLDockingApplicationPage extends AbstractBbSamplesTests {
      * @see #testBuildValidImplicitInitialLayout()
      */
     @Resource
-    public PageDescriptor validImplicitLayoutPageDescriptor;
+    private PageDescriptor validImplicitLayoutPageDescriptor;
 
     /**
      * A page descriptor with an invalid implicit layout.
@@ -98,7 +98,7 @@ public class TestBbVLDockingApplicationPage extends AbstractBbSamplesTests {
      * @see #testBuildInvalidImplicitInitialLayout()
      */
     @Resource
-    public PageDescriptor invalidImplicitLayoutPageDescriptor;
+    private PageDescriptor invalidImplicitLayoutPageDescriptor;
 
     /**
      * A page descriptor with no components.
@@ -106,7 +106,7 @@ public class TestBbVLDockingApplicationPage extends AbstractBbSamplesTests {
      * @see #testBuildEmptyPageAutoLayout()
      */
     @Resource
-    public PageDescriptor emptyPageDescriptor;
+    private PageDescriptor emptyPageDescriptor;
 
     /**
      * A page descriptor with multiple components, including to detail view descriptors and two search vies descriptors.
@@ -114,7 +114,7 @@ public class TestBbVLDockingApplicationPage extends AbstractBbSamplesTests {
      * @see #testBuildWholePageAutoLayout()
      */
     @Resource
-    public PageDescriptor wholePageDescriptor;
+    private PageDescriptor wholePageDescriptor;
 
     /**
      * {@inheritDoc}

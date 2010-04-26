@@ -17,7 +17,6 @@
 		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.5.xsd
 		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-2.5.xsd">
 
-
 	<!--
 		Bean: vldockingPropertyPlaceholderConfigurer Usage: platform required Description: This configures all placeholders
 		defined in the application context. Note "null" string is used for null values and system properties override those
@@ -66,21 +65,21 @@
 			<util:constant static-field="com.vlsolutions.swing.docking.DockingConstants.HIDE_TOP" />
 		</property>
 	</bean>
-	
+
 	<bean id="searchVldockingViewDescriptorTemplate" parent="abstractVldockingViewDescriptor" scope="prototype">
 		<property name="autoHideBorder">
 			<util:constant static-field="com.vlsolutions.swing.docking.DockingConstants.HIDE_RIGHT" />
 		</property>
 	</bean>
-	
+
 	<bean id="detailVldockingViewDescriptorTemplate" parent="abstractVldockingViewDescriptor" scope="prototype" />
-	
+
 	<bean id="validationVldockingViewDescriptorTemplate" parent="abstractVldockingViewDescriptor" scope="prototype">
 		<property name="autoHideBorder">
 			<util:constant static-field="com.vlsolutions.swing.docking.DockingConstants.HIDE_BOTTOM" />
 		</property>
 	</bean>
-	
+
 	<bean id="unknownVldockingViewDescriptorTemplate" parent="abstractVldockingViewDescriptor" scope="prototype">
 		<property name="autoHideBorder">
 			<util:constant static-field="com.vlsolutions.swing.docking.DockingConstants.HIDE_BOTTOM" />

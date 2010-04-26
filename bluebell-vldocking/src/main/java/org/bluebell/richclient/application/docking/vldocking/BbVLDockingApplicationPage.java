@@ -213,9 +213,9 @@ public class BbVLDockingApplicationPage<T> extends VLDockingApplicationPage {
         final Iterator<Resource> itr = layouts.iterator();
         while (itr.hasNext() && !layoutSuccess) {
 
-            final Resource layout = itr.next();
-            if ((layout == null) || layout.exists()) {
-                layoutSuccess = this.buildLayout(dockingDesktop, layout, exceptions);
+            final Resource tryWithLayout = itr.next();
+            if ((tryWithLayout == null) || tryWithLayout.exists()) {
+                layoutSuccess = this.buildLayout(dockingDesktop, tryWithLayout, exceptions);
             }
         }
 
@@ -518,9 +518,9 @@ public class BbVLDockingApplicationPage<T> extends VLDockingApplicationPage {
             context.put("VALIDATION_TYPE", DefaultApplicationPageConfigurer.BbViewType.VALIDATION.name());
             context.put("UNKNOWN_TYPE", DefaultApplicationPageConfigurer.BbViewType.UNKNOWN.name());
 
-            final String layout = VelocityEngineUtils.mergeTemplateIntoString(vm, "vldocking_layout.vm", context);
+            final String string = VelocityEngineUtils.mergeTemplateIntoString(vm, "vldocking_layout.vm", context);
 
-            this.setAutoLayout(new ByteArrayResource(layout.getBytes()));
+            this.setAutoLayout(new ByteArrayResource(string.getBytes()));
         }
 
         return this.autoLayout;
@@ -550,7 +550,7 @@ public class BbVLDockingApplicationPage<T> extends VLDockingApplicationPage {
 
         // 20091223, HACK, set temporally a null initial layout before calling super and restore the value later.
         // This will avoid reading the same layout resource twice.
-        final Resource layout = this.getInitialLayout();
+        final Resource previousInitialLayout = this.getInitialLayout();
         super.setInitialLayout(null);
         try {
             // (JAF), 20100411, super.createControl() does not trigger layout building since initial layout is
@@ -565,7 +565,7 @@ public class BbVLDockingApplicationPage<T> extends VLDockingApplicationPage {
             // (JAF), 20090720, remember exception to be handled later
             exceptions.add(e);
         } finally {
-            this.setInitialLayout(layout);
+            this.setInitialLayout(previousInitialLayout);
         }
 
         return control;
@@ -588,17 +588,17 @@ public class BbVLDockingApplicationPage<T> extends VLDockingApplicationPage {
         // This will avoid writing the layout resource twice.
         super.setInitialLayout(null);
 
-        final Resource layout = this.getUserLayout();
+        final Resource theUserLayout = this.getUserLayout();
         Boolean success = null;
         try {
-            if (layout != null) {
-                this.saveLayout((DockingDesktop) this.getControl(), layout);
+            if (theUserLayout != null) {
+                this.saveLayout((DockingDesktop) this.getControl(), theUserLayout);
             }
             success = super.close();
         } catch (Exception e) {
-            final String resourceDescription = (layout != null) ? layout.getDescription() : StringUtils.EMPTY;
+            final String description = (theUserLayout != null) ? theUserLayout.getDescription() : StringUtils.EMPTY;
             final String message = BbVLDockingApplicationPage.PAGE_CLOSING_FAILED_FMT.format(//
-                    new String[] { this.getPageDescriptor().getId(), resourceDescription });
+                    new String[] { this.getPageDescriptor().getId(), description });
 
             BbVLDockingApplicationPage.LOGGER.error(message, e);
         } finally {
@@ -625,8 +625,8 @@ public class BbVLDockingApplicationPage<T> extends VLDockingApplicationPage {
     /**
      * Sets the user layout.
      * 
-     * @param user
-     *            layout the user layout to set.
+     * @param userLayout
+     *            the user layout to set.
      */
     private void setUserLayout(Resource userLayout) {
 
@@ -638,8 +638,8 @@ public class BbVLDockingApplicationPage<T> extends VLDockingApplicationPage {
     /**
      * Sets the auto layout.
      * 
-     * @param auto
-     *            layout the auto layout to set.
+     * @param autoLayout
+     *            the auto layout to set.
      */
     private void setAutoLayout(Resource autoLayout) {
 
