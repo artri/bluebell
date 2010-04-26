@@ -18,12 +18,12 @@
 		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-2.5.xsd">
 
 
-<!--
-		Bean: defaultPropertyPlaceholderConfigurer Usage: platform required Description: This configures all placeholders defined in
-		the application context. Note "null" string is used for null values and system properties override those defined in
-		properties files.
+	<!--
+		Bean: defaultPropertyPlaceholderConfigurer Usage: platform required Description: This configures all placeholders
+		defined in the application context. Note "null" string is used for null values and system properties override those
+		defined in properties files.
 	-->
-	<bean id="startupPropertyPlaceholderConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer"
+	<bean id="defaultStartupPropertyPlaceholderConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer"
 		p:ignore-resource-not-found="true" p:ignore-unresolvable-placeholders="true" p:null-value="null">
 		<property name="order">
 			<util:constant static-field="org.springframework.core.Ordered.LOWEST_PRECEDENCE" />
@@ -37,7 +37,7 @@
 				<value>classpath*:META-INF/spring/root/*.properties</value>
 			</list>
 		</property>
-	</bean>	
+	</bean>
 
 	<alias alias="splashScreen" name="${richclient.splashScreen}" />
 
@@ -79,5 +79,18 @@
 			</list>
 		</property>
 	</bean>
+
+	<bean id="defaultLookAndFeelConfigurer" class="org.bluebell.richclient.application.config.BbLookAndFeelConfigurer"
+		lazy-init="true" p:imageLocations-ref="${richclient.imageResourcesFactory}">
+		<constructor-arg index="0" value="${richclient.lookAndFeelClass}" />
+	</bean>
+
+	<!--
+		Tricky bean that initializes only the configured look and feel configurer. In order to make this work then the
+		referenced bean must be defined with lazy initialization (i.e.: such as vlDockingLookAndFeelConfigurer).
+	-->
+	<bean id="initLookAndFeelConfigurer" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean"
+		p:targetObject-ref="${richclient.lookAndFeelConfigurer}" p:targetMethod="getClass" />
+
 
 </beans>

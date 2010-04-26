@@ -56,16 +56,14 @@ public class DirtyTrackingDCBCVM<T> extends DeepCopyBufferedCollectionValueModel
      * El campo con el <em>bufferedListModel</em>.
      */
     private static final Field BUFFERED_LIST_MODEL_FIELD = ReflectionUtils.findField(//
-            BufferedCollectionValueModel.class, "bufferedListModel", //
-            ObservableList.class);
+            BufferedCollectionValueModel.class, "bufferedListModel", ObservableList.class);
 
     /**
      * Log para la clase {@link DirtyTrackingDCBCVM}.
      */
     private static final Logger LOGGER = LoggerFactory.getLogger(DirtyTrackingDCBCVM.class);
     static {
-        ReflectionUtils.makeAccessible(//
-                DirtyTrackingDCBCVM.BUFFERED_LIST_MODEL_FIELD);
+        ReflectionUtils.makeAccessible(DirtyTrackingDCBCVM.BUFFERED_LIST_MODEL_FIELD);
     }
 
     /**

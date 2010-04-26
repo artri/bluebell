@@ -74,7 +74,7 @@ import org.springframework.util.Assert;
  * 
  * @author <a href = "mailto:julio.arguello@gmail.com" >Julio Argüello (JAF)</a>
  */
-@ContextConfiguration(locations = {RcpMain.DEFAULT_APP_CONTEXT_PATH})
+@ContextConfiguration(locations = { RcpMain.DEFAULT_APP_CONTEXT_PATH })
 public abstract class AbstractBbSamplesTests extends AbstractBbRichClientTests {
 
     /**

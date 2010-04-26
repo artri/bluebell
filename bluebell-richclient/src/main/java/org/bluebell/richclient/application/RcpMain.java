@@ -48,9 +48,8 @@ import org.springframework.util.Assert;
  * </pre>
  * 
  * @see ApplicationLauncher
- * @see <a
- *      href="http://static.springsource.org/spring/docs/3.0.x/spring-framework-reference/html/resources.html#resources-wildcards-in-path-other-stuff">Resources
- *      wildcards</a>
+ * @see <a href="http://static.springsource.org/spring/docs/3.0.x/spring-framework-reference/html/resources.html
+ *      #resources-wildcards-in-path-other-stuff">Resources wildcards</a>
  * 
  * @author <a href = "mailto:julio.arguello@gmail.com" >Julio Argüello (JAF)</a>
  */
@@ -64,7 +63,8 @@ public class RcpMain extends Main {
     /**
      * The default commands context path.
      */
-    public static final String DEFAULT_COMMANDS_CONTEXT_PATH = "classpath*:/META-INF/spring/**/commands/**/*-context.xml";
+    public static final String DEFAULT_COMMANDS_CONTEXT_PATH = "classpath*:/META-INF/spring/**/commands/**/"
+            + "*-context.xml";
 
     /**
      * La ubicación por defecto del contexto de arranque de la aplicación.
@@ -75,7 +75,8 @@ public class RcpMain extends Main {
      * The first application context file to be loaded (order is important due to bean dependence hierarchy). This
      * avoids "depend-on" abuse.
      */
-    public static final String MAIN_APP_CONTEXT_PATH = "classpath*:/META-INF/spring/root/bluebell-application-context.xml";
+    public static final String MAIN_APP_CONTEXT_PATH = "classpath*:/META-INF/spring/root/"
+            + "bluebell-application-context.xml";
 
     /**
      * El <em>logger</em>.

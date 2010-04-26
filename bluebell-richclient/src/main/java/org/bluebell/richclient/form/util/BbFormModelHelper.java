@@ -258,10 +258,10 @@ public class BbFormModelHelper extends FormModelHelper {
      *            el identificador del modelo.
      * @return el modelo de la tabla.
      */
-    @SuppressWarnings("unchecked")
-    public static TableModel createTableModel(EventList eventList, String[] columnPropertyNames, String id) {
+    public static TableModel createTableModel(EventList<?> eventList, String[] columnPropertyNames, String id) {
 
-        return new GlazedTableModel(eventList, columnPropertyNames, id);
+        final GlazedTableModel tableModel = new GlazedTableModel(eventList, columnPropertyNames, id);
+        return tableModel;
     }
 
     /**
@@ -281,7 +281,6 @@ public class BbFormModelHelper extends FormModelHelper {
      * 
      * @see #createValidatingTableModel(EventList , String[] , String)
      */
-    @SuppressWarnings("unchecked")
     public static TableModel createTableModel(FormModel formModel, String propertyName, String[] columnPropertyNames,
             String id) {
 
@@ -294,7 +293,7 @@ public class BbFormModelHelper extends FormModelHelper {
         org.springframework.util.Assert.isInstanceOf(EventList.class, value);
 
         // Crear el table model
-        return BbFormModelHelper.createTableModel((EventList) value, columnPropertyNames, id);
+        return BbFormModelHelper.createTableModel((EventList<?>) value, columnPropertyNames, id);
     }
 
     /**
@@ -314,9 +313,9 @@ public class BbFormModelHelper extends FormModelHelper {
      * @see org.springframework.richclient.form.AbstractMasterForm#AbstractMasterForm(HierarchicalFormModel , String ,
      *      String , Class )
      */
-    public static ValidatingFormModel createValidatingChildPageCollectionFormModel(
-            HierarchicalFormModel parentFormModel, Class<//
-            ? extends Object> clazz, String propertyName) {
+    @SuppressWarnings("unchecked")
+    public static <T> ValidatingFormModel createValidatingChildPageCollectionFormModel(
+            HierarchicalFormModel parentFormModel, Class<T> clazz, String propertyName) {
 
         return BbFormModelHelper.createValidatingChildPageCollectionFormModel(parentFormModel, clazz, propertyName,
                 Set.class);
@@ -339,18 +338,16 @@ public class BbFormModelHelper extends FormModelHelper {
      *            la clase de la colección.
      * @return el modelo.
      */
+    // @SuppressWarnings("unchecked")
     @SuppressWarnings("unchecked")
-    public static ValidatingFormModel createValidatingChildPageCollectionFormModel(
-            HierarchicalFormModel parentFormModel, Class<//
-            ? extends Object> clazz, String propertyName, //
-            final Class<//
-            ? extends Collection> collectionClazz) {
+    public static <T extends Object, Q extends Collection<T>> ValidatingFormModel createValidatingChildPageCollectionFormModel(
+            HierarchicalFormModel parentFormModel, Class<T> clazz, String propertyName, final Class<Q> collectionClazz) {
 
         // El value model de la propiedad a representar
         final ValueModel propertyVM = parentFormModel.getValueModel(propertyName);
 
         // Construir el buffered value model
-        final DirtyTrackingDCBCVM collectionVM = new DirtyTrackingDCBCVM(propertyVM, collectionClazz, clazz,
+        final DirtyTrackingDCBCVM<T> collectionVM = new DirtyTrackingDCBCVM(propertyVM, collectionClazz, clazz,
                 propertyName);
 
         // Crear el nuevo modelo a partir de la estrategia
@@ -364,7 +361,8 @@ public class BbFormModelHelper extends FormModelHelper {
                             + "to a new collection and disabling form");
                 }
                 try {
-                    final Class class2Create = BufferedCollectionValueModel.getConcreteCollectionType(collectionClazz);
+                    final Class<T> class2Create = (Class<T>) BufferedCollectionValueModel
+                            .getConcreteCollectionType(collectionClazz);
                     this.getFormObjectHolder().setValue(class2Create.newInstance());
                     this.setEnabled(Boolean.FALSE);
                 } catch (final InstantiationException e) {

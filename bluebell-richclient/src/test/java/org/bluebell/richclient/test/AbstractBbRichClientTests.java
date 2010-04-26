@@ -50,7 +50,7 @@ public abstract class AbstractBbRichClientTests extends AbstractJUnit4SpringCont
     /**
      * The application launcher.
      */
-    private static Boolean INITIALIZED = Boolean.FALSE;
+    private static Boolean initialized = Boolean.FALSE;
 
     /**
      * Launchs the application, just once.
@@ -58,10 +58,10 @@ public abstract class AbstractBbRichClientTests extends AbstractJUnit4SpringCont
     @PostConstruct
     public void launch() {
 
-        if (!AbstractBbRichClientTests.INITIALIZED) {
+        if (!AbstractBbRichClientTests.initialized) {
             new ApplicationLauncher(this.applicationContext);
 
-            AbstractBbRichClientTests.INITIALIZED = Boolean.TRUE;
+            AbstractBbRichClientTests.initialized = Boolean.TRUE;
         }
 
     }

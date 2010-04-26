@@ -447,6 +447,8 @@ public class TestAbstractBbTableMasterForm extends AbstractBbSamplesTests {
      * 
      * @param table
      *            the table.
+     * @param column
+     *            the column.
      * @param ascending
      *            the order.
      */

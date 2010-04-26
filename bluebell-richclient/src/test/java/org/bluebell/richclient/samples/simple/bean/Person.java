@@ -21,10 +21,15 @@
  */
 package org.bluebell.richclient.samples.simple.bean;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
+import org.apache.commons.lang.math.RandomUtils;
+import org.springframework.util.Assert;
 
 /**
  * A simple entity.
@@ -214,4 +219,41 @@ public class Person implements Comparable<Person> {
         return this.getName().compareTo(o.getName());
     }
 
+    /**
+     * Creates arbitrary persons.
+     * 
+     * @param size
+     *            the number of persons to create.
+     * 
+     * @return the persons.
+     */
+    public static List<Person> createPersons(Integer size) {
+
+        Assert.isTrue(size > 0, "size>0");
+
+        final List<Person> persons = new ArrayList<Person>(size);
+        for (int i = 0; i < size; ++i) {
+            persons.add(Person.createPerson());
+        }
+
+        return persons;
+    }
+
+    /**
+     * Creates an arbitrary person.
+     * 
+     * @return the person.
+     */
+    public static Person createPerson() {
+
+        final Long number = RandomUtils.nextLong();
+        final String string = number.toString();
+
+        final Person person = new Person(string);
+        person.setAddress(string);
+        person.setAge(number);
+        person.setSex((number % 2 == 0) ? Sex.MALE : Sex.FEMALE);
+
+        return person;
+    }
 }

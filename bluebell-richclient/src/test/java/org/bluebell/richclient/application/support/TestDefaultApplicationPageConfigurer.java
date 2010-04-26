@@ -47,43 +47,43 @@ public class TestDefaultApplicationPageConfigurer extends AbstractBbSamplesTests
      * A page descriptor containing a master view descriptor.
      */
     @Resource
-    public PageDescriptor masterViewPageDescriptor;
+    private PageDescriptor masterViewPageDescriptor;
 
     /**
      * A page descriptor containing a detail view descriptor.
      */
     @Resource
-    public PageDescriptor detailViewPageDescriptor;
+    private PageDescriptor detailViewPageDescriptor;
 
     /**
      * A page descriptor containing a search view descriptor.
      */
     @Resource
-    public PageDescriptor searchViewPageDescriptor;
+    private PageDescriptor searchViewPageDescriptor;
 
     /**
      * A page descriptor containing a validation view descriptor.
      */
     @Resource
-    public PageDescriptor validationViewPageDescriptor;
+    private PageDescriptor validationViewPageDescriptor;
 
     /**
      * A page descriptor containing a master and a detail view descriptors.
      */
     @Resource
-    public PageDescriptor masterAndDetailViewsPageDescriptor;
+    private PageDescriptor masterAndDetailViewsPageDescriptor;
 
     /**
      * A page descriptor containing a master and a detail view descriptors (reverse order).
      */
     @Resource
-    public PageDescriptor rMasterAndDetailViewsPageDescriptor;
+    private PageDescriptor rMasterAndDetailViewsPageDescriptor;
 
     /**
      * A page descriptor containing a master and a search view descriptors.
      */
     @Resource
-    public PageDescriptor masterAndSearchViewsPageDescriptor;
+    private PageDescriptor masterAndSearchViewsPageDescriptor;
 
     /**
      * A page descriptor containing a master and a search view descriptors (reverse order).

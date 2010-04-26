@@ -21,7 +21,6 @@
  */
 package org.bluebell.richclient.samples.simple.form;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.JComponent;
@@ -51,16 +50,9 @@ public class PersonSearchForm extends AbstractBbSearchForm<Person, Person> {
     @Override
     protected List<Person> doSearch(Person searchParams) {
 
-        final List<Person> searchResults = new ArrayList<Person>();
+        final int numberOfPersons = 10000;
 
-        searchResults.add(new Person("foo1"));
-        searchResults.add(new Person("foo2"));
-        searchResults.add(new Person("foo3"));
-        searchResults.add(new Person("foo4"));
-        searchResults.add(new Person("foo5"));
-        searchResults.add(new Person("foo6"));
-
-        return searchResults;
+        return Person.createPersons(numberOfPersons);
     }
 
     /**

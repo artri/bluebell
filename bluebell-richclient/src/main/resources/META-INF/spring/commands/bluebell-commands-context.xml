@@ -25,7 +25,8 @@
 						http://www.springframework.org/schema/util/spring-util-2.0.xsd">
 
 	<!--
-		Bean: commandsPropertyPlaceholderConfigurer Usage: platform required Description: This configures all placeholders
+		Bean: commandsPropertyPlaceholderConfigurer 
+		Usage: platform required Description: This configures all placeholders
 		defined in the application context. Note "null" string is used for null values and system properties override those
 		defined in properties files.
 	-->
@@ -130,8 +131,8 @@
 	</bean>
 
 	<!--
-		Bean: defaultFileMenu Type: user named Usage: optional Description: This specifies the content of the file menu. Note the
-		references to shared (predefined) commands by name, directly including a bean (the ExitCommand), and including a
+		Bean: defaultFileMenu Type: user named Usage: optional Description: This specifies the content of the file menu. Note
+		the references to shared (predefined) commands by name, directly including a bean (the ExitCommand), and including a
 		sub-menu (newMenu).
 	-->
 	<bean id="defaultFileMenu" class="org.springframework.richclient.command.CommandGroupFactoryBean">

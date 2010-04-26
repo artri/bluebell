@@ -27,7 +27,7 @@ import org.apache.commons.lang.StringUtils;
 import org.junit.Test;
 
 /**
- * Tests the correct behaviour of {@link ObjectUtil}.
+ * Tests the correct behaviour of {@link ObjectUtils}.
  * 
  * @author <a href = "mailto:julio.arguello@gmail.com" >Julio Argüello (JAF)</a>
  */
@@ -41,7 +41,7 @@ public class TestObjectUtil extends TestCase {
 
         // Null source and null target
         try {
-            ObjectUtil.shallowCopy(null, null);
+            ObjectUtils.shallowCopy(null, null);
             TestCase.fail("Null source and null target");
         } catch (IllegalArgumentException e) {
             TestCase.assertTrue(e.getMessage(), Boolean.TRUE);
@@ -49,7 +49,7 @@ public class TestObjectUtil extends TestCase {
 
         // Null source and not null target
         try {
-            ObjectUtil.shallowCopy(null, StringUtils.EMPTY);
+            ObjectUtils.shallowCopy(null, StringUtils.EMPTY);
             TestCase.fail("Null source");
         } catch (IllegalArgumentException e) {
             TestCase.assertTrue(e.getMessage(), Boolean.TRUE);
@@ -57,21 +57,21 @@ public class TestObjectUtil extends TestCase {
 
         // Not null source and null target
         try {
-            ObjectUtil.shallowCopy(StringUtils.EMPTY, null);
+            ObjectUtils.shallowCopy(StringUtils.EMPTY, null);
             TestCase.fail("Null target");
         } catch (IllegalArgumentException e) {
             TestCase.assertTrue(e.getMessage(), Boolean.TRUE);
         }
 
         // Primitive source and primitive target
-        ObjectUtil.shallowCopy(5, 6);
+        ObjectUtils.shallowCopy(0, 1);
         TestCase.assertTrue("Shallow copy between primitive types does nothing", Boolean.TRUE);
 
         // Shallow copy from objects of different classes: source is A and target is B
         final A a1 = new A("a1", "c1");
         final B b1 = new B("b1", "x!$%&_)(");
 
-        ObjectUtil.shallowCopy(a1, b1);
+        ObjectUtils.shallowCopy(a1, b1);
         TestCase.assertEquals("a1", a1.a);
         TestCase.assertEquals("c1", a1.c);
         TestCase.assertEquals("b1", b1.b);
@@ -83,7 +83,7 @@ public class TestObjectUtil extends TestCase {
         final B b2 = new B("b2", "c2");
         final A a2 = new A("a2", "x!$%&_)(");
 
-        ObjectUtil.shallowCopy(b2, a2);
+        ObjectUtils.shallowCopy(b2, a2);
         TestCase.assertEquals("b2", b2.b);
         TestCase.assertEquals("c2", b2.c);
         TestCase.assertEquals("a2", a2.a);
@@ -101,12 +101,12 @@ public class TestObjectUtil extends TestCase {
         /**
          * A exclusive property.
          */
-        protected String a;
+        private String a;
 
         /**
          * A shared property between <code>A</code> and <code>B</code>.
          */
-        protected String c;
+        private String c;
 
         /**
          * Creates the DTO given its property values.
@@ -118,8 +118,24 @@ public class TestObjectUtil extends TestCase {
          */
         public A(String a, String c) {
 
+            this();
             this.a = a;
             this.c = c;
+        }
+
+        /**
+         * Default constructor.
+         */
+        private A() {
+
+            this.foo();
+        }
+
+        /**
+         * Foo method to avoid checkstyle warning.
+         */
+        public void foo() {
+
         }
     }
 
@@ -133,12 +149,12 @@ public class TestObjectUtil extends TestCase {
         /**
          * A exclusive property.
          */
-        protected String b;
+        private String b;
 
         /**
          * A shared property between <code>A</code> and <code>B</code>.
          */
-        protected String c;
+        private String c;
 
         /**
          * Creates the DTO given its property values.

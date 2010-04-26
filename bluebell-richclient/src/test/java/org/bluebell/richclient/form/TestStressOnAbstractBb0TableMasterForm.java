@@ -21,18 +21,17 @@
  */
 package org.bluebell.richclient.form;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.collections.ListUtils;
-import org.apache.commons.lang.math.RandomUtils;
 import org.bluebell.richclient.samples.simple.bean.Person;
-import org.bluebell.richclient.samples.simple.bean.Person.Sex;
 import org.bluebell.richclient.test.AbstractBbSamplesTests;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.springframework.util.Assert;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.richclient.text.TimeFormat;
 
 /**
  * Load test of {@link AbstractBbTableMasterForm}.
@@ -40,24 +39,34 @@ import org.springframework.util.Assert;
  * @author <a href = "mailto:julio.arguello@gmail.com" >Julio Argüello (JAF)</a>
  */
 public class TestStressOnAbstractBb0TableMasterForm extends AbstractBbSamplesTests {
-    
+
+    /**
+     * The logger.
+     */
+    private static final Logger LOGGER = LoggerFactory.getLogger(TestStressOnAbstractBb0TableMasterForm.class);
+
     /**
      * Tests the correct behaviour of <code>showEntities</code> when leading with a huge amount of rows.
      */
     @Test
     public void testLoadShowEntities() {
 
-        final List<Person> persons = this.createPersons(2);
+        final int numberOfPersons = 100;
+        final List<Person> persons = Person.createPersons(numberOfPersons);
         final AbstractBbTableMasterForm<Person> masterForm = this.getBackingForm(this.getMasterView());
 
-        System.out.println("BEFORE: testLoadShowEntities");
-        
+        if (TestStressOnAbstractBb0TableMasterForm.LOGGER.isDebugEnabled()) {
+            TestStressOnAbstractBb0TableMasterForm.LOGGER.debug("BEFORE showing entities");
+        }
         final long before = System.nanoTime();
         masterForm.showEntities(persons);
         final long after = System.nanoTime();
-        
-        System.out.println(after - before);
-        System.out.println("AFTER: testLoadShowEntities");
+
+        final String employedTime = TimeFormat.getMillisecondsInstance().format((after - before) / 1000000);
+        if (TestStressOnAbstractBb0TableMasterForm.LOGGER.isDebugEnabled()) {
+            TestStressOnAbstractBb0TableMasterForm.LOGGER.debug(//
+                    "After showing entities. Time employed is " + employedTime);
+        }
     }
 
     /**
@@ -82,43 +91,5 @@ public class TestStressOnAbstractBb0TableMasterForm extends AbstractBbSamplesTes
         final AbstractBbTableMasterForm<Person> masterForm = this.getBackingForm(this.getMasterView());
         masterForm.showEntities(ListUtils.EMPTY_LIST);
         System.out.println("AFTER: cleanMasterEventList");
-    }
-
-    /**
-     * Creates aribitrary persons.
-     * 
-     * @param size
-     *            the number of persons to create.
-     * 
-     * @return the persons.
-     */
-    private List<Person> createPersons(Integer size) {
-
-        Assert.isTrue(size > 0, "size>0");
-
-        final List<Person> persons = new ArrayList<Person>(size);
-        for (int i = 0; i < size; ++i) {
-            persons.add(this.createPerson());
-        }
-
-        return persons;
-    }
-
-    /**
-     * Creates an aribitrary person.
-     * 
-     * @return the person.
-     */
-    private Person createPerson() {
-
-        final Long number = RandomUtils.nextLong();
-        final String string = number.toString();
-
-        final Person person = new Person(string);
-        person.setAddress(string);
-        person.setAge(number);
-        person.setSex((number % 2 == 0) ? Sex.MALE : Sex.FEMALE);
-
-        return person;
     }
 }

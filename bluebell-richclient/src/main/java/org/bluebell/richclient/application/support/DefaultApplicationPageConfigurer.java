@@ -102,7 +102,30 @@ public class DefaultApplicationPageConfigurer<T> implements ApplicationPageConfi
      * @author <a href = "mailto:julio.arguello@gmail.com" >Julio Argüello (JAF)</a>
      */
     public static enum BbViewType {
-        TREE, MASTER, DETAIL, SEARCH, VALIDATION, UNKNOWN
+        /**
+         * Tree view.
+         */
+        TREE,
+        /**
+         * Master view.
+         */
+        MASTER,
+        /**
+         * Detail view.
+         */
+        DETAIL,
+        /**
+         * Search view.
+         */
+        SEARCH,
+        /**
+         * Validation view.
+         */
+        VALIDATION,
+        /**
+         * Unknown view.
+         */
+        UNKNOWN
     }
 
     /**
@@ -128,7 +151,7 @@ public class DefaultApplicationPageConfigurer<T> implements ApplicationPageConfi
             "View  processing ignored for view id \"{0}\" ");
 
     /**
-     * Message format required for debug information during form class retrieval
+     * Message format required for debug information during form class retrieval.
      */
     private static final MessageFormat UNKNOWN_FORM_CLASS_FMT = new MessageFormat(
             "Form class \"{0}\" not found. Employing default \"org.springframework.richclient.form.Form\"");
@@ -268,14 +291,14 @@ public class DefaultApplicationPageConfigurer<T> implements ApplicationPageConfi
             validationViews = Arrays.asList(state.validationView);
         }
 
-        final Map<String, List<? extends PageComponent>> classification = new HashMap<String, List<? extends PageComponent>>();
-        classification.put(BbViewType.MASTER.name(), masterViews);
-        classification.put(BbViewType.SEARCH.name(), ListUtils.unmodifiableList(state.searchViews));
-        classification.put(BbViewType.DETAIL.name(), ListUtils.unmodifiableList(state.detailViews));
-        classification.put(BbViewType.VALIDATION.name(), validationViews);
-        classification.put(BbViewType.UNKNOWN.name(), ListUtils.unmodifiableList(state.unknownPageComponents));
+        final Map<String, List<? extends PageComponent>> res = new HashMap<String, List<? extends PageComponent>>();
+        res.put(BbViewType.MASTER.name(), masterViews);
+        res.put(BbViewType.SEARCH.name(), ListUtils.unmodifiableList(state.searchViews));
+        res.put(BbViewType.DETAIL.name(), ListUtils.unmodifiableList(state.detailViews));
+        res.put(BbViewType.VALIDATION.name(), validationViews);
+        res.put(BbViewType.UNKNOWN.name(), ListUtils.unmodifiableList(state.unknownPageComponents));
 
-        return classification;
+        return res;
     }
 
     /**
@@ -305,7 +328,7 @@ public class DefaultApplicationPageConfigurer<T> implements ApplicationPageConfi
     }
 
     /**
-     * Gets the view type
+     * Gets the view type.
      * 
      * @param view
      *            the view.
@@ -327,9 +350,9 @@ public class DefaultApplicationPageConfigurer<T> implements ApplicationPageConfi
     }
 
     /**
-     * Gets the view type
+     * Gets the view type.
      * 
-     * @param form
+     * @param formClass
      *            the form class of the backing form view.
      * @return the type.
      */
@@ -579,7 +602,7 @@ public class DefaultApplicationPageConfigurer<T> implements ApplicationPageConfi
         // Validation checks
         Assert.notNull(pageComponent, "pageComponent");
 
-        if(!state.unknownPageComponents.contains(pageComponent)) {
+        if (!state.unknownPageComponents.contains(pageComponent)) {
             state.unknownPageComponents.add(pageComponent);
         }
     }
@@ -615,6 +638,8 @@ public class DefaultApplicationPageConfigurer<T> implements ApplicationPageConfi
      * 
      * @param applicationPage
      *            the page to be configured.
+     * 
+     * @return the page state.
      */
     private State<T> doConfigureApplicationPage(ApplicationPage applicationPage) {
 
@@ -650,10 +675,11 @@ public class DefaultApplicationPageConfigurer<T> implements ApplicationPageConfi
     }
 
     /**
-     * Gets the
+     * Gets the form class for a given view descriptor.
      * 
      * @param viewDescriptor
-     * @return
+     *            the view descriptor.
+     * @return the form class.
      */
     @SuppressWarnings("unchecked")
     private Class<? extends Form> getFormClass(DefaultViewDescriptor viewDescriptor) {
@@ -726,7 +752,7 @@ public class DefaultApplicationPageConfigurer<T> implements ApplicationPageConfi
      * 
      * @author <a href = "mailto:julio.arguello@gmail.com" >Julio Argüello (JAF)</a>
      */
-    private static class State<Q> {
+    private  static final class State<Q> {
 
         /**
          * The master view.

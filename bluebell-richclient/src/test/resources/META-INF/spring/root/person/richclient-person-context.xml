@@ -33,7 +33,6 @@
 				<value>personSearchViewDescriptor</value>
 				<value>personDetailViewDescriptor</value>
 				<value>validationViewDescriptor</value>
-				<value>initialViewDescriptor</value>
 			</list>
 		</property>
 	</bean>

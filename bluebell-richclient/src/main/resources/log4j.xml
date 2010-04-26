@@ -54,6 +54,11 @@
 		<appender-ref ref="icons" />
 	</logger>
 
+	<logger name="org.springframework.richclient.form.AbstractMasterForm$DirtyTrackingDCBCVM" additivity="false">
+		<!-- Since consumes a lot of time just debugging -->
+		<level value="INFO" />
+	</logger>
+
 	<root>
 		<priority value="debug" />
 		<!--		<appender-ref ref="root" />-->
