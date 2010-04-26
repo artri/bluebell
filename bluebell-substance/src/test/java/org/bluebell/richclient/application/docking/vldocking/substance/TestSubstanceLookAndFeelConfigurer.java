@@ -24,7 +24,7 @@ package org.bluebell.richclient.application.docking.vldocking.substance;
 import org.junit.Test;
 
 /**
- * TODO
+ * TODO.
  * 
  * @author <a href = "mailto:julio.arguello@gmail.com" >Julio Argüello (JAF)</a>
  */

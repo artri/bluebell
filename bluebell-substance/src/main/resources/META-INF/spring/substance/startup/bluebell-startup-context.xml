@@ -19,12 +19,31 @@
 
 	<aop:aspectj-autoproxy />
 
-	<bean id="substanceLookAndFeelConfigurer" class="org.bluebell.richclient.application.config.substance.SubstanceLookAndFeelConfigurer">
-		<constructor-arg index="0" value="org.jvnet.substance.skin.SubstanceDustLookAndFeel" />
+	<!--
+		Bean: substanceStartupPropertyPlaceholderConfigurer Usage: platform required Description: This configures all
+		placeholders defined in the application context. Note "null" string is used for null values and system properties
+		override those defined in properties files. Note its priority is greater than "defaultPropertyPlaceholderConfigurer"
+		priority.
+	-->
+	<bean id="substanceStartupPropertyPlaceholderConfigurer" parent="defaultStartupPropertyPlaceholderConfigurer"
+		p:order="5">
+		<property name="locations">
+			<list>
+				<value>classpath:/META-INF/spring/substance/root/*.properties</value>
+			</list>
+		</property>
+	</bean>
+
+	<bean id="substanceLookAndFeelConfigurer" parent="vlDockingLookAndFeelConfigurer"
+		class="org.bluebell.richclient.application.config.substance.SubstanceLookAndFeelConfigurer" lazy-init="true">
 		<property name="progressMonitorProxyBean">
 			<util:property-path id="progressMonitor" path="splashScreen.progressMonitor" />
 		</property>
-		<property name="imageLocations" ref="${richclient.imageResourcesFactory}" />
 	</bean>
+
+	<bean id="substanceDockableContainerFactory" class="org.bluebell.richclient.application.docking.vldocking.substance.SubstanceDockableContainerFactory" />
+	
+	<bean id="substanceWidgetDesktopStyle" class="org.bluebell.richclient.application.config.substance.SubstanceWidgetDesktopStyle" />
+
 
 </beans>

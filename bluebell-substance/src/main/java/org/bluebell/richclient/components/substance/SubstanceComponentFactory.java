@@ -61,7 +61,7 @@ public class SubstanceComponentFactory extends ComponentFactoryDecorator {
         // This is just an example
         final JTabbedPane tabbedPane = super.createTabbedPane();
 
-        // This is already done at SubstanceLookAndFeelConfigurer
+        // This is already done at BbLookAndFeelConfigurer
         // tabbedPane.putClientProperty(LafWidget.TABBED_PANE_PREVIEW_PAINTER, new DefaultTabPreviewPainter());
 
         return tabbedPane;

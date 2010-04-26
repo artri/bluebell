@@ -21,9 +21,8 @@
  */
 package org.bluebell.richclient.application.config.substance;
 
-import java.util.Map;
+import java.awt.Color;
 
-import javax.swing.ImageIcon;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JTabbedPane;
@@ -33,6 +32,8 @@ import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
+import org.bluebell.richclient.application.config.vldocking.VLDockingLookAndFeelConfigurer;
+import org.bluebell.richclient.application.docking.vldocking.VLDockingUtils;
 import org.bluebell.richclient.swing.util.SwingUtils;
 import org.jvnet.lafwidget.LafWidget;
 import org.jvnet.lafwidget.animation.FadeConfigurationManager;
@@ -41,10 +42,9 @@ import org.jvnet.lafwidget.preview.DefaultPreviewPainter;
 import org.jvnet.lafwidget.tabbed.DefaultTabPreviewPainter;
 import org.jvnet.lafwidget.utils.LafConstants.TabOverviewKind;
 import org.jvnet.substance.SubstanceLookAndFeel;
+import org.jvnet.substance.api.SubstanceSkin;
 import org.jvnet.substance.api.SubstanceConstants.TabContentPaneBorderKind;
-import org.springframework.beans.factory.InitializingBean;
-import org.springframework.core.io.Resource;
-import org.springframework.richclient.application.config.UIManagerConfigurer;
+import org.jvnet.substance.skin.SkinChangeListener;
 import org.springframework.util.Assert;
 
 /**
@@ -92,17 +92,12 @@ import org.springframework.util.Assert;
  * @author <a href = "mailto:julio.arguello@gmail.com" >Julio Argüello (JAF)</a>
  */
 @Aspect
-public class SubstanceLookAndFeelConfigurer extends UIManagerConfigurer implements InitializingBean {
+public class SubstanceLookAndFeelConfigurer extends VLDockingLookAndFeelConfigurer implements SkinChangeListener {
 
     /**
      * The progress monitor proxy bean.
      */
     private Object progressMonitorProxyBean;
-
-    /**
-     * The image locations.
-     */
-    private Map<String, Resource> imageLocations;
 
     /**
      * Creates the look and feel configurer.
@@ -114,77 +109,8 @@ public class SubstanceLookAndFeelConfigurer extends UIManagerConfigurer implemen
      */
     public SubstanceLookAndFeelConfigurer(String lookAndFeelName) {
 
-        super();
-        this.setLookAndFeel(lookAndFeelName);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void setLookAndFeel(final String className) {
-
-        SwingUtils.runInEventDispatcherThread(new Runnable() {
-            public void run() {
-
-                SubstanceLookAndFeelConfigurer.super.setLookAndFeel(className);
-            }
-        });
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void setLookAndFeelWithName(final String lookAndFeelName) {
-
-        SwingUtils.runInEventDispatcherThread(new Runnable() {
-            public void run() {
-
-                SubstanceLookAndFeelConfigurer.super.setLookAndFeelWithName(lookAndFeelName);
-            }
-        });
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public void afterPropertiesSet() throws Exception {
-
-        for (Map.Entry<String, Resource> entry : this.getImageLocations().entrySet()) {
-            final String imageKey = entry.getKey();
-
-            try {
-                final ImageIcon icon = new ImageIcon(entry.getValue().getURL());
-                UIManager.put(imageKey, icon);
-            } catch (Exception e) {
-                new String("Avoid CS warnings");
-                // Nothing to do
-            }
-        }
-    }
-
-    /**
-     * Gets the imageLocations.
-     * 
-     * @return the imageLocations
-     */
-    public Map<String, Resource> getImageLocations() {
-
-        return this.imageLocations;
-    }
-
-    /**
-     * Sets the imageLocations.
-     * 
-     * @param imageLocations
-     *            the imageLocations to set
-     */
-    public void setImageLocations(Map<String, Resource> imageLocations) {
-
-        Assert.notNull(imageLocations, "imageLocations");
-
-        this.imageLocations = imageLocations;
+        super(lookAndFeelName);
+        SubstanceLookAndFeel.registerSkinChangeListener(this);
     }
 
     /**
@@ -201,34 +127,13 @@ public class SubstanceLookAndFeelConfigurer extends UIManagerConfigurer implemen
     }
 
     /**
-     * Pointcut that intercepts progress monitor <code>taskStarted</code> events.
-     * <p>
-     * This method does nothing.
+     * {@inheritDoc}
      */
-    @Pointcut("execution(* org.springframework.richclient.progress.ProgressMonitor.*(..))")
-    protected final void progressMonitorOperation() {
+    public final void skinChanged() {
 
-    }
-
-    /**
-     * Pointcut that intercepts getting progress monitor from monitoring splash screen.
-     * <p>
-     * This method does nothing.
-     */
-    @Pointcut("execution(* org.springframework.richclient.application.splash.MonitoringSplashScreen."
-            + "getProgressMonitor(..))")
-    protected final void monitoringSplashScreenGetProgressMonitorOperation() {
-
-    }
-
-    /**
-     * Pointcut that intercepts splash screen <code>splash</code> invocations.
-     * <p>
-     * This method does nothing.
-     */
-    @Pointcut("execution(* org.springframework.richclient.application.splash.SplashScreen.*(..))")
-    protected final void splashScreenOperation() {
-
+        this.installColors();
+        
+        this.installWidgetDesktopStyle();
     }
 
     /**
@@ -305,7 +210,7 @@ public class SubstanceLookAndFeelConfigurer extends UIManagerConfigurer implemen
     /**
      * {@inheritDoc}
      * <p>
-     * Proceeds according to <a href="https://substance.dev.java.net/docs/faq.html">Substance FAQ</a>:
+     * Also proceeds according to <a href="https://substance.dev.java.net/docs/faq.html">Substance FAQ</a>:
      * <p>
      * <dl>
      * <dt>Question 16: How do i make Substance to paint the title panes?
@@ -320,10 +225,11 @@ public class SubstanceLookAndFeelConfigurer extends UIManagerConfigurer implemen
     @Override
     protected void doInstallCustomDefaults() throws Exception {
 
+        super.doInstallCustomDefaults();
+
         // https://substance.dev.java.net/docs/faq.html
         JFrame.setDefaultLookAndFeelDecorated(Boolean.TRUE);
         JDialog.setDefaultLookAndFeelDecorated(Boolean.TRUE);
-        System.setProperty("sun.awt.noerasebackground", "true");
 
         // LafWidget
         UIManager.put(LafWidget.AUTO_SCROLL, Boolean.TRUE);
@@ -346,6 +252,76 @@ public class SubstanceLookAndFeelConfigurer extends UIManagerConfigurer implemen
         FadeConfigurationManager.getInstance().allowFades(FadeKind.GHOSTING_BUTTON_PRESS);
         FadeConfigurationManager.getInstance().allowFades(FadeKind.GHOSTING_ICON_ROLLOVER);
         FadeConfigurationManager.getInstance().allowFades(FadeKind.SELECTION);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void installColors() {
+
+        final SubstanceSkin skin = SubstanceLookAndFeel.getCurrentSkin();
+
+        if (skin != null) {
+            this.installColors(skin);
+        }
+    }
+
+    /**
+     * Installs the VLDocking colors for the given skin.
+     * 
+     * @param skin
+     *            the substance skin.
+     * 
+     * @see VLDockingUtils.DockingColor
+     */
+    private void installColors(SubstanceSkin skin) {
+
+        Assert.notNull(skin, "skin");
+
+        final Color shadow = skin.getMainDefaultColorScheme().getDarkColor();
+        final Color highlight = skin.getMainDefaultColorScheme().getLightColor();
+        final Color background = skin.getMainDefaultColorScheme().getBackgroundFillColor();
+        final Color active = skin.getMainActiveColorScheme().getMidColor();
+        final Color inactive = skin.getMainDefaultColorScheme().getMidColor();
+
+        // Widget style colors
+        UIManager.put(VLDockingUtils.DockingColor.BACKGROUND.getKey(), background);
+        UIManager.put(VLDockingUtils.DockingColor.SHADOW.getKey(), shadow);
+        UIManager.put(VLDockingUtils.DockingColor.HIGHLIGHT.getKey(), highlight);
+        UIManager.put(VLDockingUtils.DockingColor.ACTIVE_WIDGET.getKey(), active);
+        UIManager.put(VLDockingUtils.DockingColor.INACTIVE_WIDGET.getKey(), inactive);
+    }
+
+    /**
+     * Pointcut that intercepts progress monitor <code>taskStarted</code> events.
+     * <p>
+     * This method does nothing.
+     */
+    @Pointcut("execution(* org.springframework.richclient.progress.ProgressMonitor.*(..))")
+    protected final void progressMonitorOperation() {
+
+    }
+
+    /**
+     * Pointcut that intercepts getting progress monitor from monitoring splash screen.
+     * <p>
+     * This method does nothing.
+     */
+    @Pointcut("execution(* org.springframework.richclient.application.splash.MonitoringSplashScreen."
+            + "getProgressMonitor(..))")
+    protected final void monitoringSplashScreenGetProgressMonitorOperation() {
+
+    }
+
+    /**
+     * Pointcut that intercepts splash screen <code>splash</code> invocations.
+     * <p>
+     * This method does nothing.
+     */
+    @Pointcut("execution(* org.springframework.richclient.application.splash.SplashScreen.*(..))")
+    protected final void splashScreenOperation() {
+
     }
 
     /**
