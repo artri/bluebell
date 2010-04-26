@@ -27,16 +27,16 @@
 	</modules>
 
 	<distributionManagement>
-		<site>
-			<id>bluebell.googlecode.com.site.deploy</id>
-			<name>Google Code Maven Site For Bluebell</name>
-			<url>svn:https://bluebell.googlecode.com/svn/www/${pom.version}</url>
-		</site>
 		<!--		<site>-->
 		<!--			<id>bluebell.googlecode.com.site.deploy</id>-->
 		<!--			<name>Google Code Maven Site For Bluebell</name>-->
-		<!--			<url>file://C:/yo</url>-->
+		<!--			<url>svn:https://bluebell.googlecode.com/svn/www/${pom.version}</url>-->
 		<!--		</site>-->
+		<site>
+			<id>bluebell.googlecode.com.site.deploy</id>
+			<name>Google Code Maven Site For Bluebell</name>
+			<url>file://C:/yo</url>
+		</site>
 	</distributionManagement>
 
 	<repositories>
@@ -345,9 +345,9 @@
 					<testDoctitle>Test API for ${project.name} ${project.version}</testDoctitle>
 					<testWindowtitle>Test API for ${project.name} ${project.version}</testWindowtitle>
 					<detectLinks>true</detectLinks>
-					<links>
-						<!--						<link>http://java.sun.com/j2se/1.4.2/docs/api</link>-->
-					</links>
+					<!--					<links>-->
+					<!--						<link>http://java.sun.com/j2se/1.4.2/docs/api</link>-->
+					<!--					</links>-->
 
 					<!-- 
 						TODO - (JAF), 20091230, this exclusion does not work
@@ -667,6 +667,7 @@
 				<groupId>org.pushingpixels</groupId>
 				<artifactId>laf-plugin</artifactId>
 				<version>1.0</version>
+				<scope>runtime</scope>
 			</dependency>
 			<dependency>
 				<groupId>org.pushingpixels</groupId>
