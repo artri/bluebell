@@ -1027,7 +1027,7 @@ public abstract class AbstractB2TableMasterForm<T extends Object> extends Abstra
     @Override
     protected final List<T> beforeSelectionChange(List<Integer> modelIndexes, List<T> selection) {
 
-        final List<T> newSelection = super.beforeSelectionChange(modelIndexes, selection);
+        final List<T> newSelection = this.doRefresh(selection);
 
         // Notify detail forms about selection
         for (final AbstractBbChildForm<T> childForm : this.getDetailForms()) {

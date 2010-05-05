@@ -59,6 +59,12 @@
 		<level value="INFO" />
 	</logger>
 
+	<logger name="org.bluebell.richclient.table.support.TableUtils" additivity="false">
+		<!-- Since consumes a lot of time just debugging -->
+		<level value="INFO" />
+	</logger>
+
+
 	<root>
 		<priority value="debug" />
 		<!--		<appender-ref ref="root" />-->

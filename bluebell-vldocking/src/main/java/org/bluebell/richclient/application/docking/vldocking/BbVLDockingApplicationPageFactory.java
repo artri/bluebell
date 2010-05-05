@@ -104,8 +104,6 @@ public class BbVLDockingApplicationPageFactory<T> extends VLDockingApplicationPa
         if (alreadyAdded) {
             window.addPageListener(new PageListener() {
                 /**
-                 * Ocultar el control de la página cuando se cierra.
-                 * 
                  * @see org.springframework.richclient.application.PageListener#pageClosed
                  */
                 public void pageClosed(ApplicationPage page) {
@@ -114,8 +112,6 @@ public class BbVLDockingApplicationPageFactory<T> extends VLDockingApplicationPa
                 }
 
                 /**
-                 * Hacer visible el control de la página cuando se abre.
-                 * 
                  * @see org.springframework.richclient.application.PageListener#pageOpened
                  */
                 public void pageOpened(ApplicationPage page) {

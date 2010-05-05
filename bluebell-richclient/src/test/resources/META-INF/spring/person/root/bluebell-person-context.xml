@@ -16,22 +16,13 @@
 		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.5.xsd
 		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-2.5.xsd">
 
-
-	<bean id="personPropertyPlaceholderConfigurer" parent="defaultPropertyPlaceholderConfigurer"
-		p:ignore-unresolvable-placeholders="true" p:ignore-resource-not-found="false" p:order="100000">
-		<property name="locations">
-			<list>
-				<value>classpath*:META-INF/spring/root/person/*.properties</value>
-			</list>
-		</property>
-	</bean>
-
 	<bean id="personPageDescriptor" parent="abstractPageDescriptor">
 		<property name="viewDescriptors">
 			<list>
 				<value>personMasterViewDescriptor</value>
 				<value>personSearchViewDescriptor</value>
 				<value>personDetailViewDescriptor</value>
+				<value>personVetsDetailViewDescriptor</value>
 				<value>validationViewDescriptor</value>
 			</list>
 		</property>
@@ -61,18 +52,38 @@
 		</property>
 	</bean>
 
+	<bean id="personVetsDetailViewDescriptor" parent="abstractViewDescriptor">
+		<property name="viewProperties">
+			<util:map>
+				<entry key="formClass" value="org.bluebell.richclient.samples.simple.form.PersonVetsDetailForm" />
+			</util:map>
+		</property>
+	</bean>
+
+	<bean id="personVetsTableBinder" class="org.bluebell.richclient.form.binding.swing.TableBinder">
+		<property name="columnPropertyNames">
+			<list>
+				<value>name</value>
+			</list>
+		</property>
+		<property name="dialogBackingForm">
+			<bean class="org.bluebell.richclient.samples.simple.form.PersonVetForm" />
+		</property>
+	</bean>
+
+
+	<util:list id="personBindersForPropertyNames">
+		<props>
+			<prop key="objectClass">org.bluebell.richclient.samples.simple.bean.Person</prop>
+			<prop key="propertyName">vets</prop>
+			<prop key="binderRef">personVetsTableBinder</prop>			
+		</props>
+	</util:list>
+
 	<bean id="personMessageSource" parent="${personMessageSource.parent}">
 		<property name="basenames">
 			<list merge="true">
 				<value>org.bluebell.richclient.samples.simple.messages</value>
-			</list>
-		</property>
-	</bean>
-
-	<bean id="personImageResourcesFactory" parent="${personImageResourcesFactory.parent}">
-		<property name="locations">
-			<list merge="true">
-				<value>classpath:/org/bluebell/richclient/samples/simple/image/images.properties</value>
 			</list>
 		</property>
 	</bean>

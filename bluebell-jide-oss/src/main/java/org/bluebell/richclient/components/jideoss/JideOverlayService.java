@@ -79,12 +79,22 @@ public class JideOverlayService implements OverlayService, SwingConstants {
             "Overlay \"{0}\" not installed into \"{1}\"");
 
     /**
+     * The {@value #TARGET_COMPONENT_PARAM} method parameter.
+     */
+    private static final String TARGET_COMPONENT_PARAM = "targetComponent";
+
+    /**
+     * The {@value #OVERLAY} method parameter.
+     */
+    private static final String OVERLAY = "overlay";
+
+    /**
      * {@inheritDoc}
      */
     public Boolean isOverlayInstalled(JComponent targetComponent, JComponent overlay) {
 
-        Assert.notNull(targetComponent, "targetComponent");
-        Assert.notNull(overlay, "overlay");
+        Assert.notNull(targetComponent, JideOverlayService.TARGET_COMPONENT_PARAM);
+        Assert.notNull(overlay, JideOverlayService.OVERLAY);
 
         final DefaultOverlayable overlayable = this.findOverlayable(targetComponent);
 
@@ -110,8 +120,8 @@ public class JideOverlayService implements OverlayService, SwingConstants {
     @Override
     public Boolean installOverlay(JComponent targetComponent, JComponent overlay, int position, Insets insets) {
 
-        Assert.notNull(targetComponent, "targetComponent");
-        Assert.notNull(overlay, "overlay");
+        Assert.notNull(targetComponent, JideOverlayService.TARGET_COMPONENT_PARAM);
+        Assert.notNull(overlay, JideOverlayService.OVERLAY);
 
         final DefaultOverlayable overlayable = this.findOverlayable(targetComponent);
 
@@ -154,8 +164,8 @@ public class JideOverlayService implements OverlayService, SwingConstants {
      */
     public Boolean uninstallOverlay(JComponent targetComponent, JComponent overlay, Insets insets) {
 
-        Assert.notNull(targetComponent, "targetComponent");
-        Assert.notNull(overlay, "overlay");
+        Assert.notNull(targetComponent, JideOverlayService.TARGET_COMPONENT_PARAM);
+        Assert.notNull(overlay, JideOverlayService.OVERLAY);
 
         final DefaultOverlayable overlayable = this.findOverlayable(targetComponent);
 
@@ -211,7 +221,7 @@ public class JideOverlayService implements OverlayService, SwingConstants {
      */
     protected final Boolean isOverlayInstalled(DefaultOverlayable overlayable, JComponent overlay) {
 
-        Assert.notNull(overlay, "overlay");
+        Assert.notNull(overlay, JideOverlayService.OVERLAY);
 
         if (overlayable != null) {
 
@@ -255,8 +265,8 @@ public class JideOverlayService implements OverlayService, SwingConstants {
      */
     protected final Boolean setVisible(JComponent targetComponent, JComponent overlay, Boolean show) {
 
-        Assert.notNull(targetComponent, "targetComponent");
-        Assert.notNull(overlay, "overlay");
+        Assert.notNull(targetComponent, JideOverlayService.TARGET_COMPONENT_PARAM);
+        Assert.notNull(overlay, JideOverlayService.OVERLAY);
         Assert.notNull(show, "show");
 
         // If overlay is installed...

@@ -49,7 +49,8 @@ import org.springframework.util.ReflectionUtils;
  * @author Keith Donald
  * @author Juergen Hoeller
  * @author <a href = "mailto:julio.arguello@gmail.com" >Julio Argüello (JAF)</a>: copied from
- *         org.springframework:org.springframework.core:2.5.6.A since 3.0.0-RELEASE has intentionally removed this file.
+ *         org.springframework:org.springframework.core:2.5.6.A since from 3.0.0-RELEASE this file has intentionally
+ *         been removed.
  * 
  * @since 1.2.2
  * @deprecated as of Spring 2.5, to be removed in Spring 3.0

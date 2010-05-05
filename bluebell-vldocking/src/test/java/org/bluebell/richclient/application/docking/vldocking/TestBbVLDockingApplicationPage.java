@@ -261,6 +261,9 @@ public class TestBbVLDockingApplicationPage extends AbstractBbSamplesTests {
     @Test
     public void testBuildWholePageAutoLayout() {
 
+        final int numberOfDetailViews = 3;
+        final int numberOfSearchViews = 2;
+
         // Raise page control creation
         this.initializeVariables(this.wholePageDescriptor);
 
@@ -268,8 +271,8 @@ public class TestBbVLDockingApplicationPage extends AbstractBbSamplesTests {
         final Map<String, List<? extends PageComponent>> classification = //
         this.defaultApplicationPageConfigurer.classifyApplicationPage(this.getApplicationPage());
 
-        TestCase.assertTrue(classification.get(BbViewType.DETAIL.name()).size() == 2);
-        TestCase.assertTrue(classification.get(BbViewType.SEARCH.name()).size() == 2);
+        TestCase.assertTrue(classification.get(BbViewType.DETAIL.name()).size() == numberOfDetailViews);
+        TestCase.assertTrue(classification.get(BbViewType.SEARCH.name()).size() == numberOfSearchViews);
 
         // Ensure no exception is thrown
         final Throwable cause = RememberExceptionHandler.getLastThrowable();

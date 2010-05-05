@@ -38,7 +38,8 @@ import org.springframework.util.Assert;
  * <li>Utilizando la <em>binding factory</em> de Spring RCP para, por ejemplo, asociar este binder a una propiedad.
  * 
  * <pre>
- *     &lt;bean id=&quot;aceTableBinder&quot; class=&quot;org.bluebell.richclient.test.binding.TableBinder&quot;&gt;
+ *     &lt;bean id=&quot;aceTableBinder&quot; 
+ *         class=&quot;org.bluebell.richclient.form.binding.swing.TableBinder&quot;&gt;
  *         &lt;property name=&quot;columnPropertyNames&quot;&gt;
  *             &lt;list&gt;
  *                 &lt;value&gt;string&lt;/value&gt;

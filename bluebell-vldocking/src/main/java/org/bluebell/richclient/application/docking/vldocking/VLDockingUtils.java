@@ -26,13 +26,12 @@ import java.awt.Color;
 import javax.swing.UIManager;
 
 import org.apache.commons.lang.StringUtils;
-import org.bluebell.richclient.application.config.vldocking.WidgetDesktopStyle;
 import org.springframework.richclient.util.Assert;
 
 /**
  * Utility class for dealing with VLDocking.
  * 
- * @see WidgetDesktopStyle
+ * @see org.bluebell.richclient.application.config.vldocking.WidgetDesktopStyle
  * 
  * @author <a href = "mailto:julio.arguello@gmail.com" >Julio Argüello (JAF)</a>
  */

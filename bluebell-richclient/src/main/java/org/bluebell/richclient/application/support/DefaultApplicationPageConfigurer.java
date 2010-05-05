@@ -193,7 +193,7 @@ public class DefaultApplicationPageConfigurer<T> implements ApplicationPageConfi
 
         if (DefaultApplicationPageConfigurer.LOGGER.isDebugEnabled()) {
             DefaultApplicationPageConfigurer.LOGGER.debug(DefaultApplicationPageConfigurer.PAGE_CREATION_FMT.format(//
-                    new Object[] { new Integer(0), pageDescriptor.getId(), new Integer(window.getNumber()) }));
+                    new Object[] { Integer.valueOf(0), pageDescriptor.getId(), Integer.valueOf(window.getNumber()) }));
         }
     }
 
@@ -230,7 +230,7 @@ public class DefaultApplicationPageConfigurer<T> implements ApplicationPageConfi
 
         if (DefaultApplicationPageConfigurer.LOGGER.isDebugEnabled()) {
             DefaultApplicationPageConfigurer.LOGGER.debug(DefaultApplicationPageConfigurer.PAGE_CREATION_FMT.format(//
-                    new Object[] { new Integer(1), pageDescriptor.getId(), new Integer(window.getNumber()) }));
+                    new Object[] { Integer.valueOf(1), pageDescriptor.getId(), Integer.valueOf(window.getNumber()) }));
         }
 
         // Page components creation must be done in the event dispatcher thread
@@ -752,7 +752,7 @@ public class DefaultApplicationPageConfigurer<T> implements ApplicationPageConfi
      * 
      * @author <a href = "mailto:julio.arguello@gmail.com" >Julio Argüello (JAF)</a>
      */
-    private  static final class State<Q> {
+    private static final class State<Q> {
 
         /**
          * The master view.

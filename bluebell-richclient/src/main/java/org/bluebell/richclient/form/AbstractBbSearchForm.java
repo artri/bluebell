@@ -488,8 +488,6 @@ public abstract class AbstractBbSearchForm<T extends Object, U extends Object> e
 
         final ToggleCommand attachResultsCmd = new ToggleCommand(commandId) {
             /**
-             * Establece que se han de descartar los resultados anteriores.
-             * 
              * @see AbstractBbSearchForm#setAttachResults(boolean)
              */
             @Override
@@ -499,8 +497,6 @@ public abstract class AbstractBbSearchForm<T extends Object, U extends Object> e
             }
 
             /**
-             * Establece que se han de mantener los resultados anteriores.
-             * 
              * @see AbstractBbSearchForm#setAttachResults(boolean)
              */
             @Override
@@ -630,10 +626,8 @@ public abstract class AbstractBbSearchForm<T extends Object, U extends Object> e
                 final U formObject = (U) AbstractBbSearchForm.this.getFormObject();
                 AbstractBbSearchForm.this.setLastSearchParams(formObject);
 
-                // Obtener los resultados de la búsqueda.
+                // Obtener los resultados de la búsqueda y notificar el número de resultados devuelto
                 final List<T> searchResults = AbstractBbSearchForm.this.doSearch(formObject);
-
-                // Notificar el número de resultados devuelto
                 AbstractBbSearchForm.this.showNumberOfResults(searchResults.size());
 
                 // Establecer los resultados de la búsqueda en el formulario maestro.

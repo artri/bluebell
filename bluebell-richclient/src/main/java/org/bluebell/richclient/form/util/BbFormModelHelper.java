@@ -30,6 +30,7 @@ import javax.swing.table.TableModel;
 
 import org.bluebell.binding.value.support.DirtyTrackingDCBCVM;
 import org.bluebell.richclient.exceptionhandling.BbApplicationException;
+import org.bluebell.richclient.util.AtomicObservableEventList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.binding.MutablePropertyAccessStrategy;
@@ -57,6 +58,7 @@ import org.springframework.util.Assert;
 import org.springframework.util.ReflectionUtils;
 
 import ca.odell.glazedlists.EventList;
+import ca.odell.glazedlists.TransformedList;
 
 /**
  * Extiende {@link FormModelHelper} con nuevas métodos de utilidad.
@@ -74,6 +76,10 @@ public class BbFormModelHelper extends FormModelHelper {
     public static final Field DIRTY_VALUE_AND_FORM_MODELS_FIELD = ReflectionUtils.findField(//
             AbstractFormModel.class, "dirtyValueAndFormModels", Set.class);
 
+    static {
+        ReflectionUtils.makeAccessible(BbFormModelHelper.DIRTY_VALUE_AND_FORM_MODELS_FIELD);
+    }
+
     /**
      * Log para la clase {@link BbFormModelHelper}.
      */
@@ -90,10 +96,6 @@ public class BbFormModelHelper extends FormModelHelper {
      */
     private static final MessageFormat NO_VALIDABLE_FMT = new MessageFormat(
             "The form model with id {0} cannot be validated " + "using Hibernate Validator: unknown class");
-
-    static {
-        ReflectionUtils.makeAccessible(BbFormModelHelper.DIRTY_VALUE_AND_FORM_MODELS_FIELD);
-    }
 
     /**
      * Añade un <em>value model</em> <em>buffered</em> y con gestión de <em>dirty tracking</em> para una propiedad de
@@ -258,10 +260,25 @@ public class BbFormModelHelper extends FormModelHelper {
      *            el identificador del modelo.
      * @return el modelo de la tabla.
      */
+    @SuppressWarnings("unchecked")
     public static TableModel createTableModel(EventList<?> eventList, String[] columnPropertyNames, String id) {
 
-        final GlazedTableModel tableModel = new GlazedTableModel(eventList, columnPropertyNames, id);
-        return tableModel;
+        return new GlazedTableModel(eventList, columnPropertyNames, id) {
+
+            /**
+             * This is a <code>Serializable</code
+             */
+            private static final long serialVersionUID = -5065011806899360449L;
+
+            /**
+             * {@inheritDoc}
+             */
+            @Override
+            protected TransformedList createSwingThreadProxyList(EventList source) {
+
+                return new AtomicObservableEventList(super.createSwingThreadProxyList(source));
+            }
+        };
     }
 
     /**
@@ -302,6 +319,9 @@ public class BbFormModelHelper extends FormModelHelper {
      * <p>
      * <b>Nótese</b> que por defecto este modelo no realiza validación alguna.
      * 
+     * @param <T>
+     *            the type of the backing form object.
+     * 
      * @param parentFormModel
      *            el modelo padre.
      * @param clazz
@@ -328,27 +348,31 @@ public class BbFormModelHelper extends FormModelHelper {
      * <p>
      * <b>Nótese</b> que por defecto este modelo no realiza validación alguna.
      * 
+     * @param <T>
+     *            the type of the collection items.
+     * @param <Q>
+     *            the type of the collection.
+     * 
      * @param parentFormModel
      *            el modelo padre.
      * @param clazz
      *            la clase de cada elemento de la colección.
      * @param propertyName
      *            el nombre de la propiedad a representar
-     * @param collectionClazz
+     * @param colClazz
      *            la clase de la colección.
      * @return el modelo.
      */
-    // @SuppressWarnings("unchecked")
     @SuppressWarnings("unchecked")
-    public static <T extends Object, Q extends Collection<T>> ValidatingFormModel createValidatingChildPageCollectionFormModel(
-            HierarchicalFormModel parentFormModel, Class<T> clazz, String propertyName, final Class<Q> collectionClazz) {
+    public static <T extends Object, Q extends Collection<T>> ValidatingFormModel //
+    createValidatingChildPageCollectionFormModel(HierarchicalFormModel parentFormModel, Class<T> clazz,
+            String propertyName, final Class<Q> colClazz) {
 
         // El value model de la propiedad a representar
         final ValueModel propertyVM = parentFormModel.getValueModel(propertyName);
 
         // Construir el buffered value model
-        final DirtyTrackingDCBCVM<T> collectionVM = new DirtyTrackingDCBCVM(propertyVM, collectionClazz, clazz,
-                propertyName);
+        final DirtyTrackingDCBCVM<T> collectionVM = new DirtyTrackingDCBCVM(propertyVM, colClazz, clazz, propertyName);
 
         // Crear el nuevo modelo a partir de la estrategia
         final DefaultFormModel formModel = new BbDefaultFormModel(new BeanPropertyAccessStrategy(collectionVM), true) {
@@ -357,22 +381,19 @@ public class BbFormModelHelper extends FormModelHelper {
             protected void handleSetNullFormObject() {
 
                 if (BbFormModelHelper.LOGGER.isDebugEnabled()) {
-                    BbFormModelHelper.LOGGER.debug("New form object value is null; resetting "
-                            + "to a new collection and disabling form");
+                    BbFormModelHelper.LOGGER.debug("New form object is null; creating new col and disabling form");
                 }
                 try {
-                    final Class<T> class2Create = (Class<T>) BufferedCollectionValueModel
-                            .getConcreteCollectionType(collectionClazz);
-                    this.getFormObjectHolder().setValue(class2Create.newInstance());
+                    final Class<T> clazz = (Class<T>) BufferedCollectionValueModel.getConcreteCollectionType(colClazz);
+                    this.getFormObjectHolder().setValue(clazz.newInstance());
                     this.setEnabled(Boolean.FALSE);
                 } catch (final InstantiationException e) {
                     throw new BbApplicationException(BbFormModelHelper.NO_INSTANTIABLE_FMT.format(//
-                            new String[] { collectionClazz.getName() }), e);
+                            new String[] { colClazz.getName() }), e);
                 } catch (final IllegalAccessException e) {
                     throw new BbApplicationException(BbFormModelHelper.NO_INSTANTIABLE_FMT.format(//
-                            new String[] { collectionClazz.getName() }), e);
+                            new String[] { colClazz.getName() }), e);
                 }
-
             }
         };
 
@@ -794,4 +815,5 @@ public class BbFormModelHelper extends FormModelHelper {
             ((ConfigurableFormModel) formModel).setEnabled(Boolean.TRUE);
         }
     }
+
 }

@@ -25,6 +25,8 @@ import java.util.Collection;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.functors.InstanceofPredicate;
+import org.apache.commons.lang.SerializationUtils;
+import org.bluebell.richclient.util.AtomicObservableEventList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanWrapper;
@@ -33,7 +35,6 @@ import org.springframework.binding.value.ValueModel;
 import org.springframework.binding.value.support.BufferedCollectionValueModel;
 import org.springframework.binding.value.support.DeepCopyBufferedCollectionValueModel;
 import org.springframework.binding.value.support.DirtyTrackingValueModel;
-import org.springframework.binding.value.support.ObservableEventList;
 import org.springframework.binding.value.support.ObservableList;
 import org.springframework.util.ReflectionUtils;
 
@@ -206,16 +207,71 @@ public class DirtyTrackingDCBCVM<T> extends DeepCopyBufferedCollectionValueModel
     }
 
     /**
+     * Prepare the backing collection for installation into the <code>ListListModel</code>. Create a new collection that
+     * contains a deep copy of the given collection.
+     * <p>
+     * Replaces original implementation due to performance reasons:
+     * <ul>
+     * <li>On one hand suppose the following case, where a <em>parent entity</em> (<code>Parent</code>) has a
+     * bidirectional relation with a <em>child entity</em> ( <code>Child</code>):
+     * 
+     * <pre>
+     * parent <---> child_1
+     *         |
+     *         ^
+     *         +--> child_2
+     *         ^
+     *         +--> child_3
+     *         |
+     *         .
+     *         .
+     *         .
+     *         ^
+     *         +--> child_N
+     * </pre>
+     * 
+     * <li>On the other hand find attached the old implementation:
+     * 
+     * <pre>
+     * ArrayList list = new ArrayList(col);
+     * for (int i = 0; i &lt; list.size(); i++) {
+     *     list.set(i, deepCopy(list.get(i)));
+     * }
+     * return list;
+     * </pre>
+     * 
+     * </ul>
+     * 
+     * While trying to show the case above, old implementation would create <code>(N+1)*N</code> objects, due to deep
+     * copy iteration and probably would cause an <code>OutOfMemory</code> error. However employing a single deep copy
+     * the number of new objects is <code>N+1</code>.
+     * 
+     * <pre>
+     * return (Collection&lt;?&gt;) SerializationUtils.clone(new ArrayList&lt;T&gt;((Collection&lt;T&gt;) col));
+     * </pre>
+     * 
+     * @param col
+     *            the collection of objects to process.
+     * @return the processed collection.
+     */
+    @SuppressWarnings("unchecked")
+    @Override
+    protected Collection<?> prepareBackingCollection(Collection col) {
+
+        return (Collection<?>) SerializationUtils.clone(new ArrayList<T>((Collection<T>) col));
+    }
+
+    /**
      * Crea una <code>ObservableList</code> para que pueda ser usada como raíz de la lista de eventos del form model del
      * maestro.
      * 
      * @return una lista observable.
      */
-    @Override
     @SuppressWarnings("unchecked")
+    @Override
     protected ObservableList createBufferedListModel() {
 
-        return new ObservableEventList(new BasicEventList());
+        return new AtomicObservableEventList(new BasicEventList());
     }
 
     /**
@@ -230,30 +286,6 @@ public class DirtyTrackingDCBCVM<T> extends DeepCopyBufferedCollectionValueModel
         final Object newValue = this.getValue();
         this.setDirty(this.hasValueChanged(this.getOriginalValue(), newValue));
         this.valueUpdated();
-    }
-
-    /**
-     * Obtiene el valor a establecer en el método {@link #setValue(Object)}.
-     * <p>
-     * Si el valor pasado como parámetro es un <em>bean</em> devuelve su propiedad {@link #getBeanPropertyName()}, en
-     * caso contrario devuelve el propio valor.
-     * 
-     * @param value
-     *            el valor pasado a {@link #setValue(Object)}.
-     * @return el valor a establecer.
-     */
-    @SuppressWarnings("unchecked")
-    protected Collection<T> getValueToSet(Object value) {
-
-        final Boolean valueIsOfBeanClass = ((value != null) && value.getClass().equals(this.getBeanClass()));
-
-        Object valueToSet = value;
-        if (valueIsOfBeanClass) {
-            final BeanWrapper beanWrapper = new BeanWrapperImpl(value);
-            valueToSet = beanWrapper.getPropertyValue(this.getBeanPropertyName());
-        }
-
-        return (Collection<T>) valueToSet;
     }
 
     /**
@@ -292,6 +324,30 @@ public class DirtyTrackingDCBCVM<T> extends DeepCopyBufferedCollectionValueModel
         }
 
         return super.hasValueChanged(oldValue, newValue);
+    }
+
+    /**
+     * Obtiene el valor a establecer en el método {@link #setValue(Object)}.
+     * <p>
+     * Si el valor pasado como parámetro es un <em>bean</em> devuelve su propiedad {@link #getBeanPropertyName()}, en
+     * caso contrario devuelve el propio valor.
+     * 
+     * @param value
+     *            el valor pasado a {@link #setValue(Object)}.
+     * @return el valor a establecer.
+     */
+    @SuppressWarnings("unchecked")
+    protected Collection<T> getValueToSet(Object value) {
+
+        final Boolean valueIsOfBeanClass = ((value != null) && value.getClass().equals(this.getBeanClass()));
+
+        Object valueToSet = value;
+        if (valueIsOfBeanClass) {
+            final BeanWrapper beanWrapper = new BeanWrapperImpl(value);
+            valueToSet = beanWrapper.getPropertyValue(this.getBeanPropertyName());
+        }
+
+        return (Collection<T>) valueToSet;
     }
 
     /**

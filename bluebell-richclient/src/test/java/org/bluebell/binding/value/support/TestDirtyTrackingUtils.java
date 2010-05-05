@@ -169,22 +169,18 @@ public class TestDirtyTrackingUtils extends AbstractBbRichClientTests {
         final String i18nDirtyPropertiesHtmlString = DirtyTrackingUtils.getI18nDirtyPropertiesHtmlString(formModel);
 
         // Check everything is ok
-        TestCase.assertEquals(2, StringUtils.countMatches(//
-                i18nDirtyPropertiesHtmlString, parentFormModelMsg));
-        TestCase.assertEquals(2, StringUtils.countMatches(//
-                i18nDirtyPropertiesHtmlString, childFormModelMsg));
-        TestCase.assertEquals(1, StringUtils.countMatches(
-        //
-                i18nDirtyPropertiesHtmlString, simplePropertyParentFormModelMsg));
-        TestCase.assertEquals(1, StringUtils.countMatches(
-        //
-                i18nDirtyPropertiesHtmlString, compoundPropertyParentFormModelMsg));
-        TestCase.assertEquals(1, StringUtils.countMatches(
-        //
-                i18nDirtyPropertiesHtmlString, simplePropertyChildFormModelMsg));
-        TestCase.assertEquals(1, StringUtils.countMatches(
-        //
-                i18nDirtyPropertiesHtmlString, compoundPropertyChildFormModelMsg));
+        TestCase.assertEquals(2, StringUtils.countMatches(i18nDirtyPropertiesHtmlString, //
+                parentFormModelMsg));
+        TestCase.assertEquals(2, StringUtils.countMatches(i18nDirtyPropertiesHtmlString, //
+                childFormModelMsg));
+        TestCase.assertEquals(1, StringUtils.countMatches(i18nDirtyPropertiesHtmlString, //
+                simplePropertyParentFormModelMsg));
+        TestCase.assertEquals(1, StringUtils.countMatches(i18nDirtyPropertiesHtmlString, // 
+                compoundPropertyParentFormModelMsg));
+        TestCase.assertEquals(1, StringUtils.countMatches(i18nDirtyPropertiesHtmlString, //
+                simplePropertyChildFormModelMsg));
+        TestCase.assertEquals(1, StringUtils.countMatches(i18nDirtyPropertiesHtmlString, //
+                compoundPropertyChildFormModelMsg));
     }
 
     /**

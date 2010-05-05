@@ -22,16 +22,13 @@ package org.bluebell.binding.value.support;
  * 
  */
 
-import java.lang.reflect.Field;
 import java.util.Collection;
 import java.util.List;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.bluebell.richclient.util.GlazedListsUtils;
 import org.bluebell.richclient.util.ObjectUtils;
 import org.springframework.binding.value.support.DefaultValueChangeDetector;
-import org.springframework.util.ReflectionUtils;
-
-import ca.odell.glazedlists.TransformedList;
 
 /**
  * Extiende el comportamiento de {@link DefaultValueChangeDetector} con el objetivo de soportar colecciones en la medida
@@ -42,15 +39,7 @@ import ca.odell.glazedlists.TransformedList;
  * @see CollectionUtils#isEqualCollection(Collection, Collection)
  */
 public class CollectionAwareValueChangeDetector extends DefaultValueChangeDetector {
-
-    /**
-     * The source field of {@link TransformedList} class.
-     */
-    private static final Field SOURCE_FIELD = ReflectionUtils.findField(TransformedList.class, "source");
-    static {
-        ReflectionUtils.makeAccessible(CollectionAwareValueChangeDetector.SOURCE_FIELD);
-    }
-
+  
     /**
      * Determines if there has been a change in value between the provided arguments.
      * <p>
@@ -75,7 +64,7 @@ public class CollectionAwareValueChangeDetector extends DefaultValueChangeDetect
         }
         if ((oldValue instanceof List) && (newValue instanceof List)) {
             // (JAF), 20100424, for performance reasons check this before proceed.
-            final Boolean isWrapped = CollectionAwareValueChangeDetector.isWrapped(((List) oldValue), (List) newValue);
+            final Boolean isWrapped = GlazedListsUtils.isWrapped(((List) oldValue), (List) newValue);
 
             return isWrapped ? Boolean.FALSE : !ObjectUtils.isEqualList((List) oldValue, (List) newValue);
         }
@@ -84,34 +73,5 @@ public class CollectionAwareValueChangeDetector extends DefaultValueChangeDetect
         }
 
         return super.hasValueChanged(oldValue, newValue);
-    }
-
-    /**
-     * Checks whether a list is wrapped by other of type <code>TransformedList</code>. In such a case its content will
-     * be interpreted as equals.
-     * 
-     * @param <T>
-     *            the type of the elements of the list.
-     * @param list1
-     *            the wrapper list.
-     * @param list2
-     *            the wrapped list.
-     * @return <code>true</code> if wrapped and <code>false</code> in other case.
-     * 
-     * @since 20100424 due to performance reasons.
-     */
-    private static final <T> Boolean isWrapped(List<T> list1, List<T> list2) {
-
-        Object source = list1;
-        while (source instanceof TransformedList<?, ?>) {
-
-            if (source == list2) {
-                return Boolean.TRUE;
-            }
-
-            source = ReflectionUtils.getField(CollectionAwareValueChangeDetector.SOURCE_FIELD, source);
-        }
-
-        return Boolean.FALSE;
     }
 }

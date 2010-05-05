@@ -23,13 +23,11 @@ package org.bluebell.richclient.util;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
-import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
-import org.apache.commons.collections.ListUtils;
-import org.springframework.beans.DirectFieldAccessor;
 import org.springframework.beans.PropertyAccessor;
+import org.springframework.beans.PropertyAccessorFactory;
 import org.springframework.util.Assert;
 import org.springframework.util.ReflectionUtils;
 
@@ -64,8 +62,8 @@ public final class ObjectUtils {
         Assert.notNull(source, "source");
         Assert.notNull(target, "target");
 
-        final PropertyAccessor sourceAccessor = new DirectFieldAccessor(source);
-        final PropertyAccessor targetAccessor = new DirectFieldAccessor(target);
+        final PropertyAccessor sourceAccessor = PropertyAccessorFactory.forDirectFieldAccess(source);
+        final PropertyAccessor targetAccessor = PropertyAccessorFactory.forDirectFieldAccess(target);
 
         // Try to copy every property
         ReflectionUtils.doWithFields(source.getClass(), new ReflectionUtils.FieldCallback() {
@@ -74,9 +72,7 @@ public final class ObjectUtils {
              * {@inheritDoc}
              */
             @Override
-            public void doWith(Field field) {
-
-                // throws IllegalArgumentException, IllegalAccessException {
+            public void doWith(Field field) { // throws IllegalArgumentException, IllegalAccessException {
 
                 final String name = field.getName();
 
@@ -90,7 +86,9 @@ public final class ObjectUtils {
     }
 
     /**
-     * Method based on {@link ListUtils#isEqualList(Collection, Collection)} rewrote for performance reasons.
+     * Method based on
+     * {@link org.apache.commons.collections.ListUtils#isEqualList(java.util.Collection, java.util.Collection)} rewrote
+     * for performance reasons.
      * <p>
      * Basically employs {@link ObjectUtils#equals(Object, Object)} instead of {@link #equals(Object)} since that checks
      * identity before calling <code>equals</code>.
@@ -105,29 +103,30 @@ public final class ObjectUtils {
      * @return whether the lists are equal by value comparison
      */
     public static <T> Boolean isEqualList(List<T> list1, List<T> list2) {
-
+    
         if (list1 == list2) {
             return Boolean.TRUE;
         } else if ((list1 == null) || (list2 == null) || (list1.size() != list2.size())) {
             return Boolean.FALSE;
         }
-
+    
         final Iterator<T> itr1 = list1.iterator();
         final Iterator<T> itr2 = list2.iterator();
         Object obj1 = null;
         Object obj2 = null;
-
+    
         while (itr1.hasNext() && itr2.hasNext()) {
             obj1 = itr1.next();
             obj2 = itr2.next();
-
+    
             if (!(obj1 == null ? obj2 == null : org.apache.commons.lang.ObjectUtils.equals(obj1, obj2))) {
                 return Boolean.FALSE;
             }
         }
-
+    
         return !(itr1.hasNext() || itr2.hasNext());
     }
-    
-    
+
+  
+
 }

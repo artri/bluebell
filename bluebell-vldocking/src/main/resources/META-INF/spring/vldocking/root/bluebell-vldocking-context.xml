@@ -17,19 +17,6 @@
 		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.5.xsd
 		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-2.5.xsd">
 
-	<!--
-		Bean: vldockingPropertyPlaceholderConfigurer Usage: platform required Description: This configures all placeholders
-		defined in the application context. Note "null" string is used for null values and system properties override those
-		defined in properties files. Note its priority is greater than "defaultPropertyPlaceholderConfigurer" priority.
-	-->
-	<bean id="vldockingPropertyPlaceholderConfigurer" parent="defaultPropertyPlaceholderConfigurer" p:order="2000">
-		<property name="locations">
-			<list>
-				<value>classpath:/META-INF/spring/vldocking/root/*.properties</value>
-			</list>
-		</property>
-	</bean>
-
 	<bean id="vlDockingMessageSource" parent="${vlDockingMessageSource.parent}">
 		<property name="basenames">
 			<list merge="true">

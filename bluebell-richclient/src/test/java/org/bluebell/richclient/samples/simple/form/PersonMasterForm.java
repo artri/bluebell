@@ -25,6 +25,7 @@ import java.util.List;
 
 import org.bluebell.richclient.form.AbstractB2TableMasterForm;
 import org.bluebell.richclient.samples.simple.bean.Person;
+import org.bluebell.richclient.samples.simple.bean.Vet;
 
 /**
  * @author <a href = "mailto:julio.arguello@gmail.com" >Julio Argüello (JAF)</a>
@@ -60,8 +61,16 @@ public class PersonMasterForm extends AbstractB2TableMasterForm<Person> {
     /**
      * {@inheritDoc}
      */
-    @Override
+    @Override   
     protected List<Person> doRefresh(List<Person> persons) {
+
+        final int numberOfVets = 1000;
+
+        for (Person person : persons) {
+
+            final List<Vet> vets = Vet.createVets(numberOfVets);
+            person.addVets(vets);
+        }
 
         return persons;
     }

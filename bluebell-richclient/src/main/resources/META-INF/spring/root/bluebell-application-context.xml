@@ -32,30 +32,6 @@
 		imageResourcesFactory. 5. Specify your rulesSource class, if you're using one. 6. Configure your view beans.
 	-->
 
-	<aop:aspectj-autoproxy />
-	<context:annotation-config />
-
-	<!--
-		Bean: defaultPropertyPlaceholderConfigurer Usage: platform required Description: This configures all placeholders
-		defined in the application context. Note "null" string is used for null values and system properties override those
-		defined in properties files.
-	-->
-	<bean id="defaultPropertyPlaceholderConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer"
-		p:ignore-resource-not-found="true" p:ignore-unresolvable-placeholders="true" p:null-value="null">
-		<property name="order">
-			<util:constant static-field="org.springframework.core.Ordered.LOWEST_PRECEDENCE" />
-		</property>
-		<property name="systemPropertiesMode">
-			<util:constant
-				static-field="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer.SYSTEM_PROPERTIES_MODE_OVERRIDE" />
-		</property>
-		<property name="locations">
-			<list>
-				<value>classpath*:META-INF/spring/root/*.properties</value>
-			</list>
-		</property>
-	</bean>
-
 	<!--
 		Bean: application Usage: platform required Description: This defines the singleton application instance to be used.
 		Note that, currently, this object is not pluggable. You must use the class specified below and configure it as needed.
@@ -289,25 +265,6 @@
 	<!--
   -->
 	<bean id="defaultValueChangeDetector" class="org.bluebell.binding.value.support.CollectionAwareValueChangeDetector" />
-
-	<!--
-		Bean: imageResourcesFactory Usage: platform required (if you are using the DefaultImageSource, see below) Description:
-		This specifies the component that is responsible for providing image resources locations. This factory uses the
-		specified properties files to map image resource keys to image locations.
-	-->
-	<bean id="defaultImageResourcesFactory" class="org.springframework.context.support.ResourceMapFactoryBean">
-		<property name="locations">
-			<list>
-				<!--
-					<value>classpath:/org/springframework/richclient/image/images.properties</value>
-					<value>classpath:/org/bluebell/richclient/image/images.properties</value>
-				-->
-				<value>classpath:/org/bluebell/richclient/image/images.properties</value>
-				<value>classpath:/org/bluebell/richclient/image/coquette-images.properties</value>
-
-			</list>
-		</property>
-	</bean>
 
 	<!--
 		############################################################# Other Application Services (ordered by level tree

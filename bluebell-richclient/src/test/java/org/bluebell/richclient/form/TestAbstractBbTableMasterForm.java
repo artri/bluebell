@@ -58,7 +58,7 @@ import org.springframework.util.Assert;
  * 
  * @author <a href = "mailto:julio.arguello@gmail.com" >Julio Argüello (JAF)</a>
  */
-@ContextConfiguration()
+@ContextConfiguration
 public class TestAbstractBbTableMasterForm extends AbstractBbSamplesTests {
 
     /**

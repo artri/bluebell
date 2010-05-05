@@ -70,7 +70,7 @@ public class TestVLDockingBeanPostProcessor extends AbstractBbSamplesTests {
     @Test
     public void testViewDescriptorsClassesAreChanged() {
 
-        final int numberOfViews = 5;
+        final int numberOfViews = 6;
         final ViewDescriptor[] viewDescriptors = this.getViewDescriptorRegistry().getViewDescriptors();
 
         // Every view descriptor implements VLDockingViewDescriptor in spite of being defined with other implementor

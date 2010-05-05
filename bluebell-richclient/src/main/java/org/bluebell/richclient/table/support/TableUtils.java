@@ -49,6 +49,16 @@ public final class TableUtils {
     private static final Logger LOGGER = LoggerFactory.getLogger(TableUtils.class);
 
     /**
+     * The {@value #TABLE} parameter name.
+     */
+    private static final String TABLE = "table";
+    
+    /**
+     * The {@value #TABLE_MODEL} parameter name.
+     */
+    private static final String TABLE_MODEL = "tableModel";
+
+    /**
      * The field with the source of the <code>GlazedTableModel</code>.
      */
     private static Field glazedTableModelSourceField;
@@ -101,7 +111,7 @@ public final class TableUtils {
      */
     public static Integer getViewIndex(JTable table, Integer modelIndex) {
 
-        Assert.notNull(table, "table");
+        Assert.notNull(table, TableUtils.TABLE);
         Assert.notNull(modelIndex, "modelIndex");
 
         if (modelIndex < 0) {
@@ -125,7 +135,7 @@ public final class TableUtils {
      */
     public static List<Integer> getViewIndexes(JTable table, List<Integer> modelIndexes) {
 
-        Assert.notNull(table, "table");
+        Assert.notNull(table, TableUtils.TABLE);
         Assert.notNull(modelIndexes, "modelIndexes");
 
         final List<Integer> viewIndexes = new ArrayList<Integer>(modelIndexes.size());
@@ -149,7 +159,7 @@ public final class TableUtils {
      */
     public static Integer getModelIndex(JTable table, Integer viewIndex) {
 
-        Assert.notNull(table, "table");
+        Assert.notNull(table, TableUtils.TABLE);
         Assert.notNull(viewIndex, "viewIndex");
 
         if (viewIndex < 0) {
@@ -173,7 +183,7 @@ public final class TableUtils {
      */
     public static List<Integer> getModelIndexes(JTable table, List<Integer> viewIndexes) {
 
-        Assert.notNull(table, "table");
+        Assert.notNull(table, TableUtils.TABLE);
         Assert.notNull(viewIndexes, "viewIndexes");
 
         final List<Integer> modelIndexes = new ArrayList<Integer>(viewIndexes.size());
@@ -197,7 +207,7 @@ public final class TableUtils {
      */
     public static <Q> List<Integer> getModelIndexes(GlazedTableModel tableModel, List<Q> entities) {
 
-        Assert.notNull(tableModel, "tableModel");
+        Assert.notNull(tableModel, TableUtils.TABLE_MODEL);
         Assert.notNull(entities, "entities");
 
         final EventList<Q> eventList = TableUtils.getSource(tableModel);
@@ -220,7 +230,7 @@ public final class TableUtils {
      */
     public static List<Integer> getSelectedViewIndexes(JTable table) {
 
-        Assert.notNull(table, "table");
+        Assert.notNull(table, TableUtils.TABLE);
 
         final List<Integer> viewIndexes = new ArrayList<Integer>();
         final ListSelectionModel selectionModel = table.getSelectionModel();
@@ -253,7 +263,7 @@ public final class TableUtils {
      */
     public static List<Integer> getSelectedModelIndexes(JTable table) {
 
-        Assert.notNull(table, "table");
+        Assert.notNull(table, TableUtils.TABLE);
 
         final List<Integer> viewIndexes = TableUtils.getSelectedViewIndexes(table);
         final List<Integer> modelIndexes = TableUtils.getModelIndexes(table, viewIndexes);
@@ -274,7 +284,7 @@ public final class TableUtils {
     @SuppressWarnings("unchecked")
     public static <Q> List<Q> getVisibleEntities(JTable table) {
 
-        Assert.notNull(table, "table");
+        Assert.notNull(table, TableUtils.TABLE);
         Assert.notNull(table.getModel(), "table.getModel()");
         Assert.isTrue(table.getModel() instanceof GlazedTableModel, "table.getModel() instanceof GlazedTableModel");
 
@@ -308,7 +318,7 @@ public final class TableUtils {
     @SuppressWarnings("unchecked")
     public static <Q> void showEntities(GlazedTableModel tableModel, final List<Q> entities, final Boolean attach) {
 
-        Assert.notNull(tableModel, "tableModel");
+        Assert.notNull(tableModel, TableUtils.TABLE_MODEL);
         Assert.notNull(entities, "entities");
         Assert.notNull(attach, "attach");
 
@@ -347,7 +357,6 @@ public final class TableUtils {
                         if (!attach) {
                             eventList.clear();
                         }
-
                         eventList.addAll(eventList.size(), CollectionUtils.subtract(entities, eventList));
                     } finally {
                         // Since Swing is multithread we need to lock before and unlock later
@@ -382,8 +391,8 @@ public final class TableUtils {
      */
     public static <Q> List<Q> getSelection(JTable table, GlazedTableModel tableModel) {
 
-        Assert.notNull(table, "table");
-        Assert.notNull(tableModel, "tableModel");
+        Assert.notNull(table, TableUtils.TABLE);
+        Assert.notNull(tableModel, TableUtils.TABLE_MODEL);
 
         final EventList<Q> eventList = TableUtils.getSource(tableModel);
         final List<Integer> modelIndexes = TableUtils.getSelectedModelIndexes(table);
@@ -411,16 +420,13 @@ public final class TableUtils {
     public static <Q> void changeSelection(final JTable table, final GlazedTableModel tableModel,
             final List<Q> newSelection) {
 
-        Assert.notNull(table, "table");
-        Assert.notNull(tableModel, "tableModel");
+        Assert.notNull(table, TableUtils.TABLE);
+        Assert.notNull(tableModel, TableUtils.TABLE_MODEL);
         Assert.notNull(newSelection, "entities");
 
         // Replace current selection (do it in the event dispatcher thread to avoid race conditions)
         SwingUtils.runInEventDispatcherThread(new Runnable() {
 
-            /**
-             * {@inheritDoc}
-             */
             @Override
             public void run() {
 
@@ -431,7 +437,6 @@ public final class TableUtils {
                     final List<Q> visibleEntities = TableUtils.getVisibleEntities(table);
 
                     table.clearSelection();
-
                     for (final Q entity : newSelection) {
                         final int viewIndexToSelect = visibleEntities.indexOf(entity);
                         if (viewIndexToSelect >= 0) {
@@ -455,7 +460,7 @@ public final class TableUtils {
      */
     public static <Q> void changeSelection(final JTable table, final List<Integer> viewIndexes) {
 
-        Assert.notNull(table, "table");
+        Assert.notNull(table, TableUtils.TABLE);
         Assert.notNull(viewIndexes, "viewIndexes");
 
         // Replace current selection (do it in the event dispatcher thread to avoid race conditions)

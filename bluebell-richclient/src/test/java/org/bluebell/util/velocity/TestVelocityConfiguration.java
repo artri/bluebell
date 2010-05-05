@@ -34,6 +34,8 @@ import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
 import org.springframework.ui.velocity.VelocityEngineUtils;
 
 /**
+ * Tests the correct behaviour of Velocity template engine configuration.
+ * 
  * @author <a href = "mailto:julio.arguello@gmail.com" >Julio Argüello (JAF)</a>
  */
 @ContextConfiguration

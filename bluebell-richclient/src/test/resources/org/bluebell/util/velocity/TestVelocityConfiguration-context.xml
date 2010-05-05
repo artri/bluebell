@@ -16,6 +16,6 @@
 
 	<import resource="classpath:/META-INF/spring/root/bluebell-velocity-context.xml" />
 
-	<context:property-placeholder location="classpath:/META-INF/spring/root/bluebell-defaults.properties"/>	
+	<context:property-placeholder location="classpath:/META-INF/spring/common/bluebell-defaults.properties"/>	
 
 </beans>

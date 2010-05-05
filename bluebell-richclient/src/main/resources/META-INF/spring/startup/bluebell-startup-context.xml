@@ -17,28 +17,6 @@
 		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.5.xsd
 		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-2.5.xsd">
 
-
-	<!--
-		Bean: defaultPropertyPlaceholderConfigurer Usage: platform required Description: This configures all placeholders
-		defined in the application context. Note "null" string is used for null values and system properties override those
-		defined in properties files.
-	-->
-	<bean id="defaultStartupPropertyPlaceholderConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer"
-		p:ignore-resource-not-found="true" p:ignore-unresolvable-placeholders="true" p:null-value="null">
-		<property name="order">
-			<util:constant static-field="org.springframework.core.Ordered.LOWEST_PRECEDENCE" />
-		</property>
-		<property name="systemPropertiesMode">
-			<util:constant
-				static-field="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer.SYSTEM_PROPERTIES_MODE_OVERRIDE" />
-		</property>
-		<property name="locations">
-			<list>
-				<value>classpath*:META-INF/spring/root/*.properties</value>
-			</list>
-		</property>
-	</bean>
-
 	<alias alias="splashScreen" name="${richclient.splashScreen}" />
 
 	<!--
@@ -60,24 +38,6 @@
 	 -->
 	<bean id="imageSource" class="org.springframework.richclient.image.DefaultImageSource" p:brokenImageIndicator="${richclient.brokenImageIndicator}">
 		<constructor-arg index="0" type="java.util.Map" ref="${richclient.imageResourcesFactory}" />
-	</bean>
-
-
-	<!--
-		Bean: imageResourcesFactory Usage: platform required (if you are using the DefaultImageSource, see below) Description:
-		This specifies the component that is responsible for providing image resources locations. This factory uses the
-		specified properties files to map image resource keys to image locations.
-	-->
-	<bean id="defaultImageResourcesFactory" class="org.springframework.context.support.ResourceMapFactoryBean">
-		<property name="locations">
-			<list>
-				<!--
-					<value>classpath:/org/springframework/richclient/image/images.properties</value>
-					<value>classpath:/org/bluebell/richclient/image/images.properties</value>
-				-->
-				<value>classpath:/org/bluebell/richclient/image/images.properties</value>
-			</list>
-		</property>
 	</bean>
 
 	<bean id="defaultLookAndFeelConfigurer" class="org.bluebell.richclient.application.config.BbLookAndFeelConfigurer"

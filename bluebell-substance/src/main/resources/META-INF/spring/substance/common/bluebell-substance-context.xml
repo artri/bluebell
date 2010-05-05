@@ -3,7 +3,7 @@
 
     Copyright (C) 2009 Julio Argüello <julio.arguello@gmail.com>
 
-    This file is part of Bluebell Samples.
+    This file is part of Bluebell Substance.
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -29,14 +29,14 @@
 
 
 	<!--
-		Bean: samplesPropertyPlaceholderConfigurer Usage: platform required Description: This configures all placeholders
-		defined in the application context. Note "null" string is used for null values and system properties override those
-		defined in properties files. Note its priority is greater than "defaultPropertyPlaceholderConfigurer" priority.
+		Bean: substancePropertyPlaceholderConfigurer Usage: platform required Description: This configures all placeholders defined in the
+		application context. Note "null" string is used for null values and system properties override those defined in
+		properties files. Note its priority is greater than "defaultPropertyPlaceholderConfigurer" priority.
 	-->
-	<bean id="samplesPropertyPlaceholderConfigurer" parent="defaultPropertyPlaceholderConfigurer" p:order="-1">
+	<bean id="substancePropertyPlaceholderConfigurer" parent="defaultPropertyPlaceholderConfigurer" p:order="5">
 		<property name="locations">
 			<list>
-				<value>classpath*:META-INF/spring/simple/root/*.properties</value>
+				<value>classpath:/META-INF/spring/substance/common/*.properties</value>
 			</list>
 		</property>
 	</bean>

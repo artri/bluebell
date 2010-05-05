@@ -107,9 +107,6 @@ public abstract class AbstractOverlayFormComponentInterceptor extends AbstractFo
         // Wait until has parent and overlay is correctly installed
         final PropertyChangeListener wait4ParentListener = new PropertyChangeListener() {
 
-            /**
-             * {@inheritDoc}
-             */
             public void propertyChange(PropertyChangeEvent e) {
 
                 final JComponent targetComponent = overlayHandler.getTargetComponent();

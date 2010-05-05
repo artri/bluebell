@@ -63,7 +63,6 @@ public abstract class AbstractBbRichClientTests extends AbstractJUnit4SpringCont
 
             AbstractBbRichClientTests.initialized = Boolean.TRUE;
         }
-
     }
 
     /**

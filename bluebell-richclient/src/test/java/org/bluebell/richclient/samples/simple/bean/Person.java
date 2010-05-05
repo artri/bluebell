@@ -21,9 +21,13 @@
  */
 package org.bluebell.richclient.samples.simple.bean;
 
+import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
+import org.apache.commons.lang.builder.CompareToBuilder;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
@@ -36,7 +40,12 @@ import org.springframework.util.Assert;
  * 
  * @author <a href = "mailto:julio.arguello@gmail.com" >Julio Argüello (JAF)</a>
  */
-public class Person implements Comparable<Person> {
+public class Person implements Comparable<Person>, Serializable {
+
+    /**
+     * This is a <code>Serializable</code> class.
+     */
+    private static final long serialVersionUID = -8022101507400932844L;
 
     /**
      * The sex.
@@ -75,10 +84,17 @@ public class Person implements Comparable<Person> {
     private String address;
 
     /**
+     * The vets of this person.
+     */
+    private Collection<Vet> vets;
+
+    /**
      * Constructs the person.
      */
     public Person() {
 
+        super();
+        this.vets = new ArrayList<Vet>();
     }
 
     /**
@@ -89,7 +105,56 @@ public class Person implements Comparable<Person> {
      */
     public Person(String name) {
 
+        this();
         this.setName(name);
+    }
+
+    /**
+     * Adds vets to this person.
+     * 
+     * @param vets
+     *            the vets to be added.
+     * @return <code>this</code>.
+     */
+    public Person addVets(Collection<Vet> vets) {
+
+        Assert.notNull(vets, "vets");
+
+        for (Vet vet : vets) {
+            this.addVet(vet);
+        }
+
+        return this;
+    }
+
+    /**
+     * Adds a vet to this person.
+     * 
+     * @param vet
+     *            the vet to be added.
+     * @return <code>this</code>.
+     */
+    public Person addVet(Vet vet) {
+
+        vet.setOwner(this);
+        this.vets.add(vet);
+
+        return this;
+    }
+
+    /**
+     * Removes a vet from this person.
+     * 
+     * @param vet
+     *            the vet to be removed.
+     * @return <code>this</code>.
+     */
+    public Person removeVet(Vet vet) {
+
+        this.vets.remove(vet);
+        vet.setOwner(null);
+
+        return this;
     }
 
     /**
@@ -177,6 +242,30 @@ public class Person implements Comparable<Person> {
     }
 
     /**
+     * Gets the vets.
+     * 
+     * @return the vets.
+     */
+    public Collection<Vet> getVets() {
+
+        return Collections.unmodifiableCollection(this.vets);
+    }
+
+    /**
+     * Sets the vets.
+     * 
+     * @param vets
+     *            the vets to set.
+     */
+    public void setVets(Collection<Vet> vets) {
+
+        Assert.notNull(vets, "vets");
+
+        this.vets.clear();
+        this.addVets(vets);
+    }
+
+    /**
      * {@inheritDoc}
      */
     public boolean equals(Object object) {
@@ -205,18 +294,18 @@ public class Person implements Comparable<Person> {
      * {@inheritDoc}
      */
     @Override
-    public String toString() {
+    public int compareTo(Person object) {
 
-        return new ToStringBuilder(this, ToStringStyle.SIMPLE_STYLE).append("name", this.getName()).toString();
+        return new CompareToBuilder().append(this.getName(), object.getName()).toComparison();
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public int compareTo(Person o) {
+    public String toString() {
 
-        return this.getName().compareTo(o.getName());
+        return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE).append("name", this.getName()).toString();
     }
 
     /**

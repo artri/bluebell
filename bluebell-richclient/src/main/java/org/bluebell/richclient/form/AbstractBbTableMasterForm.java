@@ -287,14 +287,11 @@ public abstract class AbstractBbTableMasterForm<T extends Object> extends Abstra
                 new String[] { this.getId() + ".dirtyChange.title", "masterForm.dirtyChange.title" });
         final String message = AbstractBbTableMasterForm.this.getMessage(//
                 new String[] { this.getId() + ".dirtyChange.message", "masterForm.dirtyChange.message" });
-        final String description = DirtyTrackingUtils.getI18nDirtyPropertiesHtmlString(this.getDetailFormModel());
+
         final ValueHolder proceed = new ValueHolder(Boolean.FALSE);
 
-        final ConfirmationDialog dialog = new ConfirmationDialog(title, message) {
+        final ConfirmationDialog dialog = new RequestUserConfirmationDialog(title, message) {
 
-            /**
-             * {@inheritDoc}
-             */
             @Override
             protected void onConfirm() {
 
@@ -305,33 +302,12 @@ public abstract class AbstractBbTableMasterForm<T extends Object> extends Abstra
                 proceed.setValue(Boolean.TRUE);
             }
 
-            /**
-             * {@inheritDoc}
-             */
             protected void onCancel() {
 
                 if (AbstractBbTableMasterForm.LOGGER.isDebugEnabled()) {
                     AbstractBbTableMasterForm.LOGGER.debug("User cancel request");
                 }
-
             };
-
-            /**
-             * {@inheritDoc}
-             */
-            @Override
-            protected JComponent createDialogContentPane() {
-
-                // The dialog contains a message area on top and a formatted text field at the bottom.
-                final JComponent messageAreaPane = super.createDialogContentPane();
-                final JComponent formattedTextField = new JFormattedTextField(description);
-
-                final JPanel jPanel = new JPanel(new BorderLayout());
-                jPanel.add(messageAreaPane, BorderLayout.NORTH);
-                jPanel.add(formattedTextField, BorderLayout.SOUTH);
-
-                return jPanel;
-            }
         };
 
         dialog.showDialog();
@@ -780,30 +756,30 @@ public abstract class AbstractBbTableMasterForm<T extends Object> extends Abstra
      * @author <a href = "mailto:julio.arguello@gmail.com" >Julio Argüello (JAF)</a>
      */
     protected class MasterFormListSelectionHandler extends ListSelectionListenerSupport {
-
+    
         /**
          * {@inheritDoc}
          */
         @Override
         protected final void onSingleSelection(int viewIndex) {
-
+    
             this.delegateSelectionChange(Arrays.asList(viewIndex));
         }
-
+    
         /**
          * {@inheritDoc}
          */
         @Override
         protected final void onMultiSelection(int[] viewIndexes) {
-
+    
             final List<Integer> list = new ArrayList<Integer>(viewIndexes.length);
             for (int i = 0; i < viewIndexes.length; ++i) {
                 list.add(i, viewIndexes[i]);
             }
-
+    
             this.delegateSelectionChange(list);
         }
-
+    
         /**
          * Delegates selection changes, either single or multiple, into the appropiate method.
          * 
@@ -816,12 +792,12 @@ public abstract class AbstractBbTableMasterForm<T extends Object> extends Abstra
          */
         @SuppressWarnings("unchecked")
         protected final void delegateSelectionChange(List<Integer> viewIndexes) {
-
+    
             // Constants
             final AbstractBbTableMasterForm<T> masterForm = AbstractBbTableMasterForm.this;
             final JTable masterTable = masterForm.getMasterTable();
             final EventList<T> masterEventList = masterForm.getMasterEventList();
-
+    
             // Obtain the current selection
             List<T> selection = new ArrayList<T>(masterEventList.size());
             // TODO move this logic to filtermodelutil
@@ -830,12 +806,12 @@ public abstract class AbstractBbTableMasterForm<T extends Object> extends Abstra
                 final T entity = masterEventList.get(modelIndexes.get(i));
                 selection.add(entity);
             }
-
+    
             // Current selection state (none, single or multiple)
             final Boolean isEmptySelection = viewIndexes.isEmpty();
             final Boolean isSingleSelection = (viewIndexes.size() == 1);
             final Boolean isMultiSelection = !isEmptySelection && !isSingleSelection;
-
+    
             // Invoke appropiate delegate method and alert user on refresh failure
             if (isEmptySelection) {
                 Assert.state(!isEmptySelection, "Invariant broken, empty selection is managed by \"#onNoSelection\"");
@@ -845,7 +821,7 @@ public abstract class AbstractBbTableMasterForm<T extends Object> extends Abstra
                 this.onMultiSelection(modelIndexes, viewIndexes, selection);
             }
         }
-
+    
         /**
          * Called when nothing gets selected.
          * <p>
@@ -854,15 +830,15 @@ public abstract class AbstractBbTableMasterForm<T extends Object> extends Abstra
         @SuppressWarnings("unchecked")
         @Override
         protected void onNoSelection() {
-
+    
             if (AbstractBbTableMasterForm.LOGGER.isDebugEnabled()) {
                 AbstractBbTableMasterForm.LOGGER.debug("Selection is empty");
             }
-
+    
             AbstractBbTableMasterForm.this.handleSelectionChange(//
                     ListUtils.EMPTY_LIST, ListUtils.EMPTY_LIST, ListUtils.EMPTY_LIST);
         }
-
+    
         /**
          * Called when a single entity gets selected.
          * <p>
@@ -879,15 +855,15 @@ public abstract class AbstractBbTableMasterForm<T extends Object> extends Abstra
          */
         @SuppressWarnings("unchecked")
         protected void onSingleSelection(int modelIndex, int viewIndex, T selection) {
-
+    
             if (AbstractBbTableMasterForm.LOGGER.isDebugEnabled()) {
                 AbstractBbTableMasterForm.LOGGER.debug("Selected row " + viewIndex);
             }
-
+    
             AbstractBbTableMasterForm.this.handleSelectionChange(//
                     Arrays.asList(modelIndex), Arrays.asList(viewIndex), Arrays.asList(selection));
         }
-
+    
         /**
          * Called when multiple entities get selected.
          * <p>
@@ -903,13 +879,55 @@ public abstract class AbstractBbTableMasterForm<T extends Object> extends Abstra
          * @see #doSelectionChange(List, List, List)
          */
         protected void onMultiSelection(List<Integer> modelIndexes, List<Integer> viewIndexes, List<T> selection) {
-
+    
             if (AbstractBbTableMasterForm.LOGGER.isDebugEnabled()) {
                 AbstractBbTableMasterForm.LOGGER.debug("Selected rows " + ArrayUtils.toString(viewIndexes));
             }
-
+    
             AbstractBbTableMasterForm.this.handleSelectionChange(modelIndexes, viewIndexes, selection);
         }
+    }
+
+    /**
+     * An abstract confirmation dialog implementation that requires user confirmation before proceed.
+     * 
+     * @author <a href = "mailto:julio.arguello@gmail.com" >Julio Argüello (JAF)</a>
+     */
+    protected abstract class RequestUserConfirmationDialog extends ConfirmationDialog {
+    
+        /**
+         * Creates the confirmation dialog given its title and message.
+         * 
+         * @param title
+         *            the confirmation dialog title.
+         * @param message
+         *            the confirmation dialog message.
+         */
+        public RequestUserConfirmationDialog(String title, String message) {
+    
+            super(title, message);
+        }
+    
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        protected JComponent createDialogContentPane() {
+    
+            final String description = DirtyTrackingUtils.getI18nDirtyPropertiesHtmlString(//
+                    AbstractBbTableMasterForm.this.getDetailFormModel());
+    
+            // The dialog contains a message area on top and a formatted text field at the bottom.
+            final JComponent messageAreaPane = super.createDialogContentPane();
+            final JComponent formattedTextField = new JFormattedTextField(description);
+    
+            final JPanel jPanel = new JPanel(new BorderLayout());
+            jPanel.add(messageAreaPane, BorderLayout.NORTH);
+            jPanel.add(formattedTextField, BorderLayout.SOUTH);
+    
+            return jPanel;
+        }
+    
     }
 
     /**
@@ -920,24 +938,24 @@ public abstract class AbstractBbTableMasterForm<T extends Object> extends Abstra
      * @author <a href = "mailto:julio.arguello@gmail.com" >Julio Argüello (JAF)</a>
      */
     protected static final class ParentFormBackingBean {
-
+    
         /**
          * The property name.
          */
         public static final String PROPERTY_NAME = "entities";
-
+    
         /**
          * The property of the backing bean holding the entities to be shown.
          */
         private Collection<? extends Object> entities = Collections.emptyList();
-
+    
         /**
          * Creates the backing bean.
          */
         private ParentFormBackingBean() {
-
+    
         }
-
+    
         /**
          * Creates the backing bean given the entities to be shown.
          * 
@@ -945,20 +963,20 @@ public abstract class AbstractBbTableMasterForm<T extends Object> extends Abstra
          *            the entities.
          */
         private ParentFormBackingBean(Collection<? extends Object> entities) {
-
+    
             this.setEntities(entities);
         }
-
+    
         /**
          * Gets the entities to be shown.
          * 
          * @return the entities.
          */
         public Collection<? extends Object> getEntities() {
-
+    
             return this.entities;
         }
-
+    
         /**
          * Sets the entities to be shown.
          * 
@@ -966,7 +984,7 @@ public abstract class AbstractBbTableMasterForm<T extends Object> extends Abstra
          *            the entities.
          */
         public void setEntities(Collection<? extends Object> entities) {
-
+    
             this.entities = entities;
         }
     }

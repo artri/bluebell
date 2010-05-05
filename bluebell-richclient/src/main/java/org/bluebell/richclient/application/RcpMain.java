@@ -31,6 +31,8 @@ import org.springframework.util.Assert;
  * <dl>
  * <dt>{@value #DEFAULT_APP_CONTEXT_PATH}
  * <dd>The default application context path.
+ * <dt>{@value #DEFAULT_COMMON_CONTEXT_PATH}
+ * <dd>The default common context path, shared across application contexts (startup, application and commands).
  * <dt>{@value #DEFAULT_COMMANDS_CONTEXT_PATH}
  * <dd>The default commands context path.
  * <dt>{@value #DEFAULT_STARTUP_CONTEXT_PATH}
@@ -47,6 +49,8 @@ import org.springframework.util.Assert;
  * root directory before the pattern starts, unless the actual target files reside in the file system"
  * </pre>
  * 
+ * That's one of the reasons why every path pattern starts with "/META-INF/".
+ * 
  * @see ApplicationLauncher
  * @see <a href="http://static.springsource.org/spring/docs/3.0.x/spring-framework-reference/html/resources.html
  *      #resources-wildcards-in-path-other-stuff">Resources wildcards</a>
@@ -59,6 +63,11 @@ public class RcpMain extends Main {
      * The default application context path.
      */
     public static final String DEFAULT_APP_CONTEXT_PATH = "classpath*:/META-INF/spring/**/root/**/*-context.xml";
+
+    /**
+     * The default common context path.
+     */
+    public static final String DEFAULT_COMMON_CONTEXT_PATH = "classpath*:/META-INF/spring/**/common/**/*-context.xml";
 
     /**
      * The default commands context path.
@@ -109,7 +118,8 @@ public class RcpMain extends Main {
     @Override
     protected String[] getConfigLocations() {
 
-        return new String[] { RcpMain.MAIN_APP_CONTEXT_PATH, RcpMain.DEFAULT_APP_CONTEXT_PATH };
+        return new String[] { RcpMain.MAIN_APP_CONTEXT_PATH, RcpMain.DEFAULT_APP_CONTEXT_PATH,
+                RcpMain.DEFAULT_COMMON_CONTEXT_PATH };
     }
 
     /**

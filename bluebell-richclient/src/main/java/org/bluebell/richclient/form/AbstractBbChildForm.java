@@ -83,7 +83,7 @@ public abstract class AbstractBbChildForm<T extends Object> extends ApplicationW
         this.indexHolderPropertyChangeListener = new IndexHolderPropertyChangeListener();
 
         // Establecer el index holder donde consultar el elemento seleccionado.
-        this.setEditingFormObjectIndexHolder(new ValueHolder(new Integer(-1)));
+        this.setEditingFormObjectIndexHolder(new ValueHolder(Integer.valueOf(-1)));
     }
 
     /**

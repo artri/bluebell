@@ -116,7 +116,7 @@ public class TestObjectUtil extends TestCase {
          * @param c
          *            the <code>c</code> property.
          */
-        public A(String a, String c) {
+        private A(String a, String c) {
 
             this();
             this.a = a;
@@ -132,7 +132,7 @@ public class TestObjectUtil extends TestCase {
         }
 
         /**
-         * Foo method to avoid checkstyle warning.
+         * ObjectToFieldValueTransformer method to avoid checkstyle warning.
          */
         public void foo() {
 
