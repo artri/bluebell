@@ -31,7 +31,7 @@
 		This specifies the component that is responsible for providing image resources locations. This factory uses the
 		specified properties files to map image resource keys to image locations.
 	-->
-	<bean id="jideOssImageResourcesFactory" parent="defaultImageResourcesFactory">
+	<bean id="jideOssImageResourcesFactory" parent="${jideOssImageResourcesFactory.parent}">
 		<property name="locations">
 			<list merge="true">
 				<value>classpath:/org/bluebell/richclient/image/jideoss-images.properties</value>

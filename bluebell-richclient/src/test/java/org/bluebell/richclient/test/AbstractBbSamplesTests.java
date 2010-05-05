@@ -24,8 +24,6 @@ package org.bluebell.richclient.test;
 import java.awt.EventQueue;
 import java.lang.reflect.InvocationTargetException;
 
-import javax.annotation.Resource;
-
 import junit.framework.TestCase;
 
 import org.bluebell.richclient.application.RcpMain;

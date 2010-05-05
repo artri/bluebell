@@ -19,17 +19,23 @@
 package org.bluebell.richclient.application.docking.vldocking;
 
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dialog;
 import java.awt.Frame;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.lang.reflect.Field;
 
 import org.springframework.util.ReflectionUtils;
 
 import com.vlsolutions.swing.docking.FloatingDialog;
+import com.vlsolutions.swing.docking.SingleDockableContainer;
 
 /**
  * Floating dialog implementation that employs a single color for the resizer. Activation simply changes widget title
  * pane and borders, not the background itself.
+ * 
+ * @see CloseDockablesOnWindowClosing
  * 
  * @author <a href = "mailto:julio.arguello@gmail.com" >Julio Argüello (JAF)</a>
  */
@@ -82,13 +88,52 @@ public class BbFloatingDialog extends FloatingDialog {
      * {@inheritDoc}
      * <p>
      * Changes the active caption color field before calling super.
+     * <p>
+     * Also installs a <code>WindowListener</code> to prevent failures while restoring/reopening detached views
+     * previously closed.
      */
     public void init() {
 
         final Color backgroundColor = VLDockingUtils.DockingColor.BACKGROUND.getColor();
+
         ReflectionUtils.setField(BbFloatingDialog.ACTIVE_CAPTION_COLOR_FIELD, this, backgroundColor);
         ReflectionUtils.setField(BbFloatingDialog.INACTIVE_CAPTION_COLOR_FIELD, this, backgroundColor);
 
+        this.addWindowListener(new CloseDockablesOnWindowClosing());
+
         super.init();
+    }
+
+    /**
+     * Closes dockables embedded in a dialog when it is closed. Prevent failures while restoring/reopening detached
+     * views that was closed by Alt-F4 or X button (with decorations on).
+     * <p>
+     * Proceeds according to the issue related at <a
+     * href="http://forum.springsource.org/showthread.php?t=73183&page=2">Spring Richclient Forum Topic</a>
+     * <p>
+     * Thanks to cmadsen_dk !!!
+     * 
+     * @author <a href = "mailto:julio.arguello@gmail.com" >Julio Argüello (JAF)</a>
+     */
+    private class CloseDockablesOnWindowClosing extends WindowAdapter {
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public void windowClosing(WindowEvent e) {
+
+            // Make Alt-F4 etc events close the dockable embedded in the dialog
+            final Component[] components = ((FloatingDialog) e.getSource()).getContentPane().getComponents();
+
+            for (Component component : components) {
+                if (component instanceof SingleDockableContainer) {
+                    final SingleDockableContainer singleDockableContainer = (SingleDockableContainer) component;
+                    BbFloatingDialog.this.desktop.close(singleDockableContainer.getDockable());
+                }
+            }
+
+            super.windowClosing(e);
+        }
     }
 }
