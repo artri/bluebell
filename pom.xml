@@ -35,15 +35,31 @@
 		<site>
 			<id>bluebell.googlecode.com.site.deploy</id>
 			<name>Google Code Maven Site For Bluebell</name>
-			<url>file://C:/yo</url>
+			<url>file://${builddir}/site</url>
 		</site>
 	</distributionManagement>
 
 	<repositories>
 		<repository>
-			<id>org.bluebell.repository.external</id>
-			<name>Fake repository useful to integrate non mavenized artifacts</name>
+			<!--
+				Adding this fake repository fix the problem related at
+				http://forum.springsource.org/showpost.php?p=298453&postcount=13 when building from parent pom.
+			-->
+			<id>org.bluebell.repository.external1</id>
+			<name>Fake repository useful to integrate non mavenized artifacts when building from parent pom</name>
 			<url>file://${basedir}/lib</url>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+		</repository>
+		<repository>
+			<!--
+				Adding this fake repository fix the problem related at
+				http://forum.springsource.org/showpost.php?p=298453&postcount=13 when building from a child pom.
+			-->
+			<id>org.bluebell.repository.external2</id>		
+			<name>Fake repository useful to integrate non mavenized artifacts when building from child pom</name>
+			<url>file://${basedir}/../lib</url>
 			<snapshots>
 				<enabled>true</enabled>
 			</snapshots>
