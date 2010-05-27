@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>org.bluebell</groupId>
+		<artifactId>bluebell-parent</artifactId>
+		<version>0.1</version>
+	</parent>
+
+	<groupId>org.bluebell</groupId>
+	<artifactId>bluebell-jnlp</artifactId>
+	<packaging>war</packaging>
+	<name>Bluebell JNLP</name>
+	<description>JNLP deployment module</description>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>com.mycila.maven-license-plugin</groupId>
+				<artifactId>maven-license-plugin</artifactId>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-dependency-plugin</artifactId>
+			</plugin>
+
+			<plugin>
+				<groupId>org.codehaus.mojo.webstart</groupId>
+				<artifactId>webstart-maven-plugin</artifactId>
+				<version>1.0-alpha-2</version>
+				<!--				<version>testing</version>-->
+				<executions>
+					<execution>
+						<phase>process-resources</phase>
+						<goals>
+							<goal>jnlp-download-servlet</goal>
+						</goals>
+					</execution>
+				</executions>
+
+				<configuration>
+
+					<!--
+						This is the directory containing the Velocity templates from which the JNLP files will be generated. The default
+						location is 'src/main/jnlp'.
+					-->
+					<templateDirectory>src/main/jnlp/templates</templateDirectory>
+
+					<!--
+						This is the name of the directory within which the processed JNLP artifacts will be placed. This directory will
+						reside in the root of the WAR file produced by the enclosing project. The name provided here must match the
+						servlet-mapping url-pattern provided in the web.xml file. The default value is 'webstart'.
+					-->
+					<outputDirectoryName>webstart</outputDirectoryName>
+
+					<!--
+                 		Set to true to exclude all transitive dependencies. Default is false.
+                 	-->
+					<excludeTransitive>false</excludeTransitive>
+
+					<jnlpFiles>
+						<jnlpFile>
+							<templateFilename>jnlpTemplate.vm</templateFilename>
+							<!-- when there's only one jnlpFile, can be optioanl and defaults to launch.jnlp -->
+							<outputFilename>launch1.jnlp</outputFilename>
+							<jarResources>
+								<jarResource>
+									<!-- This is the main JAR since it's the one with the main class -->
+									<groupId>${project.groupId}</groupId>
+									<artifactId>bluebell-richclient</artifactId>
+									<version>${project.version}</version>
+									<mainClass>org.bluebell.richclient.application.RcpMain</mainClass>
+								</jarResource>
+								<jarResource>
+									<groupId>${project.groupId}</groupId>
+									<artifactId>bluebell-samples</artifactId>
+									<version>${project.version}</version>
+								</jarResource>
+							</jarResources>
+						</jnlpFile>
+					</jnlpFiles>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+
+	<dependencies>
+
+		<dependency>
+			<groupId>org.codehaus.mojo.webstart</groupId>
+			<artifactId>webstart-jnlp-servlet</artifactId>
+			<version>1.0-6.0-02_ea_b02</version>
+			<!--			<version>1.0-6.0-02_ea_b02-SNAPSHOT</version>-->
+			<scope>runtime</scope>
+		</dependency>
+	</dependencies>
+
+</project>
