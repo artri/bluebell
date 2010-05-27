@@ -24,6 +24,7 @@
 		<module>bluebell-jide-oss</module>
 		<module>bluebell-swingx</module>
 		<module>bluebell-samples</module>
+		<module>bluebell-jnlp</module>
 	</modules>
 
 	<distributionManagement>
@@ -163,6 +164,14 @@
 						<additionalProjectnatures>
 							<projectnature>org.eclipse.ajdt.ui.ajnature</projectnature>
 						</additionalProjectnatures>
+						<!-- 
+							(JAF) 20100527: replace output directory to avoid conflicts
+						 -->
+						<buildOutputDirectory>${basedir}/eclipse_bin</buildOutputDirectory>						
+						<!-- 
+							(JAF) 20100527: useful when dealing with multiple versions of same artifact
+						 -->						
+						<addVersionToProjectName>true</addVersionToProjectName>
 					</configuration>
 				</plugin>
 				<plugin>
