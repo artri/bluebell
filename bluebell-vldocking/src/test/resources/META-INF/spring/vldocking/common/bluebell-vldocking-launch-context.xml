@@ -10,26 +10,21 @@
 	-->
 
 <beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xmlns:p="http://www.springframework.org/schema/p" xmlns:context="http://www.springframework.org/schema/context"
-	xmlns:aop="http://www.springframework.org/schema/aop" xmlns:util="http://www.springframework.org/schema/util"
+	xmlns:p="http://www.springframework.org/schema/p" xmlns:util="http://www.springframework.org/schema/util"
+	xmlns:context="http://www.springframework.org/schema/context" xmlns:aop="http://www.springframework.org/schema/aop"
 	xsi:schemaLocation="http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.5.xsd
 		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
 		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.5.xsd
 		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-2.5.xsd">
 
-
 	<!--
-		Set the dockable container factory 
-	 -->
-	<bean id="setDockableContainerFactory" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean"
-		p:targetClass="com.vlsolutions.swing.docking.DockableContainerFactory" p:targetMethod="setFactory" p:arguments-ref="${richclient.dockableContainerFactory}" />
-
-	<bean id="defaultDockableContainerFactory" class="org.bluebell.richclient.application.docking.vldocking.BbDockableContainerFactory" />
-
-	<bean id="vldockingLookAndFeelConfigurer" parent="defaultLookAndFeelConfigurer"
-		class="org.bluebell.richclient.application.config.vldocking.VLDockingLookAndFeelConfigurer" lazy-init="true"
-		 p:widgetDesktopStyle-ref="${richclient.widgetDesktopStyle}" />
-
-	<bean id="defaultWidgetDesktopStyle" class="org.bluebell.richclient.application.config.vldocking.WidgetDesktopStyle" />
+		Bean: vldockingLaunchPropertyPlaceholderConfigurer Usage: platform required Description: This configures all placeholders
+		defined in the application context. Note "null" string is used for null values and system properties override those
+		defined in properties files. Note its priority is greater than "defaultPropertyPlaceholderConfigurer" priority.
+	-->
+	<bean id="vldockingLaunchPropertyPlaceholderConfigurer" parent="defaultPropertyPlaceholderConfigurer" p:order="2999"
+		p:location="classpath:/META-INF/spring/vldocking/common/launch.properties"/>
 
 </beans>
+
+	

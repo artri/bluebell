@@ -18,7 +18,7 @@
 		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-2.5.xsd">
 
 	<!--
-		Bean: windowMenu Type: user named Usage: optional Description: This specifies the content of the "Window" menu.
+		Bean: vlDockingWindowMenu Type: user named Usage: optional Description: This specifies the content of the "Window" menu.
 	-->
 	<bean id="vlDockingWindowMenu" class="org.springframework.richclient.command.CommandGroupFactoryBean">
 		<property name="members">

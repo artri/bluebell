@@ -17,10 +17,14 @@
 		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.5.xsd
 		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-2.5.xsd">
 
-	<bean id="vlDockingMessageSource" parent="${vlDockingMessageSource.parent}">
-		<property name="basenames">
-			<list merge="true">
-				<value>org.bluebell.richclient.application.docking.vldocking.messages</value>
+	<bean id="vldockingMessageSourceBasenames" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean"
+		p:targetClass="org.apache.commons.collections.ListUtils" p:targetMethod="union">
+		<property name="arguments">
+			<list>
+				<util:list>
+					<value>org.bluebell.richclient.application.docking.vldocking.messages</value>
+				</util:list>
+				<ref bean="${richclient.vldockingMessageSourceBasenames.parent}" />
 			</list>
 		</property>
 	</bean>
@@ -74,7 +78,7 @@
 	</bean>
 
 
-	<bean id="vlDockingBeanPostProcessor" class="org.bluebell.richclient.application.docking.vldocking.VLDockingBeanPostProcessor">
+	<bean id="vldockingBeanPostProcessor" class="org.bluebell.richclient.application.docking.vldocking.VLDockingBeanPostProcessor">
 		<property name="viewDescriptorsTemplates">
 			<util:map>
 				<entry key="MASTER" value="${richclient.masterVldockingViewDescriptorTemplate}" />
