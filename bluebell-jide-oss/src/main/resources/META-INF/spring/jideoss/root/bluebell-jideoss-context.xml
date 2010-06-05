@@ -1,23 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!--
+	<!--
 
-    Copyright (C) 2009 Julio Argüello <julio.arguello@gmail.com>
-
-    This file is part of Bluebell Jide OSS.
-
-    Licensed under the Apache License, Version 2.0 (the "License");
-    you may not use this file except in compliance with the License.
-    You may obtain a copy of the License at
-
-            http://www.apache.org/licenses/LICENSE-2.0
-
-    Unless required by applicable law or agreed to in writing, software
-    distributed under the License is distributed on an "AS IS" BASIS,
-    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-    See the License for the specific language governing permissions and
-    limitations under the License.
-
--->
+		Copyright (C) 2009 Julio Argüello <julio.arguello@gmail.com> This file is part of Bluebell Jide OSS. Licensed under
+		the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You
+		may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or
+		agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+		CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and
+		limitations under the License.
+	-->
 
 <beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:p="http://www.springframework.org/schema/p" xmlns:util="http://www.springframework.org/schema/util"
@@ -27,10 +17,10 @@
 		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.5.xsd
 		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-2.5.xsd">
 
-	<bean id="jideBindingFactoryProvider" class="org.bluebell.richclient.form.binding.BbBindingFactoryProvider"
-		p:bindingFactoryBeanName="jideBindingFactory" />
+	<bean id="jideOssBindingFactoryProvider" class="org.bluebell.richclient.form.binding.BbBindingFactoryProvider"
+		p:bindingFactoryBeanName="jideOssBindingFactory" />
 
-	<bean id="jideBindingFactory" class="org.bluebell.richclient.form.binding.jideoss.JideBindingFactory" scope="prototype">
+	<bean id="jideOssBindingFactory" class="org.bluebell.richclient.form.binding.jideoss.JideBindingFactory" scope="prototype">
 		<constructor-arg>
 			<null />
 		</constructor-arg>
@@ -39,7 +29,7 @@
 	<!-- 
   TODO
    -->
-	<bean id="jideOverlayService" class="org.bluebell.richclient.components.jideoss.JideOverlayService" />
+	<bean id="jideOssOverlayService" class="org.bluebell.richclient.components.jideoss.JideOverlayService" />
 
 	<!--
 		TODO
@@ -47,17 +37,14 @@
 	<bean id="jideOssComponentFactory" class="org.bluebell.richclient.components.jideoss.JideOssComponentFactory"
 		p:decoratedComponentFactory-ref="${richclient.jideOssDecoratedComponentFactory}" />
 
-	<!--
-		Bean: formComponentInterceptorFactory Usage: platform optional Description: This specifies the list of interceptors to
-		attach to controls constructed by the platform. This allows for a declarative model for specifying "additional"
-		functionality to be added to various components. The configuration below adds interceptors to overlay validation error
-		images and background color changes, provide popup menus in text fields, and autocompletion (as you type) for
-		comboboxes.
-	-->
-	<bean id="jideFormComponentInterceptorFactory" parent="${richclient.jideFormComponentInterceptorFactory.parent}">
-		<property name="interceptorFactories">
-			<list merge="true">
-				<ref local="searchableInterceptorFactory" />
+	<bean id="jideOssFormComponentInterceptorFactories" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean"
+		p:targetClass="org.apache.commons.collections.ListUtils" p:targetMethod="union">
+		<property name="arguments">
+			<list>
+				<ref bean="${richclient.jideOssFormComponentInterceptorFactories.parent}" />
+				<util:list>
+					<ref local="searchableInterceptorFactory" />
+				</util:list>
 			</list>
 		</property>
 	</bean>
