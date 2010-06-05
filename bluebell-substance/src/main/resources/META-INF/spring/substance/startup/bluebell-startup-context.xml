@@ -18,7 +18,7 @@
 		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-2.5.xsd">
 
 
-	<bean id="substanceLookAndFeelConfigurer" parent="vlDockingLookAndFeelConfigurer"
+	<bean id="substanceLookAndFeelConfigurer" parent="vldockingLookAndFeelConfigurer"
 		class="org.bluebell.richclient.application.config.substance.SubstanceLookAndFeelConfigurer" lazy-init="true">
 		<property name="progressMonitorProxyBean">
 			<util:property-path id="progressMonitor" path="splashScreen.progressMonitor" />
