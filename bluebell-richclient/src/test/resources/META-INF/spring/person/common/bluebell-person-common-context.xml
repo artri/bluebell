@@ -30,11 +30,14 @@
 		</property>
 	</bean>
 
-
-	<bean id="personImageResourcesFactory" parent="${personImageResourcesFactory.parent}">
-		<property name="locations">
-			<list merge="true">
-				<value>classpath:/org/bluebell/richclient/samples/simple/image/images.properties</value>
+	<bean id="personImageResourcesLocations" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean"
+		p:targetClass="org.apache.commons.collections.ListUtils" p:targetMethod="union">
+		<property name="arguments">
+			<list>
+				<ref bean="${richclient.personImageResourcesLocations.parent}" />
+				<util:list>
+					<value>classpath:/org/bluebell/richclient/samples/simple/image/images.properties</value>
+				</util:list>
 			</list>
 		</property>
 	</bean>

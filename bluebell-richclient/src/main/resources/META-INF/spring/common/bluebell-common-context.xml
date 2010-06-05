@@ -37,7 +37,7 @@
 		</property>
 		<property name="locations">
 			<list>
-				<value>classpath*:/META-INF/spring/common/*.properties</value>
+				<value>classpath*:/META-INF/spring/**/common/*.properties</value>
 			</list>
 		</property>
 	</bean>
@@ -47,17 +47,17 @@
 		Description: This specifies the component that is responsible for providing image resources locations. This factory
 		uses the specified properties files to map image resource keys to image locations.
 	-->
-	<bean id="defaultImageResourcesFactory" class="org.springframework.context.support.ResourceMapFactoryBean">
-		<property name="locations">
-			<list>
-				<!--
-					<value>classpath:/org/springframework/richclient/image/images.properties</value>
-					<value>classpath:/org/bluebell/richclient/image/images.properties</value>
-				-->
-				<value>classpath:/org/bluebell/richclient/image/images.properties</value>
-				<value>classpath:/org/bluebell/richclient/image/coquette-images.properties</value>
-			</list>
-		</property>
-	</bean>
+	<bean id="defaultImageResourcesFactory" class="org.springframework.context.support.ResourceMapFactoryBean"
+		p:locations-ref="${richclient.imageResourcesLocations}" />
+
+	<util:list id="defaultImageResourcesLocations">
+		<!--
+			<value>classpath:/org/springframework/richclient/image/images.properties</value>
+			<value>classpath:/org/bluebell/richclient/image/images.properties</value>
+		-->
+		<value>classpath:/org/bluebell/richclient/image/images.properties</value>
+		<value>classpath:/org/bluebell/richclient/image/coquette-images.properties</value>
+	</util:list>
+
 </beans>
 

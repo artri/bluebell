@@ -76,14 +76,18 @@
 		<props>
 			<prop key="objectClass">org.bluebell.richclient.samples.simple.bean.Person</prop>
 			<prop key="propertyName">vets</prop>
-			<prop key="binderRef">personVetsTableBinder</prop>			
+			<prop key="binderRef">personVetsTableBinder</prop>
 		</props>
 	</util:list>
 
-	<bean id="personMessageSource" parent="${personMessageSource.parent}">
-		<property name="basenames">
-			<list merge="true">
-				<value>org.bluebell.richclient.samples.simple.messages</value>
+	<bean id="personMessageSourceBasenames" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean"
+		p:targetClass="org.apache.commons.collections.ListUtils" p:targetMethod="union">
+		<property name="arguments">
+			<list>
+				<util:list>
+					<value>org.bluebell.richclient.samples.simple.messages</value>
+				</util:list>
+				<ref bean="${richclient.personMessageSourceBasenames.parent}" />
 			</list>
 		</property>
 	</bean>
