@@ -46,7 +46,7 @@
 				Adding this fake repository fix the problem related at
 				http://forum.springsource.org/showpost.php?p=298453&postcount=13 when building from parent pom.
 			-->
-			<id>org.bluebell.repository.external1</id>
+			<id>org.bluebell.module.repository.external</id>
 			<name>Fake repository useful to integrate non mavenized artifacts when building from parent pom</name>
 			<url>file://${basedir}/lib</url>
 			<snapshots>
@@ -58,7 +58,7 @@
 				Adding this fake repository fix the problem related at
 				http://forum.springsource.org/showpost.php?p=298453&postcount=13 when building from a child pom.
 			-->
-			<id>org.bluebell.repository.external2</id>		
+			<id>org.bluebell.parent.repository.external</id>
 			<name>Fake repository useful to integrate non mavenized artifacts when building from child pom</name>
 			<url>file://${basedir}/../lib</url>
 			<snapshots>
@@ -164,13 +164,13 @@
 						<additionalProjectnatures>
 							<projectnature>org.eclipse.ajdt.ui.ajnature</projectnature>
 						</additionalProjectnatures>
-						<!-- 
-							(JAF) 20100527: replace output directory to avoid conflicts
-						 -->
-						<buildOutputDirectory>${basedir}/eclipse_bin</buildOutputDirectory>						
+						<!--						 -->
+						<!--							(JAF) 20100527: replace output directory to avoid conflicts-->
+						<!--						 -->
+						<!--						<buildOutputDirectory>${basedir}/eclipse_bin</buildOutputDirectory>						-->
 						<!-- 
 							(JAF) 20100527: useful when dealing with multiple versions of same artifact
-						 -->						
+						 -->
 						<addVersionToProjectName>true</addVersionToProjectName>
 					</configuration>
 				</plugin>
