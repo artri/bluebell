@@ -23,7 +23,7 @@
 	<bean id="jideOssPropertyPlaceholderConfigurer" parent="defaultPropertyPlaceholderConfigurer" p:order="1000">
 		<property name="locations">
 			<list>
-				<value>classpath:/META-INF/spring/jideoss/common/*.properties</value>
+				<value>classpath*:/META-INF/spring/jideoss/common/*.properties</value>
 			</list>
 		</property>
 	</bean>

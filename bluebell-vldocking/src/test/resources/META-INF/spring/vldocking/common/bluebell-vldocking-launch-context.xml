@@ -23,7 +23,7 @@
 		defined in properties files. Note its priority is greater than "defaultPropertyPlaceholderConfigurer" priority.
 	-->
 	<bean id="vldockingLaunchPropertyPlaceholderConfigurer" parent="defaultPropertyPlaceholderConfigurer" p:order="2999"
-		p:location="classpath:/META-INF/spring/vldocking/common/launch.properties"/>
+		p:location="classpath*:/META-INF/spring/vldocking/common/launch.properties"/>
 
 </beans>
 

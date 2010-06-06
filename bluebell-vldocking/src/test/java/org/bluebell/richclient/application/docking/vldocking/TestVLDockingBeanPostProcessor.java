@@ -43,7 +43,7 @@ public class TestVLDockingBeanPostProcessor extends AbstractBbSamplesTests {
      * The bean instance to test.
      */
     @Autowired
-    private VLDockingBeanPostProcessor vlDockingBeanPostProcessor;
+    private VLDockingBeanPostProcessor vldockingBeanPostProcessor;
 
     /**
      * The default application page configurer implementation.
@@ -59,7 +59,7 @@ public class TestVLDockingBeanPostProcessor extends AbstractBbSamplesTests {
 
         super.testDependencyInjection();
 
-        TestCase.assertNotNull(this.vlDockingBeanPostProcessor);
+        TestCase.assertNotNull(this.vldockingBeanPostProcessor);
         TestCase.assertNotNull(this.defaultApplicationPageConfigurer);
         TestCase.assertNotNull(this.getViewDescriptorRegistry());
     }
@@ -108,7 +108,6 @@ public class TestVLDockingBeanPostProcessor extends AbstractBbSamplesTests {
         this.doTestTemplatesAreExpected(seaTmp, seaViewDesc);
         this.doTestTemplatesAreExpected(valTmp, valViewDesc);
         this.doTestTemplatesAreExpected(iniTmp, iniViewDesc);
-
     }
 
     /**
@@ -120,7 +119,7 @@ public class TestVLDockingBeanPostProcessor extends AbstractBbSamplesTests {
      */
     protected final VLDockingViewDescriptor getTemplate(DefaultApplicationPageConfigurer.BbViewType type) {
 
-        final String beanName = this.vlDockingBeanPostProcessor.getViewDescriptorsTemplates().get(type.name());
+        final String beanName = this.vldockingBeanPostProcessor.getViewDescriptorsTemplates().get(type.name());
 
         TestCase.assertNotNull("beanName", beanName);
 

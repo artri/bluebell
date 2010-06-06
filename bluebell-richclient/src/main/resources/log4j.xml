@@ -45,12 +45,12 @@
 	</appender>
 
 	<logger name="org.bluebell.richclient.application.BbApplicationObjectConfigurer" additivity="false">
-		<level value="DEBUG" />
+		<level value="INFO" />
 		<appender-ref ref="objects" />
 	</logger>
 
 	<logger name="org.springframework.richclient.image.DefaultIconSource" additivity="false">
-		<level value="DEBUG" />
+		<level value="INFO" />
 		<appender-ref ref="icons" />
 	</logger>
 
@@ -66,7 +66,7 @@
 
 
 	<root>
-		<priority value="debug" />
+		<priority value="INFO" />
 		<!--		<appender-ref ref="root" />-->
 		<appender-ref ref="console" />
 	</root>

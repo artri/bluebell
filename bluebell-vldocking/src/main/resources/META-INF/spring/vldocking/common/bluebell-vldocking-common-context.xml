@@ -25,7 +25,7 @@
 	<bean id="vldockingPropertyPlaceholderConfigurer" parent="defaultPropertyPlaceholderConfigurer" p:order="3000">
 		<property name="locations">
 			<list>
-				<value>classpath:/META-INF/spring/vldocking/common/*.properties</value>
+				<value>classpath*:/META-INF/spring/vldocking/common/*.properties</value>
 			</list>
 		</property>
 	</bean>

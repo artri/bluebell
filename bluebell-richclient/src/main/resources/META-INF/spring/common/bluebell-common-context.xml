@@ -37,7 +37,7 @@
 		</property>
 		<property name="locations">
 			<list>
-				<value>classpath*:/META-INF/spring/**/common/*.properties</value>
+				<value>classpath*:/META-INF/spring/common/*.properties</value>
 			</list>
 		</property>
 	</bean>
@@ -58,6 +58,8 @@
 		<value>classpath:/org/bluebell/richclient/image/images.properties</value>
 		<value>classpath:/org/bluebell/richclient/image/coquette-images.properties</value>
 	</util:list>
+
+	<bean id="foo" class="Foo" />
 
 </beans>
 

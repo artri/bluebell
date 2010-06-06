@@ -66,7 +66,7 @@
 						<jnlpFile>
 							<templateFilename>jnlpTemplate.vm</templateFilename>
 							<!-- when there's only one jnlpFile, can be optioanl and defaults to launch.jnlp -->
-							<outputFilename>launch1.jnlp</outputFilename>
+							<outputFilename>bluebell-samples.jnlp</outputFilename>
 							<jarResources>
 								<jarResource>
 									<!-- This is the main JAR since it's the one with the main class -->

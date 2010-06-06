@@ -22,6 +22,6 @@
 		priority.
 	-->
 	<bean id="jideOssLaunchPropertyPlaceholderConfigurer" parent="defaultPropertyPlaceholderConfigurer" p:order="999"
-		p:location="classpath:/META-INF/spring/jideoss/common/launch.properties" />
+		p:location="classpath*:/META-INF/spring/jideoss/common/launch.properties" />
 </beans>
 

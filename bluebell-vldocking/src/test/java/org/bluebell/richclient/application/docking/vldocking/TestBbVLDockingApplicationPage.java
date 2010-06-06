@@ -124,6 +124,8 @@ public class TestBbVLDockingApplicationPage extends AbstractBbSamplesTests {
 
         super.testDependencyInjection();
 
+        Application.instance().getLifecycleAdvisor().getRegisterableExceptionHandler();
+        
         TestCase.assertNotNull(this.defaultApplicationPageConfigurer);
         TestCase.assertNotNull(this.failedViewPageDescriptor);
         TestCase.assertNotNull(this.validExplicitLayoutPageDescriptor);

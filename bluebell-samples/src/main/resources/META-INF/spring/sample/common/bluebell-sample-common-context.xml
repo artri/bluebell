@@ -32,11 +32,11 @@
 		Bean: samplePropertyPlaceholderConfigurer Usage: platform required Description: This configures all placeholders
 		defined in the application context. Note "null" string is used for null values and system properties override those
 		defined in properties files. Note its priority is greater than "defaultPropertyPlaceholderConfigurer" priority.
-	-->
+	-->		
 	<bean id="samplePropertyPlaceholderConfigurer" parent="defaultPropertyPlaceholderConfigurer" p:order="1">
 		<property name="locations">
 			<list>
-				<value>classpath:/META-INF/spring/sample/common/*.properties</value>
+				<value>classpath*:/META-INF/spring/sample/common/*.properties</value>
 			</list>
 		</property>
 	</bean>
