@@ -42,7 +42,7 @@ import org.springframework.beans.factory.InitializingBean;
  * &lt;/bean&gt;
  * &lt;bean id="configPropertiesConfigurer"
  *      class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer"&gt;
- *   &lt;property name="location"&gt;&lt;value&gt;$${config.properties.location}&lt;/value&gt;&lt;/property&gt;
+ *   &lt;property name="location"&gt;&lt;value&gt;$${applicationConfig.properties.location}&lt;/value&gt;&lt;/property&gt;
  *   &lt;property name="fileEncoding"&gt;&lt;value&gt;$${cardlink.properties.encoding}&lt;/value&gt;&lt;/property&gt;
  * &lt;/bean&gt;
  * </pre>

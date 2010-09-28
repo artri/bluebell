@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+	<!--
+
+		Copyright (C) 2009 Julio Argüello <julio.arguello@gmail.com> This file is part of Bluebell Rich Client. Licensed under
+		the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You
+		may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or
+		agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+		CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and
+		limitations under the License.
+	-->
+
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:util="http://www.springframework.org/schema/util" xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
+		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.0.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd">
+	<bean id="abstractPPC" abstract="true" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer"
+		p:ignoreUnresolvablePlaceholders="true" p:ignoreResourceNotFound="false" />
+
+	<!-- 
+		PPC's:
+			- Highest
+			- Intermediate
+			- Lowest
+			- Intermediate
+			- Highest	
+	 -->
+	<bean id="highestPrecedencePPC" parent="abstractPPC" p:location="/org/bluebell/richclient/application/config/highest_precedence.properties">
+		<property name="order">
+			<util:constant static-field="org.bluebell.richclient.application.config.TestBbApplicationConfig.HIGHEST_PRECEDENCE" />
+		</property>
+	</bean>
+
+	<bean id="intermediatePrecedencePPC" parent="abstractPPC"
+		p:location="/org/bluebell/richclient/application/config/intermediate_precedence.properties">
+		<property name="order">
+			<util:constant static-field="org.bluebell.richclient.application.config.TestBbApplicationConfig.INTERMEDIATE_PRECEDENCE" />
+		</property>
+	</bean>
+
+	<bean id="lowestPrecedencePPC" parent="abstractPPC" p:location="/org/bluebell/richclient/application/config/lowest_precedence.properties">
+		<property name="order">
+			<util:constant static-field="org.bluebell.richclient.application.config.TestBbApplicationConfig.LOWEST_PRECEDENCE" />
+		</property>
+	</bean>
+
+	<bean id="lowestPrecedencePPC2" parent="lowestPrecedencePPC" />
+	<bean id="intermediatePrecedencePPC2" parent="intermediatePrecedencePPC" />
+	<bean id="highestPrecedencePPC2" parent="highestPrecedencePPC" />
+
+	<!--
+		The BBApplicationConfig bean to be tested.
+ 	-->
+	<bean id="applicationConfig" class="org.bluebell.richclient.application.config.BbApplicationConfig" />
+
+
+	<!--
+		Beans helpful for testing purposes.
+	 -->
+	<bean id="bean1" class="java.lang.String">
+		<constructor-arg value="${bean1}" />
+	</bean>
+	<bean id="bean2" class="java.lang.String">
+		<constructor-arg value="${bean2}" />
+	</bean>
+	<bean id="bean3" class="java.lang.String">
+		<constructor-arg value="${bean3}" />
+	</bean>
+
+</beans>

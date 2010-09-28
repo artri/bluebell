@@ -19,7 +19,7 @@
 /**
  * 
  */
-package org.bluebell.richclient.application;
+package org.bluebell.richclient.application.config;
 
 import junit.framework.TestCase;
 

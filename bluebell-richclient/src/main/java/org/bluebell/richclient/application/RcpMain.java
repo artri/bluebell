@@ -93,6 +93,17 @@ public class RcpMain extends Main {
     private static final Logger LOGGER = LoggerFactory.getLogger(RcpMain.class);
 
     /**
+     * Override {@link Main#main(String[])}, this is needed for JNLP compliance.
+     * 
+     * @param args
+     *            the main args.
+     */
+    public static void main(String[] args) {
+
+        Main.main(args);
+    }
+
+    /**
      * {@inheritDoc}
      * 
      * @see #launch(String[], String[])
@@ -109,11 +120,11 @@ public class RcpMain extends Main {
     }
 
     /**
-     * Gets the application context config locations.
+     * Gets the application context applicationConfig locations.
      * <p>
      * Default value is {@value #DEFAULT_APP_CONTEXT_PATH}.
      * 
-     * @return the config locations.
+     * @return the applicationConfig locations.
      */
     @Override
     protected String[] getConfigLocations() {
@@ -123,7 +134,7 @@ public class RcpMain extends Main {
     }
 
     /**
-     * Gets the startup config location.
+     * Gets the startup applicationConfig location.
      * <p>
      * Default value is {@value #DEFAULT_STARTUP_CONTEXT_PATH}.
      * 
@@ -138,7 +149,7 @@ public class RcpMain extends Main {
      * Launch application.
      * 
      * @param configLocations
-     *            application context config locations.
+     *            application context applicationConfig locations.
      * @param baseDirs
      *            base dirs for loading environment specific application context.
      */

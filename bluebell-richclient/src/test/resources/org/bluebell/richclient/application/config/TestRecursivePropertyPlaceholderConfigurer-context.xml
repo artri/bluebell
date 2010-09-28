@@ -32,7 +32,7 @@
 		p:ignoreUnresolvablePlaceholders="true">
 		<property name="locations">
 			<util:list>
-				<value>/org/bluebell/richclient/application/application.properties</value>
+				<value>/org/bluebell/richclient/application/config/application.properties</value>
 			</util:list>
 		</property>
 	</bean>

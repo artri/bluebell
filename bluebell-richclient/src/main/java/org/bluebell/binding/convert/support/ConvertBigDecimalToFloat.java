@@ -58,7 +58,7 @@ public class ConvertBigDecimalToFloat extends AbstractFormattingConverter {
     protected ConvertBigDecimalToFloat(final FormatterFactory formatterLocator, final boolean allowEmpty) {
 
         super(formatterLocator);
-        this.allowEmpty = allowEmpty;
+        this.allowEmpty = allowEmpty;               
     }
 
     /**
