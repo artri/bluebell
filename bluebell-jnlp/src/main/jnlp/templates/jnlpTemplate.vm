@@ -13,9 +13,8 @@
     	<icon kind="splash" href="images/logoSIES3.gif"/>
     	--> 
     	
-    	<!--
     	<offline-allowed/>
-    	-->       	
+    	       	
     	<shortcut online="true">
      		<desktop/>
      		<menu submenu="$project.Name"/>
@@ -35,6 +34,6 @@
     <application-desc main-class="$mainClass">
     	<argument>-class</argument>
     	<argument>$mainClass</argument>    	
-    </application>
+    </application-desc>
     
 </jnlp>

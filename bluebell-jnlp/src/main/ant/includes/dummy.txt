@@ -1,9 +1,7 @@
-<?xml version="1.0"?>
-<!--
-
+====
     Copyright (C) 2009 Julio Argüello <julio.arguello@gmail.com>
 
-    This file is part of Bluebell VLDocking.
+    This file is part of Bluebell JNLP.
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -16,5 +14,17 @@
     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
     See the License for the specific language governing permissions and
     limitations under the License.
+====
 
--->
+This file fix the Sun bug number 6533653.
+
+http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6533653
+
+"
+...
+Submitted On 03-SEP-2009 
+francisdb
+jgawera
+we fixed this with adding an other dummy file named "dummy" and containing "dummy" but without extension in addition to the text file
+...
+"

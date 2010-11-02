@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    Copyright (C) 2009 Julio Argüello <julio.arguello@gmail.com>
+
+    This file is part of Bluebell JNLP.
+
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+            http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+
+-->
+
+<project name="SIES Service" default="processJars">
+
+	<!--Task definitions -->
+	<taskdef resource="net/sf/antcontrib/antcontrib.properties" />
+	<taskdef file="src/main/ant/pack200.properties" />
+
+
+	<property name="tmpDir" value="${maven.project.build.directory}/antTmp" />
+
+	<!-- The fileset to be included at every single dependency -->
+	<fileset id="inclusions" dir="src/main/ant/includes" includes="*" />
+
+	<!-- 
+		Process every single JAR according to the following directory structure:
+			
+		 MVN (*)        ANT         MVN (*)
+		 	|            |             |		  
+		+======+	  +======+     +======+
+		|      |      |      |     |      |				
+		| work | ==>  | temp | ==> |output|		
+		|      |      |      |     |      |		
+		+======+	  +======+     +======+
+		
+		(*) org.codehaus.mojo.webstart:webstart-maven-plugin
+		
+		It follows these steps:
+		1) Maven webstart plugin copies to "work" directory every dependency updating those changed at maven repo since last build
+		2) Maven webstart plugin copies to "output" directory every processed artifact. Non processing should be configure
+		3) This task copies from work directory to temp directory every out of date artifact and process it according to "processJar" ant task.
+		
+		- Temp directory is needed since the first "clean" build needs to detect if an artifact is processed based on "last modified date". 
+		- This would fail due to step 2 above.
+		
+		* PRE-CONDITION: 
+			"Work directory" contains up to date artifacts (Maven webstart plugin ensures it due to step 1 above).
+			"Temp directory" doesn't exist or is empty before first clean build.  
+			"Output directory" contains last build artifacts versions. 
+		* INVARIANT:
+			After every artifact processing "work, temp and output directories" contains the same up to date, processed artifact version.
+		* POST-CONDITION:
+			"Work, temp and output directories" contains the same up to date, processed artifacts versions.			
+	-->
+	<target name="processJars">
+		<foreach param="workJar" target="processJar" inheritall="true" inheritrefs="true">
+			<path>
+				<fileset dir="${maven.webstart.workDirectory}" includes="*.jar" />
+			</path>
+		</foreach>
+	</target>
+
+	<!-- Processes a jar file only if ${is.processed} is false after calling "check.is.processed" -->
+	<target name="processJar" unless="is.processed" depends="check.is.processed">
+
+		<basename property="jar.basename" file="${workJar}" suffix=".jar" />
+		<property name="tmpJar" value="${tmpDir}/${jar.filename}" />
+		<property name="tmpJarPack200" value="${tmpDir}/${jar.basename}.pack.gz" />
+
+		<!-- STEP 0: Copy jar from working directory to temp directory -->
+		<copy file="${workJar}" tofile="${tmpJar}" />
+
+		<!-- STEP 1: Fix Sun Bug -->
+		<updateJar file="${tmpJar}" />
+
+		<!-- STEP 2: Pack and unpack before signing and repackaging -->
+		<!--
+		<packJar inputfile="${tmpJar}" outputfile="${tmpJarPack200}" />
+		<unpackJar inputfile="${tmpJarPack200}" outputfile="${tmpJar}" />
+		-->
+
+		<!-- STEP 3: Sign -->
+		<signJar file="${tmpJar}" />
+
+		<!-- STEP 4: Pack definitely -->
+		<packJar inputfile="${tmpJar}" outputfile="${tmpJarPack200}" />
+
+		<!-- STEP 5: Copy artifacts from tmp directory to work and output directories  -->
+		<copy todir="${maven.webstart.workDirectory}" flatten="true" preservelastmodified="true">
+			<!-- We need to preserve last modified date, otherwise "check.is.processed" won't work -->
+			<resources>
+				<file file="${tmpJar}" />
+				<file file="${tmpJarPack200}" />
+			</resources>
+		</copy>
+		<copy todir="${maven.webstart.outputDirectory}" flatten="true">
+			<resources>
+				<file file="${tmpJar}" />
+				<file file="${tmpJarPack200}" />
+			</resources>
+		</copy>
+	</target>
+
+	<!-- Checks whether processing is required for a given artifact -->
+	<target name="check.is.processed">
+		<basename property="jar.filename" file="${workJar}" />
+		<property name="tmpJar" value="${tmpDir}/${jar.filename}" />
+
+		<!-- JAR is processed if ${workJar} is newer than ${outputJar} -->
+		<uptodate property="is.processed" srcfile="${workJar}" targetfile="${tmpJar}" />
+
+		<condition property="message" value="Skipping ${jar.filename}" else="Processing ${jar.filename}">
+			<istrue value="${is.processed}" />
+		</condition>
+		<echo message="${message}" />
+	</target>
+
+	<!-- Updates a single JAR file including on it a set of files -->
+	<macrodef name="updateJar" description="Fix Sun Bug 6533653">
+		<attribute name="file" />
+		<sequential>
+			<jar jarfile="@{file}" update="true">
+				<fileset refid="inclusions" />
+			</jar>
+		</sequential>
+	</macrodef>
+
+	<!-- Packs a single JAR file using Pack200 algorithm  -->
+	<macrodef name="packJar" description="Packs a file using pack200 algorithm">
+		<attribute name="inputfile" />
+		<attribute name="outputfile" />
+		<sequential>
+			<pack200 src="@{inputfile}" destfile="@{outputfile}" gZIPOutput="true" segmentLimit="-1" />
+			<!-- 
+				Work around a JDK bug affecting large JAR files, see MWEBSTART-125
+		        packTask.setSegmentLimit("-1");
+			-->
+		</sequential>
+	</macrodef>
+
+	<!-- Unpacks a JAR file packaged with Pack200 algorithm -->
+	<macrodef name="unpackJar" description="Unpacks a file using pack200 algorithm">
+		<attribute name="inputfile" />
+		<attribute name="outputfile" />
+		<sequential>
+			<unpack200 src="@{inputfile}" dest="@{outputfile}" />
+		</sequential>
+	</macrodef>
+
+	<!-- Signs a JAR file -->
+	<macrodef name="signJar" description="Signs a jar file">
+		<attribute name="file" />
+		<sequential>
+			<signjar jar="@{file}" alias="${maven.keytool.alias}" storepass="${maven.keytool.storepass}" keystore="${maven.keytool.keystore}" keypass="${maven.keytool.keypass}" />
+		</sequential>
+	</macrodef>
+
+</project>
+

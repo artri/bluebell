@@ -27,12 +27,18 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-dependency-plugin</artifactId>
 			</plugin>
-
 			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-war-plugin</artifactId>
+				<configuration>
+					<webappDirectory>${maven.war.webappDirectory}</webappDirectory>
+				</configuration>
+			</plugin>
+			<plugin>
+				<!-- TODO: verificar que esto elimine firmas anteriores -->
 				<groupId>org.codehaus.mojo.webstart</groupId>
 				<artifactId>webstart-maven-plugin</artifactId>
 				<version>1.0-alpha-2</version>
-				<!--				<version>testing</version>-->
 				<executions>
 					<execution>
 						<phase>process-resources</phase>
@@ -51,22 +57,32 @@
 					<templateDirectory>src/main/jnlp/templates</templateDirectory>
 
 					<!--
+						The directory in which files will be stored prior to processing. 
+					 -->
+					<workDirectory>${maven.webstart.workDirectory}</workDirectory>
+
+					<!--
 						This is the name of the directory within which the processed JNLP artifacts will be placed. This directory will
 						reside in the root of the WAR file produced by the enclosing project. The name provided here must match the
 						servlet-mapping url-pattern provided in the web.xml file. The default value is 'webstart'.
 					-->
-					<outputDirectoryName>webstart</outputDirectoryName>
+					<outputDirectoryName>${maven.webstart.outputDirectoryName}</outputDirectoryName>
 
 					<!--
                  		Set to true to exclude all transitive dependencies. Default is false.
                  	-->
 					<excludeTransitive>false</excludeTransitive>
 
+
+					<!-- 
+		 			-->
+					<!--					<pack200>true</pack200>-->
+
 					<jnlpFiles>
 						<jnlpFile>
 							<templateFilename>jnlpTemplate.vm</templateFilename>
 							<!-- when there's only one jnlpFile, can be optioanl and defaults to launch.jnlp -->
-							<outputFilename>bluebell-samples.jnlp</outputFilename>
+							<outputFilename>bluebell-samples-${project.version}.jnlp</outputFilename>
 							<jarResources>
 								<jarResource>
 									<!-- This is the main JAR since it's the one with the main class -->
@@ -83,20 +99,190 @@
 							</jarResources>
 						</jnlpFile>
 					</jnlpFiles>
+
+					<verbose>${verbose}</verbose>
 				</configuration>
 			</plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>keytool-maven-plugin</artifactId>
+				<version>1.0</version>
+				<executions>
+					<execution>
+						<phase>prepare-package</phase>
+						<goals>
+							<goal>clean</goal>
+							<goal>genkey</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<keystore>${maven.keytool.keystore}</keystore>
+					<keypass>${maven.keytool.keypass}</keypass>
+					<storepass>${maven.keytool.storepass}</storepass>
+					<alias>${maven.keytool.alias}</alias>
+
+					<!-- the following key-settings are only used to generate the keystore and key at build-time -->
+					<storetype>jks</storetype>
+					<validity>365</validity>
+					<dname>cn=bluebell.org, ou=None, L=Seattle, ST=Washington, o=ExampleOrg, c=US</dname>
+
+					<verbose>${verbose}</verbose>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-antrun-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>fix_Sun_Bug_6533653</id>
+						<phase>prepare-package</phase>
+						<goals>
+							<goal>run</goal>
+						</goals>
+						<configuration>
+							<tasks>
+								<property name="maven.webstart.workDirectory" value="${maven.webstart.workDirectory}" />
+								<property name="maven.webstart.outputDirectory" value="${maven.webstart.outputDirectory}" />
+								<property name="maven.project.build.directory" value="${project.build.directory}" />
+
+								<property name="maven.keytool.keystore" value="${maven.keytool.keystore}" />
+								<property name="maven.keytool.keypass" value="${maven.keytool.keypass}" />
+								<property name="maven.keytool.storepass" value="${maven.keytool.storepass}" />
+								<property name="maven.keytool.alias" value="${maven.keytool.alias}" />
+
+								<ant antfile="${basedir}/build.xml">
+									<target name="processJars" />
+								</ant>
+							</tasks>
+						</configuration>
+					</execution>
+				</executions>
+				<dependencies>
+					<dependency>
+						<groupId>org.codehaus.mojo.webstart</groupId>
+						<artifactId>webstart-pack200-anttasks</artifactId>
+						<version>1.2-SNAPSHOT</version>
+					</dependency>
+					
+					<dependency>
+						<groupId>ant-contrib</groupId>
+						<artifactId>ant-contrib</artifactId>
+						<version>1.0b3</version>
+						<exclusions>
+							<!--
+								(JAF), 20100614, acoording to http://www.mail-archive.com/users@maven.apache.org/msg103972.html
+							-->
+							<!--
+								"The root cause is that the OP (Doug Daniels) is using, ant-contrib in maven-antrun-plugin. The fix is to add an
+								exclusion for ant:ant in the dependency for ant-contrib, as by default it uses ant-1.5. E.g., use"
+							-->
+							<exclusion>
+								<groupId>ant</groupId>
+								<artifactId>ant</artifactId>
+							</exclusion>
+						</exclusions>
+					</dependency>
+
+					<!-- Required by <propertyregex> ant task -->
+					<dependency>
+						<groupId>ant</groupId>
+						<artifactId>ant-optional</artifactId>
+						<version>1.5.3-1</version>
+					</dependency>
+				</dependencies>
+			</plugin>
+			<!--			<plugin>-->
+			<!--				<groupId>org.apache.maven.plugins</groupId>-->
+			<!--				<artifactId>maven-jarsigner-plugin</artifactId>-->
+			<!--				<executions>-->
+			<!--					<execution>-->
+			<!--						<id>sign</id>-->
+			<!--						<goals>-->
+			<!--							<goal>sign</goal>-->
+			<!--						</goals>-->
+			<!--					</execution>-->
+			<!--					<execution>-->
+			<!--						<id>verify</id>-->
+			<!--						<phase>verify</phase>-->
+			<!--						<goals>-->
+			<!--							<goal>verify</goal>-->
+			<!--						</goals>-->
+			<!--					</execution>-->
+			<!--				</executions>-->
+			<!--				<configuration>-->
+			<!--					<archiveDirectory>${maven.webstart.outputDirectory}</archiveDirectory>-->
+<!---->
+			<!--					<keystore>${maven.keytool.keystore}</keystore>-->
+			<!--					<keypass>${maven.keytool.keypass}</keypass>-->
+			<!--					<storepass>${maven.keytool.storepass}</storepass>-->
+			<!--					<alias>${maven.keytool.alias}</alias>-->
+<!---->
+			<!--					<removeExistingSignatures>true</removeExistingSignatures>-->
+			<!--					<verbose>${verbose}</verbose>-->
+			<!--				</configuration>-->
+			<!--			</plugin>-->
 		</plugins>
 	</build>
 
 	<dependencies>
-
 		<dependency>
 			<groupId>org.codehaus.mojo.webstart</groupId>
 			<artifactId>webstart-jnlp-servlet</artifactId>
 			<version>1.0-6.0-02_ea_b02</version>
-			<!--			<version>1.0-6.0-02_ea_b02-SNAPSHOT</version>-->
+			<!--<version>1.0-6.0-02_ea_b02-SNAPSHOT</version>-->
 			<scope>runtime</scope>
 		</dependency>
 	</dependencies>
 
+	<profiles>
+		<profile>
+			<id>jettyConfig</id>
+			<activation>
+				<property>
+					<name>with-jetty</name>
+				</property>
+			</activation>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.mortbay.jetty</groupId>
+						<artifactId>jetty-maven-plugin</artifactId>
+						<executions>
+							<execution>
+								<phase>verify</phase>
+								<goals>
+									<goal>deploy-war</goal>
+								</goals>
+							</execution>
+						</executions>
+						<configuration>
+							<!--
+								connectors> <connector implementation="org.mortbay.jetty.nio.SelectChannelConnector"> <port>8181</port>
+								<maxIdleTime>60000</maxIdleTime> </connector> </connectors
+							-->
+							<!--scanIntervalSeconds>2</scanIntervalSeconds-->
+							<webApp></webApp>
+						</configuration>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
+
+	<properties>
+		<maven.war.webappDirectory>${project.build.directory}/${project.build.finalName}</maven.war.webappDirectory>
+
+		<maven.webstart.workDirectoryName>jnlp</maven.webstart.workDirectoryName>
+		<maven.webstart.workDirectory>${project.build.directory}/${maven.webstart.workDirectoryName}</maven.webstart.workDirectory>
+		<maven.webstart.outputDirectoryName>webstart</maven.webstart.outputDirectoryName>
+		<maven.webstart.outputDirectory>${maven.war.webappDirectory}/${maven.webstart.outputDirectoryName}</maven.webstart.outputDirectory>
+
+		<maven.keytool.keystore>${project.build.directory}/keystore</maven.keytool.keystore>
+		<maven.keytool.keypass>keypass</maven.keytool.keypass>
+		<maven.keytool.storepass>m2m2m2</maven.keytool.storepass>
+		<maven.keytool.alias>alias</maven.keytool.alias>
+
+		<verbose>true</verbose>
+	</properties>
 </project>

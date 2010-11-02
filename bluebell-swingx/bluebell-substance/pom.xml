@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>org.bluebell</groupId>
+		<artifactId>bluebell-parent</artifactId>
+		<version>0.1</version>
+	</parent>
+
+	<groupId>org.bluebell</groupId>
+	<artifactId>bluebell-substance</artifactId>
+	<packaging>jar</packaging>
+	<name>Bluebell Substance</name>
+	<description>Substance integration module</description>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>com.mycila.maven-license-plugin</groupId>
+				<artifactId>maven-license-plugin</artifactId>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-dependency-plugin</artifactId>
+			</plugin>		
+		</plugins>
+	</build>
+
+	<dependencies>
+
+		<!--
+			Bluebell 
+ 		-->
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>bluebell-richclient</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>bluebell-vldocking</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>bluebell-richclient</artifactId>
+			<version>${project.version}</version>
+			<type>test-jar</type>
+			<scope>test</scope>
+		</dependency>
+
+		<!-- 
+			Spring Framework
+	 	-->	
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>org.springframework.core</artifactId>
+		</dependency>
+
+		<!-- 
+			Apache Commons
+		 -->
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>com.springsource.org.apache.commons.collections</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>com.springsource.org.apache.commons.lang</artifactId>
+		</dependency>
+
+		<!-- 
+			Spring Richclient
+		 -->
+		<dependency>
+			<groupId>org.springframework.richclient</groupId>
+			<artifactId>spring-richclient-core</artifactId>
+		</dependency>
+
+		<!-- 
+			Other swing components
+ 		-->
+		<dependency>
+			<groupId>org.pushingpixels</groupId>
+			<artifactId>substance</artifactId>
+		</dependency>
+		<!--		<dependency>-->
+		<!--			<groupId>org.pushingpixels</groupId>-->
+		<!--			<artifactId>substance</artifactId>-->
+		<!--			<type>test-jar</type>-->
+		<!--		</dependency> -->
+		<dependency>
+			<groupId>org.pushingpixels</groupId>
+			<artifactId>substance-jide</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>org.pushingpixels</groupId>
+			<artifactId>substance-extras</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.pushingpixels</groupId>
+			<artifactId>laf-plugin</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.pushingpixels</groupId>
+			<artifactId>laf-widget</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.vlsolutions</groupId>
+			<artifactId>vldocking</artifactId>
+			<optional>true</optional>
+		</dependency>
+
+		<!-- 
+			Others
+		 -->
+		<dependency>
+			<groupId>org.aspectj</groupId>
+			<artifactId>com.springsource.org.aspectj.weaver</artifactId>
+		</dependency>
+
+		<!-- 
+			Test
+		 -->
+		<dependency>
+			<groupId>org.junit</groupId>
+			<artifactId>com.springsource.org.junit</artifactId>
+		</dependency>
+	</dependencies>
+
+</project>
