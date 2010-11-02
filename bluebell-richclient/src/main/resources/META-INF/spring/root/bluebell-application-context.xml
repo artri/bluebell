@@ -1,13 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-	<!--
-
-		Copyright (C) 2009 Julio Argüello <julio.arguello@gmail.com> This file is part of Bluebell Rich Client. Licensed under
-		the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You
-		may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or
-		agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
-		CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and
-		limitations under the License.
-	-->
+<!-- Copyright (C) 2009 Julio Argüello <julio.arguello@gmail.com> This file is part of Bluebell Rich Client. Licensed under
+	the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may
+	obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or agreed to
+	in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS
+	OF
+	ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under
+	the License. -->
 
 <beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:p="http://www.springframework.org/schema/p" xmlns:util="http://www.springframework.org/schema/util"
@@ -19,21 +17,30 @@
 
 
 	<!--
-		The application context is used to configure components and services within the platform. The platform utilizes a
-		number of services at runtime, and these must be configured here. The two key beans for this are the serviceLocator
-		and applicationServices. Many of the services have reasonable default implementations, meaning that you probably won't
-		need to define them here unless you have specific needs not addressed in the default implementation. Beyond the
-		services, you will define the various components that make up your application, like the application descriptor,
-		views, lifecycle advisor, validation rules, etc. This may look a little daunting at first, but hang in there. The good
-		news is that you don't have to change many of the bean configurations provided here when you are setting up your
-		application. Typically, you would change the following: 1. The startingPageId on the lifecycleAdvisor. 2. The
-		eventExceptionHandler on the lifecycleAdvisor (or remove it if you don't want to use it). 3. Specify the location of
-		your resource bundle in the messageSource. 4. Specify the mapping properties files for images in
-		imageResourcesFactory. 5. Specify your rulesSource class, if you're using one. 6. Configure your view beans.
-	-->
+		The application context is used to configure components and services within the platform.
+
+		The platform utilizes a number of services at runtime, and these must be configured here. The two key beans for this are
+		the serviceLocator and applicationServices.
+
+		Many of the services have reasonable default implementations, meaning that you probably won't need to define them here
+		unless you have specific needs not addressed in the default implementation. Beyond the services, you will define the various
+		components that make up your application, like the application descriptor, views, lifecycle advisor, validation rules,
+		etc. This may look a little daunting at first, but hang in there. The good news is that you don't have to change many of
+		the bean configurations provided here when you are setting up your application.
+
+		Typically, you would change the following:
+		1. The startingPageId on the lifecycleAdvisor.
+		2. The eventExceptionHandler on the lifecycleAdvisor (or remove it if you don't want to use it).
+		3. Specify the location of your resource bundle in the messageSource.
+		4. Specify the mapping properties files for images in imageResourcesFactory.
+		5. Specify your rulesSource class, if you're using one.
+		6. Configure your view beans. -->
 
 	<!--
-		Bean: application Usage: platform required Description: This defines the singleton application instance to be used.
+		Bean: application
+		Usage: platform required
+		Description: This defines the singleton application instance to be used.
+
 		Note that, currently, this object is not pluggable. You must use the class specified below and configure it as needed.
 	-->
 	<bean id="application" class="org.springframework.richclient.application.Application">
@@ -42,18 +49,17 @@
 	</bean>
 
 	<!--
-		Bean: defaultApplicationDescriptor Usage: platform required Description: This defines the Application metadata to be
-		used by the Application. Note the reference to this bean in the constructor args in the application bean.
+		Bean: defaultApplicationDescriptor
+		Usage: platform required
+		Description: This defines the Application metadata to be used by the Application.
+
+		Note the reference to this bean in the constructor args in the application bean.
 	-->
-	<!-- 
-  		p:display-name="${richclient.displayName}"
-   -->
+	<!-- p:display-name="${richclient.displayName}" -->
 	<bean id="defaultApplicationDescriptor" class="org.springframework.richclient.application.support.DefaultApplicationDescriptor"
 		p:title="${richclient.title}" p:caption="${richclient.caption}" p:description="${richclient.description}" p:version="${richclient.version}"
 		p:build-id="${richclient.buildId}">
-		<!-- 
-			Replace default image (applicationInfo.image) 
-		 -->
+		<!-- Replace default image (applicationInfo.image) -->
 		<property name="image">
 			<bean factory-bean="${richclient.imageSource}" factory-method="getImageAtLocation">
 				<constructor-arg index="0" value="${richclient.startupLogo}" />
@@ -63,15 +69,21 @@
 
 
 	<!--
-		Bean: lifecycleAdvisor Type: user named Usage: required Description: This defines the LifecycleAdvisor instance to be
-		used by the Application. Note the reference to this bean in the constructor args in the application bean. If you don't
-		need any special handling in the application lifecycle, then you could use the provided default advisor in
-		org.springframework.richclient.application.config.DefaultApplicationLifecycleAdvisor Two key properties must be
-		configured, the location of the file containing the command definitions for application windows and the bean id of the
-		page that should be displayed initially upon application startup, you can find the referenced view bean toward the
-		bottom of this file. An optional, but highly recommended, property you can set is the eventExceptionHandler. If
-		specified, this will be registered with the AWT event thread as the handler to receive uncaught exceptions that occur
-		on the event thread.
+		Bean: lifecycleAdvisor
+		Type: user named
+		Usage: required
+		Description: This defines the LifecycleAdvisor instance to be used by the Application. Note the reference to
+		this bean in the constructor args in the application bean. If you don't need any special handling in the
+		application lifecycle, then you could use the provided default advisor in
+		org.springframework.richclient.application.config.DefaultApplicationLifecycleAdvisor
+
+		Two key properties must be configured, the location of the file containing the command definitions for
+		application windows and the bean id of the page that should be displayed initially upon application startup,
+		you can find the referenced view bean toward the bottom of this file. An optional, but highly recommended,
+		property you can set is the eventExceptionHandler.
+
+		If specified, this will be registered with the AWT event thread as the handler to receive uncaught exceptions
+		that occur on the event thread.
 	-->
 	<bean id="defaultLifecycleAdvisor" class="org.bluebell.richclient.application.config.BbLifecycleAdvisor"
 		p:window-command-manager-bean-name="${richclient.windowCommandManager}" p:menubar-bean-name="${richclient.menuBar}"
@@ -83,26 +95,32 @@
 
 
 	<!--
-		############################################################# Known Application Services (ordered by level tree
-		traversal) #############################################################
+		###############################################################################################################
+		Known Application Services (ordered by level tree traversal)
+		###############################################################################################################
 	-->
+
 	<!--
-		Bean: serviceLocator Usage: Platform required Description: This defines the singleton application service locator
-		instance. This is a trivial singleton object providing access to the configured services, as specified on the
-		applicationServices property.
+		Bean: serviceLocator
+		Usage: Platform required
+		Description: This defines the singleton application service locator instance.
+		This is a trivial singleton object providing access to the configured services, as specified on the applicationServices
+		property.
 	-->
 	<bean id="serviceLocator" class="org.springframework.richclient.application.ApplicationServicesLocator"
 		p:applicationServices-ref="${richclient.applicationServices}" />
 
 	<!--
-		Bean: defaultApplicationServices Usage: Platform required (unless you set this up programmatically) Description: This
-		configures the application services available to the platform. There are specific setter methods for all the standard
-		services, see the javadoc on the DefaultApplicationServices class for more details. NOTE: The use of bean ids (idref)
-		is preferred over using direct bean references to avoid startup problems with circular references.
+		Bean: defaultApplicationServices
+		Usage: Platform required (unless you set this up programmatically)
+		Description: This configures the application services available to the platform. There are specific setter methods for
+		all the standard services,
+		see the javadoc on the DefaultApplicationServices class for more details.
+
+		NOTE: The use of bean ids (idref) is preferred over using direct bean references to avoid startup problems with circular
+		references.
 	-->
-	<!--
-		p:application-security-manager-id="${richclient.applicationSecurityManager}"
-	-->
+	<!-- p:application-security-manager-id="${richclient.applicationSecurityManager}" -->
 	<bean id="defaultApplicationServices" class="org.springframework.richclient.application.support.DefaultApplicationServices"
 		p:application-object-configurer-id="${richclient.applicationObjectConfigurer}" p:application-page-factory-id="${richclient.applicationPageFactory}"
 		p:binder-selection-strategy-id="${richclient.binderSelectionStrategy}" p:binding-factory-provider-id="${richclient.bindingFactoryProvider}"
@@ -113,7 +131,6 @@
 
 		<property name="registryEntries">
 			<map>
-
 				<entry key="org.bluebell.richclient.components.OverlayService" value-ref="${richclient.overlayService}" />
 
 				<entry key="org.springframework.richclient.command.CommandServices" value-ref="${richclient.commandServices}" />
@@ -128,16 +145,19 @@
 	</bean>
 
 	<!--
-		Bean: defaultApplicationObjectConfigurer Usage: platform required (because it is a bean post processor) Description:
-		This defines the object responsible for configuring other objects constructed via the platform. This is a critical
-		part of the I18N support.
+		Bean: defaultApplicationObjectConfigurer
+		Usage: platform required (because it is a bean post processor)
+		Description: This defines the object responsible for configuring other objects constructed via the platform. This is a
+		critical part of the I18N support.
 	-->
 	<bean id="defaultApplicationObjectConfigurer" depends-on="serviceLocator"
 		class="org.bluebell.richclient.application.BbApplicationObjectConfigurer" />
 
 
 	<!--
-		Bean: applicationPageFactory Type: platform optional Description: TODO
+		Bean: applicationPageFactory
+		Type: platform optional
+		Description: TODO
 	-->
 	<bean id="defaultApplicationPageFactory" class="org.bluebell.richclient.application.support.BbApplicationPageFactory" />
 
@@ -146,13 +166,12 @@
 		logout and maintaining the global authentication token for the user.
 	-->
 	<!--
-		<bean id="defaultApplicationSecurityManager"
-		class="org.springframework.richclient.security.support.DefaultApplicationSecurityManager"
+		<bean id="defaultApplicationSecurityManager" class="org.springframework.richclient.security.support.DefaultApplicationSecurityManager"
 		p:authentication-manager-ref="authenticationManager" />
 	-->
 	<!--
-		TODO As a bean post-processor, SecurityAwareConfigurer handles any bean that implements AuthenticationAware and
-		configures them with the current authentication token.
+		TODO As a bean post-processor, SecurityAwareConfigurer handles any bean that implements AuthenticationAware and configures
+		them with the current authentication token.
 	-->
 	<!--
 		<bean id="securityAwareConfigurer" class="org.springframework.richclient.security.SecurityAwareConfigurer" />
@@ -170,15 +189,15 @@
 
 	<bean id="defaultComponentFactory" class="org.springframework.richclient.factory.DefaultComponentFactory" />
 
-	<!--
-		TODO
-	-->
+	<!-- TODO -->
 
 
 	<!--
-		Bean: conversionService Usage: platform optional Description: This specifies the component that will supply converters
-		for property values. Since we are going to add a special formatter for date fields, we need to have a reference to
-		this service in the context configured with a custom formatter factory.
+		Bean: conversionService
+		Usage: platform optional
+		Description: This specifies the component that will supply converters
+		for property values. Since we are going to add a special formatter for date fields, we need to have a reference to this
+		service in the context configured with a custom formatter factory.
 	-->
 	<bean id="defaultConversionService" class="org.springframework.richclient.application.DefaultConversionServiceFactoryBean" />
 	<bean class="org.springframework.beans.factory.config.MethodInvokingFactoryBean" p:target-object-ref="defaultConversionService"
@@ -197,14 +216,15 @@
 
 
 	<!--
-		Bean: defaultFormComponentInterceptorFactory Usage: platform optional Description: This specifies the list of
-		interceptors to attach to controls constructed by the platform. This allows for a declarative model for specifying
-		"additional" functionality to be added to various components. The configuration below adds interceptors to overlay
-		validation error images and background color changes, provide popup menus in text fields, and autocompletion (as you
-		type) for comboboxes.
+		Bean: defaultFormComponentInterceptorFactory
+		Usage: platform optional
+		Description: This specifies the list of interceptors to attach to controls constructed by the platform. This allows for
+		a declarative model for specifying "additional" functionality to be added to various components. The configuration below
+		adds interceptors to overlay validation error images and background color changes, provide popup menus in text fields,
+		and autocompletion (as you type) for comboboxes.
 	-->
-	<bean id="defaultFormComponentInterceptorFactory" class="org.springframework.richclient.form.builder.support.ChainedInterceptorFactory" 
-		p:interceptorFactories-ref="${richclient.formComponentInterceptorFactories}" />	
+	<bean id="defaultFormComponentInterceptorFactory" class="org.springframework.richclient.form.builder.support.ChainedInterceptorFactory"
+		p:interceptorFactories-ref="${richclient.formComponentInterceptorFactories}" />
 
 	<util:list id="defaultFormComponentInterceptorFactories">
 		<ref local="updateStatusBarInterceptorFactory" />
@@ -219,22 +239,25 @@
 	</util:list>
 
 	<!--
-		Bean: defaultImageSource Usage: platform required Description: This specifies the component that is responsible for
-		providing images to the platform. It makes use of a resource factory that converts the image keys to resource
-		locations. The DefaultImageSource also provides a "broken image" image for any requested image that can't be found or
-		fails to load.
+		Bean: defaultImageSource
+		Usage: platform required
+		Description: This specifies the component that is responsible for providing images to the platform. It makes use of a resource
+		factory that converts the image keys to resource locations.
+		The DefaultImageSource also provides a "broken image" image for any requested image that can't be found or fails to load.
 	-->
 	<bean id="defaultImageSource" class="org.springframework.richclient.image.DefaultImageSource">
 		<constructor-arg index="0" type="java.util.Map" ref="${richclient.imageResourcesFactory}" />
 	</bean>
 
 	<!--
-		Bean: defaultMessageSource Usage: platform optional (although you surely want to provide more basenames) Description:
+		Bean: defaultMessageSource
+		Usage: platform optional (although you surely want to provide more basenames) Description:
 		This specifies the component that is responsible for providing messages (all kinds of text) to the platform. This is a
-		critical piece of the I18N support. Unless your doing something very unusual, the ResourceBundleMessageSource used
-		below should be sufficient. Just configure it with the base names of the resource bundles you want to use in your
-		application. Unless you want to override the default text resources for the platform, you should include
-		org.springframework.richclient.application.messages as the last base name.
+		critical piece of the I18N support. Unless your doing something very unusual, the ResourceBundleMessageSource used below
+		should be sufficient. Just configure it with the base names of the resource bundles you want to use in your application.
+
+		Unless you want to override the default text resources for the platform, you should include org.springframework.richclient.application.messages
+		as the last base name.
 	-->
 	<bean id="defaultMessageSource" class="org.springframework.context.support.ResourceBundleMessageSource"
 		p:basenames-ref="${richclient.messageSourceBasenames}" />
@@ -245,101 +268,98 @@
 	</util:list>
 
 	<!--
-		Bean: messageSource Usage: platform required (not really, but you can't do much without it) Description: Take a look
-		to ${richclient.messageSource} bean description. Since "messageSource" bean name is hardcoded in
-		org.springframework.context.support.AbstractApplicationContext is preferible to define a bean with this name providing
+		Bean: messageSource
+		Usage: platform required (not really, but you can't do much without it)
+		Description: Take a look to ${richclient.messageSource} bean description. Since "messageSource" bean name is hardcoded
+		in org.springframework.context.support.AbstractApplicationContext is preferible to define a bean with this name providing
 		it a parent message source for extension.
 	-->
 	<bean id="messageSource" class="org.springframework.context.support.ResourceBundleMessageSource"
 		p:parentMessageSource-ref="${richclient.messageSource}" />
 
 	<!--
-		Bean: defaultRulesSource Usage: platform optional Description: This specifies the component that will supply
-		validation rules for properties bound into forms. This allows validation rules to be specified separately from the
-		implementation of the business domain object.
+		Bean: defaultRulesSource
+		Usage: platform optional
+		Description: This specifies the component that will supply validation
+		rules for properties bound into forms. This allows validation rules to be specified separately from the implementation
+		of the business domain object.
 	-->
 	<bean id="defaultRulesSource" class="org.springframework.rules.support.DefaultRulesSource" />
 
-	<!--
-  -->
+	<!-- -->
 	<bean id="defaultValueChangeDetector" class="org.bluebell.binding.value.support.CollectionAwareValueChangeDetector" />
 
 	<!--
-		############################################################# Other Application Services (ordered by level tree
-		traversal) (see applicationServices#registryEntries) #############################################################
+		###############################################################################################################
+		Other Application Services (ordered by level tree traversal)
+		[see applicationServices#registryEntries]
+		###############################################################################################################
 	-->
 
-	<!-- 
-  TODO
-   -->
+	<!-- TODO -->
 	<bean id="defaultApplicationWindowFactory" class="org.bluebell.richclient.application.support.TabbedApplicationWindowFactory" />
 
 	<!--
-
-		Bean: defaultApplicationPageConfigurer Usage: magic Description: This bean is an aspect capable of intercepting every
+		Bean: defaultApplicationPageConfigurer
+		Usage: magic Description: This bean is an aspect capable of intercepting every
 		page creation to configure pages linking well knows page components.
 	-->
 	<bean id="defaultApplicationPageConfigurer" class="org.bluebell.richclient.application.support.DefaultApplicationPageConfigurer" />
 
+	<bean id="applicationPageConfigurerAspect" class="org.bluebell.richclient.application.support.DefaultApplicationPageConfigurerAspect" />
 
-	<!-- 
-  TODO
-   -->
+
+	<!-- TODO -->
 	<bean id="defaultOverlayService" class="org.bluebell.richclient.components.swing.DefaultOverlayService" />
 
-	<!-- 
-  TODO
-   -->
+	<!-- TODO -->
 	<bean id="defaultCommandServices" class="org.springframework.richclient.command.support.DefaultCommandServices"
 		p:toolBarButtonConfigurer-ref="${richclient.toolBarButtonConfigurer}" />
 
-	<!-- 
-  TODO
-   -->
+	<!-- TODO -->
 	<bean id="defaultMenuFactory" class="org.springframework.richclient.factory.DefaultMenuFactory" />
 
-	<!-- 
-  TODO
-   -->
+	<!-- TODO -->
 	<bean id="defaultToolBarButtonConfigurer" class="org.bluebell.richclient.command.config.BbToolBarCommandButtonConfigurer"
 		p:useLargeIcons="true" p:showText="true" p:textBelowIcon="true" />
 
 	<!--
-		Bean: applicationEventMulticaster Type: magic Usage: platform required Description: This defines the object
-		responsible for dispatching application events to all interested components. Unless you really know what you're doing,
-		you should just include this as is.
+		Bean: applicationEventMulticaster
+		Type: magic Usage: platform required
+		Description: This defines the object responsible for dispatching application events to all interested components. Unless
+		you really know what you're doing, you should just include this as is.
 	-->
 	<bean id="applicationEventMulticaster" class="org.springframework.context.event.SimpleApplicationEventMulticaster" />
 
 	<!--
-		Bean: lookAndFeelConfigurer Usage: platform optional Description: The platform doesn't specifically make direct use of
-		this object (other than instantiating it). It is expected that the object will register itself into the UI Manager
-		when it is instantiated in the context. Take a look at the JGoodiesLooksConfigurer class for an example of this.
+		Bean: lookAndFeelConfigurer
+		Usage: platform optional
+		Description: The platform doesn't specifically make direct use of this object (other than instantiating it). It is expected
+		that the object will register itself into the UI Manager when it is instantiated in the context. Take a look at the JGoodiesLooksConfigurer
+		class for an example of this. -->
+
+	<!--
+		<bean id="lookAndFeelConfigurer" class="org.bluebell.richclient.application.config.BbJGoodiesLooksConfigurer" p:popup-drop-shadow-enabled="true"
+		p:high-contrast-focus-colors-enabled="true" p:tab-icons-enabled="false" p:use-narrow-buttons="true" p:use-system-fonts="true"
+		p:select-on-focus-gain-enabled="true" p:hi-res-gray-filter-enabled="true"> <property name="3DEnabled" value="true" /> <property
+		name="theme"> <bean class="com.jgoodies.looks.plastic.theme.ExperienceBlue" /> </property> </bean>
 	-->
 	<!--
-		<bean id="lookAndFeelConfigurer" class="org.bluebell.richclient.application.config.BbJGoodiesLooksConfigurer"
-		p:popup-drop-shadow-enabled="true" p:high-contrast-focus-colors-enabled="true" p:tab-icons-enabled="false"
-		p:use-narrow-buttons="true" p:use-system-fonts="true" p:select-on-focus-gain-enabled="true"
-		p:hi-res-gray-filter-enabled="true"> <property name="3DEnabled" value="true" /> <property name="theme"> <bean
-		class="com.jgoodies.looks.plastic.theme.ExperienceBlue" /> </property> </bean>
-	-->
-	<!--
-		<bean id="substanceLookAndFeelConfigurer"
-		class="org.bluebell.richclient.application.config.SubstanceLookAndFeelConfigurer"
+		<bean id="substanceLookAndFeelConfigurer" class="org.bluebell.richclient.application.config.SubstanceLookAndFeelConfigurer"
 		p:look-and-feel="org.jvnet.substance.skin.SubstanceBusinessLookAndFeel" />
 	-->
 
 	<!--
-		############################################################# Form components interceptor factories
-		#############################################################
+		###############################################################################################################
+		Form components interceptor factories
+		###############################################################################################################
 	-->
+
 	<bean class="org.springframework.richclient.text.SelectAllFormComponentInterceptorFactory" />
 	<bean id="updateStatusBarInterceptorFactory" class="org.bluebell.richclient.form.builder.support.UpdateStatusBarInterceptorFactory" />
 	<bean id="colorValidationInterceptorFactory" class="org.springframework.richclient.form.builder.support.ColorValidationInterceptorFactory" />
-	<!--
-		<bean id="overlayValidationInterceptorFactory"
-		class="org.springframework.richclient.form.builder.support.OverlayValidationInterceptorFactory" />
-	-->
+	<!-- <bean id="overlayValidationInterceptorFactory" class="org.springframework.richclient.form.builder.support.OverlayValidationInterceptorFactory"
+		/> -->
 	<bean id="overlayValidationInterceptorFactory" class="org.bluebell.richclient.form.builder.support.BbOverlayValidationInterceptorFactory" />
 	<bean id="textComponentPopupInterceptorFactory" class="org.bluebell.richclient.text.TextComponentPopupInterceptorFactory" />
 	<bean id="checkBoxFormComponentInterceptorFactory" class="org.springframework.richclient.form.builder.support.CheckBoxFormComponentInterceptorFactory" />
@@ -351,10 +371,7 @@
 			<list>
 				<value>credentials</value>
 				<null>
-					<!--
-						Excluir aquellos formularios cuyo modelo tenga como identificador
-						"null"
-					-->
+					<!-- Excluir aquellos formularios cuyo modelo tenga como identificador "null" -->
 				</null>
 			</list>
 		</property>

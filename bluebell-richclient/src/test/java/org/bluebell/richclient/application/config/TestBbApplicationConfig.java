@@ -23,17 +23,20 @@ package org.bluebell.richclient.application.config;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.annotation.Resource;
 
 import junit.framework.TestCase;
 
+import org.apache.commons.collections.SetUtils;
 import org.apache.commons.lang.StringUtils;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.PriorityOrdered;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
+import org.springframework.util.MultiValueMap;
 
 /**
  * Tests the correct behaviour of {@link BbApplicationConfig}.
@@ -44,19 +47,13 @@ import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
 public class TestBbApplicationConfig extends AbstractJUnit4SpringContextTests {
 
     /**
+     * Placeholder values retrieved by this application context test.
      * 
+     * @author <a href = "mailto:julio.arguello@gmail.com" >Julio Argüello (JAF)</a>
      */
-    private static final String LOWEST_PRECEDENCE_PPC_VALUE = "lowest_precedence";
-
-    /**
-     * 
-     */
-    private static final String INTERMEDIATE_PRECEDENCE_PPC_VALUE = "intermediate_precedence";
-
-    /**
-     * 
-     */
-    private static final String HIGHEST_PRECEDENCE_PPC_VALUE = "highest_precedence";
+    public enum PropertyValues {
+        L, I, H
+    };
 
     /**
      * The order of the highest precedence PPC.
@@ -92,7 +89,7 @@ public class TestBbApplicationConfig extends AbstractJUnit4SpringContextTests {
      * The retrieved application applicationConfig.
      */
     @Resource
-    private Map<String, List<String[]>> applicationConfig;
+    private MultiValueMap<String, String[]> applicationConfig;
 
     /**
      * A placeholder to be tested.
@@ -113,6 +110,18 @@ public class TestBbApplicationConfig extends AbstractJUnit4SpringContextTests {
     private String bean3;
 
     /**
+     * A placeholder to be tested.
+     */
+    @Autowired
+    private String bean4;
+
+    /**
+     * A placeholder to be tested.
+     */
+    @Autowired
+    private String bean5;
+
+    /**
      * Test the correct behaviour of dependency injection.
      */
     @Test
@@ -121,6 +130,9 @@ public class TestBbApplicationConfig extends AbstractJUnit4SpringContextTests {
         TestCase.assertNotNull(this.bean1);
         TestCase.assertNotNull(this.bean2);
         TestCase.assertNotNull(this.bean3);
+        TestCase.assertNotNull(this.bean4);
+        TestCase.assertNotNull(this.bean5);
+
         TestCase.assertNotNull(this.applicationConfig);
     }
 
@@ -130,9 +142,11 @@ public class TestBbApplicationConfig extends AbstractJUnit4SpringContextTests {
     @Test
     public void testPPCOrder() {
 
-        TestCase.assertEquals(TestBbApplicationConfig.HIGHEST_PRECEDENCE_PPC_VALUE, bean1);
-        TestCase.assertEquals(TestBbApplicationConfig.INTERMEDIATE_PRECEDENCE_PPC_VALUE, bean2);
-        TestCase.assertEquals(TestBbApplicationConfig.LOWEST_PRECEDENCE_PPC_VALUE, bean3);
+        TestCase.assertEquals(PropertyValues.H.name(), this.bean1);
+        TestCase.assertEquals(PropertyValues.I.name(), this.bean2);
+        TestCase.assertEquals(PropertyValues.L.name(), this.bean3);
+        TestCase.assertEquals(this.bean1.concat(this.bean2), this.bean4);
+        TestCase.assertEquals(PropertyValues.H.name(), this.bean5);
     }
 
     /**
@@ -176,48 +190,99 @@ public class TestBbApplicationConfig extends AbstractJUnit4SpringContextTests {
     }
 
     /**
-     * Tests the correct behaviour of{@link BbApplicationConfig#getValue(Map, String, Integer)}.
+     * Tests the correct behaviour of {@link BbApplicationConfig#getValue(Map, String, Integer)}.
      */
     @Test
     public void testGetValue() {
 
+        int pos = 0;
+
         // Bean1
-        TestCase.assertEquals(TestBbApplicationConfig.HIGHEST_PRECEDENCE_PPC_VALUE, //
-                BbApplicationConfig.getValue(this.applicationConfig, TestBbApplicationConfig.BEAN_NAME_1, 0));
-        TestCase.assertEquals(TestBbApplicationConfig.INTERMEDIATE_PRECEDENCE_PPC_VALUE, //
-                BbApplicationConfig.getValue(this.applicationConfig, TestBbApplicationConfig.BEAN_NAME_1, 1));
-        TestCase.assertEquals(TestBbApplicationConfig.LOWEST_PRECEDENCE_PPC_VALUE, //
-                BbApplicationConfig.getValue(this.applicationConfig, TestBbApplicationConfig.BEAN_NAME_1, 2));
-        TestCase.assertEquals(null,//
-                BbApplicationConfig.getValue(this.applicationConfig, TestBbApplicationConfig.BEAN_NAME_1, 3));
+        TestCase.assertEquals(PropertyValues.H.name(), //
+                BbApplicationConfig.getValue(this.applicationConfig, TestBbApplicationConfig.BEAN_NAME_1, pos++));
+        TestCase.assertEquals(PropertyValues.H.name(), //
+                BbApplicationConfig.getValue(this.applicationConfig, TestBbApplicationConfig.BEAN_NAME_1, pos++));
+        TestCase.assertEquals(PropertyValues.I.name(), //
+                BbApplicationConfig.getValue(this.applicationConfig, TestBbApplicationConfig.BEAN_NAME_1, pos++));
+        TestCase.assertEquals(PropertyValues.I.name(), //
+                BbApplicationConfig.getValue(this.applicationConfig, TestBbApplicationConfig.BEAN_NAME_1, pos++));
+        TestCase.assertEquals(PropertyValues.L.name(), //
+                BbApplicationConfig.getValue(this.applicationConfig, TestBbApplicationConfig.BEAN_NAME_1, pos++));
+        TestCase.assertEquals(PropertyValues.L.name(), //
+                BbApplicationConfig.getValue(this.applicationConfig, TestBbApplicationConfig.BEAN_NAME_1, pos++));
+        TestCase.assertEquals(null, //
+                BbApplicationConfig.getValue(this.applicationConfig, TestBbApplicationConfig.BEAN_NAME_1, pos++));
 
         // Bean2
-        TestCase.assertEquals(TestBbApplicationConfig.INTERMEDIATE_PRECEDENCE_PPC_VALUE, //
-                BbApplicationConfig.getValue(this.applicationConfig, TestBbApplicationConfig.BEAN_NAME_1, 0));
-        TestCase.assertEquals(TestBbApplicationConfig.LOWEST_PRECEDENCE_PPC_VALUE, //
-                BbApplicationConfig.getValue(this.applicationConfig, TestBbApplicationConfig.BEAN_NAME_1, 1));
+        pos = 0;
+        TestCase.assertEquals(PropertyValues.I.name(), //
+                BbApplicationConfig.getValue(this.applicationConfig, TestBbApplicationConfig.BEAN_NAME_2, pos++));
+        TestCase.assertEquals(PropertyValues.I.name(), //
+                BbApplicationConfig.getValue(this.applicationConfig, TestBbApplicationConfig.BEAN_NAME_2, pos++));
+        TestCase.assertEquals(PropertyValues.L.name(), //
+                BbApplicationConfig.getValue(this.applicationConfig, TestBbApplicationConfig.BEAN_NAME_2, pos++));
+        TestCase.assertEquals(PropertyValues.L.name(), //
+                BbApplicationConfig.getValue(this.applicationConfig, TestBbApplicationConfig.BEAN_NAME_2, pos++));
         TestCase.assertEquals(null, //
-                BbApplicationConfig.getValue(this.applicationConfig, TestBbApplicationConfig.BEAN_NAME_1, 2));
+                BbApplicationConfig.getValue(this.applicationConfig, TestBbApplicationConfig.BEAN_NAME_2, pos++));
 
-        // Bean2
-        TestCase.assertEquals(TestBbApplicationConfig.LOWEST_PRECEDENCE_PPC_VALUE, //
-                BbApplicationConfig.getValue(this.applicationConfig, TestBbApplicationConfig.BEAN_NAME_1, 0));
+        // Bean3
+        pos = 0;
+        TestCase.assertEquals(PropertyValues.L.name(), //
+                BbApplicationConfig.getValue(this.applicationConfig, TestBbApplicationConfig.BEAN_NAME_3, pos++));
+        TestCase.assertEquals(PropertyValues.L.name(), //
+                BbApplicationConfig.getValue(this.applicationConfig, TestBbApplicationConfig.BEAN_NAME_3, pos++));
         TestCase.assertEquals(null, //
-                BbApplicationConfig.getValue(this.applicationConfig, TestBbApplicationConfig.BEAN_NAME_1, 1));
+                BbApplicationConfig.getValue(this.applicationConfig, TestBbApplicationConfig.BEAN_NAME_3, pos++));
+
+        // Bean3
+        pos = 0;
+        TestCase.assertEquals(PropertyValues.L.name(), //
+                BbApplicationConfig.getValue(this.applicationConfig, TestBbApplicationConfig.BEAN_NAME_3, pos++));
+        TestCase.assertEquals(PropertyValues.L.name(), //
+                BbApplicationConfig.getValue(this.applicationConfig, TestBbApplicationConfig.BEAN_NAME_3, pos++));
+        TestCase.assertEquals(null, //
+                BbApplicationConfig.getValue(this.applicationConfig, TestBbApplicationConfig.BEAN_NAME_3, pos++));
     }
 
     /**
-     * Tests the correct behaviour of the factory bean retrieved map.
+     * Tests the correct behaviour of {@link BbApplicationConfig#debugPrint(Map)}.
      */
     @Test
-    public void testApplicationConfig() {
+    public void testDebugPrint() {
 
+        final Set<Map.Entry<String, List<String[]>>> entrySetBefore = this.applicationConfig.entrySet();
+        BbApplicationConfig.debugPrint(this.applicationConfig);
+        final Set<Map.Entry<String, List<String[]>>> entrySetAfter = this.applicationConfig.entrySet();
+
+        // Checks map is not changed during printing
+        SetUtils.isEqualSet(entrySetBefore, entrySetAfter);
     }
 
+    /**
+     * Test the correct behaviour of {@link BbApplicationConfig} when there are duplicated placeholders.
+     */
+    @Test
+    public void testDuplicatedPlaceholder() {
+
+        final int noPpc = 6;
+
+        // ${bean1} appears three times
+        TestCase.assertEquals(PropertyValues.L.name(), //
+                BbApplicationConfig.getValue(this.applicationConfig, TestBbApplicationConfig.BEAN_NAME_1, noPpc - 1));
+        TestCase.assertEquals(null, //
+                BbApplicationConfig.getValue(this.applicationConfig, TestBbApplicationConfig.BEAN_NAME_1, noPpc));
+    }
+    
+    /**
+     * Test the correct behaviour of {@link BbApplicationConfig} when there are duplicated placeholders.
+     */
     @Test
     public void testFoo() {
 
-        System.out.println(BbApplicationConfig.debugPrint(this.applicationConfig));
+        this.applicationConfig.getFirst(TestBbApplicationConfig.BEAN_NAME_1);
+        this.applicationConfig.getFirst(TestBbApplicationConfig.BEAN_NAME_2);
+        this.applicationConfig.getFirst(TestBbApplicationConfig.BEAN_NAME_3);
     }
 
 }

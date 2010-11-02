@@ -1,18 +1,39 @@
+/*
+ * Copyright (C) 2009 Julio Argüello <julio.arguello@gmail.com>
+ *
+ * This file is part of Bluebell Rich Client.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *         http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package org.bluebell.richclient.application.config;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.ListUtils;
 import org.apache.commons.collections.MapUtils;
+import org.apache.commons.collections.Predicate;
 import org.apache.commons.collections.Transformer;
 import org.apache.commons.collections.TransformerUtils;
-import org.apache.commons.collections.map.TransformedMap;
+import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.bluebell.richclient.util.ObjectUtils;
 import org.springframework.beans.BeansException;
@@ -25,6 +46,8 @@ import org.springframework.beans.factory.config.PropertyPlaceholderConfigurer;
 import org.springframework.core.OrderComparator;
 import org.springframework.core.PriorityOrdered;
 import org.springframework.util.Assert;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 
 /**
  * <code>FactoryBean</code> useful for recovering placeholder resolved values.
@@ -36,8 +59,9 @@ import org.springframework.util.Assert;
  * 
  * @author <a href = "mailto:julio.arguello@gmail.com" >Julio Argüello (JAF)</a>
  */
+@SuppressWarnings("unchecked")
 public class BbApplicationConfig implements BeanFactoryPostProcessor, PriorityOrdered,
-        FactoryBean<Map<String, List<String[]>>> {
+        FactoryBean<MultiValueMap<String, String[]>> {
 
     /**
      * The name of the field with the bean name. Useful for debugging.
@@ -56,7 +80,7 @@ public class BbApplicationConfig implements BeanFactoryPostProcessor, PriorityOr
      * <li>The third item is the priority order of the resolving placeholder configurer.
      * </ol>
      */
-    final Map<String, List<String[]>> applicationConfig = new HashMap<String, List<String[]>>();
+    final MultiValueMap<String, String[]> applicationConfig = new LinkedMultiValueMap<String, String[]>();
 
     /**
      * {@inheritDoc}
@@ -92,19 +116,18 @@ public class BbApplicationConfig implements BeanFactoryPostProcessor, PriorityOr
      * {@inheritDoc}
      */
     @Override
-    public Map<String, List<String[]>> getObject() throws Exception {
+    public MultiValueMap<String, String[]> getObject() throws Exception {
 
-        return new HashMap<String, List<String[]>>(this.applicationConfig);
+        return this.applicationConfig;
     }
 
     /**
      * {@inheritDoc}
      */
-    @SuppressWarnings("unchecked")
     @Override
-    public Class<? extends Map<String, List<String[]>>> getObjectType() {
+    public Class<? extends MultiValueMap<String, String[]>> getObjectType() {
 
-        return (Class<? extends Map<String, List<String[]>>>) this.applicationConfig.getClass();
+        return (Class<? extends MultiValueMap<String, String[]>>) this.applicationConfig.getClass();
     }
 
     /**
@@ -121,9 +144,9 @@ public class BbApplicationConfig implements BeanFactoryPostProcessor, PriorityOr
      * 
      * @return the placeholder values.
      */
-    protected final Map<String, List<String[]>> getApplicationConfig() {
+    protected final MultiValueMap<String, String[]> getApplicationConfig() {
 
-        return Collections.unmodifiableMap(this.applicationConfig);
+        return this.applicationConfig;
     }
 
     /**
@@ -139,19 +162,30 @@ public class BbApplicationConfig implements BeanFactoryPostProcessor, PriorityOr
     private void update(String placeholder, String value, PropertyPlaceholderConfigurer configurer) {
 
         // Retrieve current placeholder values
-        List<String[]> values = this.applicationConfig.get(placeholder);
-        if (values == null) {
-            values = new ArrayList<String[]>();
-        }
-
         // Resolve placeholder bean name using reflection
         final ConfigurablePropertyAccessor propertyAccessor = PropertyAccessorFactory.forDirectFieldAccess(configurer);
+
         final String beanName = (String) propertyAccessor.getPropertyValue(BbApplicationConfig.BEAN_NAME);
         final Integer order = configurer.getOrder();
 
-        // Update placeholder values
-        values.add(new String[] { value, beanName, String.valueOf(order) });
-        this.applicationConfig.put(placeholder, values);
+        // Update placeholder values (discarding duplicates)
+        final String[] newerValue = new String[] { value, beanName, String.valueOf(order) };
+        final String[] foundValue = (String[]) CollectionUtils.find( //
+                (Collection<String[]>) MapUtils.getObject(this.applicationConfig, placeholder, ListUtils.EMPTY_LIST), //
+                new Predicate() {
+
+                    @Override
+                    public boolean evaluate(Object object) {
+
+                        Assert.isInstanceOf(String[].class, object);
+
+                        return ArrayUtils.isEquals(newerValue, (String[]) object);
+                    }
+                });
+
+        if (foundValue == null) {
+            this.applicationConfig.add(placeholder, new String[] { value, beanName, String.valueOf(order) });
+        }
     }
 
     /**
@@ -199,7 +233,6 @@ public class BbApplicationConfig implements BeanFactoryPostProcessor, PriorityOr
         /**
          * {@inheritDoc}
          */
-        @SuppressWarnings("unchecked")
         @Override
         public Object transform(Object input) {
 
@@ -228,15 +261,15 @@ public class BbApplicationConfig implements BeanFactoryPostProcessor, PriorityOr
      * @param placeholderValues
      *            the configuration values to be printed.
      * @return the printed configuration values.
-     */
-    @SuppressWarnings("unchecked")
+     */  
     public static String debugPrint(Map<String, List<String[]>> placeholderValues) {
 
         final ByteArrayOutputStream baos = new ByteArrayOutputStream();
         final PrintStream outPrint = new PrintStream(baos);
 
-        final Map<String, String[]> mapToBePrinted = TransformedMap.decorateTransform(placeholderValues,
-                TransformerUtils.nopTransformer(), new PlaceholderStatsTransformer());
+        final Map<String, String[]> mapToBePrinted = MapUtils.transformedMap(//
+                new HashMap<String, String[]>(), TransformerUtils.nopTransformer(), new PlaceholderStatsTransformer());
+        mapToBePrinted.putAll((Map) placeholderValues);
         MapUtils.debugPrint(outPrint, "Configuration values", mapToBePrinted);
 
         return baos.toString();

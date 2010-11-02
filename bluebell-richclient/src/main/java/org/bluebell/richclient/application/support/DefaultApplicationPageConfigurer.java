@@ -30,10 +30,6 @@ import java.util.Map;
 
 import org.apache.commons.collections.ListUtils;
 import org.apache.commons.lang.ClassUtils;
-import org.aspectj.lang.annotation.AfterReturning;
-import org.aspectj.lang.annotation.Aspect;
-import org.aspectj.lang.annotation.Before;
-import org.aspectj.lang.annotation.Pointcut;
 import org.bluebell.richclient.application.ApplicationPageConfigurer;
 import org.bluebell.richclient.form.AbstractB2TableMasterForm;
 import org.bluebell.richclient.form.AbstractBbChildForm;
@@ -43,20 +39,17 @@ import org.bluebell.richclient.form.BbDispatcherForm;
 import org.bluebell.richclient.form.BbValidationForm;
 import org.bluebell.richclient.form.GlobalCommandsAccessor;
 import org.bluebell.richclient.form.MultipleValidationResultsReporter;
-import org.bluebell.richclient.swing.util.SwingUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.DirectFieldAccessor;
 import org.springframework.beans.PropertyAccessor;
 import org.springframework.binding.form.FormModel;
 import org.springframework.richclient.application.ApplicationPage;
-import org.springframework.richclient.application.ApplicationWindow;
 import org.springframework.richclient.application.PageComponent;
 import org.springframework.richclient.application.PageComponentDescriptor;
 import org.springframework.richclient.application.View;
 import org.springframework.richclient.application.config.ApplicationWindowAware;
 import org.springframework.richclient.application.support.DefaultViewDescriptor;
-import org.springframework.richclient.application.support.MultiViewPageDescriptor;
 import org.springframework.richclient.form.Form;
 import org.springframework.util.Assert;
 
@@ -93,8 +86,20 @@ import org.springframework.util.Assert;
  * 
  * @author <a href = "mailto:julio.arguello@gmail.com" >Julio Argüello (JAF)</a>
  */
-@Aspect
+// @Aspect
 public class DefaultApplicationPageConfigurer<T> implements ApplicationPageConfigurer<T> {
+
+    /*
+     * 20101002: Declaring this class as an aspect raises the following compile time exception:
+     * 
+     * The generic aspect 'org.bluebell.richclient.application.support.DefaultApplicationPageConfigurer' must be
+     * declared abstract
+     * 
+     * However it works at runtime!! Anyway this class has been refactored, splitting it into an aspect and the
+     * application page configurer itself.
+     * 
+     * See org.bluebell.richclient.application.support.DefaultApplicationPageConfigurerAspect
+     */
 
     /**
      * The view types acording to the figure above.
@@ -128,21 +133,12 @@ public class DefaultApplicationPageConfigurer<T> implements ApplicationPageConfi
         UNKNOWN
     }
 
-    /**
-     * The logger.
-     */
     private static final Logger LOGGER = LoggerFactory.getLogger(DefaultApplicationPageConfigurer.class);
 
     /**
      * The form class string key employed in <code>DefaultViewDescriptor#viewProperties</code>.
      */
     private static final String FORM_CLASS_KEY = "formClass";
-
-    /**
-     * Message format required for debug information during page creation.
-     */
-    private static final MessageFormat PAGE_CREATION_FMT = new MessageFormat(
-            "{0, choice, 0#Before|0<After} creating page \"{1}\" in window \"{2}\"");
 
     /**
      * Message format required for debug information during page configuration.
@@ -162,96 +158,6 @@ public class DefaultApplicationPageConfigurer<T> implements ApplicationPageConfi
     public DefaultApplicationPageConfigurer() {
 
         super();
-    }
-
-    /**
-     * Pointcut that intercepts page creation operations.
-     * <p>
-     * This method does nothing.
-     */
-    @Pointcut("execution(* org.springframework.richclient.application.ApplicationPageFactory."
-            + "createApplicationPage(..))")
-    public final void pageCreationOperation() {
-
-    }
-
-    /**
-     * Advise that acts just begore intercepting page creation operations.
-     * <p>
-     * This implementation ensures application window and page descriptor are not null and then writes a debug message.
-     * 
-     * @param window
-     *            the target window.
-     * @param pageDescriptor
-     *            the page descriptor.
-     */
-    @Before("pageCreationOperation() && args(window,pageDescriptor)")
-    public final void beforePageCreationOperation(ApplicationWindow window, MultiViewPageDescriptor pageDescriptor) {
-
-        Assert.notNull(window, "window");
-        Assert.notNull(pageDescriptor, "pageDescriptor");
-
-        if (DefaultApplicationPageConfigurer.LOGGER.isDebugEnabled()) {
-            DefaultApplicationPageConfigurer.LOGGER.debug(DefaultApplicationPageConfigurer.PAGE_CREATION_FMT.format(//
-                    new Object[] { Integer.valueOf(0), pageDescriptor.getId(), Integer.valueOf(window.getNumber()) }));
-        }
-    }
-
-    /**
-     * Process a page just inmediatly after creating it.
-     * <p>
-     * Note that at this point the page <b>has no components</b>, so we need to add them before.
-     * <p>
-     * This method operates in 3 phases:
-     * <ol>
-     * <li>Triggers page control creation. This <b>DOES NOT</b> include page components controls creation.
-     * <li>Add all described views to the page.
-     * <li>Process the page.
-     * </ol>
-     * <p>
-     * There is an invariant consisting on "page components control are not created at all at this method".
-     * 
-     * @param window
-     *            the application window where the page is about to show.
-     * @param pageDescriptor
-     *            the page descriptor.
-     * @param page
-     *            the created page.
-     * 
-     * @see #configureApplicationPage(ApplicationPage)
-     */
-    @AfterReturning(pointcut = "pageCreationOperation() && args(window,pageDescriptor)", returning = "page")
-    public final void afterReturningPageCreationOperation(ApplicationWindow window,
-            final MultiViewPageDescriptor pageDescriptor, final ApplicationPage page) {
-
-        Assert.notNull(window, "window");
-        Assert.notNull(pageDescriptor, "pageDescriptor");
-        Assert.notNull(page, "page");
-
-        if (DefaultApplicationPageConfigurer.LOGGER.isDebugEnabled()) {
-            DefaultApplicationPageConfigurer.LOGGER.debug(DefaultApplicationPageConfigurer.PAGE_CREATION_FMT.format(//
-                    new Object[] { Integer.valueOf(1), pageDescriptor.getId(), Integer.valueOf(window.getNumber()) }));
-        }
-
-        // Page components creation must be done in the event dispatcher thread
-        SwingUtils.runInEventDispatcherThread(new Runnable() {
-
-            @SuppressWarnings("unchecked")
-            public void run() {
-
-                // 1) Trigger page control creation
-                page.getControl();
-
-                // 2) Add all described views to the page
-                final List<String> viewDescriptorIds = pageDescriptor.getViewDescriptors();
-                for (final String viewDescriptorId : viewDescriptorIds) {
-                    page.showView(viewDescriptorId);
-                }
-
-                // 3) Process page
-                DefaultApplicationPageConfigurer.this.configureApplicationPage(page);
-            }
-        });
     }
 
     /**
