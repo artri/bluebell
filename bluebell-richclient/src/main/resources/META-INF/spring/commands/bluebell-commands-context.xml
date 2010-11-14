@@ -1,13 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
-	<!--
+<!--
 
-		Copyright (C) 2009 Julio Argüello <julio.arguello@gmail.com> This file is part of Bluebell Rich Client. Licensed under
-		the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You
-		may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or
-		agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
-		CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and
-		limitations under the License.
-	-->
+    Copyright (C) 2009 Julio Arg\u00fcello <julio.arguello@gmail.com>
+
+    This file is part of Bluebell Rich Client.
+
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+            http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+
+-->
 
 <beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:p="http://www.springframework.org/schema/p" xmlns:tx="http://www.springframework.org/schema/tx" xmlns:jee="http://www.springframework.org/schema/jee"
@@ -26,14 +36,17 @@
 
 	<!--
 		Bean Postprocessor
-		TODO DOC 
-	 -->
+		TODO DOC
+	-->
 	<bean id="longRunningCommandBeanPostProcessor" class="org.bluebell.richclient.command.support.BusyIndicatorActionCommandInterceptor" />
 
 	<!--
-		Bean: defaultWindowCommandManager Type: magic Usage: required Description: This specifies the component that will
-		manage the commands associated with a window. You can specify the ids of commands that are "shared" among views. This
-		indicates to the manager that they will have different target executors in each view.
+		Bean: defaultWindowCommandManager
+		Type: magic
+		Usage: required
+		Description: This specifies the component that will manage the commands associated with a window. You can specify the ids
+		of commands that are "shared" among views. This indicates to the manager that they will have different target executors
+		in each view.
 	-->
 	<bean id="defaultWindowCommandManager" class="org.springframework.richclient.application.support.ApplicationWindowCommandManager">
 		<property name="sharedCommandIds">
@@ -57,10 +70,13 @@
 	</bean>
 
 	<!--
-		Bean: defaultToolBar Type: magic Usage: required Description: This specifies the makeup of the toolbar for the
-		application. The CommandGroupFactoryBean is a factory that generates command groups. The "members" property is used to
-		specify the commands to place on the toolbar. Note that you can place command groups (menus) in the toolbar as well
-		and they will be rendered as a button that creates a drop down menu when pressed.
+		Bean: defaultToolBar
+		Type: magic
+		Usage: required
+		Description: This specifies the makeup of the toolbar for the application. The CommandGroupFactoryBean is a factory that
+		generates command groups. The "members" property is used to specify the commands to place on the toolbar. Note that you
+		can place command groups (menus) in the toolbar as well and they will be rendered as a button that creates a drop down
+		menu when pressed.
 	-->
 	<bean id="defaultToolBar" class="org.springframework.richclient.command.CommandGroupFactoryBean">
 		<property name="members">
@@ -90,9 +106,11 @@
 	</bean>
 
 	<!--
-		Bean: defaultMenuBar Type: magic Usage: required Description: This specifies the makeup of the main menu bar for the
-		application. The CommandGroupFactoryBean is a factory that generates command groups. The "members" property is used to
-		specify the top level menus in the menu bar.
+		Bean: defaultMenuBar
+		Type: magic
+		Usage: required
+		Description: This specifies the makeup of the main menu bar for the application. The CommandGroupFactoryBean is a factory
+		that generates command groups. The "members" property is used to specify the top level menus in the menu bar.
 	-->
 	<bean id="defaultMenuBar" class="org.springframework.richclient.command.CommandGroupFactoryBean">
 		<property name="members">
@@ -108,9 +126,11 @@
 	</bean>
 
 	<!--
-		Bean: defaultFileMenu Type: user named Usage: optional Description: This specifies the content of the file menu. Note
-		the references to shared (predefined) commands by name, directly including a bean (the ExitCommand), and including a
-		sub-menu (newMenu).
+		Bean: defaultFileMenu
+		Type: user named
+		Usage: optional
+		Description: This specifies the content of the file menu. Note the references to shared (predefined) commands by name,
+		directly including a bean (the ExitCommand), and including a sub-menu (newMenu).
 	-->
 	<bean id="defaultFileMenu" class="org.springframework.richclient.command.CommandGroupFactoryBean">
 		<property name="members">
@@ -150,7 +170,10 @@
 	</bean>
 
 	<!--
-		Bean: defaultWindowMenu Type: user named Usage: optional Description: This specifies the content of the "Window" menu.
+		Bean: defaultWindowMenu
+		Type: user named
+		Usage: optional
+		Description: This specifies the content of the "Window" menu.
 	-->
 	<bean id="defaultWindowMenu" class="org.springframework.richclient.command.CommandGroupFactoryBean">
 		<property name="members">
@@ -161,7 +184,10 @@
 	</bean>
 
 	<!--
-		Bean: defaultHelpMenu Type: user named Usage: optional Description: This specifies the content of the "Help" menu.
+		Bean: defaultHelpMenu
+		Type: user named
+		Usage: optional
+		Description: This specifies the content of the "Help" menu.
 	-->
 	<bean id="defaultHelpMenu" class="org.springframework.richclient.command.CommandGroupFactoryBean">
 		<property name="members">
@@ -173,27 +199,29 @@
 	</bean>
 
 	<!--
-		Bean: aboutCommand Type: user named Usage: optional Description: This creates a command to handle the "about" menu
-		item. It uses a platform class to generate an about box from the configured application data in the application
-		context.
+		Bean: aboutCommand
+		Type: user named
+		Usage: optional
+		Description: This creates a command to handle the "about" menu item. It uses a platform class to generate an about box 
+		from the configured application data in the application context.
 	-->
 	<bean id="aboutCommand" class="org.springframework.richclient.command.support.AboutCommand" />
 
 
-	<!-- 
-		TODO		
-		Permite refrescar la vista durante el debug 
+	<!--
+		TODO
+		Permite refrescar la vista durante el debug
 	-->
 	<bean id="refreshViewCommand" class="org.bluebell.richclient.command.support.RefreshViewCommand" />
 
-	<!-- 
+	<!--
 		TODO
 	-->
 	<!--
 		<bean id="loginCommand" class="org.springframework.richclient.security.LoginCommand" p:display-success="false" />
 	-->
 
-	<!-- 
+	<!--
 		TODO
 	-->
 	<!--
@@ -201,12 +229,12 @@
 		class="org.springframework.richclient.security.LogoutCommand" />
 	-->
 
-	<!-- 
+	<!--
 		TODO
 	-->
 	<bean id="exitCommand" class="org.springframework.richclient.command.support.ExitCommand" />
 
-	<!-- 
+	<!--
 		TODO
 	-->
 	<bean id="newWindowCommand" class="org.springframework.richclient.command.support.NewWindowCommand" />

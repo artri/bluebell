@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2009 Julio Argüello <julio.arguello@gmail.com>
+ * Copyright (C) 2009 Julio Arg\u00fcello <julio.arguello@gmail.com>
  *
  * This file is part of Bluebell Rich Client.
  *
@@ -177,7 +177,6 @@ public class BbMessagesDialogExceptionHandler extends MessagesDialogExceptionHan
      *            el sufijo que se añade al código del mensaje.
      * @return un array de cadenas con los códigos de los mensajes de la excepción producida y de sus clases padre.
      */
-    @SuppressWarnings("unchecked")
     protected String[] getMessagesKeys(Throwable throwable, String keySuffix) {
 
         if (this.messagesKey != null) {
@@ -190,7 +189,7 @@ public class BbMessagesDialogExceptionHandler extends MessagesDialogExceptionHan
             messageKeyList.add(errorCoded.getErrorCode() + keySuffix);
         }
 
-        Class clazz = throwable.getClass();
+        Class<?> clazz = throwable.getClass();
         while (clazz != Object.class) {
             messageKeyList.add(clazz.getName() + keySuffix);
             clazz = clazz.getSuperclass();

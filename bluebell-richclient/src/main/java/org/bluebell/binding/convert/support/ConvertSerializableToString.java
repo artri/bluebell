@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2009 Julio Argüello <julio.arguello@gmail.com>
+ * Copyright (C) 2009 Julio Arg\u00fcello <julio.arguello@gmail.com>
  *
  * This file is part of Bluebell Rich Client.
  *
@@ -65,7 +65,7 @@ public class ConvertSerializableToString extends AbstractFormattingConverter {
      * 
      * @return El tipo de la clase origen.
      */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings("rawtypes")
     public Class[] getSourceClasses() {
 
         return new Class[] { Serializable.class };
@@ -76,7 +76,7 @@ public class ConvertSerializableToString extends AbstractFormattingConverter {
      * 
      * @return El tipo de la clase destino.
      */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings("rawtypes")
     public Class[] getTargetClasses() {
 
         return new Class[] { String.class };
@@ -96,8 +96,7 @@ public class ConvertSerializableToString extends AbstractFormattingConverter {
      *             Excepción provocada.
      */
     @Override
-    @SuppressWarnings("unchecked")
-    protected Object doConvert(final Object sourceINYOURCLASS, final Class targetClass, final ConversionContext context)
+    protected Object doConvert(final Object sourceINYOURCLASS, @SuppressWarnings("rawtypes") final Class targetClass, final ConversionContext context)
             throws Exception {
 
         return (!this.allowEmpty || (sourceINYOURCLASS != null)) ? sourceINYOURCLASS.toString() : null;

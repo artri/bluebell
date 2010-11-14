@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 
-    Copyright (C) 2009 Julio Argüello <julio.arguello@gmail.com>
+    Copyright (C) 2009 Julio Arg\u00fcello <julio.arguello@gmail.com>
 
     This file is part of Bluebell Rich Client.
 
@@ -28,7 +28,7 @@
 		Resolve global application properties (i.e. ${application.path}). Note EagerPropertyPlaceholderConfigurer is used
 		instead of classic PropertyPlaceholderConfigurer.
 	-->
-	<bean id="systemPropertiesConfigurer" class="org.springframework.beans.factory.config.EagerPropertyPlaceholderConfigurer"
+	<bean id="systemPropertiesConfigurer" class="org.bluebell.richclient.application.config.EagerPropertyPlaceholderConfigurer"
 		p:ignoreUnresolvablePlaceholders="true">
 		<property name="locations">
 			<util:list>

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 
-    Copyright (C) 2009 Julio Argüello <julio.arguello@gmail.com>
+    Copyright (C) 2009 Julio Arg\u00fcello <julio.arguello@gmail.com>
 
     This file is part of Bluebell Substance.
 
@@ -29,9 +29,13 @@
 
 
 	<!--
-		Bean: substancePropertyPlaceholderConfigurer Usage: platform required Description: This configures all placeholders defined in the
-		application context. Note "null" string is used for null values and system properties override those defined in
-		properties files. Note its priority is greater than "defaultPropertyPlaceholderConfigurer" priority.
+		Bean: substancePropertyPlaceholderConfigurer
+		Usage: platform required
+		Description: This configures all placeholders defined in the application context.
+
+		Note "null" string is used for null values and system properties override those defined in properties files.
+
+		Note its priority is greater than "defaultPropertyPlaceholderConfigurer" priority.
 	-->
 	<bean id="substancePropertyPlaceholderConfigurer" parent="defaultPropertyPlaceholderConfigurer" p:order="5">
 		<property name="locations">

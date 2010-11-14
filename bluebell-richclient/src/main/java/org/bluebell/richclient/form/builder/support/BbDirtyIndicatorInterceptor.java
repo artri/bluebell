@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2009 Julio Argüello <julio.arguello@gmail.com>
+ * Copyright (C) 2009 Julio Arg\u00fcello <julio.arguello@gmail.com>
  *
  * This file is part of Bluebell Rich Client.
  *
@@ -471,7 +471,6 @@ public class BbDirtyIndicatorInterceptor extends AbstractOverlayFormComponentInt
          * 
          * @return <code> this</code>.
          */
-        @SuppressWarnings("unchecked")
         private DirtyOverlayHandler previousValue(Object previousValue) {
 
             this.previousValue = previousValue;

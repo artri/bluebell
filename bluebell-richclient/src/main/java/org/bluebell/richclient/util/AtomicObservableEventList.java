@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2009 Julio Argüello <julio.arguello@gmail.com>
+ * Copyright (C) 2009 Julio Arg\u00fcello <julio.arguello@gmail.com>
  *
  * This file is part of Bluebell Rich Client.
  *
@@ -85,7 +85,7 @@ public final class AtomicObservableEventList<S> extends ObservableEventList {
      */
     @SuppressWarnings("unchecked")
     @Override
-    public boolean addAll(int index, Collection values) {
+    public boolean addAll(int index, @SuppressWarnings("rawtypes") Collection values) {
 
         Assert.notNull(values, "values");
 

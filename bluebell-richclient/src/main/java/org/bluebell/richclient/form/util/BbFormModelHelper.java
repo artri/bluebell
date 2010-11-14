@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2009 Julio Argüello <julio.arguello@gmail.com>
+ * Copyright (C) 2009 Julio Arg\u00fcello <julio.arguello@gmail.com>
  *
  * This file is part of Bluebell Rich Client.
  *
@@ -200,6 +200,7 @@ public class BbFormModelHelper extends FormModelHelper {
         final ValueModel propertyVm = pas.getPropertyValueModel(propertyName);
 
         // 2. Crear un BufferedCollectionValueModel envolviendo el value model del punto 1.
+        @SuppressWarnings("rawtypes")
         final DirtyTrackingDCBCVM collectionVm = new DirtyTrackingDCBCVM(//
                 propertyVm, //
                 pmas.getPropertyType(propertyName), //
@@ -273,6 +274,7 @@ public class BbFormModelHelper extends FormModelHelper {
             /**
              * {@inheritDoc}
              */
+            @SuppressWarnings("rawtypes")
             @Override
             protected TransformedList createSwingThreadProxyList(EventList source) {
 
@@ -372,6 +374,7 @@ public class BbFormModelHelper extends FormModelHelper {
         final ValueModel propertyVM = parentFormModel.getValueModel(propertyName);
 
         // Construir el buffered value model
+        @SuppressWarnings("rawtypes")
         final DirtyTrackingDCBCVM<T> collectionVM = new DirtyTrackingDCBCVM(propertyVM, colClazz, clazz, propertyName);
 
         // Crear el nuevo modelo a partir de la estrategia

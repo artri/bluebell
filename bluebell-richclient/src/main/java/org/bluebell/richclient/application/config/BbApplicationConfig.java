@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2009 Julio Argüello <julio.arguello@gmail.com>
+ * Copyright (C) 2009 Julio Arg\u00fcello <julio.arguello@gmail.com>
  *
  * This file is part of Bluebell Rich Client.
  *
@@ -18,11 +18,9 @@
 
 package org.bluebell.richclient.application.config;
 
-import java.io.ByteArrayOutputStream;
-import java.io.PrintStream;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -31,8 +29,6 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.ListUtils;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.collections.Predicate;
-import org.apache.commons.collections.Transformer;
-import org.apache.commons.collections.TransformerUtils;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.bluebell.richclient.util.ObjectUtils;
@@ -40,9 +36,13 @@ import org.springframework.beans.BeansException;
 import org.springframework.beans.ConfigurablePropertyAccessor;
 import org.springframework.beans.PropertyAccessorFactory;
 import org.springframework.beans.factory.FactoryBean;
+import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.config.PropertyPlaceholderConfigurer;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.OrderComparator;
 import org.springframework.core.PriorityOrdered;
 import org.springframework.util.Assert;
@@ -59,9 +59,8 @@ import org.springframework.util.MultiValueMap;
  * 
  * @author <a href = "mailto:julio.arguello@gmail.com" >Julio Argüello (JAF)</a>
  */
-@SuppressWarnings("unchecked")
 public class BbApplicationConfig implements BeanFactoryPostProcessor, PriorityOrdered,
-        FactoryBean<MultiValueMap<String, String[]>> {
+        FactoryBean<MultiValueMap<String, String[]>>, ApplicationContextAware {
 
     /**
      * The name of the field with the bean name. Useful for debugging.
@@ -79,8 +78,15 @@ public class BbApplicationConfig implements BeanFactoryPostProcessor, PriorityOr
      * <li>The second item is the placeholder configurer that resolved it.
      * <li>The third item is the priority order of the resolving placeholder configurer.
      * </ol>
+     * 
+     * @see LinkedMultiValueMap
      */
-    final MultiValueMap<String, String[]> applicationConfig = new LinkedMultiValueMap<String, String[]>();
+    private final MultiValueMap<String, String[]> applicationConfig = new LinkedMultiValueMap<String, String[]>();
+
+    /**
+     * The application context where this bean is defined.
+     */
+    private ApplicationContext applicationContext;
 
     /**
      * {@inheritDoc}
@@ -89,11 +95,7 @@ public class BbApplicationConfig implements BeanFactoryPostProcessor, PriorityOr
     public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {
 
         // Beans of type PPC
-        final List<PropertyPlaceholderConfigurer> configurers = new ArrayList<PropertyPlaceholderConfigurer>(
-                beanFactory.getBeansOfType(PropertyPlaceholderConfigurer.class).values());
-
-        // Priority ordered
-        OrderComparator.sort(configurers);
+        final List<PropertyPlaceholderConfigurer> configurers = BbApplicationConfig.getConfigurers(beanFactory);
 
         // Post process bean factory with "useless" configurers
         for (PropertyPlaceholderConfigurer configurer : configurers) {
@@ -116,7 +118,7 @@ public class BbApplicationConfig implements BeanFactoryPostProcessor, PriorityOr
      * {@inheritDoc}
      */
     @Override
-    public MultiValueMap<String, String[]> getObject() throws Exception {
+    public final MultiValueMap<String, String[]> getObject() throws Exception {
 
         return this.applicationConfig;
     }
@@ -124,8 +126,9 @@ public class BbApplicationConfig implements BeanFactoryPostProcessor, PriorityOr
     /**
      * {@inheritDoc}
      */
+    @SuppressWarnings("unchecked")
     @Override
-    public Class<? extends MultiValueMap<String, String[]>> getObjectType() {
+    public final Class<? extends MultiValueMap<String, String[]>> getObjectType() {
 
         return (Class<? extends MultiValueMap<String, String[]>>) this.applicationConfig.getClass();
     }
@@ -137,6 +140,27 @@ public class BbApplicationConfig implements BeanFactoryPostProcessor, PriorityOr
     public boolean isSingleton() {
 
         return Boolean.TRUE;
+    }
+
+    /**
+     * Gets the application context where this bean is defined.
+     * 
+     * @return the application context.
+     */
+    public final ApplicationContext getApplicationContext() {
+
+        return this.applicationContext;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+
+        Assert.notNull(applicationContext, "applicationContext");
+
+        this.applicationContext = applicationContext;
     }
 
     /**
@@ -161,15 +185,14 @@ public class BbApplicationConfig implements BeanFactoryPostProcessor, PriorityOr
      */
     private void update(String placeholder, String value, PropertyPlaceholderConfigurer configurer) {
 
-        // Retrieve current placeholder values
-        // Resolve placeholder bean name using reflection
-        final ConfigurablePropertyAccessor propertyAccessor = PropertyAccessorFactory.forDirectFieldAccess(configurer);
+        Assert.notNull(configurer, "configurer");
 
-        final String beanName = (String) propertyAccessor.getPropertyValue(BbApplicationConfig.BEAN_NAME);
+        final String beanName = BbApplicationConfig.getBeanName(configurer);
         final Integer order = configurer.getOrder();
 
         // Update placeholder values (discarding duplicates)
         final String[] newerValue = new String[] { value, beanName, String.valueOf(order) };
+        @SuppressWarnings("unchecked")
         final String[] foundValue = (String[]) CollectionUtils.find( //
                 (Collection<String[]>) MapUtils.getObject(this.applicationConfig, placeholder, ListUtils.EMPTY_LIST), //
                 new Predicate() {
@@ -184,6 +207,7 @@ public class BbApplicationConfig implements BeanFactoryPostProcessor, PriorityOr
                 });
 
         if (foundValue == null) {
+
             this.applicationConfig.add(placeholder, new String[] { value, beanName, String.valueOf(order) });
         }
     }
@@ -224,55 +248,109 @@ public class BbApplicationConfig implements BeanFactoryPostProcessor, PriorityOr
     }
 
     /**
-     * Transforms a list of string array values into a readable string with the values of a placeholder ordered.
+     * Prints PPC's debug information.
      * 
-     * @author <a href = "mailto:julio.arguello@gmail.com" >Julio Argüello (JAF)</a>
+     * Example:
+     * 
+     * <pre>
+     * Application context with id XX:
+     * {
+     *    substancePropertyPlaceholderConfigurer[5]
+     *    vldockingLaunchPropertyPlaceholderConfigurer[2999]
+     *    vldockingPropertyPlaceholderConfigurer[3000]
+     *    personPropertyPlaceholderConfigurer[100000]
+     *    defaultPropertyPlaceholderConfigurer[2147483647]
+     * }
+     * </pre>
+     * 
+     * @param applicationContext
+     *            the application context to be debugged.
+     * 
+     * @return the debug information
      */
-    private static class PlaceholderStatsTransformer implements Transformer {
+    public static String debugPrint(ConfigurableApplicationContext applicationContext) {
 
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        public Object transform(Object input) {
+        final ListableBeanFactory beanFactory = applicationContext.getBeanFactory();
+        final List<PropertyPlaceholderConfigurer> configurers = BbApplicationConfig.getConfigurers(beanFactory);
 
-            Assert.isInstanceOf(List.class, input);
+        final StringBuffer sb = new StringBuffer();
 
-            final List<String[]> values = (List<String[]>) input;
-            final StringBuffer sb = new StringBuffer();
+        sb.append("Application context with id ");
+        sb.append(BbApplicationConfig.getApplicationContextId(applicationContext)).append(":\n");
+        sb.append('{');
 
-            for (String[] value : values) {
-                sb.append(value[0]); // Value
-                sb.append("[");
-                sb.append(value[2]); // Order
-                sb.append("]");
-                sb.append("::");
-                sb.append(value[1]); // PPC
-                sb.append(" >> ");
-            }
+        for (PropertyPlaceholderConfigurer configurer : configurers) {
+            final String beanName = BbApplicationConfig.getBeanName(configurer);
+            final Integer order = configurer.getOrder();
 
-            return sb.toString();
+            sb.append("\t");
+            sb.append(beanName);
+            sb.append('[');
+            sb.append(order);
+            sb.append(']');
+            sb.append('\n');
         }
+        sb.append("}\n");
+
+        return sb.toString();
     }
 
     /**
      * Prints configuration values.
      * 
+     * Example:
+     * 
+     * <pre>
+     *  1.richclient.substanceDecoratedComponentFactory:
+     *    1.1.defaultComponentFactory::substancePropertyPlaceholderConfigurer[5]
+     *    1.2.defaultComponentFactory::defaultPropertyPlaceholderConfigurer[2147483647]
+     * 
+     * 2.richclient.componentFactory:
+     *    2.1.substanceComponentFactory::substancePropertyPlaceholderConfigurer[5]
+     *    2.2.defaultComponentFactory::defaultPropertyPlaceholderConfigurer[2147483647]
+     * 
+     * 3.richclient.applicationPageFactory:
+     *    3.1.vldockingApplicationPageFactory::vldockingPropertyPlaceholderConfigurer[3000]
+     *    3.2.vldockingApplicationPageFactory::defaultPropertyPlaceholderConfigurer[2147483647]
+     * 
+     * 4.richclient.messageSourceBasenames:
+     *    4.1.vldockingMessageSourceBasenames::vldockingPropertyPlaceholderConfigurer[3000]
+     *    4.2.personMessageSourceBasenames::personPropertyPlaceholderConfigurer[100000]
+     *    4.3.vldockingMessageSourceBasenames::defaultPropertyPlaceholderConfigurer[2147483647]
+     * </pre>
+     * 
      * @param placeholderValues
      *            the configuration values to be printed.
      * @return the printed configuration values.
-     */  
+     */
     public static String debugPrint(Map<String, List<String[]>> placeholderValues) {
 
-        final ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        final PrintStream outPrint = new PrintStream(baos);
+        Integer keyCounter = Integer.valueOf(0);
+        Integer valueCounter = Integer.valueOf(0);
 
-        final Map<String, String[]> mapToBePrinted = MapUtils.transformedMap(//
-                new HashMap<String, String[]>(), TransformerUtils.nopTransformer(), new PlaceholderStatsTransformer());
-        mapToBePrinted.putAll((Map) placeholderValues);
-        MapUtils.debugPrint(outPrint, "Configuration values", mapToBePrinted);
+        final StringBuffer sb = new StringBuffer();
 
-        return baos.toString();
+        for (Map.Entry<String, List<String[]>> entry : placeholderValues.entrySet()) {
+
+            // Key value (Placeholder)
+            sb.append(++keyCounter).append('.').append(entry.getKey()).append(":\n");
+
+            // Placeholder values
+            valueCounter = Integer.valueOf(0);
+            for (String[] value : entry.getValue()) {
+
+                // \tkeyCounter.valueCounter.
+                sb.append("\t").append(keyCounter).append('.').append(++valueCounter).append('.');
+
+                // Value::PPC[order]\n
+                sb.append(value[0]).append("::").append(value[1]).append('[').append(value[2]).append(']').append("\n");
+            }
+            sb.append("\n");
+        }
+
+        sb.append("\n");
+
+        return sb.toString();
     }
 
     /**
@@ -344,4 +422,59 @@ public class BbApplicationConfig implements BeanFactoryPostProcessor, PriorityOr
         return null;
     }
 
+    /**
+     * Gets the application context id.
+     * 
+     * @param applicationContext
+     *            the application context.
+     * 
+     * @return the application context id.
+     */
+    private static String getApplicationContextId(ApplicationContext applicationContext) {
+
+        /*
+         * Since ApplicationContext#getDisplayName() and ApplicationContext#getId() returns an illegible string it's
+         * better to employ the creation date in order to identify application contexts one each other.
+         */
+        final Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(applicationContext.getStartupDate());
+
+        return calendar.getTime().toString();
+    }
+
+    /**
+     * Gets every <code>PropertyPlaceholderConfigurer</code> (aka PPC) defined into a bean factory ordered by
+     * precedence.
+     * 
+     * @param beanFactory
+     *            the bean factory.
+     * @return the PPC's.
+     */
+    private static List<PropertyPlaceholderConfigurer> getConfigurers(ListableBeanFactory beanFactory) {
+
+        // Beans of type PPC
+        final List<PropertyPlaceholderConfigurer> configurers = new ArrayList<PropertyPlaceholderConfigurer>(//
+                beanFactory.getBeansOfType(PropertyPlaceholderConfigurer.class).values());
+
+        // Priority ordered
+        OrderComparator.sort(configurers);
+
+        return configurers;
+    }
+
+    /**
+     * Gets the bean name of a given <code>PropertyPlaceholderConfigurer</code> using reflection.
+     * 
+     * @param configurer
+     *            the target configurer.
+     * @return the bean name.
+     */
+    private static String getBeanName(PropertyPlaceholderConfigurer configurer) {
+
+        // Resolve placeholder bean name using reflection
+        final ConfigurablePropertyAccessor accessor = PropertyAccessorFactory.forDirectFieldAccess(configurer);
+        final String beanName = (String) accessor.getPropertyValue(BbApplicationConfig.BEAN_NAME);
+
+        return beanName;
+    }
 }

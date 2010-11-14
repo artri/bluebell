@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2009 Julio Argüello <julio.arguello@gmail.com>
+ * Copyright (C) 2009 Julio Arg\u00fcello <julio.arguello@gmail.com>
  *
  * This file is part of Bluebell Rich Client.
  *
@@ -254,7 +254,7 @@ public class DirtyTrackingDCBCVM<T> extends DeepCopyBufferedCollectionValueModel
      *            the collection of objects to process.
      * @return the processed collection.
      */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     @Override
     protected Collection<?> prepareBackingCollection(Collection col) {
 
@@ -267,7 +267,7 @@ public class DirtyTrackingDCBCVM<T> extends DeepCopyBufferedCollectionValueModel
      * 
      * @return una lista observable.
      */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     @Override
     protected ObservableList createBufferedListModel() {
 

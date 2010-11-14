@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2009 Julio Argüello <julio.arguello@gmail.com>
+ * Copyright (C) 2009 Julio Arg\u00fcello <julio.arguello@gmail.com>
  *
  * This file is part of Bluebell Jide OSS.
  *
@@ -78,9 +78,8 @@ public class JideBindingFactory extends SwingBindingFactory {
     /**
      * {@inheritDoc}
      */
-    @SuppressWarnings("unchecked")
     @Override
-    public Binding bindControl(JComponent control, String formPropertyPath, Map context) {
+    public Binding bindControl(JComponent control, String formPropertyPath, @SuppressWarnings("rawtypes") Map context) {
 
         return new OverlayableBinding(super.bindControl(control, formPropertyPath, context));
     }
@@ -97,9 +96,8 @@ public class JideBindingFactory extends SwingBindingFactory {
     /**
      * {@inheritDoc}
      */
-    @SuppressWarnings("unchecked")
     @Override
-    public Binding createBinding(String formPropertyPath, Map context) {
+    public Binding createBinding(String formPropertyPath, @SuppressWarnings("rawtypes") Map context) {
 
         return new OverlayableBinding(super.createBinding(formPropertyPath, context));
     }
@@ -107,9 +105,8 @@ public class JideBindingFactory extends SwingBindingFactory {
     /**
      * {@inheritDoc}
      */
-    @SuppressWarnings("unchecked")
     @Override
-    public Binding createBinding(Class controlType, String formPropertyPath) {
+    public Binding createBinding(@SuppressWarnings("rawtypes") Class controlType, String formPropertyPath) {
 
         return new OverlayableBinding(super.createBinding(controlType, formPropertyPath));
     }
@@ -117,9 +114,9 @@ public class JideBindingFactory extends SwingBindingFactory {
     /**
      * {@inheritDoc}
      */
-    @SuppressWarnings("unchecked")
     @Override
-    public Binding createBinding(Class controlType, String formPropertyPath, Map context) {
+    public Binding createBinding(@SuppressWarnings("rawtypes") Class controlType, String formPropertyPath,
+            @SuppressWarnings("rawtypes") Map context) {
 
         return new OverlayableBinding(super.createBinding(controlType, formPropertyPath, context));
     }

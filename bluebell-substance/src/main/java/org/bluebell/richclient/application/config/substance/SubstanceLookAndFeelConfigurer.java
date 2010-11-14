@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2009 Julio Argüello <julio.arguello@gmail.com>
+ * Copyright (C) 2009 Julio Arg\u00fcello <julio.arguello@gmail.com>
  *
  * This file is part of Bluebell Substance.
  *
@@ -42,8 +42,8 @@ import org.jvnet.lafwidget.preview.DefaultPreviewPainter;
 import org.jvnet.lafwidget.tabbed.DefaultTabPreviewPainter;
 import org.jvnet.lafwidget.utils.LafConstants.TabOverviewKind;
 import org.jvnet.substance.SubstanceLookAndFeel;
-import org.jvnet.substance.api.SubstanceSkin;
 import org.jvnet.substance.api.SubstanceConstants.TabContentPaneBorderKind;
+import org.jvnet.substance.api.SubstanceSkin;
 import org.jvnet.substance.skin.SkinChangeListener;
 import org.springframework.util.Assert;
 
@@ -112,7 +112,7 @@ public class SubstanceLookAndFeelConfigurer extends VLDockingLookAndFeelConfigur
         super(lookAndFeelName);
         SubstanceLookAndFeel.registerSkinChangeListener(this);
     }
-
+    
     /**
      * Sets the progress monitor proxy bean.
      * 
@@ -135,7 +135,39 @@ public class SubstanceLookAndFeelConfigurer extends VLDockingLookAndFeelConfigur
         
         this.installWidgetDesktopStyle();
     }
+    
+    /**
+     * Pointcut that intercepts getting progress monitor from monitoring splash screen.
+     * <p>
+     * This method does nothing.
+     */
+    @Pointcut("execution(* org.springframework.richclient.application.splash.MonitoringSplashScreen."
+            + "getProgressMonitor(..))")
+    protected  void monitoringSplashScreenGetProgressMonitorOperation() {
 
+    }
+    
+    /**
+     * Pointcut that intercepts progress monitor <code>taskStarted</code> events.
+     * <p>
+     * This method does nothing.
+     */
+    @Pointcut("execution(* org.springframework.richclient.progress.ProgressMonitor.*(..))")
+    protected  void progressMonitorOperation() {
+
+    }
+
+
+    /**
+     * Pointcut that intercepts splash screen <code>splash</code> invocations.
+     * <p>
+     * This method does nothing.
+     */
+    @Pointcut("execution(* org.springframework.richclient.application.splash.SplashScreen.*(..))")
+    protected  void splashScreenOperation() {
+
+    }
+    
     /**
      * This advice ensures the intercepted method is executed in the EDT.
      * 
@@ -291,37 +323,6 @@ public class SubstanceLookAndFeelConfigurer extends VLDockingLookAndFeelConfigur
         UIManager.put(VLDockingUtils.DockingColor.HIGHLIGHT.getKey(), highlight);
         UIManager.put(VLDockingUtils.DockingColor.ACTIVE_WIDGET.getKey(), active);
         UIManager.put(VLDockingUtils.DockingColor.INACTIVE_WIDGET.getKey(), inactive);
-    }
-
-    /**
-     * Pointcut that intercepts progress monitor <code>taskStarted</code> events.
-     * <p>
-     * This method does nothing.
-     */
-    @Pointcut("execution(* org.springframework.richclient.progress.ProgressMonitor.*(..))")
-    protected final void progressMonitorOperation() {
-
-    }
-
-    /**
-     * Pointcut that intercepts getting progress monitor from monitoring splash screen.
-     * <p>
-     * This method does nothing.
-     */
-    @Pointcut("execution(* org.springframework.richclient.application.splash.MonitoringSplashScreen."
-            + "getProgressMonitor(..))")
-    protected final void monitoringSplashScreenGetProgressMonitorOperation() {
-
-    }
-
-    /**
-     * Pointcut that intercepts splash screen <code>splash</code> invocations.
-     * <p>
-     * This method does nothing.
-     */
-    @Pointcut("execution(* org.springframework.richclient.application.splash.SplashScreen.*(..))")
-    protected final void splashScreenOperation() {
-
     }
 
     /**

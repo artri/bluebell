@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2009 Julio Argüello <julio.arguello@gmail.com>
+ * Copyright (C) 2009 Julio Arg\u00fcello <julio.arguello@gmail.com>
  *
  * This file is part of Bluebell Rich Client.
  *
@@ -255,8 +255,7 @@ public abstract class AbstractBbChildForm<T extends Object> extends ApplicationW
      * 
      * @return el formulario padre.
      */
-    @SuppressWarnings("unchecked")
-    private BbDispatcherForm getParentForm() {
+    private BbDispatcherForm<T> getParentForm() {
 
         // Se declará sin <T> para que funcione la ingeniería inversa
         return this.detailForm;

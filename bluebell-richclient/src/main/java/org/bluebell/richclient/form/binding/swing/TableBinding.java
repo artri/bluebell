@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2009 Julio Argüello <julio.arguello@gmail.com>
+ * Copyright (C) 2009 Julio Arg\u00fcello <julio.arguello@gmail.com>
  *
  * This file is part of Bluebell Rich Client.
  *
@@ -953,9 +953,9 @@ public class TableBinding extends CustomBinding {
             }
 
             // Anyway update event list and change selection
-            final List newSelection;
+            final List<Object> newSelection;
             if (formObject instanceof Collection) {
-                newSelection = new ArrayList((Collection) formObject);
+                newSelection = new ArrayList<Object>((Collection<?>) formObject);
             } else {
                 newSelection = Arrays.asList(formObject);
             }

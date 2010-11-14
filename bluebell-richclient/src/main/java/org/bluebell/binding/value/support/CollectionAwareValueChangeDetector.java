@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2009 Julio Argüello <julio.arguello@gmail.com>
+ * Copyright (C) 2009 Julio Arg\u00fcello <julio.arguello@gmail.com>
  *
  * This file is part of Bluebell Rich Client.
  *
@@ -39,7 +39,7 @@ import org.springframework.binding.value.support.DefaultValueChangeDetector;
  * @see CollectionUtils#isEqualCollection(Collection, Collection)
  */
 public class CollectionAwareValueChangeDetector extends DefaultValueChangeDetector {
-  
+
     /**
      * Determines if there has been a change in value between the provided arguments.
      * <p>
@@ -53,7 +53,7 @@ public class CollectionAwareValueChangeDetector extends DefaultValueChangeDetect
      * @return <code>true</code> if the objects are different enough to indicate a change in the value model.
      */
     @Override
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     public boolean hasValueChanged(Object oldValue, Object newValue) {
 
         if (oldValue == newValue) {
@@ -64,6 +64,7 @@ public class CollectionAwareValueChangeDetector extends DefaultValueChangeDetect
         }
         if ((oldValue instanceof List) && (newValue instanceof List)) {
             // (JAF), 20100424, for performance reasons check this before proceed.
+
             final Boolean isWrapped = GlazedListsUtils.isWrapped(((List) oldValue), (List) newValue);
 
             return isWrapped ? Boolean.FALSE : !ObjectUtils.isEqualList((List) oldValue, (List) newValue);

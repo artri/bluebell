@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2009 Julio Argüello <julio.arguello@gmail.com>
+ * Copyright (C) 2009 Julio Arg\u00fcello <julio.arguello@gmail.com>
  *
  * This file is part of Bluebell Rich Client.
  *
@@ -168,9 +168,8 @@ public class TableBinder extends AbstractBinder implements InitializingBean {
     /**
      * {@inheritDoc}
      */
-    @SuppressWarnings("unchecked")
     @Override
-    protected JComponent createControl(Map context) {
+    protected JComponent createControl(@SuppressWarnings("rawtypes") Map context) {
 
         return this.getComponentFactory().createTable();
     }
@@ -178,9 +177,9 @@ public class TableBinder extends AbstractBinder implements InitializingBean {
     /**
      * {@inheritDoc}
      */
-    @SuppressWarnings("unchecked")
     @Override
-    protected Binding doBind(JComponent control, FormModel formModel, String formPropertyPath, Map context) {
+    protected Binding doBind(JComponent control, FormModel formModel, String formPropertyPath,
+            @SuppressWarnings("rawtypes") Map context) {
 
         final TableBinding binding = new TableBinding((JTable) control, formModel, formPropertyPath);
         binding.setColumnPropertyNames(this.getColumnPropertyNames());

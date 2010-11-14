@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2009 Julio Argüello <julio.arguello@gmail.com>
+ * Copyright (C) 2009 Julio Arg\u00fcello <julio.arguello@gmail.com>
  *
  * This file is part of Bluebell Rich Client.
  *
@@ -162,7 +162,7 @@ public class FormBackedView<T extends Form> extends AbstractView {
      * @return the globalCommandsAccessor
      */
     public final GlobalCommandsAccessor getGlobalCommandsAccessor() {
-    
+
         return this.globalCommandsAccessor;
     }
 
@@ -254,7 +254,7 @@ public class FormBackedView<T extends Form> extends AbstractView {
 
         // Se registran listeners para los formularios que implementan el interface ApplicationListener
         if (form instanceof ApplicationListener<?>) {
-            final ApplicationListener<ApplicationEvent> applicationListener = (ApplicationListener) form;
+            final ApplicationListener<ApplicationEvent> applicationListener = (ApplicationListener<ApplicationEvent>) form;
             this.applicationEventMulticaster.addApplicationListener(applicationListener);
         }
 
@@ -360,7 +360,7 @@ public class FormBackedView<T extends Form> extends AbstractView {
             final Constructor<T> constructor = clazz.getConstructor(parameterTypes);
 
             // Instanciar el formulario
-            instance = (T) BeanUtils.instantiateClass(constructor, parameterValues);
+            instance = BeanUtils.instantiateClass(constructor, parameterValues);
 
             // Establecer las propiedades del formulario
             if (this.getFormProperties() != null) {

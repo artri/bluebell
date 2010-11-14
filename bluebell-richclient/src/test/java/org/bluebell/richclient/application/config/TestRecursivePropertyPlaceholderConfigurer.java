@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2009 Julio Argüello <julio.arguello@gmail.com>
+ * Copyright (C) 2009 Julio Arg\u00fcello <julio.arguello@gmail.com>
  *
  * This file is part of Bluebell Rich Client.
  *
@@ -33,7 +33,7 @@ import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
  * 
  * @author <a href = "mailto:julio.arguello@gmail.com" >Julio Argüello (JAF)</a>
  * 
- * @see org.springframework.beans.factory.config.EagerPropertyPlaceholderConfigurer
+ * @see org.bluebell.richclient.application.config.EagerPropertyPlaceholderConfigurer
  */
 @ContextConfiguration()
 public class TestRecursivePropertyPlaceholderConfigurer extends AbstractJUnit4SpringContextTests {

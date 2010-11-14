@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2009 Julio Argüello <julio.arguello@gmail.com>
+ * Copyright (C) 2009 Julio Arg\u00fcello <julio.arguello@gmail.com>
  *
  * This file is part of Bluebell VLDocking.
  *
@@ -70,7 +70,7 @@ public class TestVLDockingBeanPostProcessor extends AbstractBbSamplesTests {
     @Test
     public void testViewDescriptorsClassesAreChanged() {
 
-        final int numberOfViews = 6;
+        final int numberOfViews = 7;
         final ViewDescriptor[] viewDescriptors = this.getViewDescriptorRegistry().getViewDescriptors();
 
         // Every view descriptor implements VLDockingViewDescriptor in spite of being defined with other implementor

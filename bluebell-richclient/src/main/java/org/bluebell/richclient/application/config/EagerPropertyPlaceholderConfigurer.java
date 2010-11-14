@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2009 Julio Argüello <julio.arguello@gmail.com>
+ * Copyright (C) 2009 Julio Arg\u00fcello <julio.arguello@gmail.com>
  *
  * This file is part of Bluebell Rich Client.
  *
@@ -16,10 +16,13 @@
  * limitations under the License.
  */
 
-package org.springframework.beans.factory.config;
+package org.bluebell.richclient.application.config;
 
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
+import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
+import org.springframework.beans.factory.config.PropertyPlaceholderConfigurer;
 
 /**
  * A property resource configurer that resolves placeholders in bean property values of context definitions, immediately
@@ -88,7 +91,9 @@ public class EagerPropertyPlaceholderConfigurer extends PropertyPlaceholderConfi
     public void afterPropertiesSet() throws Exception {
 
         if (this.beanFactory != null) {
-            super.postProcessBeanFactory(this.beanFactory);
+            // super.postProcessBeanFactory(this.beanFactory);
+            this.postProcessBeanFactory(this.beanFactory);
+
             this.processingCompleted = true;
         }
     }

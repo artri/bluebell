@@ -52,8 +52,10 @@ import org.springframework.core.io.ResourceLoader;
  */
 public class ResourceMapFactoryBean extends PropertiesFactoryBean implements ResourceLoaderAware, Transformer {
 
-    // TODO, (JAF), 20100406, once Spring RCP version 1.1.0 were released this class should dissapear according to
-    // http://jira.springframework.org/browse/RCP-630
+    /*
+     * TODO, (JAF), 20100406, once Spring RCP version 1.1.0 were released this class should dissapear according to
+     * http://jira.springframework.org/browse/RCP-630
+     */
 
     /**
      * A base path to prepend to each resource location value in the properties file.

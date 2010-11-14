@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2009 Julio Argüello <julio.arguello@gmail.com>
+ * Copyright (C) 2009 Julio Arg\u00fcello <julio.arguello@gmail.com>
  *
  * This file is part of Bluebell Rich Client.
  *
@@ -134,9 +134,8 @@ public abstract class ComponentFactoryDecorator extends ApplicationServicesAcces
     /**
      * {@inheritDoc}
      */
-    @SuppressWarnings("unchecked")
     @Override
-    public void configureForEnum(JComboBox comboBox, Class enumType) {
+    public void configureForEnum(JComboBox comboBox, @SuppressWarnings("rawtypes") Class enumType) {
 
         this.getDecoratedComponentFactory().configureForEnum(comboBox, enumType);
     }
@@ -180,9 +179,8 @@ public abstract class ComponentFactoryDecorator extends ApplicationServicesAcces
     /**
      * {@inheritDoc}
      */
-    @SuppressWarnings("unchecked")
     @Override
-    public JComboBox createComboBox(Class enumType) {
+    public JComboBox createComboBox(@SuppressWarnings("rawtypes") Class enumType) {
 
         return this.getDecoratedComponentFactory().createComboBox(enumType);
     }

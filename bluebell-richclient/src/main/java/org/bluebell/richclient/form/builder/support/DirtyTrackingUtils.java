@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2009 Julio Argüello <julio.arguello@gmail.com>
+ * Copyright (C) 2009 Julio Arg\u00fcello <julio.arguello@gmail.com>
  *
  * This file is part of Bluebell Rich Client.
  *
@@ -469,13 +469,12 @@ public final class DirtyTrackingUtils {
      * @param formModel
      *            el <em>form model</em>.
      */
-    @SuppressWarnings("unchecked")
     private static void handle(AbstractFormModel formModel) {
 
         Assert.notNull(formModel);
 
         final StringBuffer sb = new StringBuffer();
-        final Set dirtyValueAndFormModels = DirtyTrackingUtils.getValue(//
+        final Set<?> dirtyValueAndFormModels = DirtyTrackingUtils.getValue(//
                 formModel, "dirtyValueAndFormModels", Set.class);
         for (final Object object : dirtyValueAndFormModels) {
             if (object instanceof ValueModel) {

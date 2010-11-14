@@ -26,23 +26,18 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-dependency-plugin</artifactId>
-			</plugin>		
+			</plugin>
 		</plugins>
 	</build>
 
 	<dependencies>
 
 		<!--
-			Bluebell 
- 		-->
+			Bluebell
+		-->
 		<dependency>
 			<groupId>${project.groupId}</groupId>
 			<artifactId>bluebell-richclient</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>${project.groupId}</groupId>
-			<artifactId>bluebell-vldocking</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
@@ -52,18 +47,30 @@
 			<type>test-jar</type>
 			<scope>test</scope>
 		</dependency>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>bluebell-vldocking</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>bluebell-vldocking</artifactId>
+			<version>${project.version}</version>
+			<type>test-jar</type>
+			<scope>test</scope>
+		</dependency>
 
-		<!-- 
+		<!--
 			Spring Framework
-	 	-->	
+		-->
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>org.springframework.core</artifactId>
 		</dependency>
 
-		<!-- 
+		<!--
 			Apache Commons
-		 -->
+		-->
 		<dependency>
 			<groupId>org.apache.commons</groupId>
 			<artifactId>com.springsource.org.apache.commons.collections</artifactId>
@@ -73,26 +80,26 @@
 			<artifactId>com.springsource.org.apache.commons.lang</artifactId>
 		</dependency>
 
-		<!-- 
+		<!--
 			Spring Richclient
-		 -->
+		-->
 		<dependency>
 			<groupId>org.springframework.richclient</groupId>
 			<artifactId>spring-richclient-core</artifactId>
 		</dependency>
 
-		<!-- 
+		<!--
 			Other swing components
- 		-->
+		-->
 		<dependency>
 			<groupId>org.pushingpixels</groupId>
 			<artifactId>substance</artifactId>
 		</dependency>
-		<!--		<dependency>-->
-		<!--			<groupId>org.pushingpixels</groupId>-->
-		<!--			<artifactId>substance</artifactId>-->
-		<!--			<type>test-jar</type>-->
-		<!--		</dependency> -->
+		<!-- <dependency> -->
+		<!-- <groupId>org.pushingpixels</groupId> -->
+		<!-- <artifactId>substance</artifactId> -->
+		<!-- <type>test-jar</type> -->
+		<!-- </dependency> -->
 		<dependency>
 			<groupId>org.pushingpixels</groupId>
 			<artifactId>substance-jide</artifactId>
@@ -116,17 +123,17 @@
 			<optional>true</optional>
 		</dependency>
 
-		<!-- 
+		<!--
 			Others
-		 -->
+		-->
 		<dependency>
 			<groupId>org.aspectj</groupId>
 			<artifactId>com.springsource.org.aspectj.weaver</artifactId>
 		</dependency>
 
-		<!-- 
+		<!--
 			Test
-		 -->
+		-->
 		<dependency>
 			<groupId>org.junit</groupId>
 			<artifactId>com.springsource.org.junit</artifactId>

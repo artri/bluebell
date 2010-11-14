@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2009 Julio Argüello <julio.arguello@gmail.com>
+ * Copyright (C) 2009 Julio Arg\u00fcello <julio.arguello@gmail.com>
  *
  * This file is part of Bluebell Rich Client.
  *
@@ -109,8 +109,8 @@ public class SilentShuttleListBinding extends ShuttleListBinding {
      * {@inheritDoc}
      */
     @Override
-    @SuppressWarnings("unchecked")
-    protected boolean collectionsEqual(Collection a1, Collection a2) {
+    protected boolean collectionsEqual(@SuppressWarnings("rawtypes") Collection a1,
+            @SuppressWarnings("rawtypes") Collection a2) {
 
         // TODO, 20080916, evaluar la necesidad de utilizar apache commons
         return super.collectionsEqual(a1, a2);

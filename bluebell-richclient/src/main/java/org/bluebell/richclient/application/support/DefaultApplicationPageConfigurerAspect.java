@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2009 Julio Argüello <julio.arguello@gmail.com>
+ * Copyright (C) 2009 Julio Arg\u00fcello <julio.arguello@gmail.com>
  *
  * This file is part of Bluebell Rich Client.
  *
@@ -63,7 +63,7 @@ public class DefaultApplicationPageConfigurerAspect extends ApplicationServicesA
      */
     private static final MessageFormat PAGE_CREATION_FMT = new MessageFormat(
             "{0, choice, 0#Before|0<After} creating page \"{1}\" in window \"{2}\"");
-
+    
     /**
      * Pointcut that intercepts page creation operations.
      * <p>
