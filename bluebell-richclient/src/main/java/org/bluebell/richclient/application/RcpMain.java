@@ -22,6 +22,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.richclient.application.Application;
 import org.springframework.richclient.application.ApplicationLauncher;
+import org.springframework.richclient.application.config.ApplicationLifecycleAdvisor;
+import org.springframework.richclient.exceptionhandling.RegisterableExceptionHandler;
 import org.springframework.util.Assert;
 
 /**
@@ -184,8 +186,19 @@ public class RcpMain extends Main {
      */
     public static void handleException(Throwable t) {
 
-        Application.instance().getLifecycleAdvisor().getRegisterableExceptionHandler()//
-                .uncaughtException(Thread.currentThread(), t);
+        /*
+         * (JAF), 20101116, sometimes exception is handled whithout having loaded application instance. In such a case
+         * error should be handled on other way.
+         */
+        if (Application.isLoaded()) {
+
+            final ApplicationLifecycleAdvisor lifecycleAdvisor = Application.instance().getLifecycleAdvisor();
+            final RegisterableExceptionHandler exceptionHandler = lifecycleAdvisor.getRegisterableExceptionHandler();
+
+            exceptionHandler.uncaughtException(Thread.currentThread(), t);
+        } else {
+            RcpMain.handleLaunchFailure(t);
+        }
     }
 
     /**
