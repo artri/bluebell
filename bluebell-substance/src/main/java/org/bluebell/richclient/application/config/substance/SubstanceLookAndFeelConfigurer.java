@@ -35,16 +35,16 @@ import org.aspectj.lang.annotation.Pointcut;
 import org.bluebell.richclient.application.config.vldocking.VLDockingLookAndFeelConfigurer;
 import org.bluebell.richclient.application.docking.vldocking.VLDockingUtils;
 import org.bluebell.richclient.swing.util.SwingUtils;
-import org.jvnet.lafwidget.LafWidget;
-import org.jvnet.lafwidget.animation.FadeConfigurationManager;
-import org.jvnet.lafwidget.animation.FadeKind;
-import org.jvnet.lafwidget.preview.DefaultPreviewPainter;
-import org.jvnet.lafwidget.tabbed.DefaultTabPreviewPainter;
-import org.jvnet.lafwidget.utils.LafConstants.TabOverviewKind;
-import org.jvnet.substance.SubstanceLookAndFeel;
-import org.jvnet.substance.api.SubstanceConstants.TabContentPaneBorderKind;
-import org.jvnet.substance.api.SubstanceSkin;
-import org.jvnet.substance.skin.SkinChangeListener;
+import org.pushingpixels.lafwidget.LafWidget;
+import org.pushingpixels.lafwidget.preview.DefaultPreviewPainter;
+import org.pushingpixels.lafwidget.tabbed.DefaultTabPreviewPainter;
+import org.pushingpixels.lafwidget.utils.LafConstants.TabOverviewKind;
+import org.pushingpixels.substance.api.DecorationAreaType;
+import org.pushingpixels.substance.api.SubstanceConstants.TabContentPaneBorderKind;
+import org.pushingpixels.substance.api.SubstanceLookAndFeel;
+import org.pushingpixels.substance.api.SubstanceSkin;
+import org.pushingpixels.substance.api.skin.DustSkin;
+import org.pushingpixels.substance.api.skin.SkinChangeListener;
 import org.springframework.util.Assert;
 
 /**
@@ -109,10 +109,20 @@ public class SubstanceLookAndFeelConfigurer extends VLDockingLookAndFeelConfigur
      */
     public SubstanceLookAndFeelConfigurer(String lookAndFeelName) {
 
+        // super();
         super(lookAndFeelName);
+        // SwingUtils.runInEventDispatcherThread(new Runnable() {
+        // public void run() {
+        //
+        //
+        //
+        // SubstanceLookAndFeel.setSkin(new DustSkin());
+        // }
+        // });
+
         SubstanceLookAndFeel.registerSkinChangeListener(this);
     }
-    
+
     /**
      * Sets the progress monitor proxy bean.
      * 
@@ -131,11 +141,22 @@ public class SubstanceLookAndFeelConfigurer extends VLDockingLookAndFeelConfigur
      */
     public final void skinChanged() {
 
+        final SubstanceSkin skin = SubstanceLookAndFeel.getCurrentSkin();
+        if (skin == null) {
+            SwingUtils.runInEventDispatcherThread(new Runnable() {
+                public void run() {
+
+                    SubstanceLookAndFeel.setSkin(new DustSkin());
+                }
+            });
+
+        }
+
         this.installColors();
-        
+
         this.installWidgetDesktopStyle();
     }
-    
+
     /**
      * Pointcut that intercepts getting progress monitor from monitoring splash screen.
      * <p>
@@ -143,20 +164,19 @@ public class SubstanceLookAndFeelConfigurer extends VLDockingLookAndFeelConfigur
      */
     @Pointcut("execution(* org.springframework.richclient.application.splash.MonitoringSplashScreen."
             + "getProgressMonitor(..))")
-    protected  void monitoringSplashScreenGetProgressMonitorOperation() {
+    protected void monitoringSplashScreenGetProgressMonitorOperation() {
 
     }
-    
+
     /**
      * Pointcut that intercepts progress monitor <code>taskStarted</code> events.
      * <p>
      * This method does nothing.
      */
     @Pointcut("execution(* org.springframework.richclient.progress.ProgressMonitor.*(..))")
-    protected  void progressMonitorOperation() {
+    protected void progressMonitorOperation() {
 
     }
-
 
     /**
      * Pointcut that intercepts splash screen <code>splash</code> invocations.
@@ -164,10 +184,10 @@ public class SubstanceLookAndFeelConfigurer extends VLDockingLookAndFeelConfigur
      * This method does nothing.
      */
     @Pointcut("execution(* org.springframework.richclient.application.splash.SplashScreen.*(..))")
-    protected  void splashScreenOperation() {
+    protected void splashScreenOperation() {
 
     }
-    
+
     /**
      * This advice ensures the intercepted method is executed in the EDT.
      * 
@@ -280,10 +300,16 @@ public class SubstanceLookAndFeelConfigurer extends VLDockingLookAndFeelConfigur
         UIManager.put(SubstanceLookAndFeel.TABBED_PANE_CONTENT_BORDER_KIND, TabContentPaneBorderKind.SINGLE_PLACEMENT);
         UIManager.put(SubstanceLookAndFeel.TABBED_PANE_CLOSE_BUTTONS_PROPERTY, Boolean.FALSE);
 
-        // Fade
-        FadeConfigurationManager.getInstance().allowFades(FadeKind.GHOSTING_BUTTON_PRESS);
-        FadeConfigurationManager.getInstance().allowFades(FadeKind.GHOSTING_ICON_ROLLOVER);
-        FadeConfigurationManager.getInstance().allowFades(FadeKind.SELECTION);
+        /*
+         * (JAF), 20101115, Substance version updated to 6.1.
+         * 
+         * Background compatibility has been broken
+         */
+
+        // FIXME, (JAF), 20101115, try to fin FadeConfigurationManager.getInstance() equivalent on laf version 5.1
+        // FadeConfigurationManager.getInstance().allowFades(FadeKind.GHOSTING_BUTTON_PRESS);
+        // FadeConfigurationManager.getInstance().allowFades(FadeKind.GHOSTING_ICON_ROLLOVER);
+        // FadeConfigurationManager.getInstance().allowFades(FadeKind.SELECTION);
     }
 
     /**
@@ -311,11 +337,21 @@ public class SubstanceLookAndFeelConfigurer extends VLDockingLookAndFeelConfigur
 
         Assert.notNull(skin, "skin");
 
-        final Color shadow = skin.getMainDefaultColorScheme().getDarkColor();
-        final Color highlight = skin.getMainDefaultColorScheme().getLightColor();
-        final Color background = skin.getMainDefaultColorScheme().getBackgroundFillColor();
-        final Color active = skin.getMainActiveColorScheme().getMidColor();
-        final Color inactive = skin.getMainDefaultColorScheme().getMidColor();
+        /*
+         * (JAF), 20101115, Substance version updated to 6.1.
+         * 
+         * Background compatibility has been broken
+         */
+        // final Color shadow = skin.getMainDefaultColorScheme().getDarkColor();
+        final Color shadow = skin.getEnabledColorScheme(DecorationAreaType.NONE).getDarkColor();
+        // final Color highlight = skin.getMainDefaultColorScheme().getLightColor();
+        final Color highlight = skin.getEnabledColorScheme(DecorationAreaType.NONE).getLightColor();
+        // final Color background = skin.getMainDefaultColorScheme().getBackgroundFillColor();
+        final Color background = skin.getEnabledColorScheme(DecorationAreaType.NONE).getBackgroundFillColor();
+        // final Color active = skin.getMainActiveColorScheme().getMidColor();
+        final Color active = skin.getActiveColorScheme(DecorationAreaType.NONE).getMidColor();
+        // final Color inactive = skin.getMainDefaultColorScheme().getMidColor();
+        final Color inactive = skin.getEnabledColorScheme(DecorationAreaType.NONE).getMidColor();
 
         // Widget style colors
         UIManager.put(VLDockingUtils.DockingColor.BACKGROUND.getKey(), background);

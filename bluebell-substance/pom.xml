@@ -89,7 +89,7 @@
 		</dependency>
 
 		<!--
-			Other swing components
+			Substance related dependencies
 		-->
 		<dependency>
 			<groupId>org.pushingpixels</groupId>
@@ -113,10 +113,10 @@
 			<groupId>org.pushingpixels</groupId>
 			<artifactId>laf-plugin</artifactId>
 		</dependency>
-		<dependency>
-			<groupId>org.pushingpixels</groupId>
-			<artifactId>laf-widget</artifactId>
-		</dependency>
+		<!-- <dependency> -->
+		<!-- <groupId>org.pushingpixels</groupId> -->
+		<!-- <artifactId>laf-widget</artifactId> -->
+		<!-- </dependency> -->
 		<dependency>
 			<groupId>com.vlsolutions</groupId>
 			<artifactId>vldocking</artifactId>

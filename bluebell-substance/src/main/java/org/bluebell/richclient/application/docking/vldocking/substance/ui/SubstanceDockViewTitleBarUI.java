@@ -21,10 +21,10 @@ package org.bluebell.richclient.application.docking.vldocking.substance.ui;
 import javax.swing.JComponent;
 
 import org.bluebell.richclient.application.docking.vldocking.ui.BbDockViewTitleBarUI;
-import org.jvnet.substance.SubstanceLookAndFeel;
-import org.jvnet.substance.api.SubstanceSkin;
-import org.jvnet.substance.painter.decoration.DecorationAreaType;
-import org.jvnet.substance.utils.SubstanceCoreUtilities;
+import org.pushingpixels.substance.api.DecorationAreaType;
+import org.pushingpixels.substance.api.SubstanceLookAndFeel;
+import org.pushingpixels.substance.api.SubstanceSkin;
+import org.pushingpixels.substance.internal.utils.SubstanceCoreUtilities;
 
 import com.vlsolutions.swing.docking.DockViewTitleBar;
 
