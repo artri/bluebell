@@ -138,34 +138,8 @@ public class SubstanceLookAndFeelConfigurer extends VLDockingLookAndFeelConfigur
                 SubstanceLookAndFeel.setSkin(skinName);
 
                 /*
-                 * FIXME, (JAF), 20101117, there is a bug in Substance 6.1. Kirill Grouchnikov (Substance leader) has
-                 * been notified through the following e-mail:
-                 * 
-                 * Hi Kirill,
-                 * 
-                 * Congratulations for this great project!!
-                 * 
-                 * I am the team leader of Bluebell (aka BB), http://saber.b2b2000.com/display/BLUE/Bluebell and BB
-                 * employs (of course) Substance.
-                 * 
-                 * I don't know how to contact you regarding Substance... so that's why this e-mail..
-                 * 
-                 * org.pushingpixels.substance.api.SubstanceLookAndFeel javadoc says: <li>Call {@link
-                 * SubstanceLookAndFeel#setSkin(String)} or
-                 * 
-                 * {@link SubstanceLookAndFeel#setSkin(SubstanceSkin)} static methods. These
-                 * 
-                 * methods do not require Substance to be the current look-and-feel.</li>
-                 * 
-                 * That's true but in such a case SubstanceLookAndFeel#currentSkin is not set after calling
-                 * #setSkin(...). That's the reason why a NPE is raised later :-(
-                 * 
-                 * In my case I have fixed the problem just calling this method twice ;-) (See it here
-                 * http://code.google
-                 * .com/p/bluebell/source/browse/trunk/bluebell-substance/src/main/java/org/bluebell/richclient
-                 * /application/config/substance/SubstanceLookAndFeelConfigurer.java)
-                 * 
-                 * Thank you very much!!
+                 * See TestSubstanceLookAndFeel that demonstrate there is a little bug on Substante Look and Feel
+                 * versión 6.1 that force to call {@link SubstanceLookAndFeel#setSkin(String)} twice.
                  */
                 SubstanceLookAndFeel.setSkin(skinName);
             }
