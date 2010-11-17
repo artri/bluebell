@@ -18,6 +18,13 @@
 	<description>Desktop module</description>
 
 	<build>
+		<resources>
+			<resource>
+				<directory>src/main/resources</directory>
+				<filtering>true</filtering>
+			</resource>
+		</resources>
+
 		<plugins>
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
@@ -35,9 +42,9 @@
 	</build>
 
 	<dependencies>
-		<!-- 
+		<!--
 			Spring Framework
-	 	-->
+		-->
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>org.springframework.beans</artifactId>
@@ -71,9 +78,9 @@
 			<artifactId>spring-binding</artifactId>
 		</dependency>
 
-		<!-- 
+		<!--
 			Apache Commons
-		 -->
+		-->
 		<dependency>
 			<groupId>org.apache.commons</groupId>
 			<artifactId>com.springsource.org.apache.commons.collections</artifactId>
@@ -82,14 +89,14 @@
 			<groupId>org.apache.commons</groupId>
 			<artifactId>com.springsource.org.apache.commons.lang</artifactId>
 		</dependency>
-		<!--		<dependency>-->
-		<!--			<groupId>org.apache.commons</groupId>-->
-		<!--			<artifactId>com.springsource.org.apache.commons.io</artifactId>-->
-		<!--		</dependency>-->
+		<!-- <dependency> -->
+		<!-- <groupId>org.apache.commons</groupId> -->
+		<!-- <artifactId>com.springsource.org.apache.commons.io</artifactId> -->
+		<!-- </dependency> -->
 
-		<!-- 
+		<!--
 			Spring Richclient
-		 -->
+		-->
 		<dependency>
 			<groupId>org.springframework.richclient</groupId>
 			<artifactId>spring-richclient-resources</artifactId>
@@ -107,9 +114,9 @@
 			<artifactId>spring-richclient-sandbox</artifactId>
 		</dependency>
 
-		<!-- 
+		<!--
 			Other swing components
- 		-->
+		-->
 		<dependency>
 			<groupId>org.swinglabs</groupId>
 			<artifactId>swingx</artifactId>
@@ -126,7 +133,7 @@
 		</dependency>
 
 		<!--
-			Logging 
+			Logging
 		-->
 		<dependency>
 			<groupId>org.slf4j</groupId>
@@ -141,9 +148,9 @@
 			<artifactId>com.springsource.slf4j.log4j</artifactId>
 		</dependency>
 
-		<!-- 
+		<!--
 			Others
-		 -->
+		-->
 		<dependency>
 			<groupId>org.aspectj</groupId>
 			<artifactId>com.springsource.org.aspectj.weaver</artifactId>
@@ -153,9 +160,9 @@
 			<artifactId>com.springsource.org.apache.velocity</artifactId>
 		</dependency>
 
-		<!-- 
+		<!--
 			Test
-		 -->
+		-->
 		<dependency>
 			<groupId>org.junit</groupId>
 			<artifactId>com.springsource.org.junit</artifactId>

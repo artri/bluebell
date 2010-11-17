@@ -11,11 +11,32 @@
 	<packaging>pom</packaging>
 
 	<name>Bluebell Parent</name>
-	<url>http://code.google.com/p/bluebell/</url>
+	<url>http://saber.b2b2000.com/display/BLUE/Bluebell</url>
 	<inceptionYear>2009</inceptionYear>
 	<organization>
 		<name>Bluebell.org.es</name>
+		<url>http://site.bluebell.org.es/</url>
 	</organization>
+
+	<issueManagement>
+		<system>JIRA</system>
+		<url>http://jirabluebell.b2b2000.com/browse/BLUE</url>
+	</issueManagement>
+
+	<developers>
+		<developer>
+			<email>julio.arguello@gmail.com</email>
+			<id>julio.arguello</id>
+			<name>Julio Arg\u00fcello</name>
+			<organization>B2B 2000 S.A.</organization>
+			<organizationUrl>http://www.b2b2000.com</organizationUrl>
+			<roles>
+				<role>Team leader</role>
+			</roles>
+			<timezone>+1</timezone>
+			<!-- <url></url> -->
+		</developer>
+	</developers>
 
 	<modules>
 		<module>bluebell-richclient</module>

@@ -35,6 +35,11 @@ import org.springframework.util.MultiValueMap;
  */
 public class BbConsoleForm extends ApplicationWindowAwareForm {
 
+    /*
+     * TODO, (JAF), 20101116, make this form useful, maybe listening application events, maybe working as a log4j (sl4j)
+     * appender... and making it non "applicationConfig" dependent
+     */
+
     /**
      * Nombre del formulario.
      */

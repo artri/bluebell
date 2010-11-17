@@ -53,6 +53,10 @@ import org.springframework.util.Assert;
  * The simplest configuration requires the following bean in the startup aplication context:
  * 
  * <pre>
+ *      <bean id="substanceLookAndFeelConfigurer" parent="vldockingLookAndFeelConfigurer"
+ *                 class="org.bluebell.richclient.application.config.substance.SubstanceLookAndFeelConfigurer" lazy-init="true">
+ *                 <constructor-arg index="0" value="${richclient.substanceSkinName}" />
+ *         </bean>
  *      &lt;bean id=&quot;substanceLookAndFeelConfigurer&quot; 
  *              class=&quot;org.bluebell.richclient.application.config.SubstanceLookAndFeelConfigurer&quot; &gt;
  *              &lt;constructor-arg index=&quot;0&quot; 
@@ -70,12 +74,13 @@ import org.springframework.util.Assert;
  * 
  *      &lt;util:property-path id=&quot;progressMonitor&quot; path=&quot;splashScreen.progressMonitor&quot;/&gt;
  * 
- *      &lt;bean id=&quot;substanceLookAndFeelConfigurer&quot; 
- *              class=&quot;org.bluebell.richclient.application.config.SubstanceLookAndFeelConfigurer&quot;
- *              p:proxy-bean-ref=&quot;progressMonitor&quot;&gt;
- *              &lt;constructor-arg index=&quot;0&quot; 
- *              value=&quot;org.jvnet.substance.skin.SubstanceCremeCoffeeLookAndFeel&quot;/&gt;
- *      &lt;/bean&gt;
+ *        <bean id="substanceLookAndFeelConfigurer" parent="vldockingLookAndFeelConfigurer"
+ *                 class="org.bluebell.richclient.application.config.substance.SubstanceLookAndFeelConfigurer" lazy-init="true">
+ *                 <constructor-arg index="0" value="${richclient.substanceSkinName}" />
+ *                 <property name="progressMonitorProxyBean">
+ *                         <util:property-path id="progressMonitor" path="splashScreen.progressMonitor" />
+ *                 </property>
+ *         </bean>
  * </pre>
  * <p>
  * The extra beans are needed to intercept progress monitor operations and execute them into the Event Dispatcher
@@ -100,25 +105,71 @@ public class SubstanceLookAndFeelConfigurer extends VLDockingLookAndFeelConfigur
     private Object progressMonitorProxyBean;
 
     /**
-     * Creates the look and feel configurer.
-     * <p>
-     * Specifying look and feel name in constructor ensures look and feel is stablished before splash screen is shown.
-     * 
-     * @param lookAndFeelName
-     *            the look and feel name to be used.
+     * The default Substance skin to be set if failure or not provided.
      */
-    public SubstanceLookAndFeelConfigurer(String lookAndFeelName) {
+    public static final String DEFAULT_SUBSTANCE_SKIN = DustSkin.class.getName();
 
-        // super();
-        super(lookAndFeelName);
-        // SwingUtils.runInEventDispatcherThread(new Runnable() {
-        // public void run() {
-        //
-        //
-        //
-        // SubstanceLookAndFeel.setSkin(new DustSkin());
-        // }
-        // });
+    /**
+     * Creates the look and feel configurer given a valid Substance skin name.
+     * <p>
+     * Specifying skin name in constructor ensures look and feel is stablished before splash screen is shown.
+     * <p>
+     * Since Substance 6.1 version the skin must be set compulsory. This class proceeds according to
+     * <code>SubstanceLookAndFeel</code> javadoc:
+     * 
+     * <quote>Call {@link SubstanceLookAndFeel#setSkin(String)} or {@link SubstanceLookAndFeel#setSkin(SubstanceSkin)}
+     * static methods. These methods do not require Substance to be the current look-and-feel.</quote>
+     * <p>
+     * <b>Note</b> this constructor receives a <code>String</code> with the Substance skin name instead of look and feel
+     * class name as usual (in parent class).
+     * 
+     * @param skinName
+     *            the skin name to be used.
+     */
+    public SubstanceLookAndFeelConfigurer(final String skinName) {
+
+        super();
+
+        Assert.notNull(skinName, "skinName");
+
+        SwingUtils.runInEventDispatcherThread(new Runnable() {
+            public void run() {
+
+                SubstanceLookAndFeel.setSkin(skinName);
+
+                /*
+                 * FIXME, (JAF), 20101117, there is a bug in Substance 6.1. Kirill Grouchnikov (Substance leader) has
+                 * been notified through the following e-mail:
+                 * 
+                 * Hi Kirill,
+                 * 
+                 * Congratulations for this great project!!
+                 * 
+                 * I am the team leader of Bluebell (aka BB), http://saber.b2b2000.com/display/BLUE/Bluebell and BB
+                 * employs (of course) Substance.
+                 * 
+                 * I don't know how to contact you regarding Substance... so that's why this e-mail..
+                 * 
+                 * org.pushingpixels.substance.api.SubstanceLookAndFeel javadoc says: <li>Call {@link
+                 * SubstanceLookAndFeel#setSkin(String)} or
+                 * 
+                 * {@link SubstanceLookAndFeel#setSkin(SubstanceSkin)} static methods. These
+                 * 
+                 * methods do not require Substance to be the current look-and-feel.</li>
+                 * 
+                 * That's true but in such a case SubstanceLookAndFeel#currentSkin is not set after calling
+                 * #setSkin(...). That's the reason why a NPE is raised later :-(
+                 * 
+                 * In my case I have fixed the problem just calling this method twice ;-) (See it here
+                 * http://code.google
+                 * .com/p/bluebell/source/browse/trunk/bluebell-substance/src/main/java/org/bluebell/richclient
+                 * /application/config/substance/SubstanceLookAndFeelConfigurer.java)
+                 * 
+                 * Thank you very much!!
+                 */
+                SubstanceLookAndFeel.setSkin(skinName);
+            }
+        });
 
         SubstanceLookAndFeel.registerSkinChangeListener(this);
     }
@@ -140,17 +191,6 @@ public class SubstanceLookAndFeelConfigurer extends VLDockingLookAndFeelConfigur
      * {@inheritDoc}
      */
     public final void skinChanged() {
-
-        final SubstanceSkin skin = SubstanceLookAndFeel.getCurrentSkin();
-        if (skin == null) {
-            SwingUtils.runInEventDispatcherThread(new Runnable() {
-                public void run() {
-
-                    SubstanceLookAndFeel.setSkin(new DustSkin());
-                }
-            });
-
-        }
 
         this.installColors();
 
