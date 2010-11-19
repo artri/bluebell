@@ -275,8 +275,8 @@ public class BbApplicationConfig implements BeanFactoryPostProcessor, PriorityOr
 
         final StringBuffer sb = new StringBuffer();
 
-        sb.append("Application context with id ");
-        sb.append(BbApplicationConfig.getApplicationContextId(applicationContext)).append(":\n");
+        sb.append("Application context with id \"");
+        sb.append(BbApplicationConfig.getApplicationContextId(applicationContext)).append("\":\n");
         sb.append('{');
 
         for (PropertyPlaceholderConfigurer configurer : configurers) {

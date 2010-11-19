@@ -179,20 +179,26 @@
 					<configuration>
 						<downloadSources>true</downloadSources>
 						<downloadJavadocs>true</downloadJavadocs>
+						<additionalProjectnatures>
+							<projectnature>org.springframework.ide.eclipse.core.springnature</projectnature>
+						</additionalProjectnatures>
 						<!--
 							(JAF) 20091212: include aspectj runtime dependency
+							(JAF) 20101118: this seems not working under STS 2.5.1
 						-->
+						<!--
 						<additionalProjectnatures>
 							<projectnature>org.eclipse.ajdt.ui.ajnature</projectnature>
 						</additionalProjectnatures>
+						-->
 						<!-- -->
 						<!-- (JAF) 20100527: replace output directory to avoid conflicts -->
 						<!-- -->
 						<!-- <buildOutputDirectory>${basedir}/eclipse_bin</buildOutputDirectory> -->
 						<!--
 							(JAF) 20100527: useful when dealing with multiple versions of same artifact
-						-->
-						<addVersionToProjectName>true</addVersionToProjectName>
+							<addVersionToProjectName>true</addVersionToProjectName>
+						-->						
 					</configuration>
 				</plugin>
 				<plugin>
@@ -201,7 +207,7 @@
 					-->
 					<groupId>org.codehaus.mojo</groupId>
 					<artifactId>build-helper-maven-plugin</artifactId>
-					<version>1.3</version>
+					<version>1.5</version>
 					<executions>
 						<execution>
 							<id>add-source</id>
@@ -213,6 +219,21 @@
 								<sources>
 									<source>src/ext/java</source>
 								</sources>
+							</configuration>
+						</execution>
+						<execution>
+							<!--
+								(JAF) 20101118: parsedVersion property contains interesting information according to
+								http://mojo.codehaus.org/build-helper-maven-plugin/parse-version-mojo.html
+
+								This is needed by http://jirabluebell.b2b2000.com/browse/BLUE-29 task
+							-->
+							<id>parse-version</id>
+							<goals>
+								<goal>parse-version</goal>
+							</goals>
+							<configuration>
+								<propertyPrefix>parsedVersion</propertyPrefix>
 							</configuration>
 						</execution>
 					</executions>
