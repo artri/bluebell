@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2009 Julio Arg\u00fcello <julio.arguello@gmail.com>
  *
- * This file is part of Bluebell Rich Client.
+ * This file is part of Bluebell Substance.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,7 @@
  */
 
 /**
- * Spring Framework extensions. 
+ * Bluebell Substance components. 
  */
-package org.springframework.beans.factory.config;
+package org.bluebell.richclient.components.substance;
 

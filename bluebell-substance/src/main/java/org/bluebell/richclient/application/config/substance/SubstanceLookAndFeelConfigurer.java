@@ -36,6 +36,8 @@ import org.bluebell.richclient.application.config.vldocking.VLDockingLookAndFeel
 import org.bluebell.richclient.application.docking.vldocking.VLDockingUtils;
 import org.bluebell.richclient.swing.util.SwingUtils;
 import org.pushingpixels.lafwidget.LafWidget;
+import org.pushingpixels.lafwidget.animation.AnimationConfigurationManager;
+import org.pushingpixels.lafwidget.animation.AnimationFacet;
 import org.pushingpixels.lafwidget.preview.DefaultPreviewPainter;
 import org.pushingpixels.lafwidget.tabbed.DefaultTabPreviewPainter;
 import org.pushingpixels.lafwidget.utils.LafConstants.TabOverviewKind;
@@ -99,6 +101,9 @@ import org.springframework.util.Assert;
 @Aspect
 public class SubstanceLookAndFeelConfigurer extends VLDockingLookAndFeelConfigurer implements SkinChangeListener {
 
+    // TODO, (JAF), 20101123, aspect related methods should be externalized into other class and registered in a
+    // bluebell-aspects-context.xml like XML file
+
     /**
      * The progress monitor proxy bean.
      */
@@ -141,7 +146,9 @@ public class SubstanceLookAndFeelConfigurer extends VLDockingLookAndFeelConfigur
                  * See TestSubstanceLookAndFeel that demonstrate there is a little bug on Substante Look and Feel
                  * versión 6.1 that force to call {@link SubstanceLookAndFeel#setSkin(String)} twice.
                  */
-                SubstanceLookAndFeel.setSkin(skinName);
+                // (JAF), 20101122, false alarm, substance-jide (v5.0) have to be excluded from classpath since it is
+                // not compatible
+                // SubstanceLookAndFeel.setSkin(skinName);
             }
         });
 
@@ -314,16 +321,15 @@ public class SubstanceLookAndFeelConfigurer extends VLDockingLookAndFeelConfigur
         UIManager.put(SubstanceLookAndFeel.TABBED_PANE_CONTENT_BORDER_KIND, TabContentPaneBorderKind.SINGLE_PLACEMENT);
         UIManager.put(SubstanceLookAndFeel.TABBED_PANE_CLOSE_BUTTONS_PROPERTY, Boolean.FALSE);
 
-        /*
-         * (JAF), 20101115, Substance version updated to 6.1.
-         * 
-         * Background compatibility has been broken
-         */
-
-        // FIXME, (JAF), 20101115, try to fin FadeConfigurationManager.getInstance() equivalent on laf version 5.1
+        // (JAF), 20101115, with Substance v5.x:
         // FadeConfigurationManager.getInstance().allowFades(FadeKind.GHOSTING_BUTTON_PRESS);
         // FadeConfigurationManager.getInstance().allowFades(FadeKind.GHOSTING_ICON_ROLLOVER);
         // FadeConfigurationManager.getInstance().allowFades(FadeKind.SELECTION);
+
+        // (JAF), 20101115, with Substance v6.x
+        AnimationConfigurationManager.getInstance().allowAnimations(AnimationFacet.GHOSTING_BUTTON_PRESS);
+        AnimationConfigurationManager.getInstance().allowAnimations(AnimationFacet.GHOSTING_ICON_ROLLOVER);
+        AnimationConfigurationManager.getInstance().allowAnimations(AnimationFacet.SELECTION);
     }
 
     /**

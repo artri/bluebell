@@ -38,6 +38,11 @@
 		class="org.springframework.richclient.application.support.DefaultViewDescriptor" p:view-class="org.bluebell.richclient.application.support.FormBackedView" />
 
 	<!--
+	-->
+	<bean id="initialViewDescriptor" class="org.springframework.richclient.application.support.DefaultViewDescriptor"
+		p:viewClass="org.bluebell.richclient.application.support.ImageBackedView" />
+
+	<!--
 		View Descriptor para visualizar los errores de validación existentes en una página.
 	-->
 	<bean id="validationViewDescriptor" parent="abstractViewDescriptor">
@@ -74,10 +79,6 @@
 		</property>
 	</bean>
 
-	<!--
-	-->
-	<bean id="initialViewDescriptor" class="org.springframework.richclient.application.support.DefaultViewDescriptor"
-		p:viewClass="org.bluebell.richclient.application.support.ImageBackedView" />
 
 </beans>
 

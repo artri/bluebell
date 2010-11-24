@@ -60,7 +60,7 @@
 	</bean>
 
 	<!--
-		View descriptor templates. Use a prototype scope to restrict instantation to "under demand".
+		View descriptor templates. Use a prototype scope to restrict instantation to "on demand".
 	-->
 	<bean id="masterVldockingViewDescriptorTemplate" parent="abstractVldockingViewDescriptor" scope="prototype">
 		<property name="autoHideBorder">

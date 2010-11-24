@@ -98,7 +98,7 @@ public class DefaultApplicationPageConfigurer<T> implements ApplicationPageConfi
      * However it works at runtime!! Anyway this class has been refactored, splitting it into an aspect and the
      * application page configurer itself.
      * 
-     * See org.bluebell.richclient.application.support.DefaultApplicationPageConfigurerAspect
+     * See org.bluebell.richclient.application.support.ApplicationPageConfigurerAspect
      */
 
     /**
@@ -187,7 +187,7 @@ public class DefaultApplicationPageConfigurer<T> implements ApplicationPageConfi
         // Configuration is repeatable, idempotent and fast.
         final State<T> state = this.doConfigureApplicationPage(applicationPage);
 
-        // 
+        //
         List<? extends PageComponent> masterViews = new ArrayList<PageComponent>();
         List<? extends PageComponent> validationViews = new ArrayList<PageComponent>();
         if (state.masterView != null) {

@@ -18,13 +18,9 @@
 
 package org.bluebell.richclient.application.docking.vldocking;
 
-import java.util.HashSet;
-import java.util.Set;
-
 import org.springframework.richclient.application.ApplicationPage;
 import org.springframework.richclient.application.ApplicationWindow;
 import org.springframework.richclient.application.PageDescriptor;
-import org.springframework.richclient.application.PageListener;
 import org.springframework.richclient.application.docking.vldocking.VLDockingApplicationPage;
 import org.springframework.richclient.application.docking.vldocking.VLDockingApplicationPageFactory;
 
@@ -48,22 +44,6 @@ import org.springframework.richclient.application.docking.vldocking.VLDockingApp
 public class BbVLDockingApplicationPageFactory<T> extends VLDockingApplicationPageFactory {
 
     /**
-     * Relación de <em>application windows</em> a las que ya se les ha establecido los <em>listener</em> necesarios.
-     * 
-     * @see #addPageListenersIfNeeded(ApplicationWindow)
-     */
-    private final Set<ApplicationWindow> windowsWithListeners;
-
-    /**
-     * Construye la factoría.
-     */
-    public BbVLDockingApplicationPageFactory() {
-
-        super();
-        this.windowsWithListeners = new HashSet<ApplicationWindow>();
-    }
-
-    /**
      * Crea la página, que a diferencia de
      * {@link VLDockingApplicationPage#createApplicationPage(ApplicationWindow,PageDescriptor)} es de tipo
      * {@link BbVLDockingApplicationPage}.
@@ -84,41 +64,8 @@ public class BbVLDockingApplicationPageFactory<T> extends VLDockingApplicationPa
             // Crear y cachear la página.
             page = new BbVLDockingApplicationPage<T>(window, descriptor);
             this.cachePage(page);
-
-            // Añade los listeners necesarios a la ventana.
-            this.addPageListenersIfNeeded(window);
         }
 
         return page;
-    }
-
-    /**
-     * Registra los <em>listener</em> necesarios para una ventana si sólo si no estaba registrado.
-     * 
-     * @param window
-     *            la ventana de la aplicación.
-     */
-    private void addPageListenersIfNeeded(ApplicationWindow window) {
-
-        final Boolean alreadyAdded = this.windowsWithListeners.add(window);
-        if (alreadyAdded) {
-            window.addPageListener(new PageListener() {
-                /**
-                 * @see org.springframework.richclient.application.PageListener#pageClosed
-                 */
-                public void pageClosed(ApplicationPage page) {
-
-                    page.getControl().setVisible(Boolean.FALSE);
-                }
-
-                /**
-                 * @see org.springframework.richclient.application.PageListener#pageOpened
-                 */
-                public void pageOpened(ApplicationPage page) {
-
-                    page.getControl().setVisible(Boolean.TRUE);
-                }
-            });
-        }
     }
 }

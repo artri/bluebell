@@ -30,11 +30,14 @@ import org.pushingpixels.substance.api.SubstanceSkin;
 import org.pushingpixels.substance.api.skin.DustSkin;
 
 /**
- * This class demonstrate there is a little bug on Substante Look and Feel versión 6.1 that force to call
+ * This class tried to demonstrate a bug on Substante Look and Feel versión 6.1 that force to call
  * {@link SubstanceLookAndFeel#setSkin(String)} twice.
  * <p>
  * <a href="mailto:kirillcool@yahoo.com">Kirill Grouchnikov</a> (Substance project leader) required a test case to
  * ensure it and here it is ;-)
+ * <p>
+ * Now (20101122) error has been fixed: substance-jide version 5.0 was on classpath and this caused a silent exception
+ * (ClassNotFoundException org.jvnet...)
  * 
  * @author <a href = "mailto:julio.arguello@gmail.com" >Julio Argüello (JAF)</a>
  */
@@ -76,10 +79,15 @@ public class TestSubstanceLookAndFeel extends TestCase {
         // 0.At the beginning Substance look and feel is not set
         TestCase.assertFalse(UIManager.getLookAndFeel() instanceof SubstanceLookAndFeel);
 
-        // 1.First time "currentSkin" is null
+        // 1.First time "currentSkin" was null
         TestSubstanceLookAndFeel.setSkinOnEDT(substanceSkin);
         TestCase.assertTrue(UIManager.getLookAndFeel() instanceof SubstanceLookAndFeel);
-        TestCase.assertNull(SubstanceLookAndFeel.getCurrentSkin());
+        // TestCase.assertNull(SubstanceLookAndFeel.getCurrentSkin());
+        /*
+         * (JAF), 20101122: substance-jide version 5.0 was on classpath, this caused a silent exception
+         * (ClassNotFoundException org.jvnet...)
+         */
+        TestCase.assertNotNull(SubstanceLookAndFeel.getCurrentSkin());
 
         // 2.Second time "currentSkin" is nice!!
         TestSubstanceLookAndFeel.setSkinOnEDT(substanceSkin);

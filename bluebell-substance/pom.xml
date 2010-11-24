@@ -67,6 +67,11 @@
 			<groupId>org.springframework</groupId>
 			<artifactId>org.springframework.core</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>org.springframework.test</artifactId>
+		</dependency>
+
 
 		<!--
 			Apache Commons
@@ -95,16 +100,14 @@
 			<groupId>org.pushingpixels</groupId>
 			<artifactId>substance</artifactId>
 		</dependency>
+		<!--
+			(JAF), 20101122, Substance Jide module is not updated to 6.x versions and version 5.x is not compatible
+		-->
 		<!-- <dependency> -->
 		<!-- <groupId>org.pushingpixels</groupId> -->
-		<!-- <artifactId>substance</artifactId> -->
-		<!-- <type>test-jar</type> -->
+		<!-- <artifactId>substance-jide</artifactId> -->
+		<!-- <optional>true</optional> -->
 		<!-- </dependency> -->
-		<dependency>
-			<groupId>org.pushingpixels</groupId>
-			<artifactId>substance-jide</artifactId>
-			<optional>true</optional>
-		</dependency>
 		<dependency>
 			<groupId>org.pushingpixels</groupId>
 			<artifactId>substance-extras</artifactId>

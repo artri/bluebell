@@ -19,6 +19,7 @@
 package org.bluebell.richclient.test;
 
 import java.awt.Component;
+import java.util.Iterator;
 
 import javax.annotation.PostConstruct;
 import javax.swing.JTextField;
@@ -28,6 +29,9 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.richclient.application.Application;
 import org.springframework.richclient.application.ApplicationLauncher;
+import org.springframework.richclient.application.ApplicationPage;
+import org.springframework.richclient.application.ApplicationWindow;
+import org.springframework.richclient.command.TargetableActionCommand;
 import org.springframework.richclient.form.Form;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
@@ -111,6 +115,26 @@ public abstract class AbstractBbRichClientTests extends AbstractJUnit4SpringCont
     }
 
     /**
+     * Gets the active window.
+     * 
+     * @return the active window
+     */
+    protected final ApplicationWindow getActiveWindow() {
+
+        return Application.instance().getActiveWindow();
+    }
+
+    /**
+     * Gets the currently active page.
+     * 
+     * @return the active page.
+     */
+    protected final ApplicationPage getActivePage() {
+
+        return this.getActiveWindow().getPage();
+    }
+
+    /**
      * Gets the component with the given name.
      * 
      * @param form
@@ -119,8 +143,56 @@ public abstract class AbstractBbRichClientTests extends AbstractJUnit4SpringCont
      *            the name of the component.
      * @return the control, may be <code>null</code> if not found.
      */
-    protected Component getComponentNamed(Form form, String name) {
-
+    protected final Component getComponentNamed(Form form, String name) {
+    
         return SwingUtils.getDescendantNamed(name, form.getControl());
+    }
+
+    /**
+     * Gets the current shared command with a given id (if found) in the active window.
+     * 
+     * @param commandId
+     *            the command id.
+     * 
+     * @return the current shared command instance.
+     * 
+     * @see #getSharedCommand(ApplicationWindow, String)
+     */
+    protected final TargetableActionCommand getSharedCommand(String commandId) {
+
+        return this.getSharedCommand(this.getActiveWindow(), commandId);
+    }
+
+    /**
+     * Gets the current shared command with a given id (if found).
+     * 
+     * @param applicationWindow
+     *            the window.
+     * @param commandId
+     *            the command id.
+     * 
+     * @return the current shared command instance.
+     * 
+     * @see ApplicationWindow#getSharedCommands()
+     */
+    protected final TargetableActionCommand getSharedCommand(ApplicationWindow applicationWindow, String commandId) {
+
+        Assert.notNull(applicationWindow, "applicationWindow");
+        Assert.notNull(commandId, "commandId");
+
+        TargetableActionCommand currentCommand;
+
+        @SuppressWarnings("unchecked")
+        final Iterator<TargetableActionCommand> itr = applicationWindow.getSharedCommands();
+        while (itr.hasNext()) {
+
+            currentCommand = itr.next();
+
+            if (commandId.equals(currentCommand.getId())) {
+                return currentCommand;
+            }
+        }
+
+        return null;
     }
 }

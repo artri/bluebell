@@ -22,7 +22,6 @@
 package org.bluebell.richclient.application.support;
 
 import java.text.MessageFormat;
-import java.util.List;
 
 import org.aspectj.lang.annotation.AfterReturning;
 import org.aspectj.lang.annotation.Aspect;
@@ -32,10 +31,14 @@ import org.bluebell.richclient.application.ApplicationPageConfigurer;
 import org.bluebell.richclient.swing.util.SwingUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.richclient.application.Application;
 import org.springframework.richclient.application.ApplicationPage;
 import org.springframework.richclient.application.ApplicationWindow;
+import org.springframework.richclient.application.PageDescriptor;
+import org.springframework.richclient.application.PageDescriptorRegistry;
 import org.springframework.richclient.application.support.ApplicationServicesAccessor;
 import org.springframework.richclient.application.support.MultiViewPageDescriptor;
+import org.springframework.richclient.application.support.SingleViewPageDescriptor;
 import org.springframework.util.Assert;
 
 /**
@@ -46,24 +49,35 @@ import org.springframework.util.Assert;
  * <li>Call {@link ApplicationPageConfigurer#configureApplicationPage(ApplicationPage)}.
  * </ol>
  * 
+ * <pre>
+ * <!--
+ *         Bean: applicationPageConfigurerAspect
+ *         Usage: magic
+ *         Description: This bean is an aspect capable of intercepting every page creation to configure pages, linking well knows
+ *         page components.
+ * -->
+ * <bean id="applicationPageConfigurerAspect" class="org.bluebell.richclient.application.support.ApplicationPageConfigurerAspect" />
+ * </pre>
+ * 
+ * @see ApplicationPageConfigurer
  * @see #afterReturningPageCreationOperation(ApplicationWindow, MultiViewPageDescriptor, ApplicationPage)
  * 
  * @author <a href = "mailto:julio.arguello@gmail.com" >Julio Argüello (JAF)</a>
  */
 @Aspect
-public class DefaultApplicationPageConfigurerAspect extends ApplicationServicesAccessor {
+public class ApplicationPageConfigurerAspect extends ApplicationServicesAccessor {
 
     /**
      * The logger.
      */
-    private static final Logger LOGGER = LoggerFactory.getLogger(DefaultApplicationPageConfigurerAspect.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ApplicationPageConfigurerAspect.class);
 
     /**
      * Message format required for debug information during page creation.
      */
     private static final MessageFormat PAGE_CREATION_FMT = new MessageFormat(
             "{0, choice, 0#Before|0<After} creating page \"{1}\" in window \"{2}\"");
-    
+
     /**
      * Pointcut that intercepts page creation operations.
      * <p>
@@ -91,9 +105,9 @@ public class DefaultApplicationPageConfigurerAspect extends ApplicationServicesA
         Assert.notNull(window, "window");
         Assert.notNull(pageDescriptor, "pageDescriptor");
 
-        if (DefaultApplicationPageConfigurerAspect.LOGGER.isDebugEnabled()) {
-            DefaultApplicationPageConfigurerAspect.LOGGER.debug(//
-                    DefaultApplicationPageConfigurerAspect.PAGE_CREATION_FMT.format(new Object[] {//
+        if (ApplicationPageConfigurerAspect.LOGGER.isDebugEnabled()) {
+            ApplicationPageConfigurerAspect.LOGGER.debug(//
+                    ApplicationPageConfigurerAspect.PAGE_CREATION_FMT.format(new Object[] {//
                             Integer.valueOf(0), pageDescriptor.getId(), Integer.valueOf(window.getNumber()) }));
         }
     }
@@ -116,46 +130,78 @@ public class DefaultApplicationPageConfigurerAspect extends ApplicationServicesA
      *            the application window where the page is about to show.
      * @param pageDescriptor
      *            the page descriptor.
-     * @param page
+     * @param applicationPage
      *            the created page.
      * 
      * @see #configureApplicationPage(ApplicationPage)
      */
-    @AfterReturning(pointcut = "pageCreationOperation() && args(window,pageDescriptor)", returning = "page")
+    @AfterReturning(pointcut = "pageCreationOperation() && args(window,pageDescriptor)", returning = "applicationPage")
     public final void afterReturningPageCreationOperation(ApplicationWindow window,
-            final MultiViewPageDescriptor pageDescriptor, final ApplicationPage page) {
+            final MultiViewPageDescriptor pageDescriptor, final ApplicationPage applicationPage) {
 
         Assert.notNull(window, "window");
         Assert.notNull(pageDescriptor, "pageDescriptor");
-        Assert.notNull(page, "page");
+        Assert.notNull(applicationPage, "page");
 
-        if (DefaultApplicationPageConfigurerAspect.LOGGER.isDebugEnabled()) {
-            DefaultApplicationPageConfigurerAspect.LOGGER.debug(//
-                    DefaultApplicationPageConfigurerAspect.PAGE_CREATION_FMT.format(new Object[] { //
+        if (ApplicationPageConfigurerAspect.LOGGER.isDebugEnabled()) {
+            ApplicationPageConfigurerAspect.LOGGER.debug(//
+                    ApplicationPageConfigurerAspect.PAGE_CREATION_FMT.format(new Object[] { //
                             Integer.valueOf(1), pageDescriptor.getId(), Integer.valueOf(window.getNumber()) }));
         }
 
         // Page components creation must be done in the event dispatcher thread
         SwingUtils.runInEventDispatcherThread(new Runnable() {
 
-            @SuppressWarnings("unchecked")
             public void run() {
 
                 // 1) Trigger page control creation
-                page.getControl();
+                applicationPage.getControl();
+
+                // 2) (JAF), 20101124, at this point (after 1), page components should have been added
+                ApplicationPageConfigurerAspect.this.invariant(applicationPage);
 
                 // 2) Add all view descriptors to the page
-                final List<String> viewDescriptorIds = pageDescriptor.getViewDescriptors();
-                for (final String viewDescriptorId : viewDescriptorIds) {
-                    page.showView(viewDescriptorId);
-                }
+                // final List<String> viewDescriptorIds = pageDescriptor.getViewDescriptors();
+                // for (final String viewDescriptorId : viewDescriptorIds) {
+                // // (JAF), 20101124, we just need to add the page componente but API force us to call showView
+                // if (applicationPage.getView(viewDescriptorId) != null) {
+                // applicationPage.showView(viewDescriptorId);
+                // }
+                // }
 
                 // 3) Process page
-                final ApplicationPageConfigurer<?> applicationPageConfigurer = (ApplicationPageConfigurer<?>) //
-                DefaultApplicationPageConfigurerAspect.this.getService(ApplicationPageConfigurer.class);
+                final ApplicationPageConfigurer<?> applicationPageConfigurer = (ApplicationPageConfigurer<?>) Application
+                        .services().getService(ApplicationPageConfigurer.class);
 
-                applicationPageConfigurer.configureApplicationPage(page);
+                applicationPageConfigurer.configureApplicationPage(applicationPage);
             }
         });
+
+    }
+
+    /**
+     * Ensures the number of page components of a given page is greater than the number of page component descriptors of
+     * its associated page descriptor.
+     * 
+     * @param applicationPage
+     *            the application page to be tested.
+     */
+    private void invariant(ApplicationPage applicationPage) {
+
+        final PageDescriptorRegistry pageDescriptorRegistry = (PageDescriptorRegistry) Application.services()
+                .getService(PageDescriptorRegistry.class);
+        final PageDescriptor pageDescriptor = pageDescriptorRegistry.getPageDescriptor(applicationPage.getId());
+
+        final int noPageComponents = applicationPage.getPageComponents().size();
+        final int noViewDescriptors;
+        if (pageDescriptor instanceof MultiViewPageDescriptor) {
+            noViewDescriptors = ((MultiViewPageDescriptor) pageDescriptor).getViewDescriptors().size();
+        } else if (pageDescriptor instanceof SingleViewPageDescriptor) {
+            noViewDescriptors = 1;
+        } else {
+            noViewDescriptors = 0;
+        }
+
+        Assert.isTrue(noPageComponents >= noViewDescriptors);
     }
 }

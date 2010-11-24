@@ -47,7 +47,7 @@ import org.springframework.richclient.form.AbstractForm;
 import org.springframework.test.context.ContextConfiguration;
 
 /**
- * 
+ * Tests the correct behaviour of {@link BbVLDockingApplicationPage}.
  * 
  * @author <a href = "mailto:julio.arguello@gmail.com" >Julio Argüello (JAF)</a>
  */
@@ -125,7 +125,7 @@ public class TestBbVLDockingApplicationPage extends AbstractBbSamplesTests {
         super.testDependencyInjection();
 
         Application.instance().getLifecycleAdvisor().getRegisterableExceptionHandler();
-        
+
         TestCase.assertNotNull(this.defaultApplicationPageConfigurer);
         TestCase.assertNotNull(this.failedViewPageDescriptor);
         TestCase.assertNotNull(this.validExplicitLayoutPageDescriptor);

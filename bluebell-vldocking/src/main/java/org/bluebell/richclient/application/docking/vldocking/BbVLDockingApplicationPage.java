@@ -301,7 +301,7 @@ public class BbVLDockingApplicationPage<T> extends VLDockingApplicationPage {
 
         Assert.notNull(dockingDesktop, "dockingDesktop");
         Assert.notNull(dest, "dest");
-
+        
         try {
             // Create file if doesn't exist
             final File userLayoutFile = dest.getFile();

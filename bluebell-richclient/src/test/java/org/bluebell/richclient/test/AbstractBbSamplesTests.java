@@ -72,6 +72,8 @@ import org.springframework.util.Assert;
  *  +=============================================+
  * </pre>
  * 
+ * @see #initializeVariables(ApplicationWindow, PageDescriptor)
+ * 
  * @author <a href = "mailto:julio.arguello@gmail.com" >Julio Argüello (JAF)</a>
  */
 @ContextConfiguration(locations = { RcpMain.DEFAULT_APP_CONTEXT_PATH, RcpMain.DEFAULT_COMMON_CONTEXT_PATH })
@@ -177,39 +179,62 @@ public abstract class AbstractBbSamplesTests extends AbstractBbRichClientTests {
         TestCase.assertNotNull(this.getInitialView());
     }
 
+/**
+     * Initialize other local variables different from those populated by Spring.
+     * <p>
+     * Call this method at the beginning of every test case.
+     *      * <p>
+     * <b>Note</b> {@link #initializeVariables(ApplicationWindow, PageDescriptor) is preferred when dealing with multiple windows.
+     * 
+     * @param pageDescriptor
+     *            the page descriptor this method applies to.
+     * 
+     * @see #initializeVariables(ApplicationWindow, PageDescriptor)
+     */
+    protected void initializeVariables(PageDescriptor pageDescriptor) {
+
+        this.initializeVariables(this.getActiveWindow(), pageDescriptor);
+    }
+
     /**
      * Initialize other local variables different from those populated by Spring.
      * <p>
      * Call this method at the beginning of every test case.
      * 
+     * @param applicationWindow
+     *            the application windows to be employed.
      * @param pageDescriptor
      *            the page descriptor this method applies to.
      * 
      * @see #initializeApplicationAndWait()
      */
     @SuppressWarnings("unchecked")
-    protected void initializeVariables(PageDescriptor pageDescriptor) {
+    protected void initializeVariables(ApplicationWindow applicationWindow, PageDescriptor pageDescriptor) {
+
+        Assert.notNull(applicationWindow, "applicationWindow");
+        Assert.notNull(pageDescriptor, "pageDescriptor");
 
         this.initializeApplicationAndWait();
 
         // Create related page
-        this.setApplicationPage(//
-                this.getApplicationPageFactory().createApplicationPage(this.getActiveWindow(), pageDescriptor));
+        this.setApplicationPage(this.getApplicationPageFactory().createApplicationPage(//
+                applicationWindow, pageDescriptor));
 
         // Fire page components creation and show the new page
-        this.getActiveWindow().showPage(this.getApplicationPage());
+        applicationWindow.showPage(this.getApplicationPage());
 
         // Retrieve page components
-        this.setMasterView((FormBackedView<AbstractB2TableMasterForm<Person>>) //
-                this.getApplicationPage().getView(AbstractBbSamplesTests.MASTER_VIEW_DESCRIPTOR_BEAN_NAME));
-        this.setSearchView((FormBackedView<AbstractBbSearchForm<Person, Person>>) //
-                this.getApplicationPage().getView(AbstractBbSamplesTests.SEARCH_VIEW_DESCRIPTOR_BEAN_NAME));
-        this.setDetailView((FormBackedView<AbstractBbChildForm<Person>>) //
-                this.getApplicationPage().getView(AbstractBbSamplesTests.DETAIL_VIEW_DESCRIPTOR_BEAN_NAME));
-        this.setValidationView((FormBackedView<BbValidationForm<Person>>) //
-                this.getApplicationPage().getView(AbstractBbSamplesTests.VALIDATION_VIEW_DESCRIPTOR_BEAN_NAME));
-        this.setInitialView((AbstractView) this.getApplication().getApplicationContext().getBean(
-                AbstractBbSamplesTests.INITIAL_VIEW_DESCRIPTOR_BEAN_NAME, ViewDescriptor.class).createPageComponent());
+        this.setMasterView((FormBackedView<AbstractB2TableMasterForm<Person>>) applicationWindow.getPage().getView(
+                AbstractBbSamplesTests.MASTER_VIEW_DESCRIPTOR_BEAN_NAME));
+        this.setSearchView((FormBackedView<AbstractBbSearchForm<Person, Person>>) applicationWindow.getPage().getView(
+                AbstractBbSamplesTests.SEARCH_VIEW_DESCRIPTOR_BEAN_NAME));
+        this.setDetailView((FormBackedView<AbstractBbChildForm<Person>>) applicationWindow.getPage().getView(
+                AbstractBbSamplesTests.DETAIL_VIEW_DESCRIPTOR_BEAN_NAME));
+        this.setValidationView((FormBackedView<BbValidationForm<Person>>) applicationWindow.getPage().getView(
+                AbstractBbSamplesTests.VALIDATION_VIEW_DESCRIPTOR_BEAN_NAME));
+        this.setInitialView((AbstractView) this.getApplication().getApplicationContext()
+                .getBean(AbstractBbSamplesTests.INITIAL_VIEW_DESCRIPTOR_BEAN_NAME, ViewDescriptor.class)
+                .createPageComponent());
 
     }
 
@@ -246,7 +271,12 @@ public abstract class AbstractBbSamplesTests extends AbstractBbRichClientTests {
      */
     protected void terminateTest() {
 
-        this.getActiveWindow().getControl().dispose();
+        // (JAF), 20101123, take into account tests with multiple windows
+        // this.getActiveWindow().getControl().dispose();
+
+        for (ApplicationWindow applicationWindow : Application.instance().getWindowManager().getWindows()) {
+            applicationWindow.getControl().dispose();
+        }
     }
 
     /**
@@ -290,16 +320,6 @@ public abstract class AbstractBbSamplesTests extends AbstractBbRichClientTests {
     protected final <T extends Form> ValidatingFormModel getBackingFormModel(FormBackedView<T> view) {
 
         return (view != null) ? DefaultApplicationPageConfigurer.backingForm(view).getFormModel() : null;
-    }
-
-    /**
-     * Gets the activeWindow.
-     * 
-     * @return the activeWindow
-     */
-    protected final ApplicationWindow getActiveWindow() {
-
-        return Application.instance().getActiveWindow();
     }
 
     /**

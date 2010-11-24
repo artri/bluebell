@@ -24,9 +24,11 @@
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
 		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.0.xsd">
 	<!--
-		Bean: defaultPropertyPlaceholderConfigurer Usage: platform required Description: This configures all placeholders
-		defined in the application context. Note "null" string is used for null values and system properties override those
-		defined in properties files.
+		Bean: defaultPropertyPlaceholderConfigurer
+		Usage: platform required
+		Description: This configures all placeholders defined in the application context.
+
+		Note "null" string is used for null values and system properties override those defined in properties files.
 	-->
 	<bean id="testPropertyPlaceholderConfigurer" parent="defaultPropertyPlaceholderConfigurer" p:order="5"
 		p:location="classpath:/org/bluebell/richclient/application/docking/vldocking/TestBbVLDockingApplicationPage.properties" />

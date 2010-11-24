@@ -187,9 +187,9 @@
 							(JAF) 20101118: this seems not working under STS 2.5.1
 						-->
 						<!--
-						<additionalProjectnatures>
+							<additionalProjectnatures>
 							<projectnature>org.eclipse.ajdt.ui.ajnature</projectnature>
-						</additionalProjectnatures>
+							</additionalProjectnatures>
 						-->
 						<!-- -->
 						<!-- (JAF) 20100527: replace output directory to avoid conflicts -->
@@ -198,7 +198,7 @@
 						<!--
 							(JAF) 20100527: useful when dealing with multiple versions of same artifact
 							<addVersionToProjectName>true</addVersionToProjectName>
-						-->						
+						-->
 					</configuration>
 				</plugin>
 				<plugin>
@@ -738,12 +738,16 @@
 				<version>6.0</version>
 				<scope>runtime</scope>
 			</dependency>
-			<dependency>
-				<groupId>org.pushingpixels</groupId>
-				<artifactId>substance-jide</artifactId>
-				<version>5.0</version>
-				<scope>runtime</scope>
-			</dependency>
+
+			<!--
+				(JAF), 20101122, Substance Jide module is not updated to 6.x versions and version 5.x is not compatible
+			-->
+			<!-- <dependency> -->
+			<!-- <groupId>org.pushingpixels</groupId> -->
+			<!-- <artifactId>substance-jide</artifactId> -->
+			<!-- <version>5.0</version> -->
+			<!-- <scope>runtime</scope> -->
+			<!-- </dependency> -->
 			<dependency>
 				<groupId>org.pushingpixels</groupId>
 				<artifactId>substance-swingx</artifactId>
