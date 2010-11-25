@@ -24,7 +24,6 @@ package org.bluebell.richclient.application.support;
 import org.aspectj.lang.annotation.AfterReturning;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
-import org.bluebell.richclient.util.ApplicationUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.NotReadablePropertyException;
@@ -124,11 +123,13 @@ public class ApplicationWindowAspect extends ApplicationServicesAccessor impleme
     @Override
     public void pageOpened(ApplicationPage applicationPage) {
 
+        // 1. Show application page
         applicationPage.getControl().setVisible(Boolean.TRUE);
 
-        // Force a focus gained event, this is needed in order to be aware of recently retrieved application page
-        // configuration (step 3)
-        final PageComponent lastActiveComponent = this.whichIsLastActiveComponent(applicationPage);
+        // 2. Force a focus gained event, this is needed in order to be aware of recently retrieved application page
+        // configuration (ApplicationPageConfigurer). Otherwise no event will be raised and no handlers will be invoked
+        // (i.e. SharedCommandTargeter)
+        final PageComponent lastActiveComponent = this.getLastActiveComponent(applicationPage);
         ApplicationUtils.forceFocusGained(applicationPage, lastActiveComponent);
     }
 
@@ -138,11 +139,33 @@ public class ApplicationWindowAspect extends ApplicationServicesAccessor impleme
     @Override
     public void pageClosed(ApplicationPage applicationPage) {
 
+        // 1. Hide application page
         applicationPage.getControl().setVisible(Boolean.FALSE);
 
-        // 1. Reset DockingDesktop#focusHandler#lastFocusedDockable
+        // 2. Reset DockingDesktop#focusHandler#lastFocusedDockable
+        // this.doSomethingTrickyWithVLDocking(applicationPage);
+
+        // 3. Reset AbstractApplicationPage#activeComponent after remembering it
+        this.rememberLastActiveComponent(applicationPage);
+        ApplicationUtils.resetActiveComponent(applicationPage);
+    }
+
+    /**
+     * Reset <code>lastFocusedDockable</code> property from the <em>focus handler</em> of a <code>DockingDesktop</code>
+     * control. This is needed in order to propagate focus changed events.
+     * <p>
+     * Yes, I know this code is VLDocking dependant... ...however no import is needed and therefore it's fully fault
+     * tolerant.
+     * <p>
+     * <b>Updated</b> at 20101125, it seems to be this code is no longer needed.
+     * 
+     * @param applicationPage
+     *            the target application page whose abstraction is a <code>DockingDesktop</code>.
+     */
+    protected final void doSomethingTrickyWithVLDocking(ApplicationPage applicationPage) {
+
         try {
-            // This code is VLDocking dependant, however no import is needed and it's fault tolerant
+            // This code is VLDocking dependant, however no import is needed and therefore it's fault tolerant
             final Object focusHandler = PropertyAccessorFactory.forDirectFieldAccess(applicationPage.getControl())//
                     .getPropertyValue(ApplicationWindowAspect.FOCUS_HANDLER);
             PropertyAccessorFactory.forDirectFieldAccess(focusHandler)//
@@ -152,10 +175,6 @@ public class ApplicationWindowAspect extends ApplicationServicesAccessor impleme
             ApplicationWindowAspect.LOGGER.warn(//
                     "Unable to reset lastFocusedDockable, may be not using VLDocking?");
         }
-
-        // 2. Reset AbstractApplicationPage#activeComponent
-        this.rememberLastActiveComponent(applicationPage);
-        ApplicationUtils.resetActiveComponent(applicationPage);
     }
 
     /**
@@ -165,12 +184,12 @@ public class ApplicationWindowAspect extends ApplicationServicesAccessor impleme
      *            the target application page.
      * @return the last active component (may be <code>null</code>).
      */
-    protected PageComponent whichIsLastActiveComponent(ApplicationPage applicationPage) {
+    protected PageComponent getLastActiveComponent(ApplicationPage applicationPage) {
 
         Assert.notNull(applicationPage, "applicationPage");
 
         final PageComponent currentActiveComponent = applicationPage.getActiveComponent();
-        
+
         final PageComponent lastActiveComponent;
         if (currentActiveComponent != null) {
             lastActiveComponent = currentActiveComponent;

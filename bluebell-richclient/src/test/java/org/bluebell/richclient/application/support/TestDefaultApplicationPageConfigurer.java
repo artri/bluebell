@@ -250,10 +250,10 @@ public class TestDefaultApplicationPageConfigurer extends AbstractBbSamplesTests
         this.testFullPageReverse();
         this.assertViewDescriptors(Boolean.FALSE, Boolean.FALSE, Boolean.FALSE, Boolean.FALSE);
 
-        new DefaultApplicationPageConfigurer<Object>().configureApplicationPage(this.getApplicationPage());
+        new DefaultApplicationPageConfigurer<Object>().configureApplicationPage(this.getInitializedPage());
         this.assertViewDescriptors(Boolean.FALSE, Boolean.FALSE, Boolean.FALSE, Boolean.FALSE);
 
-        new DefaultApplicationPageConfigurer<Object>().configureApplicationPage(this.getApplicationPage());
+        new DefaultApplicationPageConfigurer<Object>().configureApplicationPage(this.getInitializedPage());
         this.assertViewDescriptors(Boolean.FALSE, Boolean.FALSE, Boolean.FALSE, Boolean.FALSE);
     }
 

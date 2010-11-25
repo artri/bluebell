@@ -42,7 +42,7 @@ import org.springframework.richclient.command.support.GlobalCommandIds;
 import org.springframework.richclient.util.Assert;
 
 /**
- * Tests the correct updating of shared command.
+ * Tests the correct behaviour of {@link ApplicationWindowAspect}.
  * <p>
  * According to issue number <a href="http://jirabluebell.b2b2000.com/browse/BLUE-30">30</a> shared command executors
  * are not updated conveniently after changing pages. This is due to the following facts:
@@ -145,7 +145,7 @@ public class TestApplicationWindowAspect extends AbstractBbSamplesTests {
         Assert.notNull(window3, "window3");
         Assert.notNull(window4, "window4");
 
-//        this.doShowPageInWindow(window1, this.initialPageDescriptor);
+        // this.doShowPageInWindow(window1, this.initialPageDescriptor);
         this.doShowPageInWindow(window2, this.getPersonPageDescriptor());
         this.doShowPageInWindow(window3, this.initialPageDescriptor);
         this.doShowPageInWindow(window4, this.getPersonPageDescriptor());

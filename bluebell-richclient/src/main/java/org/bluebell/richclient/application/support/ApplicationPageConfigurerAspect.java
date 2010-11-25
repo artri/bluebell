@@ -149,30 +149,29 @@ public class ApplicationPageConfigurerAspect extends ApplicationServicesAccessor
                             Integer.valueOf(1), pageDescriptor.getId(), Integer.valueOf(window.getNumber()) }));
         }
 
+        final ApplicationPageConfigurer<?> applicationPageConfigurer = (ApplicationPageConfigurer<?>) Application
+                .services().getService(ApplicationPageConfigurer.class);
+
         // Page components creation must be done in the event dispatcher thread
         SwingUtils.runInEventDispatcherThread(new Runnable() {
 
             public void run() {
 
-                // 1) Trigger page control creation
+                // 1) Trigger page control creation, this will attach page components to application page
                 applicationPage.getControl();
 
-                // 2) (JAF), 20101124, at this point (after 1), page components should have been added
+                // 2) (JAF), 20101124, at this point (after 1), page components should have already been added
                 ApplicationPageConfigurerAspect.this.invariant(applicationPage);
 
                 // 2) Add all view descriptors to the page
                 // final List<String> viewDescriptorIds = pageDescriptor.getViewDescriptors();
                 // for (final String viewDescriptorId : viewDescriptorIds) {
-                // // (JAF), 20101124, we just need to add the page componente but API force us to call showView
+                // // We just need to add the page componente but API force us to call showView
                 // if (applicationPage.getView(viewDescriptorId) != null) {
                 // applicationPage.showView(viewDescriptorId);
-                // }
-                // }
+                // }}
 
                 // 3) Process page
-                final ApplicationPageConfigurer<?> applicationPageConfigurer = (ApplicationPageConfigurer<?>) Application
-                        .services().getService(ApplicationPageConfigurer.class);
-
                 applicationPageConfigurer.configureApplicationPage(applicationPage);
             }
         });

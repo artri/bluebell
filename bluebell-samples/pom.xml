@@ -26,16 +26,16 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-dependency-plugin</artifactId>
-			</plugin>			
+			</plugin>
 		</plugins>
 	</build>
 
 	<dependencies>
 
 		<!--
-			Bluebell 
- 		-->
- 		<dependency>
+			Bluebell
+		-->
+		<dependency>
 			<groupId>${project.groupId}</groupId>
 			<artifactId>bluebell-richclient</artifactId>
 			<version>${project.version}</version>

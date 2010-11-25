@@ -19,7 +19,7 @@
 /**
  * 
  */
-package org.bluebell.richclient.util;
+package org.bluebell.richclient.application.support;
 
 import org.springframework.beans.PropertyAccessorFactory;
 import org.springframework.richclient.application.ApplicationPage;

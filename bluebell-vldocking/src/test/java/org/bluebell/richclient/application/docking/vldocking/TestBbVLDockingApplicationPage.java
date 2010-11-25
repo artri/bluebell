@@ -159,7 +159,7 @@ public class TestBbVLDockingApplicationPage extends AbstractBbSamplesTests {
         TestCase.assertEquals(((ApplicationPageException) cause).getPageId(), pageId);
 
         // Ensure employed layout is the expected one
-        final BbVLDockingApplicationPage<?> vlPage = (BbVLDockingApplicationPage<?>) this.getApplicationPage();
+        final BbVLDockingApplicationPage<?> vlPage = (BbVLDockingApplicationPage<?>) this.getInitializedPage();
         TestCase.assertEquals(vlPage.getAutoLayout(), vlPage.getLayout());
     }
 
@@ -177,7 +177,7 @@ public class TestBbVLDockingApplicationPage extends AbstractBbSamplesTests {
         TestCase.assertNull("cause", cause);
 
         // Ensure employed layout is the expected one
-        final BbVLDockingApplicationPage<?> vlPage = (BbVLDockingApplicationPage<?>) this.getApplicationPage();
+        final BbVLDockingApplicationPage<?> vlPage = (BbVLDockingApplicationPage<?>) this.getInitializedPage();
         TestCase.assertEquals(vlPage.getInitialLayout(), vlPage.getLayout());
     }
 
@@ -195,7 +195,7 @@ public class TestBbVLDockingApplicationPage extends AbstractBbSamplesTests {
         TestCase.assertNull("cause", cause);
 
         // Ensure employed layout is the expected one
-        final BbVLDockingApplicationPage<?> vlPage = (BbVLDockingApplicationPage<?>) this.getApplicationPage();
+        final BbVLDockingApplicationPage<?> vlPage = (BbVLDockingApplicationPage<?>) this.getInitializedPage();
         TestCase.assertEquals(vlPage.getAutoLayout(), vlPage.getLayout());
     }
 
@@ -213,7 +213,7 @@ public class TestBbVLDockingApplicationPage extends AbstractBbSamplesTests {
         TestCase.assertNull("cause", cause);
 
         // Ensure employed layout is the expected one
-        final BbVLDockingApplicationPage<?> vlPage = (BbVLDockingApplicationPage<?>) this.getApplicationPage();
+        final BbVLDockingApplicationPage<?> vlPage = (BbVLDockingApplicationPage<?>) this.getInitializedPage();
         TestCase.assertEquals(vlPage.getInitialLayout(), vlPage.getLayout());
     }
 
@@ -231,7 +231,7 @@ public class TestBbVLDockingApplicationPage extends AbstractBbSamplesTests {
         TestCase.assertNull("cause", cause);
 
         // Ensure employed layout is the expected one
-        final BbVLDockingApplicationPage<?> vlPage = (BbVLDockingApplicationPage<?>) this.getApplicationPage();
+        final BbVLDockingApplicationPage<?> vlPage = (BbVLDockingApplicationPage<?>) this.getInitializedPage();
         TestCase.assertEquals(vlPage.getAutoLayout(), vlPage.getLayout());
     }
 
@@ -253,7 +253,7 @@ public class TestBbVLDockingApplicationPage extends AbstractBbSamplesTests {
         TestCase.assertNull("cause", cause);
 
         // Ensure employed layout is the expected one
-        final BbVLDockingApplicationPage<?> vlPage = (BbVLDockingApplicationPage<?>) this.getApplicationPage();
+        final BbVLDockingApplicationPage<?> vlPage = (BbVLDockingApplicationPage<?>) this.getInitializedPage();
         TestCase.assertEquals(vlPage.getAutoLayout(), vlPage.getLayout());
     }
 
@@ -271,7 +271,7 @@ public class TestBbVLDockingApplicationPage extends AbstractBbSamplesTests {
 
         // Ensure this page description is really whole
         final Map<String, List<? extends PageComponent>> classification = //
-        this.defaultApplicationPageConfigurer.classifyApplicationPage(this.getApplicationPage());
+        this.defaultApplicationPageConfigurer.classifyApplicationPage(this.getInitializedPage());
 
         TestCase.assertTrue(classification.get(BbViewType.DETAIL.name()).size() == numberOfDetailViews);
         TestCase.assertTrue(classification.get(BbViewType.SEARCH.name()).size() == numberOfSearchViews);
@@ -281,7 +281,7 @@ public class TestBbVLDockingApplicationPage extends AbstractBbSamplesTests {
         TestCase.assertNull("cause", cause);
 
         // Ensure employed layout is the expected one
-        final BbVLDockingApplicationPage<?> vlPage = (BbVLDockingApplicationPage<?>) this.getApplicationPage();
+        final BbVLDockingApplicationPage<?> vlPage = (BbVLDockingApplicationPage<?>) this.getInitializedPage();
         TestCase.assertEquals(vlPage.getAutoLayout(), vlPage.getLayout());
     }
 

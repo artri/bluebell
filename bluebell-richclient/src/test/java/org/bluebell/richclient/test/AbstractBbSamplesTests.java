@@ -112,7 +112,7 @@ public abstract class AbstractBbSamplesTests extends AbstractBbRichClientTests {
     /**
      * The application page to be tested.
      */
-    private ApplicationPage applicationPage;
+    private ApplicationPage initializedPage;
 
     /**
      * The factory to create application pages.
@@ -171,7 +171,7 @@ public abstract class AbstractBbSamplesTests extends AbstractBbRichClientTests {
         // Initialized variables
         TestCase.assertNotNull(this.getApplicationPageFactory());
         TestCase.assertNotNull(this.getActiveWindow());
-        TestCase.assertNotNull(this.getApplicationPage());
+        TestCase.assertNotNull(this.getInitializedPage());
         TestCase.assertNotNull(this.getMasterView());
         TestCase.assertNotNull(this.getSearchView());
         TestCase.assertNotNull(this.getDetailView());
@@ -217,11 +217,21 @@ public abstract class AbstractBbSamplesTests extends AbstractBbRichClientTests {
         this.initializeApplicationAndWait();
 
         // Create related page
-        this.setApplicationPage(this.getApplicationPageFactory().createApplicationPage(//
+        this.setInitializedPage(this.getApplicationPageFactory().createApplicationPage(//
                 applicationWindow, pageDescriptor));
 
         // Fire page components creation and show the new page
-        applicationWindow.showPage(this.getApplicationPage());
+        applicationWindow.showPage(this.getInitializedPage());
+
+        // Retrieve initial view
+        AbstractView initialView = applicationWindow.getPage().getView(
+                AbstractBbSamplesTests.INITIAL_VIEW_DESCRIPTOR_BEAN_NAME);
+        if (initialView == null) {
+            initialView = (AbstractView) this.getApplication().getApplicationContext().getBean(//
+                    AbstractBbSamplesTests.INITIAL_VIEW_DESCRIPTOR_BEAN_NAME, ViewDescriptor.class)
+                    .createPageComponent();
+        }
+        this.setInitialView(initialView);
 
         // Retrieve page components
         this.setMasterView((FormBackedView<AbstractB2TableMasterForm<Person>>) applicationWindow.getPage().getView(
@@ -232,10 +242,6 @@ public abstract class AbstractBbSamplesTests extends AbstractBbRichClientTests {
                 AbstractBbSamplesTests.DETAIL_VIEW_DESCRIPTOR_BEAN_NAME));
         this.setValidationView((FormBackedView<BbValidationForm<Person>>) applicationWindow.getPage().getView(
                 AbstractBbSamplesTests.VALIDATION_VIEW_DESCRIPTOR_BEAN_NAME));
-        this.setInitialView((AbstractView) this.getApplication().getApplicationContext()
-                .getBean(AbstractBbSamplesTests.INITIAL_VIEW_DESCRIPTOR_BEAN_NAME, ViewDescriptor.class)
-                .createPageComponent());
-
     }
 
     /**
@@ -323,13 +329,13 @@ public abstract class AbstractBbSamplesTests extends AbstractBbRichClientTests {
     }
 
     /**
-     * Gets the applicationPage.
+     * Gets the initializedPage.
      * 
-     * @return the applicationPage
+     * @return the initializedPage
      */
-    protected final ApplicationPage getApplicationPage() {
+    protected final ApplicationPage getInitializedPage() {
 
-        return this.applicationPage;
+        return this.initializedPage;
     }
 
     /**
@@ -403,16 +409,16 @@ public abstract class AbstractBbSamplesTests extends AbstractBbRichClientTests {
     }
 
     /**
-     * Sets the applicationPage.
+     * Sets the initializedPage.
      * 
-     * @param applicationPage
-     *            the applicationPage to set
+     * @param initializedPage
+     *            the initializedPage to set
      */
-    private void setApplicationPage(ApplicationPage applicationPage) {
+    private void setInitializedPage(ApplicationPage applicationPage) {
 
-        Assert.notNull(applicationPage, "applicationPage");
+        Assert.notNull(applicationPage, "initializedPage");
 
-        this.applicationPage = applicationPage;
+        this.initializedPage = applicationPage;
     }
 
     /**
