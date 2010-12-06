@@ -36,7 +36,7 @@ import javax.swing.border.Border;
 import org.apache.commons.collections.MapUtils;
 import org.bluebell.richclient.application.docking.vldocking.VLDockingUtils;
 import org.bluebell.richclient.application.docking.vldocking.VLDockingUtils.DockViewType;
-import org.bluebell.richclient.application.docking.vldocking.ui.BAutoHideExpandPanelUI;
+import org.bluebell.richclient.application.docking.vldocking.ui.BbAutoHideExpandPanelUI;
 import org.bluebell.richclient.application.docking.vldocking.ui.BbAutoHideButtonUI;
 import org.bluebell.richclient.application.docking.vldocking.ui.BbDockViewTitleBarUI;
 import org.bluebell.richclient.application.docking.vldocking.ui.BbDockViewUI;
@@ -356,12 +356,20 @@ public class WidgetDesktopStyle {
             return this.defaults;
         }
 
-        // Request focus on tab selection, otherwise activation will not be triggered correctly
-        this.defaults.put("TabbedContainer.requestFocusOnTabSelection", Boolean.TRUE);
+        /*
+         * (JAF), 20101205, Very important!!!
+         * 
+         * Should request focus on tab selection be activated? On one hand in case negative activation will not be
+         * triggered correctly. On the other hand (affirmative case) every time a tabbed container is shown request
+         * focus, so this is a problem since is better to keep old dockable focused (activated!)
+         * 
+         * Decission is to keep value as FALSE since is prior to retain old selection.
+         */
+        this.defaults.put("TabbedContainer.requestFocusOnTabSelection", Boolean.FALSE);
 
         // UI Delegates
         this.defaults.put("AutoHideButtonUI", BbAutoHideButtonUI.class.getName());
-        this.defaults.put("AutoHideExpandPanelUI", BAutoHideExpandPanelUI.class.getName());
+        this.defaults.put("AutoHideExpandPanelUI", BbAutoHideExpandPanelUI.class.getName());
         this.defaults.put("DetachedDockViewUI", BbDockViewUI.class.getName());
         this.defaults.put("DockViewUI", BbDockViewUI.class.getName());
         this.defaults.put("DockViewTitleBarUI", BbDockViewTitleBarUI.class.getName());

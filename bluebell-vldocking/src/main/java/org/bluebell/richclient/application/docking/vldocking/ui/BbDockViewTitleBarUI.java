@@ -21,7 +21,6 @@ package org.bluebell.richclient.application.docking.vldocking.ui;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
-import java.beans.PropertyChangeEvent;
 
 import javax.swing.JComponent;
 import javax.swing.JLabel;
@@ -30,6 +29,7 @@ import javax.swing.plaf.ComponentUI;
 
 import org.bluebell.richclient.application.config.vldocking.WidgetDesktopStyle.ActivationAware;
 import org.bluebell.richclient.application.docking.vldocking.VLDockingUtils;
+import org.springframework.util.Assert;
 
 import com.vlsolutions.swing.docking.DockViewTitleBar;
 import com.vlsolutions.swing.docking.Dockable;
@@ -50,11 +50,6 @@ import com.vlsolutions.swing.docking.ui.DockViewTitleBarUI;
  * @author <a href = "mailto:julio.arguello@gmail.com" >Julio Argüello (JAF)</a>
  */
 public class BbDockViewTitleBarUI extends DockViewTitleBarUI implements ActivationAware {
-
-    /**
-     * The active property name.
-     */
-    private static final String ACTIVE_PROPERTY_NAME = "active";
 
     /**
      * Creates the UI.
@@ -78,23 +73,6 @@ public class BbDockViewTitleBarUI extends DockViewTitleBarUI implements Activati
 
         this.installLabel(); // Re-install label in order to support font resizing
         this.installBackground();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void propertyChange(PropertyChangeEvent e) {
-
-        if (BbDockViewTitleBarUI.ACTIVE_PROPERTY_NAME.equals(e.getPropertyName())) {
-
-            final Boolean active = (Boolean) e.getNewValue();
-            final Dockable dockable = this.titleBar.getDockable();
-
-            this.repaintDockable(dockable, active);
-        } else {
-            super.propertyChange(e);
-        }
     }
 
     /**
@@ -130,7 +108,7 @@ public class BbDockViewTitleBarUI extends DockViewTitleBarUI implements Activati
     /**
      * {@inheritDoc}
      * <p>
-     * A different color scheme is used depending on the title bar is activated or not.
+     * A different color scheme is used depending on whether the title bar is activated or not.
      */
     @Override
     protected void installBackground() {
@@ -141,24 +119,38 @@ public class BbDockViewTitleBarUI extends DockViewTitleBarUI implements Activati
     /**
      * Activates or deactivates the given dockable and repaints it.
      * 
-     * @param dockable
-     *            the dockable to be repainted.
+     * @param dockViewTitleBar
+     *            the dockViewTitleBar to be repainted.
      * @param active
      *            <code>true</code> for activating.
      */
-    private void repaintDockable(Dockable dockable, Boolean active) {
+    static void nullSafeRepaintDockable(DockViewTitleBar dockViewTitleBar, Boolean active) {
 
-        final DockableContainer dockableContainer = DockingUtilities.findSingleDockableContainer(dockable);
+        Assert.notNull(active, "active");
 
-        if ((dockableContainer != null) && (dockableContainer instanceof JComponent)) {
-            final JComponent jComponent = (JComponent) dockableContainer;
-            final ComponentUI componentUI = UIManager.getUI(jComponent);
+        if (dockViewTitleBar != null) {
+            final Dockable dockable = dockViewTitleBar.getDockable();
+            final DockableContainer dockableContainer = DockingUtilities.findSingleDockableContainer(dockable);
 
-            if (componentUI instanceof ActivationAware) {
-                final ActivationAware activationAware = (ActivationAware) componentUI;
+            // Title bar
+            dockViewTitleBar.setActive(active);
+            if (active && (dockable != null)) {
+                // (JAF), 20101205, at com.vlsolutions.swing.docking.DockViewTitleBar.FocusHighlighter notification is
+                // reset every time title bar gets activated
+                dockable.getDockKey().setNotification(Boolean.FALSE);
+            }
 
-                activationAware.activate(jComponent, active);
-                jComponent.repaint();
+            // Activation aware
+            if ((dockableContainer != null) && (dockableContainer instanceof JComponent)) {
+                final JComponent component = (JComponent) dockableContainer;
+                final ComponentUI componentUI = UIManager.getUI(component);
+
+                if (componentUI instanceof ActivationAware) {
+                    final ActivationAware activationAware = (ActivationAware) componentUI;
+
+                    activationAware.activate(component, active);
+                    component.repaint();
+                }
             }
         }
     }
@@ -172,6 +164,14 @@ public class BbDockViewTitleBarUI extends DockViewTitleBarUI implements Activati
      */
     public static BbDockViewTitleBarUI createUI(JComponent tb) {
 
+        /*
+         * http://jirabluebell.b2b2000.com/browse/BLUE-31
+         * 
+         * (JAF), 20101205, replace de focus highlighter implementation since original is buggy
+         */
+        BbFocusHighlighter.replaceFocusHighlighterIfNeeded();
+
+        // (JAF), 20101202, this method cannot be a singleton, see parent...
         return new BbDockViewTitleBarUI((DockViewTitleBar) tb);
     }
 }

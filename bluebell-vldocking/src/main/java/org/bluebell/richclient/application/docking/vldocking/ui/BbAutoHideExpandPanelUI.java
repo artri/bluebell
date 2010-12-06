@@ -53,12 +53,12 @@ import com.vlsolutions.swing.docking.ui.AutoHideExpandPanelUI;
  * 
  * @author <a href = "mailto:julio.arguello@gmail.com" >Julio Argüello (JAF)</a>
  */
-public class BAutoHideExpandPanelUI extends AutoHideExpandPanelUI implements ActivationAware {
+public class BbAutoHideExpandPanelUI extends AutoHideExpandPanelUI implements ActivationAware {
 
     /**
      * The singleton UI instance.
      */
-    private static final BAutoHideExpandPanelUI INSTANCE = new BAutoHideExpandPanelUI();
+    private static final BbAutoHideExpandPanelUI INSTANCE = new BbAutoHideExpandPanelUI();
 
     /**
      * The field "content" from <code>AutoHideExpandPanel</code>.
@@ -74,8 +74,8 @@ public class BAutoHideExpandPanelUI extends AutoHideExpandPanelUI implements Act
             AutoHideExpandPanel.class, "selectedButton", AutoHideButton.class);
 
     static {
-        ReflectionUtils.makeAccessible(BAutoHideExpandPanelUI.CONTENT_FIELD);
-        ReflectionUtils.makeAccessible(BAutoHideExpandPanelUI.SELECTED_BUTTON_FIELD);
+        ReflectionUtils.makeAccessible(BbAutoHideExpandPanelUI.CONTENT_FIELD);
+        ReflectionUtils.makeAccessible(BbAutoHideExpandPanelUI.SELECTED_BUTTON_FIELD);
     }
 
     /**
@@ -86,7 +86,7 @@ public class BAutoHideExpandPanelUI extends AutoHideExpandPanelUI implements Act
     /**
      * Creates the UI.
      */
-    public BAutoHideExpandPanelUI() {
+    public BbAutoHideExpandPanelUI() {
 
         super();
     }
@@ -239,7 +239,7 @@ public class BAutoHideExpandPanelUI extends AutoHideExpandPanelUI implements Act
         JPanel content = null;
         try {
             content = (JPanel) //
-            BAutoHideExpandPanelUI.CONTENT_FIELD.get(autoHideExpandPanel);
+            BbAutoHideExpandPanelUI.CONTENT_FIELD.get(autoHideExpandPanel);
         } catch (IllegalArgumentException e) {
             throw new IllegalStateException("Error accessing selected button field", e);
         } catch (IllegalAccessException e) {
@@ -270,7 +270,7 @@ public class BAutoHideExpandPanelUI extends AutoHideExpandPanelUI implements Act
 
         try {
             final AutoHideButton selectedButton = (AutoHideButton) //
-            BAutoHideExpandPanelUI.SELECTED_BUTTON_FIELD.get(autoHideExpandPanel);
+            BbAutoHideExpandPanelUI.SELECTED_BUTTON_FIELD.get(autoHideExpandPanel);
 
             if (selectedButton != null) {
                 zone = selectedButton.getZone();
@@ -293,7 +293,7 @@ public class BAutoHideExpandPanelUI extends AutoHideExpandPanelUI implements Act
      */
     public static ComponentUI createUI(JComponent c) {
 
-        return BAutoHideExpandPanelUI.INSTANCE;
+        return BbAutoHideExpandPanelUI.INSTANCE;
     }
 
     /**
@@ -307,7 +307,7 @@ public class BAutoHideExpandPanelUI extends AutoHideExpandPanelUI implements Act
         public void ancestorAdded(AncestorEvent ancestorEvent) {
 
             final AutoHideExpandPanel autoHideExpandPanel = (AutoHideExpandPanel) ancestorEvent.getComponent();
-            BAutoHideExpandPanelUI.this.installBorder(autoHideExpandPanel, Boolean.FALSE);
+            BbAutoHideExpandPanelUI.this.installBorder(autoHideExpandPanel, Boolean.FALSE);
         }
 
         /**

@@ -22,11 +22,22 @@
 package org.bluebell.richclient.application.docking.vldocking;
 
 import java.awt.Color;
+import java.awt.Component;
+import java.beans.PropertyChangeEvent;
 
 import javax.swing.UIManager;
 
+import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.builder.ToStringBuilder;
+import org.apache.commons.lang.builder.ToStringStyle;
 import org.springframework.richclient.util.Assert;
+
+import com.vlsolutions.swing.docking.AutoHideExpandPanel;
+import com.vlsolutions.swing.docking.DockView;
+import com.vlsolutions.swing.docking.DockViewTitleBar;
+import com.vlsolutions.swing.docking.DockingUtilities;
+import com.vlsolutions.swing.docking.SingleDockableContainer;
 
 /**
  * Utility class for dealing with VLDocking.
@@ -77,6 +88,283 @@ public final class VLDockingUtils {
         final String overlay = active ? VLDockingUtils.ACTIVE_INFIX : VLDockingUtils.INACTIVE_INFIX;
 
         return StringUtils.overlay(key, overlay, index, index);
+    }
+
+    /**
+     * Null safe version of {@link #findDockViewTitleBar(Component)}.
+     * 
+     * @param component
+     *            the component.
+     * @return the dock view title bar.
+     * 
+     * @see #findDockViewTitleBar(Component)
+     */
+    public static DockViewTitleBar nullSafeFindDockViewTitleBar(Component component) {
+
+        final DockViewTitleBar dockViewTitleBar;
+        if (component != null) {
+            dockViewTitleBar = VLDockingUtils.findDockViewTitleBar(component);
+        } else {
+            dockViewTitleBar = null;
+        }
+
+        return dockViewTitleBar;
+    }
+
+    /**
+     * Find the dock view title bar associated to the dockable container of a given component (if any).
+     * 
+     * @param component
+     *            the component.
+     * @return the dock view title bar.
+     */
+    public static DockViewTitleBar findDockViewTitleBar(Component component) {
+
+        Assert.notNull(component, "component");
+
+        final SingleDockableContainer sdc = DockingUtilities.findSingleDockableContainerAncestor(component);
+        final DockViewTitleBar dockViewTitleBar;
+
+        if (sdc == null) {
+            dockViewTitleBar = null;
+        } else if (sdc instanceof DockView) {
+            dockViewTitleBar = ((DockView) sdc).getTitleBar();
+        } else if (sdc instanceof AutoHideExpandPanel) {
+            dockViewTitleBar = ((AutoHideExpandPanel) sdc).getTitleBar();
+        } else {
+            dockViewTitleBar = null;
+        }
+
+        return dockViewTitleBar;
+    }
+
+    /**
+     * A bean useful for dealing with focus changed events within VLDocking.
+     * 
+     * @author <a href = "mailto:julio.arguello@gmail.com" >Julio Argüello (JAF)</a>
+     */
+    public static class FocusGainedBean {
+
+        /**
+         * The number of instances, useful for debugging.
+         */
+        private static int instanceCount = 0;
+
+        /**
+         * The target event.
+         */
+        private PropertyChangeEvent event;
+
+        /**
+         * The last active title bar.
+         */
+        private DockViewTitleBar lastTitleBar;
+
+        /**
+         * The description of what's happening.
+         */
+        private String whatsHappening;
+
+        /**
+         * Default constructor: increase instance count.
+         */
+        public FocusGainedBean() {
+
+            ++FocusGainedBean.instanceCount;
+        }
+
+        /**
+         * Gets the target event.
+         * 
+         * @return the event.
+         */
+        public final PropertyChangeEvent getEvent() {
+
+            return this.event;
+        }
+
+        /**
+         * Sets the target event.
+         * 
+         * @param event
+         *            the event to set.
+         * @return <code>this</code>.
+         */
+        public final FocusGainedBean setEvent(PropertyChangeEvent event) {
+
+            Assert.notNull(event, "event");
+
+            this.event = event;
+
+            return this;
+        }
+
+        /**
+         * Gets the old focused component propagated by an event.
+         * 
+         * @return the component.
+         */
+        public final Component getOldComponent() {
+
+            final Component oldComponent;
+            if ((this.getEvent() != null) && this.getEvent().getOldValue() instanceof Component) {
+                oldComponent = (Component) this.getEvent().getOldValue();
+            } else {
+                oldComponent = null;
+            }
+            return oldComponent;
+        }
+
+        /**
+         * Gets the new focused component propagated by an event.
+         * 
+         * @return the component.
+         */
+        public final Component getNewComponent() {
+
+            final Component newComponent;
+            if ((this.getEvent() != null) && this.getEvent().getNewValue() instanceof Component) {
+                newComponent = (Component) this.getEvent().getNewValue();
+            } else {
+                newComponent = null;
+            }
+            return newComponent;
+        }
+
+        /**
+         * Gets the last active title bar.
+         * 
+         * @return the last active title bar.
+         */
+        public final DockViewTitleBar getLastTitleBar() {
+
+            return this.lastTitleBar;
+        }
+
+        /**
+         * Sets the last active title bar.
+         * 
+         * @param lastTitleBar
+         *            the last active title bar to set.
+         * 
+         * @return <code>this</code>.
+         */
+        public final FocusGainedBean setLastTitleBar(DockViewTitleBar lastActiveTitleBar) {
+
+            this.lastTitleBar = lastActiveTitleBar;
+
+            return this;
+        }
+
+        /**
+         * Gets the old focused title bar propagated by an event.
+         * 
+         * @return the title bar.
+         */
+        public final DockViewTitleBar getOldTitleBar() {
+
+            return VLDockingUtils.nullSafeFindDockViewTitleBar(this.getOldComponent());
+        }
+
+        /**
+         * Gets the new focused title bar propagated by an event.
+         * 
+         * @return the title bar.
+         */
+        public final DockViewTitleBar getNewTitleBar() {
+
+            return VLDockingUtils.nullSafeFindDockViewTitleBar(this.getNewComponent());
+        }
+
+        /**
+         * Gets the description of what's happening.
+         * 
+         * @return the description.
+         */
+        public final String getWhatsHappening() {
+
+            return this.whatsHappening;
+        }
+
+        /**
+         * Sets the description of what's happening.
+         * 
+         * @param whatsHappening
+         *            the description to set.
+         * 
+         * @return <code>this</code>.
+         */
+        public final FocusGainedBean setWhatsHappening(String whatsHappening) {
+
+            Assert.notNull(whatsHappening, "whatsHappening");
+
+            this.whatsHappening = whatsHappening;
+
+            return this;
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public String toString() {
+
+            return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE) //
+                    .append(FocusGainedBean.instanceCount) //
+                    .append(this.getWhatsHappening()) //
+                    .append("lastTitleBar", this.titleBarToString(this.getLastTitleBar()))//
+                    .append("oldTitleBar", this.titleBarToString(this.getOldTitleBar())) //
+                    .append("newTitleBar", this.titleBarToString(this.getNewTitleBar())) //
+                    .append("oldComponent", this.componentToString(this.getOldComponent()))//
+                    .append("newComponent", this.componentToString(this.getNewComponent()))//
+                    .toString();
+        }
+
+        /**
+         * Returns a legible representation of a given component.
+         * 
+         * @param component
+         *            the target component.
+         * @return a string.
+         */
+        private String componentToString(Component component) {
+
+            final StringBuffer sb = new StringBuffer();
+            sb.append(ObjectUtils.identityToString(component));
+
+            if (component != null) {
+                sb.append(": ").append((component.getName() != null) ? component.getName() : component.toString());
+            }
+
+            return sb.toString();
+        }
+
+        /**
+         * Returns a legible representation of a given dockable.
+         * 
+         * @param dockable
+         *            the target dockable
+         * @return a string.
+         */
+        private String titleBarToString(DockViewTitleBar titleBar) {
+
+            final StringBuffer sb = new StringBuffer();
+            sb.append(ObjectUtils.identityToString(titleBar));
+
+            final Character prefix;
+            final String text;
+            if (titleBar != null) {
+                prefix = titleBar.isActive() ? '+' : '-';
+                text = (titleBar.getDockable() != null) ? titleBar.getDockable().getDockKey().getName() : null;
+            } else {
+                prefix = '-';
+                text = null;
+            }
+            
+            sb.append(prefix).append(text);
+            
+            return sb.toString();
+        }
     }
 
     /**

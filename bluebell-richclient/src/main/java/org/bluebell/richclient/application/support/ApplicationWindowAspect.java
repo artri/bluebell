@@ -21,13 +21,13 @@
  */
 package org.bluebell.richclient.application.support;
 
+import java.util.List;
+
 import org.aspectj.lang.annotation.AfterReturning;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.NotReadablePropertyException;
-import org.springframework.beans.PropertyAccessorFactory;
 import org.springframework.richclient.application.ApplicationPage;
 import org.springframework.richclient.application.ApplicationWindow;
 import org.springframework.richclient.application.PageComponent;
@@ -80,16 +80,6 @@ public class ApplicationWindowAspect extends ApplicationServicesAccessor impleme
             + "::lastActiveComponent";
 
     /**
-     * A property of the focus handler.
-     */
-    private static final String LAST_FOCUSED_DOCKABLE = "lastFocusedDockable";
-
-    /**
-     * A property of the docking desktop.
-     */
-    private static final String FOCUS_HANDLER = "focusHandler";
-
-    /**
      * Pointcut that intercepts window creation operations.
      * <p>
      * This method does nothing.
@@ -129,7 +119,7 @@ public class ApplicationWindowAspect extends ApplicationServicesAccessor impleme
         // 2. Force a focus gained event, this is needed in order to be aware of recently retrieved application page
         // configuration (ApplicationPageConfigurer). Otherwise no event will be raised and no handlers will be invoked
         // (i.e. SharedCommandTargeter)
-        final PageComponent lastActiveComponent = this.getLastActiveComponent(applicationPage);
+        final PageComponent lastActiveComponent = this.findActivationCandidate(applicationPage);
         ApplicationUtils.forceFocusGained(applicationPage, lastActiveComponent);
     }
 
@@ -151,54 +141,31 @@ public class ApplicationWindowAspect extends ApplicationServicesAccessor impleme
     }
 
     /**
-     * Reset <code>lastFocusedDockable</code> property from the <em>focus handler</em> of a <code>DockingDesktop</code>
-     * control. This is needed in order to propagate focus changed events.
-     * <p>
-     * Yes, I know this code is VLDocking dependant... ...however no import is needed and therefore it's fully fault
-     * tolerant.
-     * <p>
-     * <b>Updated</b> at 20101125, it seems to be this code is no longer needed.
-     * 
-     * @param applicationPage
-     *            the target application page whose abstraction is a <code>DockingDesktop</code>.
-     */
-    protected final void doSomethingTrickyWithVLDocking(ApplicationPage applicationPage) {
-
-        try {
-            // This code is VLDocking dependant, however no import is needed and therefore it's fault tolerant
-            final Object focusHandler = PropertyAccessorFactory.forDirectFieldAccess(applicationPage.getControl())//
-                    .getPropertyValue(ApplicationWindowAspect.FOCUS_HANDLER);
-            PropertyAccessorFactory.forDirectFieldAccess(focusHandler)//
-                    .setPropertyValue(ApplicationWindowAspect.LAST_FOCUSED_DOCKABLE, null);
-
-        } catch (NotReadablePropertyException e) {
-            ApplicationWindowAspect.LOGGER.warn(//
-                    "Unable to reset lastFocusedDockable, may be not using VLDocking?");
-        }
-    }
-
-    /**
      * Gets the last active component on a given page (if any).
      * 
-     * @param applicationPage
+     * @param page
      *            the target application page.
      * @return the last active component (may be <code>null</code>).
      */
-    protected PageComponent getLastActiveComponent(ApplicationPage applicationPage) {
+    protected PageComponent findActivationCandidate(ApplicationPage page) {
 
-        Assert.notNull(applicationPage, "applicationPage");
+        Assert.notNull(page, "applicationPage");
 
-        final PageComponent currentActiveComponent = applicationPage.getActiveComponent();
+        final List<String> descriptors = ApplicationUtils.getDeclaredPageComponentDescriptors(page);
 
-        final PageComponent lastActiveComponent;
-        if (currentActiveComponent != null) {
-            lastActiveComponent = currentActiveComponent;
+        final PageComponent lastActiveComponent = (PageComponent) page.getControl().getClientProperty(
+                ApplicationWindowAspect.LAST_ACTIVE_COMPONENT);
+
+        final PageComponent candidate;
+        if (lastActiveComponent != null) {
+            candidate = lastActiveComponent;
+        } else if (!descriptors.isEmpty()) {
+            candidate = page.getView(descriptors.get(0));
         } else {
-            lastActiveComponent = (PageComponent) applicationPage.getControl().getClientProperty(
-                    ApplicationWindowAspect.LAST_ACTIVE_COMPONENT);
+            candidate = null;
         }
 
-        return lastActiveComponent;
+        return candidate;
     }
 
     /**
@@ -216,4 +183,41 @@ public class ApplicationWindowAspect extends ApplicationServicesAccessor impleme
         applicationPage.getControl().putClientProperty(//
                 ApplicationWindowAspect.LAST_ACTIVE_COMPONENT, applicationPage.getActiveComponent());
     }
+
+    // /**
+    // * A property of the focus handler.
+    // */
+    // private static final String LAST_FOCUSED_DOCKABLE = "lastFocusedDockable";
+    //
+    // /**
+    // * A property of the docking desktop.
+    // */
+    // private static final String FOCUS_HANDLER = "focusHandler";
+    // /**
+    // * Reset <code>lastFocusedDockable</code> property from the <em>focus handler</em> of a
+    // <code>DockingDesktop</code>
+    // * control. This is needed in order to propagate focus changed events.
+    // * <p>
+    // * Yes, I know this code is VLDocking dependant... ...however no import is needed and therefore it's fully fault
+    // * tolerant.
+    // * <p>
+    // * <b>Updated</b> at 20101125, seems to be this code is no longer needed.
+    // *
+    // * @param applicationPage
+    // * the target application page whose abstraction is a <code>DockingDesktop</code>.
+    // */
+    // protected final void doSomethingTrickyWithVLDocking(ApplicationPage applicationPage) {
+    //
+    // try {
+    // // This code is VLDocking dependant, however no import is needed and therefore it's fault tolerant
+    // final Object focusHandler = PropertyAccessorFactory.forDirectFieldAccess(applicationPage.getControl())//
+    // .getPropertyValue(ApplicationWindowAspect.FOCUS_HANDLER);
+    // PropertyAccessorFactory.forDirectFieldAccess(focusHandler)//
+    // .setPropertyValue(ApplicationWindowAspect.LAST_FOCUSED_DOCKABLE, null);
+    //
+    // } catch (NotReadablePropertyException e) {
+    // ApplicationWindowAspect.LOGGER.warn(//
+    // "Unable to reset lastFocusedDockable, may be not using VLDocking?");
+    // }
+    // }
 }

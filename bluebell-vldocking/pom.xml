@@ -33,8 +33,8 @@
 	<dependencies>
 
 		<!--
-			Bluebell 
- 		-->
+			Bluebell
+		-->
 		<dependency>
 			<groupId>${project.groupId}</groupId>
 			<artifactId>bluebell-richclient</artifactId>
@@ -48,9 +48,9 @@
 			<scope>test</scope>
 		</dependency>
 
-		<!-- 
+		<!--
 			Spring Framework
-	 	-->
+		-->
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>org.springframework.beans</artifactId>
@@ -72,9 +72,9 @@
 			<artifactId>org.springframework.test</artifactId>
 		</dependency>
 
-		<!-- 
+		<!--
 			Apache Commons
-		 -->
+		-->
 		<dependency>
 			<groupId>org.apache.commons</groupId>
 			<artifactId>com.springsource.org.apache.commons.collections</artifactId>
@@ -87,10 +87,14 @@
 			<groupId>org.apache.commons</groupId>
 			<artifactId>com.springsource.org.apache.commons.io</artifactId>
 		</dependency>
+		<!-- <dependency> -->
+		<!-- <groupId>org.apache.commons</groupId> -->
+		<!-- <artifactId>com.springsource.org.apache.commons.beanutils</artifactId> -->
+		<!-- </dependency> -->
 
-		<!-- 
+		<!--
 			Spring Richclient
-		 -->
+		-->
 		<dependency>
 			<groupId>org.springframework.richclient</groupId>
 			<artifactId>spring-richclient-core</artifactId>
@@ -100,33 +104,33 @@
 			<artifactId>spring-richclient-vldocking</artifactId>
 		</dependency>
 
-		<!-- 
+		<!--
 			Other swing components
- 		-->
+		-->
 		<dependency>
 			<groupId>com.vlsolutions</groupId>
 			<artifactId>vldocking</artifactId>
 		</dependency>
 
 		<!--
-			Logging 
+			Logging
 		-->
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>com.springsource.slf4j.api</artifactId>
 		</dependency>
 
-		<!-- 
+		<!--
 			Others
-		 -->
+		-->
 		<dependency>
 			<groupId>org.apache.velocity</groupId>
 			<artifactId>com.springsource.org.apache.velocity</artifactId>
 		</dependency>
 
-		<!-- 
+		<!--
 			Test
-		 -->
+		-->
 		<dependency>
 			<groupId>org.junit</groupId>
 			<artifactId>com.springsource.org.junit</artifactId>

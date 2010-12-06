@@ -34,11 +34,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.richclient.application.Application;
 import org.springframework.richclient.application.ApplicationPage;
 import org.springframework.richclient.application.ApplicationWindow;
-import org.springframework.richclient.application.PageDescriptor;
-import org.springframework.richclient.application.PageDescriptorRegistry;
 import org.springframework.richclient.application.support.ApplicationServicesAccessor;
 import org.springframework.richclient.application.support.MultiViewPageDescriptor;
-import org.springframework.richclient.application.support.SingleViewPageDescriptor;
 import org.springframework.util.Assert;
 
 /**
@@ -179,27 +176,16 @@ public class ApplicationPageConfigurerAspect extends ApplicationServicesAccessor
     }
 
     /**
-     * Ensures the number of page components of a given page is greater than the number of page component descriptors of
-     * its associated page descriptor.
+     * Ensures the number of page components of a given page is greater than or equal to the number of page component
+     * descriptors of its associated page descriptor.
      * 
      * @param applicationPage
      *            the application page to be tested.
      */
     private void invariant(ApplicationPage applicationPage) {
 
-        final PageDescriptorRegistry pageDescriptorRegistry = (PageDescriptorRegistry) Application.services()
-                .getService(PageDescriptorRegistry.class);
-        final PageDescriptor pageDescriptor = pageDescriptorRegistry.getPageDescriptor(applicationPage.getId());
-
         final int noPageComponents = applicationPage.getPageComponents().size();
-        final int noViewDescriptors;
-        if (pageDescriptor instanceof MultiViewPageDescriptor) {
-            noViewDescriptors = ((MultiViewPageDescriptor) pageDescriptor).getViewDescriptors().size();
-        } else if (pageDescriptor instanceof SingleViewPageDescriptor) {
-            noViewDescriptors = 1;
-        } else {
-            noViewDescriptors = 0;
-        }
+        final int noViewDescriptors = ApplicationUtils.getDeclaredPageComponentDescriptors(applicationPage).size();
 
         Assert.isTrue(noPageComponents >= noViewDescriptors);
     }

@@ -21,6 +21,7 @@ package org.bluebell.richclient.application.docking.vldocking.substance.ui;
 import javax.swing.JComponent;
 
 import org.bluebell.richclient.application.docking.vldocking.ui.BbDockViewTitleBarUI;
+import org.bluebell.richclient.application.docking.vldocking.ui.BbFocusHighlighter;
 import org.pushingpixels.substance.api.DecorationAreaType;
 import org.pushingpixels.substance.api.SubstanceLookAndFeel;
 import org.pushingpixels.substance.api.SubstanceSkin;
@@ -98,6 +99,13 @@ public class SubstanceDockViewTitleBarUI extends BbDockViewTitleBarUI {
      * @return the UI.
      */
     public static SubstanceDockViewTitleBarUI createUI(JComponent tb) {
+
+        /*
+         * http://jirabluebell.b2b2000.com/browse/BLUE-31
+         * 
+         * (JAF), 20101205, replace de focus highlighter implementation since original is buggy
+         */
+        BbFocusHighlighter.replaceFocusHighlighterIfNeeded();
 
         return new SubstanceDockViewTitleBarUI((DockViewTitleBar) tb);
     }

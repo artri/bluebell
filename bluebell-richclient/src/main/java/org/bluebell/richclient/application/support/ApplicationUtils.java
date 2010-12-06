@@ -21,10 +21,21 @@
  */
 package org.bluebell.richclient.application.support;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.bluebell.richclient.swing.util.SwingUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.PropertyAccessorFactory;
+import org.springframework.richclient.application.Application;
 import org.springframework.richclient.application.ApplicationPage;
 import org.springframework.richclient.application.PageComponent;
+import org.springframework.richclient.application.PageDescriptor;
+import org.springframework.richclient.application.PageDescriptorRegistry;
 import org.springframework.richclient.application.support.AbstractApplicationPage;
+import org.springframework.richclient.application.support.MultiViewPageDescriptor;
+import org.springframework.richclient.application.support.SingleViewPageDescriptor;
 import org.springframework.util.Assert;
 
 /**
@@ -36,7 +47,13 @@ import org.springframework.util.Assert;
  */
 public final class ApplicationUtils {
 
-    // (JAF), 20101124, should other core utility classes be at this package (org.bluebell.richclient.util)?
+    // (JAF), 20101124, should other core utility classes be at this package (org.bluebell.richclient.util)? --> I don't
+    // think so, Spring Framework do it like BB
+
+    /**
+     * The logger.
+     */
+    private static final Logger LOGGER = LoggerFactory.getLogger(ApplicationUtils.class);
 
     /**
      * The active component property name of {@link AbstractApplicationPage}.
@@ -49,6 +66,36 @@ public final class ApplicationUtils {
     private ApplicationUtils() {
 
         super();
+    }
+
+    /**
+     * Gets the declared page component descriptors of a given page.
+     * 
+     * @param applicationPage
+     *            the application page.
+     * @return a list of page descriptors. Never empty.
+     */
+    @SuppressWarnings("unchecked")
+    public static final List<String> getDeclaredPageComponentDescriptors(ApplicationPage applicationPage) {
+
+        Assert.notNull(applicationPage, "applicationPage");
+
+        // Page and view descriptors registry
+        final PageDescriptorRegistry pageDescriptorRegistry = (PageDescriptorRegistry) Application.services()
+                .getService(PageDescriptorRegistry.class);
+
+        final List<String> pageDescriptors = new ArrayList<String>();
+
+        final PageDescriptor pageDescriptor = pageDescriptorRegistry.getPageDescriptor(applicationPage.getId());
+        if (pageDescriptor instanceof MultiViewPageDescriptor) {
+            final MultiViewPageDescriptor multiViewPageDescriptor = (MultiViewPageDescriptor) pageDescriptor;
+            pageDescriptors.addAll(multiViewPageDescriptor.getViewDescriptors());
+        } else if (pageDescriptor instanceof SingleViewPageDescriptor) {
+            final SingleViewPageDescriptor singleViewPageDescriptor = (SingleViewPageDescriptor) pageDescriptor;
+            pageDescriptors.add(singleViewPageDescriptor.getId());
+        }
+
+        return pageDescriptors;
     }
 
     /**
@@ -87,13 +134,44 @@ public final class ApplicationUtils {
 
     /**
      * Sets the active component of a given page ensuring this will raise a <code>focusGainedEvent</code>.
+     * <p>
+     * <b>Note</b> this code may not work if <em>tabbed pane</em> request "permanently" focus, in such a case they'll
+     * win... For instance take into account the following line at <code>WidgetDesktopStyle</code>:
+     * 
+     * <pre>
+     *      (JAF), 20101205, Very important!!!
+     * 
+     *      Should request focus on tab selection be activated? On one hand in case negative activation will not be 
+     *      triggered correctly. On the other hand (affirmative case) every time a tabbed container is shown request focus,
+     *      so this is a problem since is better to keep old dockable focused (activated!)
+     * 
+     *      Decission is to keep value as FALSE since is prior to retain old selection.
+     * 
+     *      this.defaults.put("TabbedContainer.requestFocusOnTabSelection", Boolean.FALSE);
+     * </pre>
+     * 
+     * Or the following at <code>org.bluebell.richclient.factory.ComponentFactoryDecorator#</code>:
+     * 
+     * <pre>
+     * public JTabbedPane createTabbedPane() {
+     * 
+     *     // (JAF), 20101206, as explained in
+     *     // org.bluebell.richclient.application.support.ApplicationUtils#forceFocusGained tabbed panes usually requires
+     *     // focus for themselves, this is a problem that also occurs in BbFocusHighlighter (VLDocking module) as
+     *     // explained here: http://www.javalobby.org/java/forums/t43667.html
+     *     final JTabbedPane tabbedPane = this.getDecoratedComponentFactory().createTabbedPane();
+     *     tabbedPane.setFocusable(Boolean.FALSE);
+     * 
+     *     return tabbedPane;
+     * }
+     * </pre>
      * 
      * @param applicationPage
      *            the target application page.
      * @param newActiveComponent
      *            the new active component.
      */
-    public static void forceFocusGained(ApplicationPage applicationPage, PageComponent newActiveComponent) {
+    public static void forceFocusGained(final ApplicationPage applicationPage, final PageComponent newActiveComponent) {
 
         Assert.notNull(applicationPage, "applicationPage");
         Assert.isTrue((newActiveComponent == null)
@@ -104,6 +182,25 @@ public final class ApplicationUtils {
         if (newActiveComponent != null) {
             ApplicationUtils.resetActiveComponent(applicationPage);
             applicationPage.setActiveComponent(newActiveComponent);
+
+            SwingUtils.runInEventDispatcherThread(new Runnable() {
+
+                @Override
+                public void run() {
+
+                    Boolean success = Boolean.FALSE;
+                    try {
+                        success = newActiveComponent.getControl().requestFocusInWindow();
+                    } catch (Exception e) {
+                        ApplicationUtils.LOGGER.warn("Failed to get \"" + newActiveComponent.getId() + "\" control");
+                    } finally {
+                        if (ApplicationUtils.LOGGER.isDebugEnabled()) {
+                            ApplicationUtils.LOGGER.debug("Forcing focus gained on \"" + newActiveComponent.getId()
+                                    + "\" result is \"" + success + "\"");
+                        }
+                    }
+                }
+            });
         }
     }
 

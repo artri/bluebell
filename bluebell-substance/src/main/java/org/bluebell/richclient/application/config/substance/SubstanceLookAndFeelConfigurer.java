@@ -334,11 +334,15 @@ public class SubstanceLookAndFeelConfigurer extends VLDockingLookAndFeelConfigur
         AnimationConfigurationManager.getInstance().allowAnimations(AnimationFacet.ARM);
         AnimationConfigurationManager.getInstance().allowAnimations(AnimationFacet.FOCUS);
         AnimationConfigurationManager.getInstance().allowAnimations(AnimationFacet.FOCUS_LOOP_ANIMATION);
+
         // FIXME, (JAF), 20101125, Ghosting_Button_Press and Ghosting_Icon_Rollover does not work fine when jide-oss is
         // in classpath (http://jirabluebell.b2b2000.com/browse/BLUE-33)
         // AnimationConfigurationManager.getInstance().allowAnimations(AnimationFacet.GHOSTING_BUTTON_PRESS);
         // AnimationConfigurationManager.getInstance().allowAnimations(AnimationFacet.GHOSTING_ICON_ROLLOVER);
-        AnimationConfigurationManager.getInstance().allowAnimations(AnimationFacet.ICON_GLOW);
+
+        // (JAF), 20101206, this facet causes a tricky effect at global commands, especially with "New" command button
+        // AnimationConfigurationManager.getInstance().allowAnimations(AnimationFacet.ICON_GLOW);
+
         AnimationConfigurationManager.getInstance().allowAnimations(AnimationFacet.PRESS);
         AnimationConfigurationManager.getInstance().allowAnimations(AnimationFacet.ROLLOVER);
         AnimationConfigurationManager.getInstance().allowAnimations(AnimationFacet.SELECTION);

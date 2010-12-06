@@ -43,6 +43,7 @@ import org.apache.commons.lang.builder.ToStringStyle;
 import org.apache.velocity.app.VelocityEngine;
 import org.bluebell.richclient.application.ApplicationPageConfigurer;
 import org.bluebell.richclient.application.ApplicationPageException;
+import org.bluebell.richclient.application.support.ApplicationUtils;
 import org.bluebell.richclient.application.support.DefaultApplicationPageConfigurer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -236,11 +237,16 @@ public class BbVLDockingApplicationPage<T> extends VLDockingApplicationPage {
      * 
      * @return <code>true</code> if success and <code>false</code> in other case.
      * 
+     * @see #closeUndeclaredPageComponents()
+     * 
      */
     public Boolean buildLayout(DockingDesktop dockingDesktop, Resource layout, List<Exception> exceptions) {
 
         Assert.notNull(dockingDesktop, "dockingDesktop");
         Assert.notNull(exceptions, "exceptions");
+
+        // (JAF), 20101205, close undeclared page components
+        this.closeUndeclaredPageComponents();
 
         if (layout == null) {
             this.getPageDescriptor().buildInitialLayout(this);
@@ -301,7 +307,7 @@ public class BbVLDockingApplicationPage<T> extends VLDockingApplicationPage {
 
         Assert.notNull(dockingDesktop, "dockingDesktop");
         Assert.notNull(dest, "dest");
-        
+
         try {
             // Create file if doesn't exist
             final File userLayoutFile = dest.getFile();
@@ -347,6 +353,11 @@ public class BbVLDockingApplicationPage<T> extends VLDockingApplicationPage {
         final Boolean layoutSuccess = this.buildLayout(dockingDesktop, layouts, exceptions);
         if (!layoutSuccess && !exceptions.isEmpty()) {
             throw new ApplicationPageException(exceptions.get(0), this.getId());
+        }
+
+        if (layoutSuccess) {
+            // (JAF), 20101206, force a "pageOpened" event (i.e. for page ApplicationWindowAspect to be invoked)
+            this.getActiveWindow().showPage(this);
         }
     }
 
@@ -524,6 +535,22 @@ public class BbVLDockingApplicationPage<T> extends VLDockingApplicationPage {
         }
 
         return this.autoLayout;
+    }
+
+    /**
+     * Close existing page components non declared on page descriptor registry.
+     */
+    private void closeUndeclaredPageComponents() {
+
+        final List<String> declaredDescriptors = ApplicationUtils.getDeclaredPageComponentDescriptors(this);
+
+        // (JAF), 20101205, close every "non declared" page component after proceed (i.e.: clearing active component)
+        final List<PageComponent> pageComponents = new ArrayList<PageComponent>(this.getPageComponents());
+        for (PageComponent pageComponent : pageComponents) {
+            if (!declaredDescriptors.contains(pageComponent.getId())) {
+                this.close(pageComponent);
+            }
+        }
     }
 
     /**

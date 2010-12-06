@@ -56,8 +56,8 @@ public class ResetPerspectiveCommand extends ActionCommand {
     @Override
     protected void doExecuteCommand() {
 
-        // TODO (JAF), 20100325, may be rename this class and package
-        
+        // TODO (JAF), 20100325, may rename this class and package
+
         final ApplicationPage page = Application.instance().getActiveWindow().getPage();
 
         if (page instanceof BbVLDockingApplicationPage<?>) {

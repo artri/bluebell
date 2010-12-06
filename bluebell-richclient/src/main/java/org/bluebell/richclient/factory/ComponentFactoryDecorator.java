@@ -373,7 +373,14 @@ public abstract class ComponentFactoryDecorator extends ApplicationServicesAcces
     @Override
     public JTabbedPane createTabbedPane() {
 
-        return this.getDecoratedComponentFactory().createTabbedPane();
+        // (JAF), 20101206, as explained in
+        // org.bluebell.richclient.application.support.ApplicationUtils#forceFocusGained tabbed panes usually requires
+        // focus for themselves, this is a problem that also occurs in BbFocusHighlighter (VLDocking module) as
+        // explained here: http://www.javalobby.org/java/forums/t43667.html        
+        final JTabbedPane tabbedPane = this.getDecoratedComponentFactory().createTabbedPane();
+        tabbedPane.setFocusable(Boolean.FALSE);
+
+        return tabbedPane;
     }
 
     /**

@@ -98,7 +98,7 @@ public abstract class AbstractBbSearchForm<T extends Object, U extends Object> e
      * <em>Flag</em> indicando si los resultados de la última búsqueda se han de añadir a los anteriores (
      * <code>true</code>) o si por el contrario deben sustituirlos (<code>true</code>).
      */
-    private boolean attachResults = false;
+    private boolean attachResults = Boolean.FALSE;
 
     /**
      * El comando para añadir o no resultados.
@@ -161,8 +161,7 @@ public abstract class AbstractBbSearchForm<T extends Object, U extends Object> e
         super(formId);
         this.setClearFormOnCommit(Boolean.FALSE);
 
-        // TODO (JAF), 20080713, quizás sea mejor recuperar el interceptor de
-        // otro modo...
+        // TODO (JAF), 20080713, quizás sea mejor recuperar el interceptor de otro modo...
         this.dirtyIndicatorInterceptorFactory = (ConfigurableFormComponentInterceptorFactory) //
         this.getApplicationContext().getBean("dirtyIndicatorInterceptorFactory");
     }
@@ -321,20 +320,12 @@ public abstract class AbstractBbSearchForm<T extends Object, U extends Object> e
      * 
      * @return el control con el formulario.
      * 
-     * @deprecated, (JAF), 20081015: en realidad no está deprecado, el objetivo es hacer esto método final. De momento
-     *              se mantiene así por respetar la compatibilidad.
      */
     @Override
-    @Deprecated
-    protected JComponent createFormControl() {
+    protected final JComponent createFormControl() {
 
         final int preferredWidth = 400;
         final int preferredHeight = 10;
-
-        // TODO (JAF), 20081015: en realidad no está deprecado, el objetivo es
-        // hacer esto método final. De momento se mantiene así por respetar la
-        // compatibilidad. ESTE MISMO COMENTARIO ESTÁ EN LA ETIQUETA @deprecated
-        // (quitarlos todos una vez declarado final el método).
 
         // Hacer que los resultados de validación se muestren en el titlePane
         new SimpleValidationResultsReporter(//
@@ -407,9 +398,10 @@ public abstract class AbstractBbSearchForm<T extends Object, U extends Object> e
     protected CommandGroup getCommandGroup() {
 
         if (this.commandGroup == null) {
-            this.commandGroup = CommandGroup.createCommandGroup(AbstractBbSearchForm.COMMAND_GROUP_ID, new Object[] {
-                    this.getAttachResultsCommand(), this.getSearchCommand(), this.getRefreshLastSearchCommand(),
-                    this.getResetCommand() });
+            this.commandGroup = CommandGroup.createCommandGroup(
+                    AbstractBbSearchForm.COMMAND_GROUP_ID,
+                    new Object[] { this.getAttachResultsCommand(), this.getSearchCommand(),
+                            this.getRefreshLastSearchCommand(), this.getResetCommand() });
         }
 
         return this.commandGroup;
@@ -544,8 +536,7 @@ public abstract class AbstractBbSearchForm<T extends Object, U extends Object> e
                 // Notificar el número de resultados devuelto
                 AbstractBbSearchForm.this.showNumberOfResults(searchResults.size());
 
-                // Establecer los resultados de la búsqueda en el formulario
-                // maestro.
+                // Establecer los resultados de la búsqueda en el formulario maestro.
                 AbstractBbSearchForm.this.getMasterForm().showEntities(//
                         searchResults, AbstractBbSearchForm.this.isAttachResults());
             }
@@ -645,8 +636,7 @@ public abstract class AbstractBbSearchForm<T extends Object, U extends Object> e
         searchCmd.setSecurityControllerId(scid);
 
         // Configurar el comando
-        return CommandUtils.configureCommand(//
-                searchCmd, this.getFormModel(), Boolean.TRUE);
+        return CommandUtils.configureCommand(searchCmd, this.getFormModel(), Boolean.TRUE);
     }
 
     /**
@@ -668,8 +658,7 @@ public abstract class AbstractBbSearchForm<T extends Object, U extends Object> e
 
         if (this.titlePane == null) {
             final String id = AbstractBbSearchForm.SEARCH_FORM_ID;
-            final String title = AbstractBbSearchForm.this.getMessage(//
-                    id + ".title");
+            final String title = AbstractBbSearchForm.this.getMessage(id + ".title");
 
             final int lines = 3;
             this.titlePane = new TitlePane(lines);
@@ -719,31 +708,28 @@ public abstract class AbstractBbSearchForm<T extends Object, U extends Object> e
      * <p>
      * En su primera ejecución instancia el diálogo {@link #noResultsMessageDialog}.
      * 
-     * @param number
+     * @param resultsCount
      *            el número de resultados devueltos por la última búsqueda.
      */
-    private void showNumberOfResults(int number) {
+    private void showNumberOfResults(int resultsCount) {
 
         final String id = AbstractBbSearchForm.SEARCH_FORM_ID;
 
-        // Construir de forma perezosa el diálogo que informa que no hay
-        // resultados para la búsqueda.
+        // Construir de forma perezosa el diálogo que informa que no hay resultados para la búsqueda.
         if (this.noResultsMessageDialog == null) {
-            final String title = AbstractBbSearchForm.this.getMessage(//
-                    id + ".noResultsDialog.title");
-            final String message = AbstractBbSearchForm.this.getMessage(//
-                    id + ".noResultsDialog.message");
+            final String title = AbstractBbSearchForm.this.getMessage(id + ".noResultsDialog.title");
+            final String message = AbstractBbSearchForm.this.getMessage(id + ".noResultsDialog.message");
             this.noResultsMessageDialog = new MessageDialog(title, message);
         }
 
         // Si la búsqueda no arroja resultados notificarlo
-        if (number == 0) {
+        if (resultsCount == 0) {
             this.noResultsMessageDialog.showDialog();
         }
 
         // Modificar el mensaje del titlePane mostrando el número de resultados
         final String text = AbstractBbSearchForm.this.getMessage(//
-                id + ".numberOfResults.caption", new Integer[] { number });
+                id + ".numberOfResults.caption", new Integer[] { resultsCount });
         this.getTitlePane().setMessage(new DefaultMessage(text, Severity.INFO));
     }
 }
