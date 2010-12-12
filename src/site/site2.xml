@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    Copyright (C) 2009 Julio Arg\u00fcello <julio.arguello@gmail.com>
+
+    This file is part of Bluebell Parent.
+
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+            http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+
+-->
+
+<project name="Bluebell" xmlns="http://maven.apache.org/DECORATION/1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/DECORATION/1.0.0 http://maven.apache.org/xsd/decoration-1.0.0.xsd">
+
+	<!--	<bannerLeft>-->
+	<!--		<name />-->
+	<!--		<src />-->
+	<!--		<alt />-->
+	<!--		<href />-->
+	<!--	</bannerLeft>-->
+	<!--	<bannerRight>-->
+	<!--		<name />-->
+	<!--		<src />-->
+	<!--		<alt />-->
+	<!--		<href />-->
+	<!--	</bannerRight>-->
+
+	<!--	<publishDate position=.. format=.. />-->
+	<!--	<version position=.. />-->
+	<poweredBy>
+		<!-- 
+			TODO - (JAF) 20091229: 
+			Change logo background and size
+		-->
+		<logo img="images/logos/Bluebell.png" name="Bluebell" href="${project.url}" />
+	</poweredBy>
+
+	<skin>
+		<groupId>org.apache.maven.skins</groupId>
+		<artifactId>maven-default-skin</artifactId>
+		<version>1.0</version>
+		<!--		org.apache.maven.skins:maven-stylus-skin:1.1-->
+		<!--		org.apache.maven.skins:maven-classic-skin:1.0-->
+	</skin>
+
+	<body>
+		<head>
+			<meta name="faq" content="Bluebell" />
+		</head>
+		<links>
+			<!-- 
+				TODO - (JAF) 20091229: 
+				Add/Replace links (Spring RCP, coquette icon set...)
+			-->
+			<item name="Apache" href="http://www.apache.org/" />
+			<item name="Maven" href="http://maven.apache.org/" />
+		</links>
+
+		<!--		<breadcrumbs>-->
+		<!--			<item name=.. href=.. />-->
+		<!--		</breadcrumbs>-->
+
+		<!--		<menu name=.. inherit=.. inheritAsRef=.. ref=.. img=..>-->
+		<!--			<item collapse=.. ref=.. name=.. href=..>-->
+		<!--				<description />-->
+		<!--				<item collapse=.. ref=.. name=.. href=..>-->
+		<!--					<description />-->
+		<!--					<items />-->
+		<!--				</item>-->
+		<!--			</item>-->
+		<!--		</menu>-->
+
+		<!-- 
+				FIXME - (JAF) 20091229: 
+				Replace quick links
+			-->
+		<!--		<menu name="Quick Links">-->
+		<!--			<item name="Features" href="/maven-features.html" />-->
+		<!--		</menu>-->
+		<menu ref="parent" />
+		<menu ref="modules" />
+		<menu ref="reports" />
+
+	</body>
+
+	<!--	<custom />-->
+
+</project>

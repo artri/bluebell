@@ -1,0 +1,43 @@
+~~
+~~ Copyright (C) 2009 Julio Arg\u00fcello <julio.arguello@gmail.com>
+~~
+~~ This file is part of Bluebell Parent.
+~~
+~~ Licensed under the Apache License, Version 2.0 (the "License");
+~~ you may not use this file except in compliance with the License.
+~~ You may obtain a copy of the License at
+~~
+~~         http://www.apache.org/licenses/LICENSE-2.0
+~~
+~~ Unless required by applicable law or agreed to in writing, software
+~~ distributed under the License is distributed on an "AS IS" BASIS,
+~~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+~~ See the License for the specific language governing permissions and
+~~ limitations under the License.
+~~
+
+	Welcome to the Bluebell Project, we hope you enjoy your time
+	on this project site. We've tried to assemble some
+	great user documentation and developer information, and
+	we're really excited that you've taken the time to visit this site.
+
+What is Bluebell Project
+	
+	Bluebell aim is to provide an abstraction layer over Spring RCP 
+	that makes it easy developing applications following a common 
+	and professional structure.
+
+	Note this is not a Spring RCP branch, it's indeed an extension 
+	that provides Substance, VLDocking, SwingX and JideOSS support 
+	out of the box.
+
+	We would like to release a version ASAP (you can see Subversion 
+	activity). Once this version were released any contribution will 
+	be really appreciated.
+
+	We are working on a very first stage of this project. Bluebell is 
+	not a spring rich competitor, of course. It's a set of add ons 
+	over Spring RCP infrastructure (for instance table binding, 
+	transparent vldocking addoption without configuration, plugabble 
+	substance integration out of the box, jide OSS components 
+	integration...), that's why we think this work could be helpful.

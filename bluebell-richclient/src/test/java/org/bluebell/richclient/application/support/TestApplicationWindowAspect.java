@@ -145,7 +145,7 @@ public class TestApplicationWindowAspect extends AbstractBbSamplesTests {
         Assert.notNull(window3, "window3");
         Assert.notNull(window4, "window4");
 
-        // this.doShowPageInWindow(window1, this.initialPageDescriptor);
+        this.doShowPageInWindow(window1, this.initialPageDescriptor);
         this.doShowPageInWindow(window2, this.getPersonPageDescriptor());
         this.doShowPageInWindow(window3, this.initialPageDescriptor);
         this.doShowPageInWindow(window4, this.getPersonPageDescriptor());

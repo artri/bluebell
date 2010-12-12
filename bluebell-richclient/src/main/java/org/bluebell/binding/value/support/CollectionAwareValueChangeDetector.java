@@ -31,12 +31,59 @@ import org.bluebell.richclient.util.ObjectUtils;
 import org.springframework.binding.value.support.DefaultValueChangeDetector;
 
 /**
- * Extiende el comportamiento de {@link DefaultValueChangeDetector} con el objetivo de soportar colecciones en la medida
- * en que dos colecciones son iguales si tienen los mismos elementos.
+ * Extends {@link DefaultValueChangeDetector} behaviour in order to provide support for collections so "two collections
+ * are equal if and only if they have same elements".
+ * <p>
+ * <b>How does Bluebell works with it?</b>
+ * <dl>
+ * <dt>Application context
+ * <dd>Main application context
+ * <dt>Bean declaration
+ * <dd>Find below provided bean declaration:
  * 
- * @author <a href = "mailto:julio.arguello@gmail.com" >Julio Argüello (JAF)</a>
+ * <pre>
+ * <!--
+ *         Bean: defaultValueChangeDetector
+ *         Usage: platform optional
+ *         Description: This specifies the value change detector used for value models (and others) in order to detect changes.
+ * -->
+ * <bean id="defaultValueChangeDetector" class="org.bluebell.binding.value.support.CollectionAwareValueChangeDetector" />
+ * </pre>
+ * 
+ * <dt>Bean configuration
+ * <dd>Find below the main bean with whom it collaborates:
+ * 
+ * <pre>
+ * <!--
+ *         Bean: defaultApplicationServices
+ *         Usage: Platform required (unless you set this up programmatically)
+ *         Description: This configures the application services available to the platform. There are specific setter methods for
+ *         all the standard services,
+ *         see the javadoc on the DefaultApplicationServices class for more details.
+ * 
+ *         NOTE: The use of bean ids (idref) is preferred over using direct bean references to avoid startup problems with circular
+ *         references.
+ * -->
+ * <bean id="defaultApplicationServices" class="org.springframework.richclient.application.support.DefaultApplicationServices">
+ *         ...
+ *         p:value-change-detector-id="${richclient.valueChangeDetector}"
+ * </bean>
+ * </pre>
+ * 
+ * <dt>Aditional configuration
+ * <dd>A PPC (<code>PropertyPlaceholderConfigurer</code>) must provide a valid replacement for
+ * <code>${richclient.valueChangeDetector}</code>. Default configuration defines
+ * <code>defaultPropertyPlaceholderConfigurer</code> with the following property:
+ * 
+ * <pre>
+ * richclient.valueChangeDetector = defaultValueChangeDetector
+ * </pre>
+ * 
+ * </dl>
  * 
  * @see CollectionUtils#isEqualCollection(Collection, Collection)
+ * 
+ * @author <a href = "mailto:julio.arguello@gmail.com" >Julio Argüello (JAF)</a>
  */
 public class CollectionAwareValueChangeDetector extends DefaultValueChangeDetector {
 

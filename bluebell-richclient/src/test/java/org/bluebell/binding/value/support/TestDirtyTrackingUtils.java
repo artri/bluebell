@@ -75,7 +75,7 @@ public class TestDirtyTrackingUtils extends AbstractBbRichClientTests {
 
         TestCase.assertNotNull(this.testDirtyTrackingUtilsProperties);
     }
-
+    
     /**
      * Tests the correct behaviour of
      * {@link DirtyTrackingUtils#getI18nDirtyProperties(org.springframework.binding.form.FormModel)} .

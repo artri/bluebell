@@ -20,16 +20,9 @@
 	<build>
 		<plugins>
 			<plugin>
-				<groupId>com.mycila.maven-license-plugin</groupId>
-				<artifactId>maven-license-plugin</artifactId>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-dependency-plugin</artifactId>
-			</plugin>
-			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-war-plugin</artifactId>
+				<version>2.1.1</version>
 				<configuration>
 					<webappDirectory>${maven.war.webappDirectory}</webappDirectory>
 				</configuration>
@@ -40,6 +33,9 @@
 				<artifactId>webstart-maven-plugin</artifactId>
 				<version>1.0-alpha-2</version>
 				<executions>
+					<!--
+						(JAF), FIXME, 20101211, this causes a bug within Maven 3 and maven site plugin v3.X
+					-->
 					<execution>
 						<phase>process-resources</phase>
 						<goals>
@@ -57,8 +53,8 @@
 					<templateDirectory>src/main/jnlp/templates</templateDirectory>
 
 					<!--
-						The directory in which files will be stored prior to processing. 
-					 -->
+						The directory in which files will be stored prior to processing.
+					-->
 					<workDirectory>${maven.webstart.workDirectory}</workDirectory>
 
 					<!--
@@ -69,14 +65,14 @@
 					<outputDirectoryName>${maven.webstart.outputDirectoryName}</outputDirectoryName>
 
 					<!--
-                 		Set to true to exclude all transitive dependencies. Default is false.
-                 	-->
+						Set to true to exclude all transitive dependencies. Default is false.
+					-->
 					<excludeTransitive>false</excludeTransitive>
 
 
-					<!-- 
-		 			-->
-					<!--					<pack200>true</pack200>-->
+					<!--
+					-->
+					<!-- <pack200>true</pack200> -->
 
 					<jnlpFiles>
 						<jnlpFile>
@@ -164,7 +160,7 @@
 						<artifactId>webstart-pack200-anttasks</artifactId>
 						<version>1.2-SNAPSHOT</version>
 					</dependency>
-					
+
 					<dependency>
 						<groupId>ant-contrib</groupId>
 						<artifactId>ant-contrib</artifactId>
@@ -192,36 +188,36 @@
 					</dependency>
 				</dependencies>
 			</plugin>
-			<!--			<plugin>-->
-			<!--				<groupId>org.apache.maven.plugins</groupId>-->
-			<!--				<artifactId>maven-jarsigner-plugin</artifactId>-->
-			<!--				<executions>-->
-			<!--					<execution>-->
-			<!--						<id>sign</id>-->
-			<!--						<goals>-->
-			<!--							<goal>sign</goal>-->
-			<!--						</goals>-->
-			<!--					</execution>-->
-			<!--					<execution>-->
-			<!--						<id>verify</id>-->
-			<!--						<phase>verify</phase>-->
-			<!--						<goals>-->
-			<!--							<goal>verify</goal>-->
-			<!--						</goals>-->
-			<!--					</execution>-->
-			<!--				</executions>-->
-			<!--				<configuration>-->
-			<!--					<archiveDirectory>${maven.webstart.outputDirectory}</archiveDirectory>-->
+			<!-- <plugin> -->
+			<!-- <groupId>org.apache.maven.plugins</groupId> -->
+			<!-- <artifactId>maven-jarsigner-plugin</artifactId> -->
+			<!-- <executions> -->
+			<!-- <execution> -->
+			<!-- <id>sign</id> -->
+			<!-- <goals> -->
+			<!-- <goal>sign</goal> -->
+			<!-- </goals> -->
+			<!-- </execution> -->
+			<!-- <execution> -->
+			<!-- <id>verify</id> -->
+			<!-- <phase>verify</phase> -->
+			<!-- <goals> -->
+			<!-- <goal>verify</goal> -->
+			<!-- </goals> -->
+			<!-- </execution> -->
+			<!-- </executions> -->
+			<!-- <configuration> -->
+			<!-- <archiveDirectory>${maven.webstart.outputDirectory}</archiveDirectory> -->
 <!---->
-			<!--					<keystore>${maven.keytool.keystore}</keystore>-->
-			<!--					<keypass>${maven.keytool.keypass}</keypass>-->
-			<!--					<storepass>${maven.keytool.storepass}</storepass>-->
-			<!--					<alias>${maven.keytool.alias}</alias>-->
+			<!-- <keystore>${maven.keytool.keystore}</keystore> -->
+			<!-- <keypass>${maven.keytool.keypass}</keypass> -->
+			<!-- <storepass>${maven.keytool.storepass}</storepass> -->
+			<!-- <alias>${maven.keytool.alias}</alias> -->
 <!---->
-			<!--					<removeExistingSignatures>true</removeExistingSignatures>-->
-			<!--					<verbose>${verbose}</verbose>-->
-			<!--				</configuration>-->
-			<!--			</plugin>-->
+			<!-- <removeExistingSignatures>true</removeExistingSignatures> -->
+			<!-- <verbose>${verbose}</verbose> -->
+			<!-- </configuration> -->
+			<!-- </plugin> -->
 		</plugins>
 	</build>
 
@@ -230,7 +226,7 @@
 			<groupId>org.codehaus.mojo.webstart</groupId>
 			<artifactId>webstart-jnlp-servlet</artifactId>
 			<version>1.0-6.0-02_ea_b02</version>
-			<!--<version>1.0-6.0-02_ea_b02-SNAPSHOT</version>-->
+			<!--<version>1.0-6.0-02_ea_b02-SNAPSHOT</version> -->
 			<scope>runtime</scope>
 		</dependency>
 	</dependencies>
@@ -261,7 +257,7 @@
 								connectors> <connector implementation="org.mortbay.jetty.nio.SelectChannelConnector"> <port>8181</port>
 								<maxIdleTime>60000</maxIdleTime> </connector> </connectors
 							-->
-							<!--scanIntervalSeconds>2</scanIntervalSeconds-->
+							<!--scanIntervalSeconds>2</scanIntervalSeconds -->
 							<webApp></webApp>
 						</configuration>
 					</plugin>

@@ -30,6 +30,32 @@ import org.springframework.binding.format.support.SimpleFormatterFactory;
  * 
  * Necesario para binding de componentes Spring RichClient, como por ejemplo:
  * {@link org.springframework.richclient.form.binding.swing.NumberBinder}
+ * <p>
+ * This is a typical use of this class within Spring Application Context:
+ * 
+ * <pre>
+ * <!--
+ *         Bean: conversionService
+ *         Usage: platform optional
+ *         Description: This specifies the component that will supply converters
+ *         for property values. Since we are going to add a special formatter for date fields, we need to have a reference to this
+ *         service in the context configured with a custom formatter factory.
+ * -->
+ * <bean id="defaultConversionService" class="org.springframework.richclient.application.DefaultConversionServiceFactoryBean" />
+ * <bean class="org.springframework.beans.factory.config.MethodInvokingFactoryBean" p:target-object-ref="defaultConversionService"
+ *         p:target-method="addConverters">
+ *         <property name="arguments">
+ *                 <list>
+ *                         <list>
+ *                                 <bean class="org.bluebell.binding.convert.support.ConvertSerializableToString" />
+ *                                 <bean class="org.bluebell.binding.convert.support.ConvertStringToSerializable" />
+ *                                 <bean class="org.bluebell.binding.convert.support.ConvertBigDecimalToFloat" />
+ *                                 <bean class="org.bluebell.binding.convert.support.ConvertFloatToBigDecimal" />
+ *                         </list>
+ *                 </list>
+ *         </property>
+ * </bean>
+ * </pre>
  * 
  * @author <a href = "mailto:julio.arguello@gmail.com" >Julio Argüello (JAF)</a>
  */
@@ -76,7 +102,7 @@ public class ConvertFloatToBigDecimal extends AbstractFormattingConverter {
      * Clase destino.
      * 
      * @return El tipo de la clase destino.
-     */   
+     */
     @SuppressWarnings("rawtypes")
     public Class[] getTargetClasses() {
 
@@ -97,8 +123,8 @@ public class ConvertFloatToBigDecimal extends AbstractFormattingConverter {
      *             Excepción provocada.
      */
     @Override
-    protected Object doConvert(final Object sourceINYOURCLASS, @SuppressWarnings("rawtypes") final Class targetClass, final ConversionContext context)
-            throws Exception {
+    protected Object doConvert(final Object sourceINYOURCLASS, @SuppressWarnings("rawtypes") final Class targetClass,
+            final ConversionContext context) throws Exception {
 
         return (!this.allowEmpty || (sourceINYOURCLASS != null)) ? ((Float) sourceINYOURCLASS).doubleValue() : null;
     }

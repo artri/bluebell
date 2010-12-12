@@ -17,19 +17,6 @@
 	<name>Bluebell Jide OSS</name>
 	<description>Jide OSS integration module</description>
 
-	<build>
-		<plugins>
-			<plugin>
-				<groupId>com.mycila.maven-license-plugin</groupId>
-				<artifactId>maven-license-plugin</artifactId>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-dependency-plugin</artifactId>
-			</plugin>			
-		</plugins>
-	</build>
-
 	<dependencies>
 
 		<!--

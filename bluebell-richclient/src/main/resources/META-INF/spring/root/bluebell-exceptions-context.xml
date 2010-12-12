@@ -27,8 +27,7 @@
 		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-2.5.xsd">
 
 
-	<bean id="clearBusyIndicatorExceptionHandlerDelegate"
-		class="org.bluebell.richclient.command.support.BusyIndicatorActionCommandInterceptor$ClearBusyIndicatorExceptionHandlerDelegate" />
+	<bean id="clearBusyIndicatorExceptionHandlerDelegate" class="org.bluebell.richclient.command.support.ClearBusyIndicatorExceptionHandlerDelegate" />
 
 	<bean id="keepAliveAfterFailureExceptionHandlerDelegate" class="org.bluebell.richclient.form.AbstractB2TableMasterForm$KeepAliveAfterFailureExceptionHandlerDelegate" />
 

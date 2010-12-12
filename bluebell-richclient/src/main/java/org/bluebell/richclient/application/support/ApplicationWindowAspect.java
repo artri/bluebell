@@ -28,6 +28,8 @@ import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.NotReadablePropertyException;
+import org.springframework.beans.PropertyAccessorFactory;
 import org.springframework.richclient.application.ApplicationPage;
 import org.springframework.richclient.application.ApplicationWindow;
 import org.springframework.richclient.application.PageComponent;
@@ -119,8 +121,8 @@ public class ApplicationWindowAspect extends ApplicationServicesAccessor impleme
         // 2. Force a focus gained event, this is needed in order to be aware of recently retrieved application page
         // configuration (ApplicationPageConfigurer). Otherwise no event will be raised and no handlers will be invoked
         // (i.e. SharedCommandTargeter)
-        final PageComponent lastActiveComponent = this.findActivationCandidate(applicationPage);
-        ApplicationUtils.forceFocusGained(applicationPage, lastActiveComponent);
+        final PageComponent lastActiveComponent = this.findActivationCandidate(applicationPage);                
+        ApplicationUtils.forceFocusGained(applicationPage, lastActiveComponent);     
     }
 
     /**
@@ -193,6 +195,7 @@ public class ApplicationWindowAspect extends ApplicationServicesAccessor impleme
     // * A property of the docking desktop.
     // */
     // private static final String FOCUS_HANDLER = "focusHandler";
+    //
     // /**
     // * Reset <code>lastFocusedDockable</code> property from the <em>focus handler</em> of a
     // <code>DockingDesktop</code>
