@@ -254,7 +254,8 @@ public class FormBackedView<T extends Form> extends AbstractView {
 
         // Se registran listeners para los formularios que implementan el interface ApplicationListener
         if (form instanceof ApplicationListener<?>) {
-            final ApplicationListener<ApplicationEvent> applicationListener = (ApplicationListener<ApplicationEvent>) form;
+            final ApplicationListener<ApplicationEvent> applicationListener = //
+            (ApplicationListener<ApplicationEvent>) form;
             this.applicationEventMulticaster.addApplicationListener(applicationListener);
         }
 

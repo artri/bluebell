@@ -55,20 +55,24 @@ import org.springframework.util.Assert;
  * The simplest configuration requires the following bean in the startup aplication context:
  * 
  * <pre>
+ * {@code
  *      <bean id="substanceLookAndFeelConfigurer" parent="vldockingLookAndFeelConfigurer"
- *                 class="org.bluebell.richclient.application.config.substance.SubstanceLookAndFeelConfigurer" lazy-init="true">
+ *                 class="org.bluebell.richclient.application.config.substance.SubstanceLookAndFeelConfigurer" 
+ *                 lazy-init="true">
  *                 <constructor-arg index="0" value="${richclient.substanceSkinName}" />
- *         </bean>
+ *      </bean>
  *      &lt;bean id=&quot;substanceLookAndFeelConfigurer&quot; 
  *              class=&quot;org.bluebell.richclient.application.config.SubstanceLookAndFeelConfigurer&quot; &gt;
  *              &lt;constructor-arg index=&quot;0&quot; 
  *              value=&quot;org.jvnet.substance.skin.SubstanceCremeCoffeeLookAndFeel&quot;/&gt;
  *      &lt;/bean&gt;
+ * }
  * </pre>
  * 
  * However is better to define the following beans in the startup application context:
  * 
  * <pre>
+ * {@code
  *      &lt;aop:aspectj-autoproxy/&gt; 
  * 
  *      &lt;bean id=&quot;splashScreen&quot;
@@ -77,12 +81,14 @@ import org.springframework.util.Assert;
  *      &lt;util:property-path id=&quot;progressMonitor&quot; path=&quot;splashScreen.progressMonitor&quot;/&gt;
  * 
  *        <bean id="substanceLookAndFeelConfigurer" parent="vldockingLookAndFeelConfigurer"
- *                 class="org.bluebell.richclient.application.config.substance.SubstanceLookAndFeelConfigurer" lazy-init="true">
+ *                 class="org.bluebell.richclient.application.config.substance.SubstanceLookAndFeelConfigurer" 
+ *                 lazy-init="true">
  *                 <constructor-arg index="0" value="${richclient.substanceSkinName}" />
  *                 <property name="progressMonitorProxyBean">
  *                         <util:property-path id="progressMonitor" path="splashScreen.progressMonitor" />
  *                 </property>
  *         </bean>
+ *  }
  * </pre>
  * <p>
  * The extra beans are needed to intercept progress monitor operations and execute them into the Event Dispatcher
@@ -122,8 +128,10 @@ public class SubstanceLookAndFeelConfigurer extends VLDockingLookAndFeelConfigur
      * Since Substance 6.1 version the skin must be set compulsory. This class proceeds according to
      * <code>SubstanceLookAndFeel</code> javadoc:
      * 
-     * <quote>Call {@link SubstanceLookAndFeel#setSkin(String)} or {@link SubstanceLookAndFeel#setSkin(SubstanceSkin)}
-     * static methods. These methods do not require Substance to be the current look-and-feel.</quote>
+     * <blockquote> Call {@link SubstanceLookAndFeel#setSkin(String)} or
+     * {@link SubstanceLookAndFeel#setSkin(SubstanceSkin)} static methods. These methods do not require Substance to be
+     * the current look-and-feel. </blockquote>
+     * 
      * <p>
      * <b>Note</b> this constructor receives a <code>String</code> with the Substance skin name instead of look and feel
      * class name as usual (in parent class).

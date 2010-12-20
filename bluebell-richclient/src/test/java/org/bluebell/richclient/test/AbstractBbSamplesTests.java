@@ -224,14 +224,14 @@ public abstract class AbstractBbSamplesTests extends AbstractBbRichClientTests {
         applicationWindow.showPage(this.getInitializedPage());
 
         // Retrieve initial view
-        AbstractView initialView = applicationWindow.getPage().getView(
+        AbstractView foundInitialView = applicationWindow.getPage().getView(
                 AbstractBbSamplesTests.INITIAL_VIEW_DESCRIPTOR_BEAN_NAME);
-        if (initialView == null) {
-            initialView = (AbstractView) this.getApplication().getApplicationContext().getBean(//
+        if (foundInitialView == null) {
+            foundInitialView = (AbstractView) this.getApplication().getApplicationContext().getBean(//
                     AbstractBbSamplesTests.INITIAL_VIEW_DESCRIPTOR_BEAN_NAME, ViewDescriptor.class)
                     .createPageComponent();
         }
-        this.setInitialView(initialView);
+        this.setInitialView(foundInitialView);
 
         // Retrieve page components
         this.setMasterView((FormBackedView<AbstractB2TableMasterForm<Person>>) applicationWindow.getPage().getView(
@@ -411,8 +411,8 @@ public abstract class AbstractBbSamplesTests extends AbstractBbRichClientTests {
     /**
      * Sets the initializedPage.
      * 
-     * @param initializedPage
-     *            the initializedPage to set
+     * @param applicationPage
+     *            the applicationPage to set
      */
     private void setInitializedPage(ApplicationPage applicationPage) {
 

@@ -20,7 +20,6 @@ package org.bluebell.richclient.application.config;
 
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.config.PropertyPlaceholderConfigurer;
 
@@ -45,7 +44,8 @@ import org.springframework.beans.factory.config.PropertyPlaceholderConfigurer;
  * &lt;/bean&gt;
  * &lt;bean id="configPropertiesConfigurer"
  *      class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer"&gt;
- *   &lt;property name="location"&gt;&lt;value&gt;$${applicationConfig.properties.location}&lt;/value&gt;&lt;/property&gt;
+ *   &lt;property name="location"
+ *      &gt;&lt;value&gt;$${applicationConfig.properties.location}&lt;/value&gt;&lt;/property&gt;
  *   &lt;property name="fileEncoding"&gt;&lt;value&gt;$${cardlink.properties.encoding}&lt;/value&gt;&lt;/property&gt;
  * &lt;/bean&gt;
  * </pre>
@@ -53,7 +53,7 @@ import org.springframework.beans.factory.config.PropertyPlaceholderConfigurer;
  * @author Alex Wei (ozgwei@gmail.com)
  * @since 26/07/2006
  * @see org.springframework.core.Ordered
- * @see BeanFactoryPostProcessor
+ * @see org.springframework.beans.factory.config.BeanFactoryPostProcessor
  * @see org.springframework.beans.factory.ListableBeanFactory
  * @see PropertyPlaceholderConfigurer
  * 

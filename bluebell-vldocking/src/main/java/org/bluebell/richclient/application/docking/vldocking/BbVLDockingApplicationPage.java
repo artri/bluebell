@@ -356,7 +356,7 @@ public class BbVLDockingApplicationPage<T> extends VLDockingApplicationPage {
         }
 
         if (layoutSuccess) {
-            // (JAF), 20101206, force a "pageOpened" event (i.e. for page ApplicationWindowAspect to be invoked)
+            // (JAF), 20101206, force a "pageOpened" event (i.e. for page ApplicationConfigAspect to be invoked)
             this.getActiveWindow().showPage(this);
         }
     }

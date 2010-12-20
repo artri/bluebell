@@ -26,7 +26,6 @@ import javax.annotation.Resource;
 import junit.framework.TestCase;
 
 import org.apache.commons.lang.math.RandomUtils;
-import org.bluebell.richclient.application.support.ApplicationWindowAspect;
 import org.bluebell.richclient.test.AbstractBbSamplesTests;
 import org.junit.Test;
 import org.springframework.beans.PropertyAccessorFactory;
@@ -35,25 +34,25 @@ import org.springframework.richclient.application.ApplicationWindow;
 import org.springframework.richclient.application.ApplicationWindowFactory;
 import org.springframework.richclient.application.PageComponent;
 import org.springframework.richclient.application.PageDescriptor;
-import org.springframework.richclient.application.support.SharedCommandTargeter;
 import org.springframework.richclient.command.ActionCommandExecutor;
 import org.springframework.richclient.command.TargetableActionCommand;
 import org.springframework.richclient.command.support.GlobalCommandIds;
 import org.springframework.richclient.util.Assert;
 
 /**
- * Tests the correct behaviour of {@link ApplicationWindowAspect}.
+ * Tests the correct behaviour of {@link org.bluebell.richclient.application.support.ApplicationWindowAspect}.
  * <p>
  * According to issue number <a href="http://jirabluebell.b2b2000.com/browse/BLUE-30">30</a> shared command executors
  * are not updated conveniently after changing pages. This is due to the following facts:
  * <ol>
  * <li><code>ApplicationPage#setActiveComponent</code> is not invoked in some cases.
  * <li>Sometimes, even if invoked, no action is done (tipically <code>#fireFocusXXX</code> like methods). These actions
- * are needed in order to register newer commands executors {@link SharedCommandTargeter}.
+ * are needed in order to register newer commands executors
+ * {@link org.springframework.richclient.application.support.SharedCommandTargeter}.
  * </ol>
  * 
- * @see SharedCommandTargeter
- * @see ApplicationWindowAspect
+ * @see org.springframework.richclient.application.support.SharedCommandTargeter
+ * @see ApplicationConfigAspect
  * 
  * @author <a href = "mailto:julio.arguello@gmail.com" >Julio Argüello (JAF)</a>
  */
@@ -152,7 +151,7 @@ public class TestApplicationWindowAspect extends AbstractBbSamplesTests {
     }
 
     /**
-     * Show a page in a given window following these steps:
+     * Show a page in a given window. Follows these steps:
      * <ol>
      * <li>Activate target window
      * <li>Initialize test variables
@@ -194,6 +193,9 @@ public class TestApplicationWindowAspect extends AbstractBbSamplesTests {
 
     /**
      * Returns the current implementation of the shared command with id {@link GlobalCommandIds#PROPERTIES}.
+     * 
+     * @param applicationWindow
+     *            the target application window.
      * 
      * @return the associated command executor.
      * 

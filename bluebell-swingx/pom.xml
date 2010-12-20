@@ -15,13 +15,22 @@
 	<artifactId>bluebell-swingx</artifactId>
 	<packaging>jar</packaging>
 	<name>Bluebell SwingX</name>
-	<description>SwingX integration module</description>	
+	<description>SwingX integration module</description>
+
+	<!--
+		(JAF), 20101215, "URL" must be set compulsory into parent pom and children in order to make relative links work at site:deploy
+
+		See:
+		http://maven.apache.org/plugins/maven-site-plugin/faq.html#Use_of_url
+		http://maven.apache.org/plugins/maven-site-plugin/faq.html#Why_dont_the_links_between_parent_and_child_modules_work_when_I_run_mvn_site
+	-->
+	<url>${bb.project.url}/svn/www/${project.artifactId}</url>
 
 	<dependencies>
 
 		<!--
-			Bluebell 
- 		-->
+			Bluebell
+		-->
 		<dependency>
 			<groupId>${project.groupId}</groupId>
 			<artifactId>bluebell-richclient</artifactId>
@@ -35,34 +44,34 @@
 			<scope>test</scope>
 		</dependency>
 
-		<!-- 
+		<!--
 			Spring Framework
-	 	-->
+		-->
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>org.springframework.core</artifactId>
 		</dependency>
 
-		<!-- 
+		<!--
 			Spring Richclient
-		 -->
+		-->
 		<dependency>
 			<groupId>org.springframework.richclient</groupId>
 			<artifactId>spring-richclient-core</artifactId>
 		</dependency>
 
-		<!-- 
+		<!--
 			Other swing components
- 		-->
+		-->
 		<dependency>
 			<groupId>org.swinglabs</groupId>
 			<artifactId>swingx</artifactId>
 			<!-- There is a dependence in ColorValidationInterceptor -->
 		</dependency>
 
-		<!-- 
+		<!--
 			Test
-		 -->
+		-->
 		<dependency>
 			<groupId>org.junit</groupId>
 			<artifactId>com.springsource.org.junit</artifactId>

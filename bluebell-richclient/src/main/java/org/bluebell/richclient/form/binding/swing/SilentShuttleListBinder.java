@@ -69,7 +69,8 @@ public class SilentShuttleListBinder extends ShuttleListBinder {
      * {@inheritDoc}
      */
     @Override
-    protected Binding doBind(JComponent control, FormModel formModel, String formPropertyPath, @SuppressWarnings("rawtypes") Map context) {
+    protected Binding doBind(JComponent control, FormModel formModel, String formPropertyPath, //
+            @SuppressWarnings("rawtypes") Map context) {
 
         Assert.isTrue(control instanceof SilentShuttleList, formPropertyPath);
 

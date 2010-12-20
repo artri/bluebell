@@ -27,6 +27,13 @@
 		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.5.xsd
 		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-2.5.xsd">
 
+	<!--
+		Bean: applicationConfigAspect
+		Usage: magic
+		Description: This bean is an aspect capable of detecting and fixing some tricky situations after loading
+		application context (i.e.: recursive message source hierarchy)
+	-->
+	<bean id="applicationConfigAspect" class="org.bluebell.richclient.application.config.ApplicationConfigAspect" />
 
 	<!--
 		Bean: applicationWindowAspect

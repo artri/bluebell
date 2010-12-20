@@ -20,13 +20,10 @@ package org.bluebell.binding.convert.support;
 
 import java.math.BigDecimal;
 
-import org.springframework.beans.BeanUtils;
-import org.springframework.beans.PropertyAccessorFactory;
 import org.springframework.binding.convert.ConversionContext;
 import org.springframework.binding.convert.support.AbstractFormattingConverter;
 import org.springframework.binding.format.FormatterFactory;
 import org.springframework.binding.format.support.SimpleFormatterFactory;
-import org.springframework.binding.support.BeanPropertyAccessStrategy;
 
 /**
  * Clase de utilidad para convertir un BigDecimal a Float.
@@ -36,16 +33,18 @@ import org.springframework.binding.support.BeanPropertyAccessStrategy;
  * <p>
  * This is a typical use of this class within Spring Application Context:
  * 
- * <pre>
+ * {@code
  * <!--
  *         Bean: conversionService
  *         Usage: platform optional
  *         Description: This specifies the component that will supply converters
- *         for property values. Since we are going to add a special formatter for date fields, we need to have a reference to this
- *         service in the context configured with a custom formatter factory.
+ *         for property values. Since we are going to add a special formatter for date fields, 
+ *         we need to have a reference to this service in the context configured with a custom formatter factory.
  * -->
- * <bean id="defaultConversionService" class="org.springframework.richclient.application.DefaultConversionServiceFactoryBean" />
- * <bean class="org.springframework.beans.factory.config.MethodInvokingFactoryBean" p:target-object-ref="defaultConversionService"
+ * <bean id="defaultConversionService" 
+ *      class="org.springframework.richclient.application.DefaultConversionServiceFactoryBean" />
+ * <bean class="org.springframework.beans.factory.config.MethodInvokingFactoryBean" 
+ *      p:target-object-ref="defaultConversionService"
  *         p:target-method="addConverters">
  *         <property name="arguments">
  *                 <list>
@@ -58,7 +57,7 @@ import org.springframework.binding.support.BeanPropertyAccessStrategy;
  *                 </list>
  *         </property>
  * </bean>
- * </pre>
+ * }
  * 
  * @author <a href = "mailto:julio.arguello@gmail.com" >Julio Argüello (JAF)</a>
  */
@@ -74,7 +73,7 @@ public class ConvertBigDecimalToFloat extends AbstractFormattingConverter {
     public ConvertBigDecimalToFloat() {
 
         this(new SimpleFormatterFactory(), true);
-        
+
     }
 
     /**

@@ -33,7 +33,6 @@ import org.springframework.richclient.application.ApplicationPage;
 import org.springframework.richclient.application.PageComponent;
 import org.springframework.richclient.application.PageDescriptor;
 import org.springframework.richclient.application.PageDescriptorRegistry;
-import org.springframework.richclient.application.support.AbstractApplicationPage;
 import org.springframework.richclient.application.support.MultiViewPageDescriptor;
 import org.springframework.richclient.application.support.SingleViewPageDescriptor;
 import org.springframework.util.Assert;
@@ -56,7 +55,8 @@ public final class ApplicationUtils {
     private static final Logger LOGGER = LoggerFactory.getLogger(ApplicationUtils.class);
 
     /**
-     * The active component property name of {@link AbstractApplicationPage}.
+     * The active component property name of
+     * {@link org.springframework.richclient.application.support.AbstractApplicationPage}.
      */
     private static final String ACTIVE_COMPONENT = "activeComponent";
 
@@ -76,7 +76,7 @@ public final class ApplicationUtils {
      * @return a list of page descriptors. Never empty.
      */
     @SuppressWarnings("unchecked")
-    public static final List<String> getDeclaredPageComponentDescriptors(ApplicationPage applicationPage) {
+    public static List<String> getDeclaredPageComponentDescriptors(ApplicationPage applicationPage) {
 
         Assert.notNull(applicationPage, "applicationPage");
 
@@ -142,8 +142,8 @@ public final class ApplicationUtils {
      *      (JAF), 20101205, Very important!!!
      * 
      *      Should request focus on tab selection be activated? On one hand in case negative activation will not be 
-     *      triggered correctly. On the other hand (affirmative case) every time a tabbed container is shown request focus,
-     *      so this is a problem since is better to keep old dockable focused (activated!)
+     *      triggered correctly. On the other hand (affirmative case) every time a tabbed container is shown 
+     *      request focus, so this is a problem since is better to keep old dockable focused (activated!)
      * 
      *      Decission is to keep value as FALSE since is prior to retain old selection.
      * 
@@ -156,9 +156,9 @@ public final class ApplicationUtils {
      * public JTabbedPane createTabbedPane() {
      * 
      *     // (JAF), 20101206, as explained in
-     *     // org.bluebell.richclient.application.support.ApplicationUtils#forceFocusGained tabbed panes usually requires
-     *     // focus for themselves, this is a problem that also occurs in BbFocusHighlighter (VLDocking module) as
-     *     // explained here: http://www.javalobby.org/java/forums/t43667.html
+     *     // org.bluebell.richclient.application.support.ApplicationUtils#forceFocusGained tabbed panes usually
+     *     // requires focus for themselves, this is a problem that also occurs in BbFocusHighlighter (VLDocking module)
+     *     // as explained here: http://www.javalobby.org/java/forums/t43667.html
      *     final JTabbedPane tabbedPane = this.getDecoratedComponentFactory().createTabbedPane();
      *     tabbedPane.setFocusable(Boolean.FALSE);
      * 

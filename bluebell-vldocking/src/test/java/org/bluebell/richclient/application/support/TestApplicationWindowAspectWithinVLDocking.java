@@ -21,7 +21,6 @@
  */
 package org.bluebell.richclient.application.support;
 
-import org.bluebell.richclient.application.support.TestApplicationWindowAspect;
 
 /**
  * Tests the correct updating os shared command within VLDocking context (that means working with VLDocking pages).

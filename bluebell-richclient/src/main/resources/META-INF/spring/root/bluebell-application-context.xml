@@ -284,7 +284,7 @@
 		Usage: platform required (not really, but you can't do much without it)
 		Description: Take a look to ${richclient.messageSource} bean description. Since "messageSource" bean name is hardcoded
 		in org.springframework.context.support.AbstractApplicationContext is preferible to define a bean with this name providing
-		it a parent message source for extension.
+		it a parent message source for extensibility.
 	-->
 	<bean id="messageSource" class="org.springframework.context.support.ResourceBundleMessageSource"
 		p:parentMessageSource-ref="${richclient.messageSource}" />

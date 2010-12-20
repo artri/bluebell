@@ -46,7 +46,7 @@ public class TestSubstanceLookAndFeel extends TestCase {
     /**
      * Tests Substance bug according to email sent to Kirill:
      * 
-     * <quote> Hi Kirill,
+     * <blockquote> Hi Kirill,
      * 
      * Congratulations for this great project!!
      * 
@@ -69,7 +69,7 @@ public class TestSubstanceLookAndFeel extends TestCase {
      * /source/browse/trunk/bluebell-substance/src/main/java/org/bluebell/richclient/application
      * /config/substance/SubstanceLookAndFeelConfigurer.java)
      * 
-     * Thank you very much!! </quote>
+     * Thank you very much!! </blockquote>
      * 
      */
     public void testSetSubstanceSkin() {
@@ -96,7 +96,7 @@ public class TestSubstanceLookAndFeel extends TestCase {
     }
 
     /**
-     * Sets a Substance skin into the Event Dispatcher Thread (EDT)
+     * Sets a Substance skin into the Event Dispatcher Thread (EDT).
      * 
      * @param substanceSkin
      *            the skin to set.

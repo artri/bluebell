@@ -46,15 +46,16 @@ import org.springframework.util.Assert;
  * <li>Call {@link ApplicationPageConfigurer#configureApplicationPage(ApplicationPage)}.
  * </ol>
  * 
- * <pre>
+ * {@code
  * <!--
  *         Bean: applicationPageConfigurerAspect
  *         Usage: magic
- *         Description: This bean is an aspect capable of intercepting every page creation to configure pages, linking well knows
- *         page components.
+ *         Description: This bean is an aspect capable of intercepting every page creation to configure pages, 
+ *         linking well knows page components.
  * -->
- * <bean id="applicationPageConfigurerAspect" class="org.bluebell.richclient.application.support.ApplicationPageConfigurerAspect" />
- * </pre>
+ * <bean id="applicationPageConfigurerAspect" 
+ *      class="org.bluebell.richclient.application.support.ApplicationPageConfigurerAspect" />
+ * }
  * 
  * @see ApplicationPageConfigurer
  * @see #afterReturningPageCreationOperation(ApplicationWindow, MultiViewPageDescriptor, ApplicationPage)

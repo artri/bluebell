@@ -133,6 +133,9 @@ public class DefaultApplicationPageConfigurer<T> implements ApplicationPageConfi
         UNKNOWN
     }
 
+    /**
+     * The logger for this class.
+     */
     private static final Logger LOGGER = LoggerFactory.getLogger(DefaultApplicationPageConfigurer.class);
 
     /**

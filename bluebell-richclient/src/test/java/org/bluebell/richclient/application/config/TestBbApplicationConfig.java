@@ -52,38 +52,49 @@ public class TestBbApplicationConfig extends AbstractJUnit4SpringContextTests {
      * @author <a href = "mailto:julio.arguello@gmail.com" >Julio Argüello (JAF)</a>
      */
     public enum PropertyValues {
-        L, I, H
+        /**
+         * The <b>L</b>owest value.
+         */
+        L,
+        /**
+         * The <b>I</b>ntermediate value.
+         */
+        I,
+        /**
+         * The <b>H</b>ighest value.
+         */
+        H
     };
 
     /**
      * The order of the highest precedence PPC.
      */
-    public static Integer HIGHEST_PRECEDENCE = PriorityOrdered.HIGHEST_PRECEDENCE + 1;
+    public static final Integer HIGHEST_PRECEDENCE = PriorityOrdered.HIGHEST_PRECEDENCE + 1;
 
     /**
      * The order of an intermediate precedence PPC.
      */
-    public static Integer INTERMEDIATE_PRECEDENCE = 2;
+    public static final Integer INTERMEDIATE_PRECEDENCE = 2;
 
     /**
      * The order of the lowest precedence PPC.
      */
-    public static Integer LOWEST_PRECEDENCE = PriorityOrdered.LOWEST_PRECEDENCE;
+    public static final Integer LOWEST_PRECEDENCE = PriorityOrdered.LOWEST_PRECEDENCE;
 
     /**
      * The name of the first bean.
      */
-    private static String BEAN_NAME_1 = "bean1";
+    private static final String BEAN_NAME_1 = "bean1";
 
     /**
      * The name of the second bean.
      */
-    private static String BEAN_NAME_2 = "bean2";
+    private static final String BEAN_NAME_2 = "bean2";
 
     /**
      * The name of the third bean.
      */
-    private static String BEAN_NAME_3 = "bean3";
+    private static final String BEAN_NAME_3 = "bean3";
 
     /**
      * The retrieved application applicationConfig.
@@ -273,7 +284,7 @@ public class TestBbApplicationConfig extends AbstractJUnit4SpringContextTests {
         TestCase.assertEquals(null, //
                 BbApplicationConfig.getValue(this.applicationConfig, TestBbApplicationConfig.BEAN_NAME_1, noPpc));
     }
-    
+
     /**
      * Test the correct behaviour of {@link BbApplicationConfig} when there are duplicated placeholders.
      */

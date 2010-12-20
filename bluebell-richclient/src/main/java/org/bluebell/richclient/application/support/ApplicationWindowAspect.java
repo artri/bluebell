@@ -28,8 +28,6 @@ import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.NotReadablePropertyException;
-import org.springframework.beans.PropertyAccessorFactory;
 import org.springframework.richclient.application.ApplicationPage;
 import org.springframework.richclient.application.ApplicationWindow;
 import org.springframework.richclient.application.PageComponent;
@@ -49,18 +47,18 @@ import org.springframework.util.Assert;
  * All of this is needed since page component activation doesn't work fine out of the box while dealing with multiple
  * pages.
  * <p>
- * <b>Note</code> ideally this class should be merged into
+ * <b>Note</b> ideally this class should be merged into
  * {@link org.springframework.richclient.application.support.AbstractApplicationPage}, but this is Bluebell, not Spring
  * RCP.
  * 
- * <pre>
+ * {@code
  * <!--
  *         Bean: applicationWindowAspect
  *         Usage: magic
  *         Description: This bean is an aspect capable of intercepting every window creation to attach a page listener.
  * -->
  * <bean id="applicationWindowAspect" class="org.bluebell.richclient.application.support.ApplicationWindowAspect" />
- * </pre>
+ * }
  * 
  * @see PageListener
  * @see ApplicationWindow
@@ -121,8 +119,8 @@ public class ApplicationWindowAspect extends ApplicationServicesAccessor impleme
         // 2. Force a focus gained event, this is needed in order to be aware of recently retrieved application page
         // configuration (ApplicationPageConfigurer). Otherwise no event will be raised and no handlers will be invoked
         // (i.e. SharedCommandTargeter)
-        final PageComponent lastActiveComponent = this.findActivationCandidate(applicationPage);                
-        ApplicationUtils.forceFocusGained(applicationPage, lastActiveComponent);     
+        final PageComponent lastActiveComponent = this.findActivationCandidate(applicationPage);
+        ApplicationUtils.forceFocusGained(applicationPage, lastActiveComponent);
     }
 
     /**
@@ -214,12 +212,12 @@ public class ApplicationWindowAspect extends ApplicationServicesAccessor impleme
     // try {
     // // This code is VLDocking dependant, however no import is needed and therefore it's fault tolerant
     // final Object focusHandler = PropertyAccessorFactory.forDirectFieldAccess(applicationPage.getControl())//
-    // .getPropertyValue(ApplicationWindowAspect.FOCUS_HANDLER);
+    // .getPropertyValue(ApplicationConfigAspect.FOCUS_HANDLER);
     // PropertyAccessorFactory.forDirectFieldAccess(focusHandler)//
-    // .setPropertyValue(ApplicationWindowAspect.LAST_FOCUSED_DOCKABLE, null);
+    // .setPropertyValue(ApplicationConfigAspect.LAST_FOCUSED_DOCKABLE, null);
     //
     // } catch (NotReadablePropertyException e) {
-    // ApplicationWindowAspect.LOGGER.warn(//
+    // ApplicationConfigAspect.LOGGER.warn(//
     // "Unable to reset lastFocusedDockable, may be not using VLDocking?");
     // }
     // }

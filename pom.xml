@@ -16,9 +16,12 @@
 		(6) - (JAF), 20101209, Review build_helper plugin problems, BB may be affected...
 		(8) - (JAF), 20101210, deploy artifacts to SVN and include information in site like confluence plugin does
 		(9) - (JAF), 20101210, optimize tests (parallel execution).
-		(10)- (JAF), 20101211, review this pom and child poms in order to remove configuration from <plugins> in favour of <pluginmanagement>
-		(11)- (JAF), 20101212, employ ${bluebell.parent.basedir}
-		(12)- (JAF), 20101212, deploy artifacts to http://babyloncandle.blogspot.com/2009/04/deploying-maven-artifacts-to-googlecode.html
+		OK (10)- (JAF), 20101211, review this pom and child poms in order to remove configuration from <plugins> in favour of <pluginmanagement>
+		OK (11)- (JAF), 20101212, employ ${bluebell.parent.basedir}
+		OK (12)- (JAF), 20101212, deploy artifacts to http://babyloncandle.blogspot.com/2009/04/deploying-maven-artifacts-to-googlecode.html
+		OK (13)- (JAF), 20101213, test newer version of wagon-svn
+		OK (14)- (JAF), 20101218, take a look to http://code.google.com/p/maven-googlecode-plugin/wiki/MavenSiteDeployOnSVN
+		KO (15)- (JAF), 20101218, deploy to google code, maven-googlecode-plugin.googlecode.com/svn/site/index.html
 	-->
 
 	<modelVersion>4.0.0</modelVersion>
@@ -27,20 +30,30 @@
 	<artifactId>bluebell-parent</artifactId>
 	<version>0.1</version>
 	<packaging>pom</packaging>
-
 	<name>Bluebell Parent</name>
-	<url>http://saber.b2b2000.com/display/BLUE/Bluebell</url>
+	<description>Bluebell parent pom module</description>
+
+	<!--
+		(JAF), 20101215, "URL" must be set compulsory into parent pom and children in order to make relative links work
+		at site:deploy
+
+		http://maven.apache.org/plugins/maven-site-plugin/faq.html#Use_of_url
+		http://maven.apache.org/plugins/maven-site-plugin/faq.html
+		#Why_dont_the_links_between_parent_and_child_modules_work_when_I_run_mvn_site
+	-->
+	<url>${bb.project.url}/svn/www/</url>
+
 	<inceptionYear>2009</inceptionYear>
 	<organization>
 		<name>Bluebell.org.es</name>
-		<url>http://site.bluebell.org.es/</url>
+		<url>http://saber.b2b2000.com/display/BLUE/Bluebell</url>
 	</organization>
 
 	<licenses>
 		<license>
 			<name>Apache License, Version 2.0</name>
 			<url>http://www.apache.org/licenses/LICENSE-2.0</url>
-			<distribution>manual</distribution>
+			<distribution>repo</distribution>
 		</license>
 	</licenses>
 
@@ -48,19 +61,19 @@
 		(JAF) 20101206, according to http://maven.apache.org/pom.html#SCM
 	-->
 	<scm>
-		<connection>scm:svn:http://bluebell.googlecode.com/svn/trunk/</connection>
+		<connection>scm:svn:${bb.project.url}/svn/trunk/</connection>
 		<developerConnection>scm:svn:https://bluebell.googlecode.com/svn/trunk/</developerConnection>
 		<tag>HEAD</tag>
 		<url>http://code.google.com/p/bluebell/source/browse/#svn/trunk</url>
 	</scm>
 
-	<!--
-		(JAF) 20101211, defining properties into parent pom being overrided by profile
-		properties technique does not work fine on Maven 2.x.
-
-		See http://jira.codehaus.org/browse/MNG-2363 (I'm not really sure this is the associated bug...)
-	-->
 	<prerequisites>
+		<!--
+			(JAF) 20101211, defining properties into parent pom being overrided by profile
+			properties technique does not work fine under Maven 2.x.
+
+			See http://jira.codehaus.org/browse/MNG-2363 (I'm not really sure this is the associated bug...)
+		-->
 		<maven>3.0</maven>
 	</prerequisites>
 
@@ -87,20 +100,32 @@
 
 
 	<distributionManagement>
-		<site>
-			<id>bluebell.googlecode.com.site.deploy</id>
-			<name>Google Code Maven Site For Bluebell</name>
-			<url>dav:https://bluebell.googlecode.com/svn/www/${project.version}</url>
-			<!-- <url>svn:https://bluebell.googlecode.com/svn/www/${project.version}</url> -->
-		</site>
 		<!-- <site> -->
-		<!-- <id>bluebell.googlecode.com.site.deploy</id> -->
+		<!-- <id>bluebell.googlecode.com</id> -->
 		<!-- <name>Google Code Maven Site For Bluebell</name> -->
-		<!-- <url>file://${user.home}/.bluebell/dist/${project.version}</url> -->
+		<!-- <url>dav:http://bluebell.googlecode.com/svn/www/${project.version}</url> -->
+		<!-- <url>svn:https://bluebell.googlecode.com/svn/www/${project.version}</url> -->
 		<!-- </site> -->
+		<!-- <site> -->
+		<!-- <id>bluebell.googlecode.com</id> -->
+		<!-- <name>Google Code Maven Site For Bluebell</name> -->
+		<!-- <url>${bb.distributionManagement.site.url}</url> -->
+		<!-- </site> -->
+		<site>
+			<id>bluebell.googlecode.com</id>
+			<name>Google Code Maven Site For Bluebell</name>
+			<url>scm:svn:https://bluebell.googlecode.com/svn/www</url>
+		</site>
+
+		<repository>
+			<id>bluebell.googlecode.com</id>
+			<name>Google Code Maven Site For Bluebell</name>
+			<url>dav:https://bluebell.googlecode.com/svn/maven/</url>
+		</repository>
 	</distributionManagement>
 
 	<repositories>
+
 		<!-- <repository> -->
 		<!-- <id>org.bluebell.module.repository.external</id> -->
 		<!-- <name>Fake repository useful to integrate non mavenized artifacts when building from parent pom</name> -->
@@ -156,16 +181,10 @@
 			<name>Codehaus Release Repo</name>
 			<url>http://repository.codehaus.org</url>
 		</pluginRepository>
-		<!-- </pluginRepository> -->
-		<!-- <pluginRepository> -->
-		<!-- <id>mvn-public</id> -->
-		<!-- <name>MVNRepository</name> -->
-		<!-- <url>http://mvnrepository.com</url> -->
-		<!-- </pluginRepository> -->
-		<!--
-			(JAF), 20101210, "org.jboss.apiviz.apiviz" doclet needs "jboss.releases" repository.
-		-->
 		<pluginRepository>
+			<!--
+				(JAF), 20101210, "org.jboss.apiviz.apiviz" doclet needs "jboss.releases" repository.
+			-->
 			<id>jboss.releases</id>
 			<name>JBoss releases</name>
 			<url>http://repository.jboss.org/maven2</url>
@@ -192,10 +211,28 @@
 				<artifactId>wagon-webdav</artifactId>
 				<version>1.0-beta-2</version>
 			</extension>
+
+			<extension>
+				<groupId>org.apache.maven.wagon</groupId>
+				<artifactId>wagon-scm</artifactId>
+				<version>1.0-beta-6</version>
+			</extension>
+			<extension>
+				<groupId>org.apache.maven.scm</groupId>
+				<artifactId>maven-scm-manager-plexus</artifactId>
+				<version>1.0</version>
+			</extension>
+			<extension>
+				<groupId>org.apache.maven.scm</groupId>
+				<artifactId>maven-scm-provider-svnexe</artifactId>
+				<version>1.0</version>
+			</extension>
+			<!-- <extension> -->
 			<!--
 				(JAF) 20091228: a customized wagon-svn version is used to make SVN work as HTTP server...
+
+				UPDATE, (JAF), 20101216, no needed anymore since site deployment is made via file:/ protocol
 			-->
-			<!-- <extension> -->
 			<!-- <groupId>org.jvnet.wagon-svn</groupId> -->
 			<!-- <artifactId>org.bluebell.wagon-svn</artifactId> -->
 			<!-- <version>1.11-SNAPSHOT</version> -->
@@ -205,215 +242,74 @@
 		<pluginManagement>
 			<plugins>
 				<plugin>
-					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-jar-plugin</artifactId>
-					<version>2.3.1</version>
+					<groupId>com.mycila.maven-license-plugin</groupId>
+					<artifactId>maven-license-plugin</artifactId>
+					<version>1.5.0</version>
+					<configuration>
+						<header>${bb.license.header}</header>
+						<headerDefinitions>
+							<headerDefinition>${bb.license.headerDefinition}</headerDefinition>
+						</headerDefinitions>
+
+						<quiet>true</quiet>
+						<failIfMissing>true</failIfMissing>
+						<aggregate>true</aggregate>
+						<encoding>${project.build.sourceEncoding}</encoding>
+
+						<properties>
+							<name>${project.name}</name>
+							<year>${project.inceptionYear}</year>
+							<owner>Julio Arg\u00fcello</owner>
+							<email>julio.arguello@gmail.com</email>
+						</properties>
+						<excludes>
+							<exclude>**/src/etc/**</exclude>
+							<exclude>**/src/ext/**</exclude>
+							<exclude>**/lib/**</exclude>
+							<exclude>**/*.vm</exclude>
+						</excludes>
+					</configuration>
 					<executions>
 						<execution>
-							<!--
-								(JAF), 20100321: attach tests artifact installation to build lifecycle
-							-->
-							<id>attach-tests</id>
-							<goals>
-								<goal>test-jar</goal>
-							</goals>
-						</execution>
-					</executions>
-				</plugin>
-				<plugin>
-					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-source-plugin</artifactId>
-					<version>2.1.2</version>
-					<executions>
-						<execution>
-							<!--
-								(JAF), 20100316: attach sources artifact installation to build lifecycle
-							-->
-							<id>attach-sources</id>
+							<id>format-headers</id>
 							<phase>verify</phase>
 							<goals>
-								<goal>jar</goal>
+								<goal>format</goal>
 							</goals>
 						</execution>
 					</executions>
 				</plugin>
 				<plugin>
+					<!--
+						(JAF) 20091212: stablished maven compiler plugin compliance version and encoding
+					-->
 					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-site-plugin</artifactId>
-					<version>3.0-beta-3</version>
+					<artifactId>maven-compiler-plugin</artifactId>
+					<version>2.3.2</version>
 					<configuration>
-						<inputEncoding>${project.reporting.inputEncoding}</inputEncoding>
-						<outputEncoding>${project.reporting.outputEncoding}</outputEncoding>
-						<generateSitemap>true</generateSitemap>
-
-						<reportPlugins>
-							<!--
-								(JAF), 20101210, Maven Confluence plugin pages are:
-								http://code.google.com/p/maven-confluence-plugin/
-							-->
-							<!-- <plugin> -->
-							<!-- <groupId>org.bsc.maven</groupId> -->
-							<!-- <artifactId>maven-confluence-reporting-plugin</artifactId> -->
-							<!-- <version>1.2</version> -->
-							<!-- <reportSets> -->
-							<!-- <reportSet> -->
-							<!-- <id>confluence</id> -->
-							<!-- <configuration> -->
-							<!-- <spaceKey>BLUE</spaceKey> -->
-							<!-- <endPoint>http://saber.b2b2000.com/rpc/xmlrpc</endPoint> -->
-							<!---->
-							<!-- <username>j.arguello</username> -->
-							<!-- <password>arguello</password> -->
-							<!-- <parentPageTitle>Maven</parentPageTitle> -->
-							<!-- </configuration> -->
-							<!-- <reports> -->
-							<!-- <report>plugin-confluence-summary</report> -->
-							<!-- </reports> -->
-							<!-- </reportSet> -->
-							<!-- </reportSets> -->
-							<!-- </plugin> -->
-							<!--
-								(JAF), 20101209, enabling dependency locations on project-info-reports-plugin
-								incredibly slows down site creation.
-
-								See http://blog.andyhot.gr/maven-and-slow-dependencies-report/
-							-->
-							<plugin>
-								<groupId>org.apache.maven.plugins</groupId>
-								<artifactId>maven-project-info-reports-plugin</artifactId>
-								<version>2.2</version>
-								<configuration>
-									<dependencyLocationsEnabled>false</dependencyLocationsEnabled>
-								</configuration>
-							</plugin>
-							<plugin>
-								<groupId>org.apache.maven.plugins</groupId>
-								<artifactId>maven-surefire-report-plugin</artifactId>
-								<configuration>
-									<!-- <xrefLocation>${project.reporting.outputDirectory}/../xref-test</xrefLocation> -->
-									<aggregate>true</aggregate>
-								</configuration>
-								<reportSets>
-									<reportSet>
-										<id>report-only</id>
-										<reports>
-											<report>report-only</report>
-										</reports>
-									</reportSet>
-								</reportSets>
-							</plugin>
-							<plugin>
-								<groupId>org.apache.maven.plugins</groupId>
-								<artifactId>maven-jxr-plugin</artifactId>
-								<version>2.2</version>
-								<configuration>
-									<!--
-										(JAF), 20101208: according to
-										http://blog.xebia.com/2007/01/16/reporting-on-a-multi-module-project-with-maven2/
-									-->
-									<aggregate>true</aggregate>
-
-									<!--
-										(JAF), 20091230, Javadoc links will not work until deploying site, even when using site:stage
-
-										http://jira.codehaus.org/browse/JXR-6
-									-->
-									<linkJavadoc>true</linkJavadoc>
-
-									<inputEncoding>${project.reporting.inputEncoding}</inputEncoding>
-									<outputEncoding>${project.reporting.outputEncoding}</outputEncoding>
-								</configuration>
-							</plugin>
-							<plugin>
-								<groupId>org.apache.maven.plugins</groupId>
-								<artifactId>maven-javadoc-plugin</artifactId>
-								<!--
-									(JAF), 20101209, version number is set according to:
-									http://mindthegab.com/2010/10/21/boost-your-maven-build-with-best-practices/
-
-									"There is a bug in the maven javadoc plugin 2.6+ which was causing the
-									plugin to be invoked N*N times where N is the number of modules of my project
-									(so N times per each of the N modules).
-									The workaround is to downgrade to 2.5 version of the javadoc plugin."
-								-->
-								<version>2.5</version>
-								<reportSets>
-									<reportSet>
-										<id>aggregate</id>
-										<reports>
-											<report>aggregate</report>
-										</reports>
-									</reportSet>
-									<reportSet>
-										<id>test-aggregate</id>
-										<reports>
-											<report>test-aggregate</report>
-										</reports>
-									</reportSet>
-								</reportSets>
-								<configuration>
-									<!--
-										(JAF), 20101211, note in order to aggregate Javadoc under version 2.5 not
-										only aggregating report set is enough but also including the element <aggregate>true</aggregate>
-										is needed (contrary to what documentation says...)
-									-->
-									<aggregate>true</aggregate>
-
-									<!--
-										(JAF), 20101211, note in order to prevent bug 251 under Maven3, "destDir" param
-										must be set before "reportOutputDirectory" as follows.
-
-										See http://jira.codehaus.org/browse/MJAVADOC-251
-									-->
-									<destDir></destDir>
-									<reportOutputDirectory>${project.reporting.outputDirectory}</reportOutputDirectory>
-
-									<!--
-										(JAF), 20101208, "detectLinks" is too slow and not very useful
-									-->
-									<!-- <detectLinks>true</detectLinks> -->
-
-									<!--
-										TODO - (JAF), 20091230, lamentably <linksource> element does not work with jxr plugin :-(
-									-->
-									<!-- <linksource>true</linksource> -->
-
-									<doctitle>API for ${project.name} ${project.version}</doctitle>
-									<windowtitle>API for ${project.name} ${project.version}</windowtitle>
-									<testDoctitle>Test API for ${project.name} ${project.version}</testDoctitle>
-									<testWindowtitle>Test API for ${project.name} ${project.version}</testWindowtitle>
-
-									<charset>${project.reporting.outputEncoding}</charset>
-									<encoding>${project.reporting.outputEncoding}</encoding>
-									<docencoding>${project.reporting.outputEncoding}</docencoding>
-									<breakiterator>true</breakiterator>
-									<version>true</version>
-									<author>true</author>
-									<keywords>true</keywords>
-
-									<!--
-										(JAF), 20091230, Graphviz doclet support:
-										http://code.google.com/p/apiviz/#Maven_2_Integration.
-
-										Prerequisites are http://code.google.com/p/apiviz/#Prerequisites.
-
-										Basically installing and setting the following system properties:
-										- msiexec /a graphviz-x.xx.msi
-										- GRAPHVIZ_HOME=C:\Program Files\Graphviz-2.20.2\bin
-										- Path=...;%GRAPHVIZ_HOME%
-									-->
-									<doclet>org.jboss.apiviz.APIviz</doclet>
-									<docletArtifact>
-										<groupId>org.jboss.apiviz</groupId>
-										<artifactId>apiviz</artifactId>
-										<version>1.3.0.GA</version>
-									</docletArtifact>
-									<useStandardDocletOptions>true</useStandardDocletOptions>
-									<additionalparam>${APIviz.source.classpath}</additionalparam>
-								</configuration>
-							</plugin>
-						</reportPlugins>
+						<source>1.6</source>
+						<target>1.6</target>
+						<encoding>${project.build.sourceEncoding}</encoding>
 					</configuration>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-dependency-plugin</artifactId>
+					<executions>
+						<execution>
+							<!--
+								(JAF) 20091222: break build if dependency analysis fails
+							-->
+							<id>analyze</id>
+							<goals>
+								<goal>analyze-only</goal>
+							</goals>
+							<configuration>
+								<failOnWarning>true</failOnWarning>
+								<ignoreNonCompile>true</ignoreNonCompile>
+							</configuration>
+						</execution>
+					</executions>
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
@@ -442,6 +338,297 @@
 							(JAF) 20100527: useful when dealing with multiple versions of same artifact
 							<addVersionToProjectName>true</addVersionToProjectName>
 						-->
+					</configuration>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-jar-plugin</artifactId>
+					<version>2.3.1</version>
+					<executions>
+						<execution>
+							<!--
+								(JAF), 20100321: attach tests artifact installation to build lifecycle
+							-->
+							<id>attach-tests</id>
+							<goals>
+								<goal>test-jar</goal>
+							</goals>
+						</execution>
+					</executions>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-site-plugin</artifactId>
+					<version>3.0-beta-3</version>
+					<configuration>
+						<inputEncoding>${project.reporting.inputEncoding}</inputEncoding>
+						<outputEncoding>${project.reporting.outputEncoding}</outputEncoding>
+						<generateSitemap>true</generateSitemap>
+
+						<outputDirectory>${bb.site.outputDirectory}</outputDirectory>
+						<reportPlugins>
+							<plugin>
+								<groupId>org.apache.maven.plugins</groupId>
+								<artifactId>maven-checkstyle-plugin</artifactId>
+								<version>2.6</version>
+								<configuration>
+									<configLocation>${bb.site.checkstyle.configLocation}</configLocation>
+									<headerLocation>${bb.license.header}</headerLocation>
+									<encoding>${project.build.sourceEncoding}</encoding>
+									<includeTestSourceDirectory>true</includeTestSourceDirectory>
+									<linkXRef>true</linkXRef>
+									<xrefLocation>${bb.site.xrefLocation}</xrefLocation>
+								</configuration>
+							</plugin>
+							<plugin>
+								<groupId>org.apache.maven.plugins</groupId>
+								<artifactId>maven-javadoc-plugin</artifactId>
+								<!--
+									(JAF), 20101209, version number is set according to:
+									http://mindthegab.com/2010/10/21/boost-your-maven-build-with-best-practices/
+
+									"There is a bug in the maven javadoc plugin 2.6+ which was causing the
+									plugin to be invoked N*N times where N is the number of modules of my project
+									(so N times per each of the N modules).
+									The workaround is to downgrade to 2.5 version of the javadoc plugin."
+
+									UPDATE:
+									(JAF), 20101216, with maven-javadoc-plugin 2.5 and Maven 3.0.1 reportSet
+									is ignored!!
+								-->
+								<version>2.5</version>
+								<configuration>
+									<!--
+										(JAF), 20101211, note in order to aggregate Javadoc under version 2.5 not
+										only aggregating report set is enough but also including the element
+										<aggregate>true</aggregate> is needed (contrary to what documentation says...)
+									-->
+									<aggregate>true</aggregate>
+
+									<!--
+										(JAF), 20101211, note in order to prevent bug 251 under Maven3, "destDir" param
+										must be set before "reportOutputDirectory" as follows.
+
+										See http://jira.codehaus.org/browse/MJAVADOC-251
+									-->
+									<destDir></destDir>
+									<reportOutputDirectory>${project.reporting.outputDirectory}</reportOutputDirectory>
+
+									<!--
+										(JAF), 20101208, "detectLinks" is too slow and not very useful
+									-->
+									<!-- <detectLinks>true</detectLinks> -->
+
+									<!--
+										TODO - (JAF), 20091230, lamentably <linksource> element does not link with
+										JXR plugin :-(
+									-->
+									<!-- <linksource>true</linksource> -->
+
+									<doctitle>API for ${project.name} ${project.version}</doctitle>
+									<windowtitle>API for ${project.name} ${project.version}</windowtitle>
+									<testDoctitle>Test API for ${project.name} ${project.version}</testDoctitle>
+									<testWindowtitle>Test API for ${project.name} ${project.version}</testWindowtitle>
+
+
+									<charset>${project.reporting.outputEncoding}</charset>
+									<encoding>${project.build.sourceEncoding}</encoding>
+									<docencoding>${project.reporting.outputEncoding}</docencoding>
+									<breakiterator>true</breakiterator>
+									<version>true</version>
+									<author>true</author>
+									<keywords>true</keywords>
+
+									<!--
+										(JAF), 20091230, Graphviz doclet support:
+										http://code.google.com/p/apiviz/#Maven_2_Integration.
+
+										Prerequisites are http://code.google.com/p/apiviz/#Prerequisites.
+
+										Basically installing and setting the following system properties:
+										- msiexec /a graphviz-x.xx.msi
+										- GRAPHVIZ_HOME=C:\Program Files\Graphviz-2.20.2\bin
+										- Path=...;%GRAPHVIZ_HOME%
+									-->
+									<doclet>org.jboss.apiviz.APIviz</doclet>
+									<docletArtifact>
+										<groupId>org.jboss.apiviz</groupId>
+										<artifactId>apiviz</artifactId>
+										<version>1.3.0.GA</version>
+									</docletArtifact>
+									<useStandardDocletOptions>true</useStandardDocletOptions>
+									<additionalparam>${bb.site.javadoc.APIviz.source.classpath}</additionalparam>
+								</configuration>
+							</plugin>
+							<plugin>
+								<groupId>org.apache.maven.plugins</groupId>
+								<artifactId>maven-jxr-plugin</artifactId>
+								<version>2.2</version>
+								<configuration>
+									<!--
+										(JAF), 20101208: according to:
+
+										http://blog.xebia.com/2007/01/16/
+										reporting-on-a-multi-module-project-with-maven2/
+									-->
+									<aggregate>true</aggregate>
+
+									<!--
+										(JAF), 20091230, Javadoc links will not work until deploying site,
+										even when using site:stage
+
+										http://jira.codehaus.org/browse/JXR-6
+									-->
+									<linkJavadoc>true</linkJavadoc>
+
+									<inputEncoding>${project.reporting.inputEncoding}</inputEncoding>
+									<outputEncoding>${project.reporting.outputEncoding}</outputEncoding>
+								</configuration>
+							</plugin>
+							<plugin>
+								<!--
+									FIXME, (JAF), 20101216, taking into account Maven 3 reporting changes, and JXR
+									aggregation limitations, AFAIK this is the unique way to produce JXR reports for
+									parent and child modules
+
+									Other reporting plugins like "maven-checkstyle-plugin" needs child projects
+									reporting folders in order to make linking work. Note JXR folder into child modules
+									links well with parent module Javadoc. That's why Javadoc is exclusively published
+									into parent folder (...and because Javadoc generation is weight...)
+								-->
+								<groupId>org.apache.maven.plugins</groupId>
+								<artifactId>maven-jxr-plugin</artifactId>
+								<version>2.2</version>
+								<configuration>
+									<inputEncoding>${project.reporting.inputEncoding}</inputEncoding>
+									<outputEncoding>${project.reporting.outputEncoding}</outputEncoding>
+								</configuration>
+							</plugin>
+							<plugin>
+								<!--
+									(JAF), 20101209, enabling dependency locations on project-info-reports-plugin
+									incredibly slows down site creation.
+
+									See http://blog.andyhot.gr/maven-and-slow-dependencies-report/
+								-->
+								<groupId>org.apache.maven.plugins</groupId>
+								<artifactId>maven-project-info-reports-plugin</artifactId>
+								<version>2.2</version>
+								<configuration>
+									<dependencyLocationsEnabled>false</dependencyLocationsEnabled>
+								</configuration>
+							</plugin>
+							<plugin>
+								<!--
+									(JAF), 20101217, A good explanation why tests are run during test phase
+									and cobertura report:
+									http://www.mail-archive.com/users@maven.apache.org/msg82834.html
+
+									Cobertura is configured according to...
+									http://weblogs.java.net/blog/survivant/archive/2008/11/maven_test_cove.html
+
+									...because exists the following bug:
+									http://jira.codehaus.org/browse/MCOBERTURA-83
+								-->
+								<groupId>org.codehaus.mojo</groupId>
+								<artifactId>cobertura-maven-plugin</artifactId>
+								<version>${cobertura-version}</version>
+							</plugin>
+							<plugin>
+								<groupId>org.apache.maven.plugins</groupId>
+								<artifactId>maven-surefire-report-plugin</artifactId>
+								<version>2.6</version>
+								<configuration>
+									<xrefLocation>${bb.site.xrefLocation}</xrefLocation>
+									<detail>true</detail>
+									<aggregate>true</aggregate>
+								</configuration>
+								<reportSets>
+									<reportSet>
+										<id>report-only</id>
+										<reports>
+											<report>report-only</report>
+										</reports>
+									</reportSet>
+								</reportSets>
+							</plugin>
+
+							<!--
+								(JAF), 20101210, Maven Confluence plugin pages are:
+								http://code.google.com/p/maven-confluence-plugin/
+							-->
+							<!-- <plugin> -->
+							<!-- <groupId>org.bsc.maven</groupId> -->
+							<!-- <artifactId>maven-confluence-reporting-plugin</artifactId> -->
+							<!-- <version>1.2</version> -->
+							<!-- <reportSets> -->
+							<!-- <reportSet> -->
+							<!-- <id>confluence</id> -->
+							<!-- <configuration> -->
+							<!-- <spaceKey>BLUE</spaceKey> -->
+							<!-- <endPoint>http://saber.b2b2000.com/rpc/xmlrpc</endPoint> -->
+							<!---->
+							<!-- <username>j.arguello</username> -->
+							<!-- <password>arguello</password> -->
+							<!-- <parentPageTitle>Maven</parentPageTitle> -->
+							<!-- </configuration> -->
+							<!-- <reports> -->
+							<!-- <report>plugin-confluence-summary</report> -->
+							<!-- </reports> -->
+							<!-- </reportSet> -->
+							<!-- </reportSets> -->
+							<!-- </plugin> -->
+						</reportPlugins>
+					</configuration>
+				</plugin>
+				<plugin>
+					<!--
+						(JAF), 20101220, downgrade to version 2.3 due to the following bugs:
+						http://jira.codehaus.org/browse/MRESOURCES-104
+						http://jira.codehaus.org/browse/MRESOURCES-117
+					-->
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-resources-plugin</artifactId>
+					<version>2.3</version>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-source-plugin</artifactId>
+					<version>2.1.2</version>
+					<executions>
+						<execution>
+							<!--
+								(JAF), 20100316: attach sources artifact installation to build lifecycle
+							-->
+							<id>attach-sources</id>
+							<phase>verify</phase>
+							<goals>
+								<goal>jar</goal>
+							</goals>
+						</execution>
+					</executions>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-surefire-plugin</artifactId>
+					<version>2.6</version>
+					<configuration>
+						<!--
+							(JAF), 20091226: Specify the JUnit artifact to be used
+						-->
+						<junitArtifactName>org.junit:com.springsource.org.junit</junitArtifactName>
+						<forkMode>always</forkMode>
+
+
+						<systemProperties>
+							<!--
+								(JAF), 20101213: In order to avoid cobertura run tests twice.
+							-->
+							<property>
+								<name>net.sourceforge.cobertura.datafile</name>
+								<value>${project.build.directory}/cobertura/cobertura.ser</value>
+							</property>
+						</systemProperties>
 					</configuration>
 				</plugin>
 				<plugin>
@@ -482,36 +669,22 @@
 					</executions>
 				</plugin>
 				<plugin>
-					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-dependency-plugin</artifactId>
+					<groupId>org.codehaus.mojo</groupId>
+					<artifactId>cobertura-maven-plugin</artifactId>
+					<version>${cobertura-version}</version>
 					<executions>
+						<!--
+							(JAF) 20101206, According to "BetterBuildsWithMaven2" and due to a hard-coded path in
+							Cobertura, the database used is stored in the project directory as cobertura.ser, and
+							is not cleaned with the rest of the project.
+						-->
 						<execution>
-							<!--
-								(JAF) 20091222: break build if dependency analysis fails
-							-->
-							<id>analyze</id>
+							<id>clean</id>
 							<goals>
-								<goal>analyze-only</goal>
+								<goal>clean</goal>
 							</goals>
-							<configuration>
-								<failOnWarning>true</failOnWarning>
-								<ignoreNonCompile>true</ignoreNonCompile>
-							</configuration>
 						</execution>
 					</executions>
-				</plugin>
-				<plugin>
-					<!--
-						(JAF) 20091212: stablished maven compiler plugin compliance version and encoding
-					-->
-					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-compiler-plugin</artifactId>
-					<version>2.3.2</version>
-					<configuration>
-						<source>1.6</source>
-						<target>1.6</target>
-						<encoding>${project.build.sourceEncoding}</encoding>
-					</configuration>
 				</plugin>
 				<plugin>
 					<groupId>org.codehaus.mojo</groupId>
@@ -529,119 +702,45 @@
 						<commandlineArgs>-class org.bluebell.richclient.application.RcpMain</commandlineArgs>
 					</configuration>
 				</plugin>
-
-				<!-- <plugin> -->
-				<!-- <groupId>org.codehaus.mojo</groupId> -->
-				<!-- <artifactId>cobertura-maven-plugin</artifactId> -->
-				<!-- <version>2.4</version> -->
-				<!-- <executions> -->
-				<!-- -->
-				<!-- (JAF) 20101206, According to "BetterBuildsWithMaven2" and due to a hard-coded path in Cobertura, -->
-				<!-- the database used is stored in the project directory as cobertura.ser, and is not cleaned with -->
-				<!-- the rest of the project. -->
-				<!-- -->
-				<!-- This is also described at: -->
-				<!-- http://weblogs.java.net/blog/survivant/archive/2008/11/maven_test_cove.html -->
-				<!-- -->
-				<!-- <execution> -->
-				<!-- <id>clean</id> -->
-				<!-- <goals> -->
-				<!-- <goal>clean</goal> -->
-				<!-- </goals> -->
-				<!-- </execution> -->
-				<!-- </executions> -->
-				<!-- </plugin> -->
-				<plugin>
-					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-surefire-plugin</artifactId>
-					<version>2.4.2</version>
-					<configuration>
-						<!--
-							(JAF) 20091226: Specify the JUnit artifact to be used
-						-->
-						<junitArtifactName>org.junit:com.springsource.org.junit</junitArtifactName>
-						<!--
-							(JAF) 20091226: Run tests in different VM since Spring RCP only allows one application instance per VM
-						-->
-						<forkMode>always</forkMode>
-					</configuration>
-				</plugin>
-				<plugin>
-					<groupId>com.mycila.maven-license-plugin</groupId>
-					<artifactId>maven-license-plugin</artifactId>
-					<version>1.5.0</version>
-					<configuration>
-						<header>${bluebell.parent.basedir}/src/etc/license.txt</header>
-						<headerDefinitions>
-							<headerDefinition>${bluebell.parent.basedir}/src/etc/licenseHeaders4Java.xml</headerDefinition>
-						</headerDefinitions>
-
-						<quiet>true</quiet>
-						<failIfMissing>true</failIfMissing>
-						<aggregate>true</aggregate>
-						<encoding>${project.build.sourceEncoding}</encoding>
-
-						<properties>
-							<name>${project.name}</name>
-							<year>${project.inceptionYear}</year>
-							<owner>Julio Arg\u00fcello</owner>
-							<email>julio.arguello@gmail.com</email>
-						</properties>
-						<excludes>
-							<exclude>**/src/etc/**</exclude>
-							<exclude>**/src/ext/**</exclude>
-							<exclude>**/lib/**</exclude>
-							<exclude>**/*.vm</exclude>
-						</excludes>
-					</configuration>
-					<executions>
-						<execution>
-							<id>format-headers</id>
-							<phase>verify</phase>
-							<goals>
-								<goal>format</goal>
-							</goals>
-						</execution>
-					</executions>
-				</plugin>
-				<!-- <plugin> -->
-				<!-- <groupId>org.codehaus.sonar</groupId> -->
-				<!-- <artifactId>sonar-maven-plugin</artifactId> -->
-				<!-- <version>2.3</version> -->
-				<!-- <dependencies> -->
-				<!-- <dependency> -->
-				<!-- <groupId>org.apache.derby</groupId> -->
-				<!-- <artifactId>derbyclient</artifactId> -->
-				<!-- <version>10.1.1.0</version> -->
-				<!-- </dependency> -->
-				<!-- </dependencies> -->
-				<!-- </plugin> -->
 			</plugins>
 		</pluginManagement>
 		<plugins>
-			<!-- <plugin> -->
-			<!-- <groupId>org.codehaus.sonar</groupId> -->
-			<!-- <artifactId>sonar-maven-plugin</artifactId> -->
-			<!-- </plugin> -->
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-source-plugin</artifactId>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-site-plugin</artifactId>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-eclipse-plugin</artifactId>
-			</plugin>
-			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>build-helper-maven-plugin</artifactId>
-			</plugin>
 			<plugin>
 				<groupId>com.mycila.maven-license-plugin</groupId>
 				<artifactId>maven-license-plugin</artifactId>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-antrun-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>prepare-site</id>
+						<!-- <phase>prepare-package</phase> -->
+						<phase>post-site</phase>
+						<goals>
+							<goal>run</goal>
+						</goals>
+						<configuration>
+							<tasks>
+								<echo>in post-site phase</echo>
+								<!-- <property name="maven.webstart.workDirectory"
+									value="${maven.webstart.workDirectory}" /> -->
+								<!-- <property name="maven.webstart.outputDirectory"
+									value="${maven.webstart.outputDirectory}" /> -->
+								<!-- <property name="maven.project.build.directory"
+									value="${project.build.directory}" /> -->
+
+								<ant antfile="${project.basedir}/build.xml">
+									<target name="fixcrlf" />
+								</ant>
+							</tasks>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -649,30 +748,34 @@
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-compiler-plugin</artifactId>
+				<artifactId>maven-eclipse-plugin</artifactId>
 			</plugin>
 			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>exec-maven-plugin</artifactId>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-site-plugin</artifactId>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-source-plugin</artifactId>
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
 			</plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>build-helper-maven-plugin</artifactId>
+			</plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>cobertura-maven-plugin</artifactId>
+			</plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>exec-maven-plugin</artifactId>
+			</plugin>
 		</plugins>
 	</build>
-
-
-	<!-- <plugin> -->
-	<!-- <groupId>org.codehaus.mojo</groupId> -->
-	<!-- <artifactId>cobertura-maven-plugin</artifactId> -->
-	<!-- <configuration> -->
-	<!-- <encoding>${project.build.sourceEncoding}</encoding> -->
-	<!-- <formats> -->
-	<!-- <format>html</format> -->
-	<!-- </formats> -->
-	<!-- </configuration> -->
-	<!-- </plugin> -->
 
 	<dependencyManagement>
 		<dependencies>
@@ -1040,8 +1143,8 @@
 				</file>
 			</activation>
 			<properties>
-				<bluebell.parent.basedir>${project.basedir}</bluebell.parent.basedir>
-
+				<bb.distributionManagement.site.url>file://${project.basedir}\..\www\</bb.distributionManagement.site.url>
+				<bb.site.outputDirectory>${project.reporting.outputDirectory}/</bb.site.outputDirectory>
 				<!--
 					(JAF), 20101210, Graphviz doc says:
 					"Please note that you must compile the project first before running the
@@ -1054,20 +1157,66 @@
 
 					So avoid setting -sourceclasspath param!!
 				-->
-				<APIviz.source.classpath>foo</APIviz.source.classpath>
+				<bb.site.javadoc.APIviz.source.classpath>foo</bb.site.javadoc.APIviz.source.classpath>
 
-				<license.header>/src/etc/license.txt</license.header>
-				<license.headerDefinition>/src/etc/licenseHeaders4Java.xml</license.headerDefinition>
+				<bb.license.header>/src/etc/license.txt</bb.license.header>
+				<bb.license.headerDefinition>/src/etc/licenseHeaders4Java.xml</bb.license.headerDefinition>
+
+				<bb.site.checkstyle.configLocation>/src/etc/checkstyle.xml</bb.site.checkstyle.configLocation>
 			</properties>
 		</profile>
 	</profiles>
 
 	<properties>
-		<bluebell.parent.basedir>${project.parent.basedir}</bluebell.parent.basedir>
+		<!--
+			The root path of the project URL (see <project><url></url> section).
+		-->
+		<bb.project.url>http://bluebell.googlecode.com/</bb.project.url>
 
-		<APIviz.source.classpath>-sourceclasspath ${project.build.outputDirectory}</APIviz.source.classpath>
-		<license.header>${project.parent.basedir}/src/etc/license.txt</license.header>
-		<license.headerDefinition>${project.parent.basedir}/src/etc/licenseHeaders4Java.xml</license.headerDefinition>
+		<!--
+			The URL where the site is deployed to.
+
+			http://jira.codehaus.org/browse/MSITE-409
+			http://tech-mind.blogspot.com/2009/01/configure-site-plugin-for-maven-multi.html
+		-->
+		<bb.distributionManagement.site.url>file://${project.basedir}\..\..\www\</bb.distributionManagement.site.url>
+
+		<!--
+			The location of the license header file.
+		-->
+		<bb.license.header>${project.parent.basedir}/src/etc/license.txt</bb.license.header>
+
+		<!--
+			The location of the license header definition file.
+		-->
+		<bb.license.headerDefinition>${project.parent.basedir}/src/etc/licenseHeaders4Java.xml</bb.license.headerDefinition>
+
+		<!--
+			The root path from the URL where the Maven site is generated inside.
+		-->
+		<bb.site.outputDirectory>${project.reporting.outputDirectory}/${project.artifactId}</bb.site.outputDirectory>
+
+		<!--
+			The command to be attached to Javadoc plugin execution in order to generate graphs.
+		-->
+		<bb.site.javadoc.APIviz.source.classpath>
+			-sourceclasspath ${project.build.outputDirectory}
+		</bb.site.javadoc.APIviz.source.classpath>
+
+
+		<!--
+			The location of the checkstyle file.
+		-->
+		<bb.site.checkstyle.configLocation>${project.parent.basedir}/src/etc/checkstyle.xml</bb.site.checkstyle.configLocation>
+
+		<!--
+			The location of the xref report.
+
+			(JAF), 20101612, it's parent relative. To be honest I don't know why child relative location does not work.
+			<xrefLocation>${bb.site.outputDirectory}/xref</xrefLocation>
+		-->
+		<bb.site.xrefLocation>${project.parent.reporting.outputDirectory}/xref</bb.site.xrefLocation>
+
 
 		<!--
 			(JAF) 20091229: Set source encoding taking into account
@@ -1084,5 +1233,6 @@
 		<aspectj-version>1.6.3.RELEASE</aspectj-version>
 		<subtance-version>6.1</subtance-version>
 		<velocity-version>1.6.2</velocity-version>
+		<cobertura-version>2.4</cobertura-version>
 	</properties>
 </project>

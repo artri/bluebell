@@ -32,7 +32,6 @@ import org.apache.commons.collections.Predicate;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.bluebell.richclient.util.ObjectUtils;
-import org.springframework.beans.BeansException;
 import org.springframework.beans.ConfigurablePropertyAccessor;
 import org.springframework.beans.PropertyAccessorFactory;
 import org.springframework.beans.factory.FactoryBean;
@@ -92,7 +91,7 @@ public class BbApplicationConfig implements BeanFactoryPostProcessor, PriorityOr
      * {@inheritDoc}
      */
     @Override
-    public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {
+    public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) { // throws BeansException {
 
         // Beans of type PPC
         final List<PropertyPlaceholderConfigurer> configurers = BbApplicationConfig.getConfigurers(beanFactory);
@@ -156,7 +155,7 @@ public class BbApplicationConfig implements BeanFactoryPostProcessor, PriorityOr
      * {@inheritDoc}
      */
     @Override
-    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+    public void setApplicationContext(ApplicationContext applicationContext) { // throws BeansException {
 
         Assert.notNull(applicationContext, "applicationContext");
 
@@ -193,7 +192,7 @@ public class BbApplicationConfig implements BeanFactoryPostProcessor, PriorityOr
         // Update placeholder values (discarding duplicates)
         final String[] newerValue = new String[] { value, beanName, String.valueOf(order) };
         @SuppressWarnings("unchecked")
-        final String[] foundValue = (String[]) CollectionUtils.find( //
+        final String[] foundValue = (String[]) CollectionUtils.find(//
                 (Collection<String[]>) MapUtils.getObject(this.applicationConfig, placeholder, ListUtils.EMPTY_LIST), //
                 new Predicate() {
 
@@ -222,6 +221,9 @@ public class BbApplicationConfig implements BeanFactoryPostProcessor, PriorityOr
         /**
          * Creates a new instance given a source one, copying every field and hardcoding the fact this placeholder
          * ignores unresolvable placeholders and not found resources.
+         * 
+         * @param source
+         *            the source PPC.
          */
         public StatsPropertyPlaceholderConfigurer(PropertyPlaceholderConfigurer source) {
 
@@ -337,7 +339,13 @@ public class BbApplicationConfig implements BeanFactoryPostProcessor, PriorityOr
 
             // Placeholder values
             valueCounter = Integer.valueOf(0);
-            for (String[] value : entry.getValue()) {
+            for (Object itr : entry.getValue()) {
+
+                if (!(itr instanceof String[])) {
+                    // FIXME, (JAF), 20101217, sometimes there is a value differente from String[]
+                    break;
+                }
+                final String[] value = (String[]) itr;
 
                 // \tkeyCounter.valueCounter.
                 sb.append("\t").append(keyCounter).append('.').append(++valueCounter).append('.');
@@ -383,7 +391,8 @@ public class BbApplicationConfig implements BeanFactoryPostProcessor, PriorityOr
      * 
      * @see #getPlaceholderConfig(Map, String, Integer)
      */
-    public static String getValue(Map<String, List<String[]>> applicationConfig, String placeholder, Integer precedence) {
+    public static String getValue(Map<String, List<String[]>> applicationConfig, //
+            String placeholder, Integer precedence) {
 
         final String[] config = BbApplicationConfig.getPlaceholderConfig(applicationConfig, placeholder, precedence);
 

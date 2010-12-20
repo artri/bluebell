@@ -42,32 +42,39 @@ import org.springframework.binding.value.support.DefaultValueChangeDetector;
  * <dd>Find below provided bean declaration:
  * 
  * <pre>
+ * {@code
  * <!--
  *         Bean: defaultValueChangeDetector
  *         Usage: platform optional
- *         Description: This specifies the value change detector used for value models (and others) in order to detect changes.
+ *         Description: This specifies the value change detector used for value models (and others) 
+ *         in order to detect changes.
  * -->
- * <bean id="defaultValueChangeDetector" class="org.bluebell.binding.value.support.CollectionAwareValueChangeDetector" />
+ * <bean id="defaultValueChangeDetector" 
+ *      class="org.bluebell.binding.value.support.CollectionAwareValueChangeDetector" />
+ * }
  * </pre>
  * 
  * <dt>Bean configuration
  * <dd>Find below the main bean with whom it collaborates:
  * 
  * <pre>
+ * {@code
  * <!--
  *         Bean: defaultApplicationServices
  *         Usage: Platform required (unless you set this up programmatically)
- *         Description: This configures the application services available to the platform. There are specific setter methods for
- *         all the standard services,
+ *         Description: This configures the application services available to the platform. 
+ *         There are specific setter methods for all the standard services,
  *         see the javadoc on the DefaultApplicationServices class for more details.
  * 
- *         NOTE: The use of bean ids (idref) is preferred over using direct bean references to avoid startup problems with circular
- *         references.
+ *         NOTE: The use of bean ids (idref) is preferred over using direct bean references to 
+ *         avoid startup problems with circular references.
  * -->
- * <bean id="defaultApplicationServices" class="org.springframework.richclient.application.support.DefaultApplicationServices">
+ * <bean id="defaultApplicationServices" 
+ *      class="org.springframework.richclient.application.support.DefaultApplicationServices">
  *         ...
  *         p:value-change-detector-id="${richclient.valueChangeDetector}"
  * </bean>
+ * }
  * </pre>
  * 
  * <dt>Aditional configuration

@@ -17,6 +17,15 @@
 	<name>Bluebell JNLP</name>
 	<description>JNLP deployment module</description>
 
+	<!--
+		(JAF), 20101215, "URL" must be set compulsory into parent pom and children in order to make relative links work at site:deploy
+
+		See:
+		http://maven.apache.org/plugins/maven-site-plugin/faq.html#Use_of_url
+		http://maven.apache.org/plugins/maven-site-plugin/faq.html#Why_dont_the_links_between_parent_and_child_modules_work_when_I_run_mvn_site
+	-->
+	<url>${bb.project.url}/svn/www/${project.artifactId}</url>
+
 	<build>
 		<plugins>
 			<plugin>
@@ -147,7 +156,7 @@
 								<property name="maven.keytool.storepass" value="${maven.keytool.storepass}" />
 								<property name="maven.keytool.alias" value="${maven.keytool.alias}" />
 
-								<ant antfile="${basedir}/build.xml">
+								<ant antfile="${project.basedir}/build.xml">
 									<target name="processJars" />
 								</ant>
 							</tasks>

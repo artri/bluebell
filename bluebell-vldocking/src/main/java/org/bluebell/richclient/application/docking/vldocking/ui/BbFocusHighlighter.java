@@ -31,8 +31,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.Assert;
 
-import sun.swing.SwingUtilities2;
-
 import com.vlsolutions.swing.docking.DockViewTitleBar;
 import com.vlsolutions.swing.docking.DockingDesktop;
 
@@ -61,7 +59,7 @@ import com.vlsolutions.swing.docking.DockingDesktop;
  * </pre>
  * 
  * @see Associated <a href="http://jirabluebell.b2b2000.com/browse/BLUE-31">JIRA issue</a>
- * @see Javalobby <a href="http://www.javalobby.org/java/forums/t43667.html">article</a regarding to focus traversal on
+ * @see Javalobby <a href="http://www.javalobby.org/java/forums/t43667.html">article</a> regarding to focus traversal on
  *      a tabbed pane.
  * 
  * @author <a href = "mailto:julio.arguello@gmail.com" >Julio Argüello (JAF)</a>
@@ -83,7 +81,8 @@ public class BbFocusHighlighter implements PropertyChangeListener {
      * 
      * @see #replaceFocusHighlighterIfNeeded()
      */
-    private static final String FOCUS_HIGHLIGHTER_CLASS = "com.vlsolutions.swing.docking.DockViewTitleBar$FocusHighlighter";
+    private static final String FOCUS_HIGHLIGHTER_CLASS = //
+    "com.vlsolutions.swing.docking.DockViewTitleBar$FocusHighlighter";
 
     /**
      * The {@value #FOCUS_OWNER} property name.
@@ -98,8 +97,8 @@ public class BbFocusHighlighter implements PropertyChangeListener {
     /**
      * {@inheritDoc}
      * 
-     * @see SwingUtilities2#tabbedPaneChangeFocusTo(java.awt.Component)
-     * @see SwingUtilities2#compositeRequestFocus(java.awt.Component)
+     * @see sun.swing.SwingUtilities2#tabbedPaneChangeFocusTo(java.awt.Component)
+     * @see sun.swing.SwingUtilities2#compositeRequestFocus(java.awt.Component)
      */
     public void propertyChange(PropertyChangeEvent e) {
 
@@ -146,8 +145,9 @@ public class BbFocusHighlighter implements PropertyChangeListener {
              * b) - Setting docking desktop as NON focusable, does the trick!!
              * ----------------------------------------------------------------
              * 
-             * If docking desktop were focusable then SwingUtilities2#tabbedPaneChangeFocusTo(java.awt.Component) would
-             * invoke SwingUtilities2#compositeRequestFocus(java.awt.Component) and that is not so cool...
+             * If docking desktop were focusable then
+             * sun.swing.SwingUtilities2#tabbedPaneChangeFocusTo(java.awt.Component) would invoke
+             * SwingUtilities2#compositeRequestFocus(java.awt.Component) and that is not so cool...
              */
             final DockingDesktop dockingDesktop = bean.getNewTitleBar().getDesktop();
             if (dockingDesktop != null) {

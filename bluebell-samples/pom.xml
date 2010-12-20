@@ -15,7 +15,16 @@
 	<artifactId>bluebell-samples</artifactId>
 	<packaging>jar</packaging>
 	<name>Bluebell Samples</name>
-	<description>Samples module</description>	
+	<description>Samples module</description>
+
+	<!--
+		(JAF), 20101215, "URL" must be set compulsory into parent pom and children in order to make relative links work at site:deploy
+
+		See:
+		http://maven.apache.org/plugins/maven-site-plugin/faq.html#Use_of_url
+		http://maven.apache.org/plugins/maven-site-plugin/faq.html#Why_dont_the_links_between_parent_and_child_modules_work_when_I_run_mvn_site
+	-->
+	<url>${bb.project.url}/svn/www/${project.artifactId}</url>
 
 	<dependencies>
 

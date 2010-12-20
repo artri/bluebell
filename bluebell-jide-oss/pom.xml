@@ -17,11 +17,19 @@
 	<name>Bluebell Jide OSS</name>
 	<description>Jide OSS integration module</description>
 
+	<!--
+		(JAF), 20101215, "URL" must be set compulsory into parent pom and children in order to make relative links work at site:deploy
+
+		See:
+		http://maven.apache.org/plugins/maven-site-plugin/faq.html#Use_of_url
+		http://maven.apache.org/plugins/maven-site-plugin/faq.html#Why_dont_the_links_between_parent_and_child_modules_work_when_I_run_mvn_site
+	-->
+	<url>${bb.project.url}/svn/www/${project.artifactId}</url>
 	<dependencies>
 
 		<!--
-			Bluebell 
- 		-->
+			Bluebell
+		-->
 		<dependency>
 			<groupId>${project.groupId}</groupId>
 			<artifactId>bluebell-richclient</artifactId>
@@ -35,9 +43,9 @@
 			<scope>test</scope>
 		</dependency>
 
-		<!-- 
+		<!--
 			Spring Richclient
-		 -->
+		-->
 		<dependency>
 			<groupId>org.springframework.richclient</groupId>
 			<artifactId>spring-richclient-jideoss</artifactId>
@@ -47,22 +55,20 @@
 			<artifactId>spring-richclient-core</artifactId>
 		</dependency>
 
-		<!-- 
+		<!--
 			Other swing components
- 		-->
+		-->
 		<dependency>
 			<groupId>com.jidesoft</groupId>
 			<artifactId>jide-oss</artifactId>
 		</dependency>
 
 		<!--
-			Logging 
+			Logging
 		-->
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>com.springsource.slf4j.api</artifactId>
 		</dependency>
-
 	</dependencies>
-
 </project>

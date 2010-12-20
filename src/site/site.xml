@@ -22,17 +22,23 @@
 <project name="Bluebell Project">
 	<bannerLeft>
 		<name>Bluebell</name>
-		<src>images/bluebell-logo.png</src>
+		 <src>images/bluebell-logo.png</src> 
+<!--		<src>http://saber.b2b2000.com/download/attachments/4194322/BLUE</src>-->
 		<href>http://saber.b2b2000.com/display/BLUE/Bluebell</href>
 	</bannerLeft>
 	<body>
-		<menu name="Bluebell Project">
+
+		<links>
+			<item name="${project.name}" href="${project.url}" />
+		</links>
+
+		<menu name="Bluebell Project" inherit="top">
 			<item name="Overview" href="index.html" />
 		</menu>
 
 		<menu ref="parent" inherit="top" />
 
-		<menu ref="modules" inherit="bottom" />
-		<menu ref="reports" inherit="top" />
+		<menu ref="modules" inherit="bottom" collapse="false" />
+		<menu ref="reports" inherit="top" collapse="false" />
 	</body>
 </project>

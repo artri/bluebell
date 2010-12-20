@@ -20,22 +20,39 @@ package org.bluebell.richclient.test;
 
 import java.awt.Component;
 import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 import javax.annotation.PostConstruct;
+import javax.annotation.Resource;
 import javax.swing.JTextField;
 
+import org.apache.commons.lang.ClassUtils;
+import org.apache.commons.lang.ObjectUtils;
+import org.bluebell.richclient.application.config.BbApplicationConfig;
 import org.bluebell.richclient.swing.util.SwingUtils;
+import org.junit.AfterClass;
+import org.junit.Before;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.context.HierarchicalMessageSource;
+import org.springframework.context.MessageSource;
 import org.springframework.richclient.application.Application;
 import org.springframework.richclient.application.ApplicationLauncher;
 import org.springframework.richclient.application.ApplicationPage;
 import org.springframework.richclient.application.ApplicationWindow;
+import org.springframework.richclient.application.WindowManager;
+import org.springframework.richclient.application.config.ApplicationLifecycleAdvisor;
 import org.springframework.richclient.command.TargetableActionCommand;
 import org.springframework.richclient.form.Form;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
 import org.springframework.util.Assert;
+import org.springframework.util.ReflectionUtils;
 
 /**
  * Base class for creating Spring Richclient tests.
@@ -46,15 +63,60 @@ import org.springframework.util.Assert;
 public abstract class AbstractBbRichClientTests extends AbstractJUnit4SpringContextTests implements InitializingBean {
 
     /**
+     * The logger.
+     */
+    private static final Logger LOGGER = LoggerFactory.getLogger(AbstractBbRichClientTests.class);
+
+    /**
      * The global application instance.
      */
     @Autowired
     private Application application;
 
     /**
+     * The application config, useful for debugging.
+     */
+    @Resource
+    // @Autowire does not work for this factory bean
+    protected Map<String, List<String[]>> applicationConfig;
+
+    /**
      * The application launcher.
      */
     private static Boolean initialized = Boolean.FALSE;
+
+    /**
+     * Close the application after every test is executed.
+     * <p>
+     * Note it is not possible to call <code>Application#close</code> directly since it invokes <code>System#exit</code>
+     * that causes exiting JVM outside normal test lifecycle.
+     * <p>
+     * So, this method just close application context, notify others about shutdown proccess and reset
+     * <code>Application#SOLE_INSTANCE</code> in order to avoid the following message: <blockquote> The global rich
+     * client application instance has not yet been initialized; it must be created and loaded first. </blockquote>
+     */
+    @AfterClass
+    public static void closeApplication() {
+
+        // final WindowManager windowManager = Application.instance().getWindowManager();
+        final ApplicationContext applicationContext = Application.instance().getApplicationContext();
+        final ApplicationLifecycleAdvisor lifecycleAdvisor = Application.instance().getLifecycleAdvisor();
+
+        try {
+            /*
+             * (JAF), 20101219, closing windowManager makes "Maven Surefire Report Plugin" ignore these tests.
+             */
+            // if (windowManager.close()) {
+            if (applicationContext instanceof ConfigurableApplicationContext) {
+                ((ConfigurableApplicationContext) applicationContext).close();
+            }
+            lifecycleAdvisor.onShutdown();
+            // }
+        } finally {
+            Application.load(null);
+            // System.exit(0);
+        }
+    }
 
     /**
      * Launchs the application, just once.
@@ -78,6 +140,39 @@ public abstract class AbstractBbRichClientTests extends AbstractJUnit4SpringCont
         // org.springframework.util.Assert is preferred (i.e.: over junit.framework.Assert)to avoid get binded to a
         // specific test framework
         Assert.notNull(this.applicationContext, "this.applicationContext");
+        Assert.notNull(this.applicationConfig, "this.applicationConfig");
+    }
+
+    /**
+     * Prinsts debug information useful for detecting failures before any test execution.
+     */
+    @Before
+    public final void beforeAnyTestCase() {
+
+        MessageSource messageSource = (MessageSource) Application.services().getService(MessageSource.class);
+        HierarchicalMessageSource childMessageSource = null;
+
+        final StringBuffer messageSources = new StringBuffer();
+        messageSources.append("Message sources chain: ");
+        while (messageSource != null) {
+
+            messageSources.append(ObjectUtils.identityToString(messageSource));
+            messageSources.append(">>");
+
+            if (messageSource == childMessageSource) {
+                AbstractBbRichClientTests.LOGGER.error("OEOEOOEOEO");
+                break;
+            } else if (messageSource instanceof HierarchicalMessageSource) {
+                childMessageSource = (HierarchicalMessageSource) messageSource;
+                messageSource = childMessageSource.getParentMessageSource();
+            }
+        }
+
+        if (AbstractBbRichClientTests.LOGGER.isDebugEnabled()) {
+            AbstractBbRichClientTests.LOGGER.debug(ClassUtils.getShortClassName(this.getClass()));
+            AbstractBbRichClientTests.LOGGER.debug(BbApplicationConfig.debugPrint(this.applicationConfig));
+            AbstractBbRichClientTests.LOGGER.debug(messageSources.toString());
+        }
     }
 
     /**
@@ -144,7 +239,7 @@ public abstract class AbstractBbRichClientTests extends AbstractJUnit4SpringCont
      * @return the control, may be <code>null</code> if not found.
      */
     protected final Component getComponentNamed(Form form, String name) {
-    
+
         return SwingUtils.getDescendantNamed(name, form.getControl());
     }
 

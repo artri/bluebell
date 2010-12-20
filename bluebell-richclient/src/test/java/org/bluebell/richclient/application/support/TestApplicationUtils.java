@@ -197,7 +197,8 @@ public class TestApplicationUtils extends AbstractBbSamplesTests {
 
         applicationWindow.showPage(pageDescriptor);
 
-        this.doTestForceFocusGained(applicationWindow, pageDescriptor, applicationWindow.getPage().getActiveComponent());
+        this.doTestForceFocusGained(//
+                applicationWindow, pageDescriptor, applicationWindow.getPage().getActiveComponent());
     }
 
     /**

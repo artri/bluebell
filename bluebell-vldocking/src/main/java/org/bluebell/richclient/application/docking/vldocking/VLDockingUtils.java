@@ -244,7 +244,7 @@ public final class VLDockingUtils {
         /**
          * Sets the last active title bar.
          * 
-         * @param lastTitleBar
+         * @param lastActiveTitleBar
          *            the last active title bar to set.
          * 
          * @return <code>this</code>.
@@ -342,8 +342,8 @@ public final class VLDockingUtils {
         /**
          * Returns a legible representation of a given dockable.
          * 
-         * @param dockable
-         *            the target dockable
+         * @param titleBar
+         *            the target title bar.
          * @return a string.
          */
         private String titleBarToString(DockViewTitleBar titleBar) {

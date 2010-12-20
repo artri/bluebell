@@ -44,7 +44,9 @@ import org.springframework.richclient.exceptionhandling.MessagesDialogExceptionH
  * 
  * @author <a href = "mailto:julio.arguello@gmail.com" >Julio Argüello (JAF)</a>
  * 
+ * @deprecated (JAF), 20101217, Spring RCP already includes support for <code>ErrorCoded</code> exceptions.
  */
+@Deprecated
 public class BbMessagesDialogExceptionHandler extends MessagesDialogExceptionHandler {
 
     /**
@@ -71,6 +73,15 @@ public class BbMessagesDialogExceptionHandler extends MessagesDialogExceptionHan
      * La longitud del una línea del mensaje a mostrar.
      */
     private int wrapLength = BbMessagesDialogExceptionHandler.DEFAULT_WRAP_LENGTH;
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void logException(Thread thread, Throwable throwable) {
+
+        super.logException(thread, throwable);
+    }
 
     /**
      * Obtiene el mensaje a mostrar en el diálogo.
