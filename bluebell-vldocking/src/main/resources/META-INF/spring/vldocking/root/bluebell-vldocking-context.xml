@@ -44,7 +44,8 @@
 		Type: platform optional
 		Description: TODO
 	-->
-	<bean id="vldockingApplicationPageFactory" class="org.bluebell.richclient.application.docking.vldocking.BbVLDockingApplicationPageFactory" />
+	<bean id="vldockingApplicationPageFactory" class="org.bluebell.richclient.application.docking.vldocking.BbVLDockingApplicationPageFactory"
+		p:autoLayoutTemplate="${richclient.autoLayoutTemplateLocation}" />
 
 
 	<!--

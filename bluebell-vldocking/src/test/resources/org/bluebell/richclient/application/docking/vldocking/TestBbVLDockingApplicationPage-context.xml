@@ -101,6 +101,11 @@
 	</bean>
 
 	<!--
+		A whole page descriptor with two detail views and two search views exclusive for testInvalidAutoLayoutTemplate
+	-->
+	<bean id="testInvalidAutoLayoutTemplatePageDescriptor" parent="wholePageDescriptor" />
+
+	<!--
 		A view descriptor that fails form control creation.
 	-->
 	<bean id="failedViewDescriptor" parent="abstractViewDescriptor">

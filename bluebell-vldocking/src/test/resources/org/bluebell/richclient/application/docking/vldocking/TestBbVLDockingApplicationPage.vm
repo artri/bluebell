@@ -1,0 +1,148 @@
+#*
+	====================================================================
+	Parameters:
+ 		classification: the page components classification.
+ 		MASTER_TYPE: master type string constant. 
+ 		DETAIL_TYPE: detail type string constant. 
+ 		SEARCH_TYPE: search type string constant. 
+ 		VALIDATION_TYPE: validation type string constant. 
+ 		UNKWNOWN_TYPE: unknown type string constant. 
+	====================================================================
+	Resultant Layout:
+
+       +=============================================+
+       +=============================================+
+   +---+-------------------------------+-------------+-+
+   | T |(1.1)                          |(1.2)        | |
+   | r |          Master View          |Search Views |-+
+   | e |                               |             | |
+   | e +-------------------------------+-------------+-+
+   |   |_____|     |_____|_____|_____________________|
+   | V |                                             |
+   | i |(2)            Detail Views                  |
+   | e |                                             |
+   | w |                                             |
+   +---+---------------------------------------------+
+       |(3) Validation View |                        |
+       +=============================================+       
+*#
+
+#* 
+	====================================================================
+	Constants extraction	
+	==================================================================== 
+*#
+
+#set( $masterViews = [] )
+#set( $detailViews = [] )
+#set( $searchViews = [] )
+#set( $validationViews = [] )
+#set( $unknownViews = [] )
+#set( $otherViews = [] )
+
+#*
+	Unknown and other views are intentionally ignored
+*# 
+
+#foreach( $viewType in $classification.keySet() )
+	#set( $viewSet = $classification.get($viewType) )
+	#if( $viewType.equals($MASTER_TYPE) )
+		#set( $masterViews = $viewSet )
+	#elseif( $viewType.equals($DETAIL_TYPE) )
+		#set( $detailViews = $viewSet )
+	#elseif( $viewType.equals($SEARCH_TYPE) )
+		#set( $searchViews = $viewSet )
+	#elseif( $viewType.equals($VALIDATION_TYPE) )
+		#set( $validationViews = $viewSet )
+	#elseif( $viewType.equals($UNKNOWN_TYPE))
+		#set( $unknownViews = $viewSet )
+	#else
+		#set( $otherViews = $viewSet )
+	#end 
+#end
+
+#set( $hasMasterViews     = ! $masterViews.isEmpty())
+#set( $hasDetailViews     = ! $detailViews.isEmpty())
+#set( $hasSearchViews     = ! $searchViews.isEmpty())
+#set( $hasValidationViews = ! $validationViews.isEmpty())
+#set( $hasUnkwnownViews   = ! $unkwnownViews.isEmpty())
+#set( $hasOtherViews      = ! $otherViews.isEmpty())
+
+#* 
+	====================================================================
+	Paint the given dockables employing a <TabbedDockable>  when needed.	
+	==================================================================== 
+*#
+#macro( paintDockables $dockables )		
+	#set( $isTabbedDockable = $dockables.size() > 1 ) 	
+	#if( $isTabbedDockable )
+		<TabbedDockable>
+	#end
+	#foreach( $dockable in $dockables )
+		<Dockable>
+			<Key dockName="$dockable.Id" dockLabel="$dockable.Id" />
+			<RelativePosition x="0.0" y="0.0" w="0.0" h="0.0" /> ## Redundant for dockables not within a border
+		</Dockable>		
+	#end
+	#if( $isTabbedDockable )
+		</TabbedDockable>
+	#end
+#end
+
+#*
+	====================================================================
+	Paint a <TabGroup> given a dockable.
+	====================================================================
+*#
+#macro( paintTabGroup $dockables )		
+	#set( $isTabbedDockable = $dockables.size() > 1 ) 	
+	#if( $isTabbedDockable )
+		<TabGroups>
+		#foreach( $dockable in $dockables )
+			<Dockable>
+				<Key dockName="$dockable.Id" />			
+			</Dockable>		
+		#end
+		</TabGroups>
+	#end
+#end
+
+
+#* 
+	====================================================================
+	The template itself.	
+	==================================================================== 
+*#
+<VLDocking version="3.0.0">
+	<DockingDesktop>
+		<DockingPanel>		
+			
+			## (1) - (2)
+			#set( $verticalSplit = (($hasMasterViews || $hasSearchViews) && $hasDetailViews) )			
+			#if( $verticalSplit ) <Split orientation="0"> #end
+				## (1.1) | (1.2) 		
+				#set( $topHorizontalSplit = $hasMasterViews && $hasSearchViews )
+				#if( $topHorizontalSplit ) <Split orientation="1"> #end ## (1)				
+					#paintDockables( $masterViews ) ## (1.1)
+					#paintDockables( $searchViews ) ## (1.2)
+				#if( $topHorizontalSplit ) </Split> #end 		
+				#paintDockables( $detailViews ) ## (2)
+			#if( $verticalSplit ) </Split> #end			
+		</DockingPanel>
+
+		## Condition: (has_validation_view)
+		<Border zone="1">
+			#paintDockables( $validationViews ) ## (3)
+		</Border>
+
+		<TabGroups>
+			#paintTabGroup( $masterViews )
+			#paintTabGroup( $detailViews )
+			#paintTabGroup( $searchViews )
+			#paintTabGroup( $validationViews )
+			#paintTabGroup( $unknownViews )
+			#paintTabGroup( $otherViews )
+		</TabGroups>
+	</DockingDesktop>
+</VLDocking>
+

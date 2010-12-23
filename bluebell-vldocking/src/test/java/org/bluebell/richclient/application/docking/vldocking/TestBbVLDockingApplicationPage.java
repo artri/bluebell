@@ -35,8 +35,10 @@ import org.bluebell.richclient.application.support.DefaultApplicationPageConfigu
 import org.bluebell.richclient.samples.simple.form.PersonChildForm;
 import org.bluebell.richclient.samples.simple.form.PersonSearchForm;
 import org.bluebell.richclient.test.AbstractBbSamplesTests;
+import org.bluebell.richclient.util.ObjectUtils;
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.richclient.application.Application;
 import org.springframework.richclient.application.PageComponent;
 import org.springframework.richclient.application.PageDescriptor;
@@ -45,6 +47,7 @@ import org.springframework.richclient.exceptionhandling.AbstractLoggingException
 import org.springframework.richclient.exceptionhandling.RegisterableExceptionHandler;
 import org.springframework.richclient.form.AbstractForm;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.util.Assert;
 
 /**
  * Tests the correct behaviour of {@link BbVLDockingApplicationPage}.
@@ -115,6 +118,14 @@ public class TestBbVLDockingApplicationPage extends AbstractBbSamplesTests {
      */
     @Resource
     private PageDescriptor wholePageDescriptor;
+
+    /**
+     * A page descriptor with multiple components, including to detail view descriptors and two search vies descriptors.
+     * 
+     * @see #testInvalidAutoLayoutTemplate()
+     */
+    @Resource
+    private PageDescriptor testInvalidAutoLayoutTemplatePageDescriptor;
 
     /**
      * {@inheritDoc}
@@ -283,6 +294,55 @@ public class TestBbVLDockingApplicationPage extends AbstractBbSamplesTests {
         // Ensure employed layout is the expected one
         final BbVLDockingApplicationPage<?> vlPage = (BbVLDockingApplicationPage<?>) this.getInitializedPage();
         TestCase.assertEquals(vlPage.getAutoLayout(), vlPage.getLayout());
+    }
+
+    @Test
+    public void testInvalidAutoLayoutTemplate() {
+
+        // Initialize variables and obtain the BB VLDocking application page factory
+        final PageDescriptor pageDescriptor = this.testInvalidAutoLayoutTemplatePageDescriptor;
+        this.initializeVariables(pageDescriptor);
+
+        final BbVLDockingApplicationPageFactory<?> pageFactory = (BbVLDockingApplicationPageFactory<?>) //
+        ObjectUtils.unwrapProxy(this.getApplicationPageFactory());
+
+        final BbVLDockingApplicationPage<?> page = (BbVLDockingApplicationPage<?>) pageFactory.createApplicationPage(
+                this.getActiveWindow(), pageDescriptor);
+
+        // 1.Null auto layout template is forbidden on page factory
+        try {
+            pageFactory.setAutoLayoutTemplate(null);
+            TestCase.fail("bbVLDockingApplicationPageFactory.setAutoLayoutTemplate(null);");
+        } catch (IllegalArgumentException e) {
+            TestCase.assertTrue(e.getMessage(), Boolean.TRUE);
+        }
+
+        // 2.Null auto layout template is forbidden on application page
+        try {
+            page.setAutoLayoutTemplate(null);
+            TestCase.fail("page.setAutoLayoutTemplate(null);");
+        } catch (IllegalArgumentException e) {
+            TestCase.assertTrue(e.getMessage(), Boolean.TRUE);
+        }
+
+        // 3.Fake auto layout template is forbidden on application page
+        try {
+            final org.springframework.core.io.Resource fakeResource = new ClassPathResource("foo:bar");
+            page.setAutoLayoutTemplate(fakeResource);
+            TestCase.fail("page.setAutoLayoutTemplate(fakeResource);");
+        } catch (IllegalArgumentException e) {
+            TestCase.assertTrue(e.getMessage(), Boolean.TRUE);
+        }
+
+        // 4.Existing auto layout fails if location is not the expected one: ${richclient.vmConfigLocation}
+        final org.springframework.core.io.Resource existingResource = new ClassPathResource(
+                "org/bluebell/richclient/application/docking/vldocking/TestBbVLDockingApplicationPage.vm");
+        page.setAutoLayoutTemplate(existingResource);
+        TestCase.assertTrue("page.setAutoLayoutTemplate(existingResource);", Boolean.TRUE);
+
+        page.resetLayout();
+
+        Assert.isNull(page.getLayout(), "page.getLayout()");
     }
 
     /**

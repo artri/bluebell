@@ -164,9 +164,24 @@ public class BbVLDockingApplicationPage<T> extends VLDockingApplicationPage {
     private Resource initialLayout;
 
     /**
-     * The auto layout resource.
+     * The velocity template to be merged when building auto layout.
+     * <p>
+     * Note in order to make this work <code>velocityEngine</code> should be configured and accessible. Pay attention to
+     * property named <code>resourceLoaderPath</code> since velocity template should be the folder where this
+     * <code>velocity template</code> is stored.
+     * 
+     * <pre>
+     * {@code  
+     *          <bean id="velocityEngine" class="org.springframework.ui.velocity.VelocityEngineFactoryBean"
+     *                  p:preferFileSystemAccess="false" 
+     *                  p:configLocation="${richclient.vmConfigLocation}"
+     *                  p:resourceLoaderPath="${richclient.vmResourceLoaderPath}" />
+     * }
+     * </pre>
+     * 
+     * @since 20101223, due to <a href="http://jirabluebell.b2b2000.com/browse/BLUE-34">BLUE-34</a>
      */
-    private Resource autoLayout;
+    private Resource autoLayoutTemplate;
 
     /**
      * Creates the page given its window and page descriptor.
@@ -249,7 +264,10 @@ public class BbVLDockingApplicationPage<T> extends VLDockingApplicationPage {
         this.closeUndeclaredPageComponents();
 
         if (layout == null) {
+            
             this.getPageDescriptor().buildInitialLayout(this);
+            
+            this.setLayout(null);
 
             return Boolean.TRUE;
         }
@@ -385,6 +403,22 @@ public class BbVLDockingApplicationPage<T> extends VLDockingApplicationPage {
     }
 
     /**
+     * Sets the velocity template.
+     * 
+     * @param autoLayoutTemplate
+     *            the velocity template to set.
+     * 
+     * @see #autoLayoutTemplate
+     */
+    public final void setAutoLayoutTemplate(Resource velocityTemplate) {
+
+        Assert.notNull(velocityTemplate, "autoLayoutTemplate");
+        Assert.isTrue(velocityTemplate.exists(), "autoLayoutTemplate.exists()");
+
+        this.autoLayoutTemplate = velocityTemplate;
+    }
+
+    /**
      * {@inheritDoc}
      * 
      * @see #doClose()
@@ -495,46 +529,61 @@ public class BbVLDockingApplicationPage<T> extends VLDockingApplicationPage {
     /**
      * Gets the auto layout.
      * <p>
-     * Never returns <code>null</code>.
+     * Never returns <code>null</code> but note returned resource may be useless.
      * 
      * @return the auto layout.
      */
     protected final Resource getAutoLayout() {
 
-        if (this.autoLayout == null) {
+        Assert.notNull(this.getAutoLayoutTemplate(), "this.getVelocityTemplate()");
 
-            // No me gusta esta forma de obtener el contexto
-            final VelocityEngine vm = this.getApplicationContext().getBean("velocityEngine", VelocityEngine.class);
-            final ApplicationPageConfigurer<?> applicationPageConfigurer = (ApplicationPageConfigurer<?>) //
-            this.getService(ApplicationPageConfigurer.class);
+        // No me gusta esta forma de obtener el contexto
+        final VelocityEngine vm = this.getApplicationContext().getBean("velocityEngine", VelocityEngine.class);
+        final ApplicationPageConfigurer<?> applicationPageConfigurer = (ApplicationPageConfigurer<?>) //
+        this.getService(ApplicationPageConfigurer.class);
 
-            // TODO, (JAF), 20100408, applicationPageConfigurer is not compulsory
-            final Map<String, List<? extends PageComponent>> classification = applicationPageConfigurer
-                    .classifyApplicationPage(this);
+        // TODO, (JAF), 20100408, applicationPageConfigurer is not compulsory
+        final Map<String, List<? extends PageComponent>> classification = applicationPageConfigurer
+                .classifyApplicationPage(this);
 
-            /*
-             * Trait unknown views as master views: *This code should be moved to the template*
-             */
-            final List<PageComponent> newMasterViews = new ArrayList<PageComponent>();
-            newMasterViews.addAll(classification.get(DefaultApplicationPageConfigurer.BbViewType.MASTER.name()));
-            newMasterViews.addAll(classification.get(DefaultApplicationPageConfigurer.BbViewType.UNKNOWN.name()));
-            classification.put(DefaultApplicationPageConfigurer.BbViewType.MASTER.name(), newMasterViews);
+        /*
+         * Trait unknown views as master views: *This code should be moved to the template*
+         */
+        final List<PageComponent> newMasterViews = new ArrayList<PageComponent>();
+        newMasterViews.addAll(classification.get(DefaultApplicationPageConfigurer.BbViewType.MASTER.name()));
+        newMasterViews.addAll(classification.get(DefaultApplicationPageConfigurer.BbViewType.UNKNOWN.name()));
+        classification.put(DefaultApplicationPageConfigurer.BbViewType.MASTER.name(), newMasterViews);
 
-            // Merge context
-            final Map<String, Object> context = new HashMap<String, Object>();
-            context.put("classification", classification);
-            context.put("MASTER_TYPE", DefaultApplicationPageConfigurer.BbViewType.MASTER.name());
-            context.put("DETAIL_TYPE", DefaultApplicationPageConfigurer.BbViewType.DETAIL.name());
-            context.put("SEARCH_TYPE", DefaultApplicationPageConfigurer.BbViewType.SEARCH.name());
-            context.put("VALIDATION_TYPE", DefaultApplicationPageConfigurer.BbViewType.VALIDATION.name());
-            context.put("UNKNOWN_TYPE", DefaultApplicationPageConfigurer.BbViewType.UNKNOWN.name());
+        // Merge context
+        final Map<String, Object> context = new HashMap<String, Object>();
+        context.put("classification", classification);
+        context.put("MASTER_TYPE", DefaultApplicationPageConfigurer.BbViewType.MASTER.name());
+        context.put("DETAIL_TYPE", DefaultApplicationPageConfigurer.BbViewType.DETAIL.name());
+        context.put("SEARCH_TYPE", DefaultApplicationPageConfigurer.BbViewType.SEARCH.name());
+        context.put("VALIDATION_TYPE", DefaultApplicationPageConfigurer.BbViewType.VALIDATION.name());
+        context.put("UNKNOWN_TYPE", DefaultApplicationPageConfigurer.BbViewType.UNKNOWN.name());
 
-            final String string = VelocityEngineUtils.mergeTemplateIntoString(vm, "vldocking_layout.vm", context);
+        Resource resource;
+        try {
+            final String templateLocation = this.getAutoLayoutTemplate().getFilename();
+            final String string = VelocityEngineUtils.mergeTemplateIntoString(vm, templateLocation, context);
 
-            this.setAutoLayout(new ByteArrayResource(string.getBytes()));
+            resource = new ByteArrayResource(string.getBytes());
+        } catch (Throwable e) {
+            resource = new ByteArrayResource(new byte[] {});
         }
 
-        return this.autoLayout;
+        return resource;
+    }
+
+    /**
+     * Gets the velocity template.
+     * 
+     * @return the velocity template.
+     */
+    protected final Resource getAutoLayoutTemplate() {
+
+        return this.autoLayoutTemplate;
     }
 
     /**
@@ -660,19 +709,6 @@ public class BbVLDockingApplicationPage<T> extends VLDockingApplicationPage {
         Assert.notNull(userLayout, "userLayout");
 
         this.userLayout = userLayout;
-    }
-
-    /**
-     * Sets the auto layout.
-     * 
-     * @param autoLayout
-     *            the auto layout to set.
-     */
-    private void setAutoLayout(Resource autoLayout) {
-
-        Assert.notNull(autoLayout, "autoLayout");
-
-        this.autoLayout = autoLayout;
     }
 }
 

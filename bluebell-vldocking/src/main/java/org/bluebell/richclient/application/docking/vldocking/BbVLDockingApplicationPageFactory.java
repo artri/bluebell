@@ -18,11 +18,14 @@
 
 package org.bluebell.richclient.application.docking.vldocking;
 
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.core.io.Resource;
 import org.springframework.richclient.application.ApplicationPage;
 import org.springframework.richclient.application.ApplicationWindow;
 import org.springframework.richclient.application.PageDescriptor;
 import org.springframework.richclient.application.docking.vldocking.VLDockingApplicationPage;
 import org.springframework.richclient.application.docking.vldocking.VLDockingApplicationPageFactory;
+import org.springframework.util.Assert;
 
 /**
  * Factoría para la creación de páginas de aplicación que extiende el comportamiento de
@@ -41,7 +44,14 @@ import org.springframework.richclient.application.docking.vldocking.VLDockingApp
  * 
  * @author <a href = "mailto:julio.arguello@gmail.com" >Julio Argüello (JAF)</a>
  */
-public class BbVLDockingApplicationPageFactory<T> extends VLDockingApplicationPageFactory {
+public class BbVLDockingApplicationPageFactory<T> extends VLDockingApplicationPageFactory implements InitializingBean {
+
+    /**
+     * The velocity template required by {@link BbVLDockingApplicationPage}.
+     * 
+     * @see BbVLDockingApplicationPage#setVelocityTemplate(Resource).
+     */
+    private Resource autoLayoutTemplate;
 
     /**
      * Crea la página, que a diferencia de
@@ -56,6 +66,7 @@ public class BbVLDockingApplicationPageFactory<T> extends VLDockingApplicationPa
      *            el descriptor de página.
      * @return la página.
      */
+    @SuppressWarnings("unchecked")
     @Override
     public ApplicationPage createApplicationPage(ApplicationWindow window, PageDescriptor descriptor) {
 
@@ -63,9 +74,42 @@ public class BbVLDockingApplicationPageFactory<T> extends VLDockingApplicationPa
         if (page == null) {
             // Crear y cachear la página.
             page = new BbVLDockingApplicationPage<T>(window, descriptor);
+            ((BbVLDockingApplicationPage<T>) page).setAutoLayoutTemplate(this.getAutoLayoutTemplate());
             this.cachePage(page);
         }
 
         return page;
+    }
+
+    /** 
+     * {@inheritDoc}
+     */
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        
+        Assert.notNull(this.getAutoLayoutTemplate(), "this.getVelocityTemplate()");
+    }
+
+    /**
+     * Sets the velocity template.
+     * 
+     * @param autoLayoutTemplate
+     *            the velocity template to set.
+     */
+    public final void setAutoLayoutTemplate(Resource velocityTemplate) {
+    
+        Assert.notNull(velocityTemplate, "autoLayoutTemplate");
+    
+        this.autoLayoutTemplate = velocityTemplate;
+    }
+
+    /**
+     * Gets the velocity template.
+     * 
+     * @return the velocity template.
+     */
+    protected final Resource getAutoLayoutTemplate() {
+
+        return this.autoLayoutTemplate;
     }
 }
