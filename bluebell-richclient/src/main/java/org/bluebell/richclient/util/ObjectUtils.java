@@ -26,6 +26,10 @@ import java.lang.reflect.Modifier;
 import java.util.Iterator;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.aop.framework.Advised;
+import org.springframework.aop.support.AopUtils;
 import org.springframework.beans.PropertyAccessor;
 import org.springframework.beans.PropertyAccessorFactory;
 import org.springframework.util.Assert;
@@ -37,6 +41,11 @@ import org.springframework.util.ReflectionUtils;
  * @author <a href = "mailto:julio.arguello@gmail.com" >Julio Argüello (JAF)</a>
  */
 public final class ObjectUtils {
+
+    /**
+     * The logger.
+     */
+    private static final Logger LOGGER = LoggerFactory.getLogger(ObjectUtils.class);
 
     /**
      * Utility classes should have a private constructor.
@@ -90,8 +99,8 @@ public final class ObjectUtils {
      * {@link org.apache.commons.collections.ListUtils#isEqualList(java.util.Collection, java.util.Collection)} rewrote
      * for performance reasons.
      * <p>
-     * Basically employs {@link ObjectUtils#equals(Object, Object)} instead of {@link #equals(Object)} since that checks
-     * identity before calling <code>equals</code>.
+     * Basically employs {@link ObjectUtils#equals(Object, Object)} instead of {@link #equals(Object)} since the first
+     * one checks identity before calling <code>equals</code>.
      * 
      * @param <T>
      *            the type of the elements in the list.
@@ -103,30 +112,83 @@ public final class ObjectUtils {
      * @return whether the lists are equal by value comparison
      */
     public static <T> Boolean isEqualList(List<T> list1, List<T> list2) {
-    
+
         if (list1 == list2) {
             return Boolean.TRUE;
         } else if ((list1 == null) || (list2 == null) || (list1.size() != list2.size())) {
             return Boolean.FALSE;
         }
-    
+
         final Iterator<T> itr1 = list1.iterator();
         final Iterator<T> itr2 = list2.iterator();
         Object obj1 = null;
         Object obj2 = null;
-    
+
         while (itr1.hasNext() && itr2.hasNext()) {
             obj1 = itr1.next();
             obj2 = itr2.next();
-    
+
             if (!(obj1 == null ? obj2 == null : org.apache.commons.lang.ObjectUtils.equals(obj1, obj2))) {
                 return Boolean.FALSE;
             }
         }
-    
+
         return !(itr1.hasNext() || itr2.hasNext());
     }
 
-  
+    /**
+     * This is a utility method for getting raw objects that may have been proxied. It is intended to be used in cases
+     * where raw implementations are needed rather than working with interfaces which they implement.
+     * 
+     * @param bean
+     *            the potential proxy.
+     * @return the most inner unwrapped bean.
+     * 
+     * @see #unwrapProxy(Object, Boolean)
+     * @since 20101223 thanks to <a href="http://jirabluebell.b2b2000.com/browse/BLUE-34">BLUE-34</a>
+     */
+    public static final Object unwrapProxy(Object bean) {
 
+        return ObjectUtils.unwrapProxy(bean, Boolean.TRUE);
+    }
+
+    /**
+     * This is a utility method for getting raw objects that may have been proxied. It is intended to be used in cases
+     * where raw implementations are needed rather than working with interfaces which they implement.
+     * 
+     * @param bean
+     *            the potential proxy.
+     * @param recursive
+     *            whether to procceeed recursively through nested proxies.
+     * @return the unwrapped bean or <code>null</code> if target bean is <code>null</code>. If <code>recursive</code>
+     *         parameter is <code>true</code> then returns the most inner unwrapped bean, otherwise the nearest target
+     *         bean is returned.
+     * 
+     * @see Based on this <a href="http://forum.springsource.org/showthread.php?t=60216">Spring forum topic</a>.
+     * @see Advised
+     * @since 20101223 thanks to <a href="http://jirabluebell.b2b2000.com/browse/BLUE-34">BLUE-34</a>
+     */
+    public static final Object unwrapProxy(Object bean, Boolean recursive) {
+
+        Assert.notNull(recursive, "recursive");
+
+        Object unwrapped = bean;
+
+        // If the given object is a proxy, set the return value as the object being proxied, otherwise return the given
+        // object
+        if ((bean != null) && (bean instanceof Advised) && (AopUtils.isAopProxy(bean))) {
+
+            final Advised advised = (Advised) bean;
+            try {
+                final Object target = advised.getTargetSource().getTarget();
+
+                unwrapped = recursive ? ObjectUtils.unwrapProxy(target, recursive) : target;
+            } catch (Exception e) {
+                unwrapped = bean;
+                ObjectUtils.LOGGER.warn("Failure unwrapping \"" + bean + "\".", e);
+            }
+        }
+
+        return unwrapped;
+    }
 }

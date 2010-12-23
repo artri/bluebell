@@ -39,10 +39,14 @@ import org.springframework.richclient.application.support.ApplicationServicesAcc
 
 /**
  * 
+ * 
+ * 
  * @author <a href = "mailto:julio.arguello@gmail.com" >Julio Argüello (JAF)</a>
  */
 // @Aspect
 public class ApplicationConfigAspect extends ApplicationServicesAccessor implements BeanPostProcessor {
+
+    // (JAF), 20101220, end this class.
 
     /**
      * The logger.
@@ -50,7 +54,10 @@ public class ApplicationConfigAspect extends ApplicationServicesAccessor impleme
     private static final Logger LOGGER = LoggerFactory.getLogger(ApplicationConfigAspect.class);
 
     /**
+     * Checks message source hierarchy is as expected. If doesn't then tries to solve the problem.
+     * 
      * @param targetMessageSource
+     *            the target message source.
      */
     public final void checkMessageSourceHierarchy(MessageSource targetMessageSource) {
 

@@ -25,13 +25,15 @@ import junit.framework.TestCase;
 
 import org.apache.commons.lang.StringUtils;
 import org.junit.Test;
+import org.springframework.aop.framework.ProxyFactory;
+import org.springframework.util.Assert;
 
 /**
  * Tests the correct behaviour of {@link ObjectUtils}.
  * 
  * @author <a href = "mailto:julio.arguello@gmail.com" >Julio Argüello (JAF)</a>
  */
-public class TestObjectUtil extends TestCase {
+public class TestObjectUtils extends TestCase {
 
     /**
      * Tests the correct behaviour of shallow copy.
@@ -89,6 +91,65 @@ public class TestObjectUtil extends TestCase {
         TestCase.assertEquals("a2", a2.a);
         TestCase.assertEquals("c2", a2.c);
         TestCase.assertTrue(a2.c == b2.c);
+    }
+
+    /**
+     * Tests the correct behaviour of unwrapping proxies.
+     */
+    @Test
+    public void testUnwrapProxy() {
+
+        final Integer maxIter = 10;
+        final String string = StringUtils.EMPTY;
+
+        // 1. Test recursive proxy unwrapping (one parameter method)
+        for (int i = 0; i < maxIter; ++i) {
+            final Object proxy = TestObjectUtils.createProxy(string, i);
+            TestCase.assertSame(string, ObjectUtils.unwrapProxy(proxy));
+        }
+
+        // 2. Test recursive proxy unwrapping (two parameters method)
+        for (int i = 0; i < maxIter; ++i) {
+            final Object proxy = TestObjectUtils.createProxy(string, i);
+            TestCase.assertSame(string, ObjectUtils.unwrapProxy(proxy, Boolean.TRUE));
+        }
+
+        // 3. Test non recursive proxy unwrapping
+        final Object proxy = TestObjectUtils.createProxy(string, maxIter);
+        Object unwrappedProxy = proxy;
+        for (int i = 0; i < maxIter - 1; ++i) {
+            unwrappedProxy = ObjectUtils.unwrapProxy(unwrappedProxy, Boolean.FALSE);
+        }
+
+        // 3.1. At this point proxies have been unwrapped maxIter - 1 times, so work is not yet done
+        TestCase.assertNotSame(string, unwrappedProxy);
+
+        unwrappedProxy = ObjectUtils.unwrapProxy(unwrappedProxy, Boolean.FALSE);
+
+        // 3.2. At this point proxies have been unwrapped maxIter times, so work is already done
+        TestCase.assertSame(string, unwrappedProxy);
+
+        // 4. Null parameter
+        TestCase.assertNull(ObjectUtils.unwrapProxy(null));
+        TestCase.assertNull(ObjectUtils.unwrapProxy(null, Boolean.TRUE));
+        TestCase.assertNull(ObjectUtils.unwrapProxy(null, Boolean.FALSE));
+    }
+
+    /**
+     * Creates a chain of proxies starting with the given parameter and stopping when depth has been reached.
+     * 
+     * @param bean
+     *            the target bean.
+     * @param depth
+     *            the expected depth.
+     * @return the most outer proxy.
+     */
+    private static Object createProxy(Object bean, Integer depth) {
+
+        Assert.notNull(bean, "bean");
+        Assert.notNull(depth, "deep");
+
+        return (depth > 0) ? TestObjectUtils.createProxy(new ProxyFactory(bean).getProxy(), --depth) : bean;
     }
 
     /**

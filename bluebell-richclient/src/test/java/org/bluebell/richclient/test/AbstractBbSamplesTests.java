@@ -183,8 +183,9 @@ public abstract class AbstractBbSamplesTests extends AbstractBbRichClientTests {
      * Initialize other local variables different from those populated by Spring.
      * <p>
      * Call this method at the beginning of every test case.
-     *      * <p>
-     * <b>Note</b> {@link #initializeVariables(ApplicationWindow, PageDescriptor) is preferred when dealing with multiple windows.
+     * <p>
+     * <b>Note</b> {@link #initializeVariables(ApplicationWindow, PageDescriptor) is preferred when dealing 
+     * with multiple windows.
      * 
      * @param pageDescriptor
      *            the page descriptor this method applies to.
