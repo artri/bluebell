@@ -1,44 +1,69 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 
-	Copyright (C) 2009 Julio Arg\u00fcello <julio.arguello@gmail.com>
+    Copyright (C) 2009 Julio Arg\u00fcello <julio.arguello@gmail.com>
 
-	This file is part of Bluebell Parent.
+    This file is part of Bluebell Parent.
 
-	Licensed under the Apache License, Version 2.0 (the "License");
-	you may not use this file except in compliance with the License.
-	You may obtain a copy of the License at
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
 
-	http://www.apache.org/licenses/LICENSE-2.0
+            http://www.apache.org/licenses/LICENSE-2.0
 
-	Unless required by applicable law or agreed to in writing, software
-	distributed under the License is distributed on an "AS IS" BASIS,
-	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-	See the License for the specific language governing permissions and
-	limitations under the License.
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
 
 -->
 
-<project name="Bluebell Project">
+
+<project name="Bluebell Project" xmlns="http://maven.apache.org/DECORATION/1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/DECORATION/1.0.0 http://maven.apache.org/xsd/decoration-1.0.0.xsd">
+
+	<publishDate position="left" />
+	<version position="left" />
+
 	<bannerLeft>
 		<name>Bluebell</name>
-		 <src>images/bluebell-logo.png</src> 
-<!--		<src>http://saber.b2b2000.com/download/attachments/4194322/BLUE</src>-->
+		<src>images/bluebell-logo.png</src>
 		<href>http://saber.b2b2000.com/display/BLUE/Bluebell</href>
+		<alt>Bluebell Confluence Home</alt>
 	</bannerLeft>
+	<bannerRight>
+		<name>Spring Rich Client</name>
+		<src>images/rcp-logo.png</src>
+		<href>http://www.springsource.org/spring-rcp</href>
+		<alt>Spring Rich Client</alt>
+	</bannerRight>
+	<poweredBy>
+		<logo name="B2B 2000" href="http://www.b2b2000.com/" img="images/b2b-logo.gif" />
+	</poweredBy>
 	<body>
+		<head>
+			<meta name="faq" content="Bluebell" />
+		</head>
 
 		<links>
-			<item name="${project.name}" href="${project.url}" />
+			<item name="Spring3" href="http://www.springsource.org/" />
+			<item name="Maven3" href="http://maven.apache.org/" />
+			<item name="Substance" href="https://github.com/kirillcool" />
+			<item name="SwingX" href="https://swingx.dev.java.net/" />
+			<item name="VLDocking" href="http://code.google.com/p/vldocking/" />
+			<item name="JideOss" href="https://jide-oss.dev.java.net/" />
+			<item name="DryIcons" href="http://dryicons.com/" />
 		</links>
 
 		<menu name="Bluebell Project" inherit="top">
 			<item name="Overview" href="index.html" />
+			<item name="Sitemap" href="sitemap.html" />
 		</menu>
 
 		<menu ref="parent" inherit="top" />
+		<menu ref="modules" inherit="bottom" />
+		<menu ref="reports" inherit="top" />
 
-		<menu ref="modules" inherit="bottom" collapse="false" />
-		<menu ref="reports" inherit="top" collapse="false" />
 	</body>
 </project>

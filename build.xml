@@ -23,9 +23,16 @@
 -->
 <project name="Bluebell" default="fixcrlf">
 
+	<property name="srcdir" value=".\..\www\" />
+	<property name="exclusions" value="**\*.png,**\*.css,**\*.gif,**\*.jpg" />
+
+	<!-- 
+		(JAF), 20101222, this should be targetted during site:deploy phase, 
+		but site lifecycle phases are not intercepted within Maven 3.x version
+	-->
 	<target name="fixcrlf">
-		<echo message="hola"/>
-		<fixcrlf srcdir=".\..\www\" eol="unix" excludes="**\*.png,**\*.css"/>
+		<echo message="Fixcrlf on '${srcdir}' with following exclusions '${exclusions}'" />
+		<fixcrlf srcdir="${srcdir}" eol="unix" preservelastmodified="true" excludes="${exclusions}" />
 	</target>
 
 </project>

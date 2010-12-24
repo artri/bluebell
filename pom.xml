@@ -22,6 +22,8 @@
 		OK (13)- (JAF), 20101213, test newer version of wagon-svn
 		OK (14)- (JAF), 20101218, take a look to http://code.google.com/p/maven-googlecode-plugin/wiki/MavenSiteDeployOnSVN
 		KO (15)- (JAF), 20101218, deploy to google code, maven-googlecode-plugin.googlecode.com/svn/site/index.html
+		KO (16)- (JAF), 20101223, eclipse plugin should include checkstyle validationenabled
+		OK (17)- (JAF), 20101224, include http://code.google.com/p/maven-overview-plugin/
 	-->
 
 	<modelVersion>4.0.0</modelVersion>
@@ -100,21 +102,12 @@
 
 
 	<distributionManagement>
-		<!-- <site> -->
-		<!-- <id>bluebell.googlecode.com</id> -->
-		<!-- <name>Google Code Maven Site For Bluebell</name> -->
-		<!-- <url>dav:http://bluebell.googlecode.com/svn/www/${project.version}</url> -->
-		<!-- <url>svn:https://bluebell.googlecode.com/svn/www/${project.version}</url> -->
-		<!-- </site> -->
-		<!-- <site> -->
-		<!-- <id>bluebell.googlecode.com</id> -->
-		<!-- <name>Google Code Maven Site For Bluebell</name> -->
-		<!-- <url>${bb.distributionManagement.site.url}</url> -->
-		<!-- </site> -->
 		<site>
 			<id>bluebell.googlecode.com</id>
 			<name>Google Code Maven Site For Bluebell</name>
-			<url>scm:svn:https://bluebell.googlecode.com/svn/www</url>
+			<!-- <url>dav:http://bluebell.googlecode.com/svn/www</url> -->
+			<!-- <url>scm:svn:https://bluebell.googlecode.com/svn/www</url> -->
+			<url>${bb.distributionManagement.site.url}</url>
 		</site>
 
 		<repository>
@@ -125,7 +118,6 @@
 	</distributionManagement>
 
 	<repositories>
-
 		<!-- <repository> -->
 		<!-- <id>org.bluebell.module.repository.external</id> -->
 		<!-- <name>Fake repository useful to integrate non mavenized artifacts when building from parent pom</name> -->
@@ -201,11 +193,12 @@
 		<module>bluebell-jide-oss</module>
 		<module>bluebell-swingx</module>
 		<module>bluebell-samples</module>
-		<!-- <module>bluebell-jnlp</module> -->
+		<!--<module>bluebell-jnlp</module> -->
 	</modules>
 
 	<build>
 		<extensions>
+
 			<extension>
 				<groupId>org.apache.maven.wagon</groupId>
 				<artifactId>wagon-webdav</artifactId>
@@ -318,6 +311,7 @@
 					<configuration>
 						<downloadSources>true</downloadSources>
 						<downloadJavadocs>true</downloadJavadocs>
+						<buildOutputDirectory>${project.basedir}/eclipse-bin</buildOutputDirectory>
 						<additionalProjectnatures>
 							<projectnature>org.springframework.ide.eclipse.core.springnature</projectnature>
 						</additionalProjectnatures>
@@ -364,9 +358,20 @@
 						<inputEncoding>${project.reporting.inputEncoding}</inputEncoding>
 						<outputEncoding>${project.reporting.outputEncoding}</outputEncoding>
 						<generateSitemap>true</generateSitemap>
-
 						<outputDirectory>${bb.site.outputDirectory}</outputDirectory>
+
+						<!--
+							(JAF), 20101221, according to Maven. The Definitive Guide_Sonatype
+						-->
+						<templateDirectory>${bb.site.templateDirectory}</templateDirectory>
+						<template>site.vm</template>
+
 						<reportPlugins>
+							<plugin>
+								<groupId>com.googlecode.maven-overview-plugin</groupId>
+								<artifactId>maven-overview-plugin</artifactId>
+								<version>1.6</version>
+							</plugin>
 							<plugin>
 								<groupId>org.apache.maven.plugins</groupId>
 								<artifactId>maven-checkstyle-plugin</artifactId>
@@ -519,22 +524,6 @@
 								</configuration>
 							</plugin>
 							<plugin>
-								<!--
-									(JAF), 20101217, A good explanation why tests are run during test phase
-									and cobertura report:
-									http://www.mail-archive.com/users@maven.apache.org/msg82834.html
-
-									Cobertura is configured according to...
-									http://weblogs.java.net/blog/survivant/archive/2008/11/maven_test_cove.html
-
-									...because exists the following bug:
-									http://jira.codehaus.org/browse/MCOBERTURA-83
-								-->
-								<groupId>org.codehaus.mojo</groupId>
-								<artifactId>cobertura-maven-plugin</artifactId>
-								<version>${cobertura-version}</version>
-							</plugin>
-							<plugin>
 								<groupId>org.apache.maven.plugins</groupId>
 								<artifactId>maven-surefire-report-plugin</artifactId>
 								<version>2.6</version>
@@ -552,7 +541,27 @@
 									</reportSet>
 								</reportSets>
 							</plugin>
+							<plugin>
+								<!--
+									(JAF), 20101217, A good explanation why tests are run during test phase
+									and cobertura report:
+									http://www.mail-archive.com/users@maven.apache.org/msg82834.html
 
+									Cobertura is configured according to...
+									http://weblogs.java.net/blog/survivant/archive/2008/11/maven_test_cove.html
+
+									...because exists the following bug:
+									http://jira.codehaus.org/browse/MCOBERTURA-83
+								-->
+								<groupId>org.codehaus.mojo</groupId>
+								<artifactId>cobertura-maven-plugin</artifactId>
+								<version>${cobertura-version}</version>
+							</plugin>
+							<dependency>
+								<groupId>org.codehaus.mojo</groupId>
+								<artifactId>jdepend-maven-plugin</artifactId>
+								<version>2.0-beta-2</version>
+							</dependency>
 							<!--
 								(JAF), 20101210, Maven Confluence plugin pages are:
 								http://code.google.com/p/maven-confluence-plugin/
@@ -579,6 +588,7 @@
 							<!-- </reportSets> -->
 							<!-- </plugin> -->
 						</reportPlugins>
+
 					</configuration>
 				</plugin>
 				<plugin>
@@ -714,22 +724,16 @@
 				<artifactId>maven-antrun-plugin</artifactId>
 				<executions>
 					<execution>
+						<!--
+							(JAF), 20101222, this task is not targeted within Maven 3.x
+						-->
 						<id>prepare-site</id>
-						<!-- <phase>prepare-package</phase> -->
-						<phase>post-site</phase>
+						<phase>site-deploy</phase>
 						<goals>
 							<goal>run</goal>
 						</goals>
 						<configuration>
 							<tasks>
-								<echo>in post-site phase</echo>
-								<!-- <property name="maven.webstart.workDirectory"
-									value="${maven.webstart.workDirectory}" /> -->
-								<!-- <property name="maven.webstart.outputDirectory"
-									value="${maven.webstart.outputDirectory}" /> -->
-								<!-- <property name="maven.project.build.directory"
-									value="${project.build.directory}" /> -->
-
 								<ant antfile="${project.basedir}/build.xml">
 									<target name="fixcrlf" />
 								</ant>
@@ -818,7 +822,6 @@
 				<groupId>org.springframework</groupId>
 				<artifactId>org.springframework.aop</artifactId>
 				<version>${spring-version}</version>
-				<scope>runtime</scope>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework</groupId>
@@ -1145,6 +1148,7 @@
 			<properties>
 				<bb.distributionManagement.site.url>file://${project.basedir}\..\www\</bb.distributionManagement.site.url>
 				<bb.site.outputDirectory>${project.reporting.outputDirectory}/</bb.site.outputDirectory>
+				<bb.site.templateDirectory>${project.basedir}/src/site</bb.site.templateDirectory>
 				<!--
 					(JAF), 20101210, Graphviz doc says:
 					"Please note that you must compile the project first before running the
@@ -1195,6 +1199,12 @@
 			The root path from the URL where the Maven site is generated inside.
 		-->
 		<bb.site.outputDirectory>${project.reporting.outputDirectory}/${project.artifactId}</bb.site.outputDirectory>
+
+		<!--
+			The location of the maven site templates.
+			See "Maven. The Definitive Guide_Sonatype"
+		-->
+		<bb.site.templateDirectory>${project.parent.basedir}/src/site</bb.site.templateDirectory>
 
 		<!--
 			The command to be attached to Javadoc plugin execution in order to generate graphs.
