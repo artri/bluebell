@@ -18,8 +18,12 @@
 
 package org.bluebell.richclient.application.docking.vldocking;
 
+import java.text.MessageFormat;
+
+import org.apache.commons.lang.SystemUtils;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.core.io.Resource;
+import org.springframework.richclient.application.Application;
 import org.springframework.richclient.application.ApplicationPage;
 import org.springframework.richclient.application.ApplicationWindow;
 import org.springframework.richclient.application.PageDescriptor;
@@ -47,6 +51,16 @@ import org.springframework.util.Assert;
 public class BbVLDockingApplicationPageFactory<T> extends VLDockingApplicationPageFactory implements InitializingBean {
 
     /**
+     * A message format with the user layout location template to be propagated to pages.
+     */
+    private MessageFormat userLayoutLocationFmt;
+
+    /**
+     * A message format with the initial layout location template to be propagated to pages.
+     */
+    private MessageFormat initialLayoutLocationFmt;
+
+    /**
      * The velocity template required by {@link BbVLDockingApplicationPage}.
      * 
      * @see BbVLDockingApplicationPage#setVelocityTemplate(Resource).
@@ -66,28 +80,57 @@ public class BbVLDockingApplicationPageFactory<T> extends VLDockingApplicationPa
      *            el descriptor de página.
      * @return la página.
      */
-    @SuppressWarnings("unchecked")
     @Override
     public ApplicationPage createApplicationPage(ApplicationWindow window, PageDescriptor descriptor) {
 
         VLDockingApplicationPage page = this.findPage(window, descriptor);
         if (page == null) {
-            // Crear y cachear la página.
-            page = new BbVLDockingApplicationPage<T>(window, descriptor);
-            ((BbVLDockingApplicationPage<T>) page).setAutoLayoutTemplate(this.getAutoLayoutTemplate());
+            page = new BbVLDockingApplicationPage<T>(window, descriptor)//
+                    .setUserLayoutLocationFmt(this.getUserLayoutLocationFmt()) //
+                    .setInitialLayoutLocationFmt(this.getInitialLayoutLocationFmt()) //
+                    .setAutoLayoutTemplate(this.getAutoLayoutTemplate());
+
             this.cachePage(page);
         }
 
         return page;
     }
 
-    /** 
+    /**
      * {@inheritDoc}
      */
     @Override
     public void afterPropertiesSet() throws Exception {
-        
+
         Assert.notNull(this.getAutoLayoutTemplate(), "this.getVelocityTemplate()");
+        Assert.notNull(this.getInitialLayoutLocationFmt(), "this.getInitialLayoutFmt()");
+        Assert.notNull(this.getUserLayoutLocationFmt(), "this.getUserLayoutFmt()");
+    }
+
+    /**
+     * Sets the user layout location pattern.
+     * 
+     * @param userLayoutLocation
+     *            the user layout location to set.
+     */
+    public final void setUserLayoutLocation(String userLayoutLocation) {
+
+        Assert.notNull(userLayoutLocation, "userLayoutLocation");
+
+        this.userLayoutLocationFmt = BbVLDockingApplicationPageFactory.patternToMessageFormat(userLayoutLocation);
+    }
+
+    /**
+     * Sets the initial layout location pattern.
+     * 
+     * @param initialLayoutLocation
+     *            the initial layout location to set.
+     */
+    public final void setInitialLayoutLocation(String initialLayoutLocation) {
+
+        Assert.notNull(initialLayoutLocation, "initialLayoutLocation");
+
+        this.initialLayoutLocationFmt = BbVLDockingApplicationPageFactory.patternToMessageFormat(initialLayoutLocation);
     }
 
     /**
@@ -96,11 +139,65 @@ public class BbVLDockingApplicationPageFactory<T> extends VLDockingApplicationPa
      * @param autoLayoutTemplate
      *            the velocity template to set.
      */
-    public final void setAutoLayoutTemplate(Resource velocityTemplate) {
-    
-        Assert.notNull(velocityTemplate, "autoLayoutTemplate");
-    
-        this.autoLayoutTemplate = velocityTemplate;
+    public final void setAutoLayoutTemplate(Resource autoLayoutTemplate) {
+
+        Assert.notNull(autoLayoutTemplate, "autoLayoutTemplate");
+
+        this.autoLayoutTemplate = autoLayoutTemplate;
+    }
+
+    /**
+     * Gets the user layout message format.
+     * <p>
+     * Never returns <code>null</code>. Default value is:
+     * <blockquote>${user.home}/.${richclient.displayName}/vldocking/{0}.xml</blockquote>, with the following
+     * convention:
+     * 
+     * <dl>
+     * <dt>{0}
+     * <dd>The page descriptor identifier.
+     * </dl>
+     * 
+     * @return the user layout message format.
+     */
+    protected final MessageFormat getUserLayoutLocationFmt() {
+
+        if (this.userLayoutLocationFmt == null) {
+
+            // "${user.home}/.${richclient.displayName}/vldocking/{2}.xml"
+            final StringBuffer sb = new StringBuffer() //
+                    .append(SystemUtils.getUserHome())//
+                    .append("/.")//
+                    .append(Application.instance().getName())//
+                    .append("/vldocking/{0}.xml");
+
+            final String userLayoutLocation = sb.toString().replaceAll("\\Q${\\E(.*?)}", "$1");
+
+            this.setUserLayoutLocation(userLayoutLocation);
+        }
+
+        return this.userLayoutLocationFmt;
+    }
+
+    /**
+     * Gets the initial layout message format.
+     * <p>
+     * Never returns <code>null</code>. Default value is: <blockquote>/META-INF/vldocking/{0}.xml</blockquote>, with the
+     * following convention:
+     * <dl>
+     * <dt>{0}
+     * <dd>The page descriptor identifier.
+     * </dl>
+     * 
+     * @return the initial layout message format.
+     */
+    protected final MessageFormat getInitialLayoutLocationFmt() {
+
+        if (this.initialLayoutLocationFmt == null) {
+            this.setInitialLayoutLocation("/META-INF/vldocking/{0}.xml");
+        }
+
+        return this.initialLayoutLocationFmt;
     }
 
     /**
@@ -109,7 +206,25 @@ public class BbVLDockingApplicationPageFactory<T> extends VLDockingApplicationPa
      * @return the velocity template.
      */
     protected final Resource getAutoLayoutTemplate() {
-
+    
         return this.autoLayoutTemplate;
+    }
+
+    /**
+     * Transforms placeholder like expressions into the associated text (i.e.: ${key} --> key).
+     * <p>
+     * Otherwise message format creation will not be triggered
+     * 
+     * @param pattern
+     *            the pattern.
+     * @return a message format having escaped invalid expressions.
+     */
+    private static MessageFormat patternToMessageFormat(String pattern) {
+    
+        Assert.notNull(pattern, "pattern");
+    
+        final MessageFormat messageFormat = new MessageFormat(pattern.replaceAll("\\Q${\\E(.*?)}", "$1"));
+    
+        return messageFormat;
     }
 }

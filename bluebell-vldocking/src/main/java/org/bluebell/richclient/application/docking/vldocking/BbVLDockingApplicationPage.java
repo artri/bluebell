@@ -37,7 +37,6 @@ import javax.xml.parsers.ParserConfigurationException;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.SystemUtils;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
 import org.apache.velocity.app.VelocityEngine;
@@ -102,43 +101,6 @@ public class BbVLDockingApplicationPage<T> extends VLDockingApplicationPage {
             "Error reading workspace layout \"{0}\"");
 
     /**
-     * Message format for building user layout locations.
-     * <p>
-     * Follows this convention:
-     * 
-     * <pre>
-     * ${user_home}/.${application}/vldocking/${pageId}.xml
-     * </pre>
-     * 
-     * <dl>
-     * <dt>user_home
-     * <dd>The user home.
-     * <dt>application
-     * <dd>The application name.
-     * <dt>pageId
-     * <dd>The descriptor id.
-     * </dl>
-     */
-    private static final MessageFormat USER_LAYOUT_FMT = new MessageFormat("{0}/.{1}/vldocking/{2}.xml");
-
-    /**
-     * Message format for building default layout locations.
-     * <p>
-     * Follows this convention:
-     * 
-     * <pre>
-     * /META_INF/layouts/${page_descriptor_id}.xml
-     * </pre>
-     * 
-     * <dl>
-     * <dt>page_descriptor_id
-     * <dd>The page descriptor identifier.
-     * </dl>
-     * 
-     */
-    private static final MessageFormat INITIAL_LAYOUT_FMT = new MessageFormat("/META-INF/vldocking/{0}.xml");
-
-    /**
      * The identifier of the page to be used when page descriptor identifier is null.
      */
     private static final String PAGE_ID_IF_NULL = "emptyPage";
@@ -154,14 +116,14 @@ public class BbVLDockingApplicationPage<T> extends VLDockingApplicationPage {
     private Resource layout;
 
     /**
-     * The user layout resource.
+     * A message format with the user layout location template to be propagated to pages.
      */
-    private Resource userLayout;
+    private MessageFormat userLayoutLocationFmt;
 
     /**
-     * The initial layout resource.
+     * A message format with the initial layout location template to be propagated to pages.
      */
-    private Resource initialLayout;
+    private MessageFormat initialLayoutLocationFmt;
 
     /**
      * The velocity template to be merged when building auto layout.
@@ -264,9 +226,9 @@ public class BbVLDockingApplicationPage<T> extends VLDockingApplicationPage {
         this.closeUndeclaredPageComponents();
 
         if (layout == null) {
-            
+
             this.getPageDescriptor().buildInitialLayout(this);
-            
+
             this.setLayout(null);
 
             return Boolean.TRUE;
@@ -391,15 +353,37 @@ public class BbVLDockingApplicationPage<T> extends VLDockingApplicationPage {
     }
 
     /**
-     * Sets the initial layout.
+     * Sets the user layout message format.
      * 
-     * @param initialLayout
-     *            the initial layout to set.
+     * @param userLayoutLocationFmt
+     *            the user layout message format to set.
+     * 
+     * @return <code>this</code>.
      */
-    public void setInitialLayout(Resource initialLayout) {
+    public final BbVLDockingApplicationPage<T> setUserLayoutLocationFmt(MessageFormat userLayoutLocationFmt) {
 
-        this.initialLayout = initialLayout;
-        super.setInitialLayout(initialLayout);
+        Assert.notNull(userLayoutLocationFmt, "userLayoutLocationFmt");
+
+        this.userLayoutLocationFmt = userLayoutLocationFmt;
+
+        return this;
+    }
+
+    /**
+     * Sets the initial layout location template.
+     * 
+     * @param initialLayoutLocationFmt
+     *            the initial layout location template.
+     * 
+     * @return <code>this</code>.
+     */
+    public final BbVLDockingApplicationPage<T> setInitialLayoutLocationFmt(MessageFormat initialLayoutLocationFmt) {
+
+        Assert.notNull(initialLayoutLocationFmt, "initialLayoutLocationFmt");
+
+        this.initialLayoutLocationFmt = initialLayoutLocationFmt;
+
+        return this;
     }
 
     /**
@@ -409,13 +393,17 @@ public class BbVLDockingApplicationPage<T> extends VLDockingApplicationPage {
      *            the velocity template to set.
      * 
      * @see #autoLayoutTemplate
+     * 
+     * @return <code>this</code>.
      */
-    public final void setAutoLayoutTemplate(Resource velocityTemplate) {
+    public final BbVLDockingApplicationPage<T> setAutoLayoutTemplate(Resource autoLayoutTemplate) {
 
-        Assert.notNull(velocityTemplate, "autoLayoutTemplate");
-        Assert.isTrue(velocityTemplate.exists(), "autoLayoutTemplate.exists()");
+        Assert.notNull(autoLayoutTemplate, "autoLayoutTemplate");
+        Assert.isTrue(autoLayoutTemplate.exists(), "autoLayoutTemplate.exists()");
 
-        this.autoLayoutTemplate = velocityTemplate;
+        this.autoLayoutTemplate = autoLayoutTemplate;
+
+        return this;
     }
 
     /**
@@ -483,22 +471,15 @@ public class BbVLDockingApplicationPage<T> extends VLDockingApplicationPage {
      * Never returns <code>null</code> but note returned resource may not exist.
      * 
      * @return the user layout.
-     * 
-     * @see #USER_LAYOUT_LOCATION_FMT
      */
     protected final Resource getUserLayout() {
 
-        if (this.userLayout == null) {
-            final String userHome = SystemUtils.getUserHome().getAbsolutePath();
-            final String applicationName = this.getApplication().getName();
+        final String pageId = this.getPageDescriptor().getId();
+        final String userLayoutLocation = this.getUserLayoutLocationFmt().format(new String[] { pageId });
 
-            final String userLayoutLocation = BbVLDockingApplicationPage.USER_LAYOUT_FMT.format(//
-                    new String[] { userHome, applicationName, this.getPageDescriptor().getId() });
+        final Resource userLayout = new FileSystemResource(userLayoutLocation);
 
-            this.setUserLayout(new FileSystemResource(userLayoutLocation));
-        }
-
-        return this.userLayout;
+        return userLayout;
     }
 
     /**
@@ -510,20 +491,22 @@ public class BbVLDockingApplicationPage<T> extends VLDockingApplicationPage {
      */
     protected final Resource getInitialLayout() {
 
-        if ((this.initialLayout == null) && (this.getPageDescriptor() instanceof VLDockingPageDescriptor)) {
+        Resource initialLayout = null;
 
-            this.setInitialLayout(((VLDockingPageDescriptor) this.getPageDescriptor()).getInitialLayout());
+        if (this.getPageDescriptor() instanceof VLDockingPageDescriptor) {
+
+            initialLayout = ((VLDockingPageDescriptor) this.getPageDescriptor()).getInitialLayout();
         }
 
-        // If initial layout goes on being null
-        if (this.initialLayout == null) {
-            final String location = BbVLDockingApplicationPage.INITIAL_LAYOUT_FMT.format(//
-                    new String[] { this.getPageDescriptor().getId() });
+        // If initial layout keeps being null
+        if (initialLayout == null) {
+            final String pageId = this.getPageDescriptor().getId();
+            final String path = this.getInitialLayoutLocationFmt().format(new String[] { pageId });
 
-            this.setInitialLayout(new ClassPathResource(location));
+            initialLayout = new ClassPathResource(path);
         }
 
-        return this.initialLayout;
+        return initialLayout;
     }
 
     /**
@@ -570,10 +553,32 @@ public class BbVLDockingApplicationPage<T> extends VLDockingApplicationPage {
 
             resource = new ByteArrayResource(string.getBytes());
         } catch (Throwable e) {
+            // (JAF), 20101224, this resource is useless but doesn't break the contract!
+            // VLDocking will fail to build this layout: never mind, handlers on this class will treat the exception
             resource = new ByteArrayResource(new byte[] {});
         }
 
         return resource;
+    }
+
+    /**
+     * Gets the user layout message format.
+     * 
+     * @return the user layout message format. Never returns <code>null</code>.
+     */
+    protected final MessageFormat getUserLayoutLocationFmt() {
+
+        return this.userLayoutLocationFmt;
+    }
+
+    /**
+     * Gets the initial layout message format.
+     * 
+     * @return the initial layout message format. Never returns <code>null</code>.
+     */
+    protected final MessageFormat getInitialLayoutLocationFmt() {
+
+        return this.initialLayoutLocationFmt;
     }
 
     /**
@@ -696,19 +701,6 @@ public class BbVLDockingApplicationPage<T> extends VLDockingApplicationPage {
         // Assert.notNull(layout, "layout");
 
         this.layout = layout;
-    }
-
-    /**
-     * Sets the user layout.
-     * 
-     * @param userLayout
-     *            the user layout to set.
-     */
-    private void setUserLayout(Resource userLayout) {
-
-        Assert.notNull(userLayout, "userLayout");
-
-        this.userLayout = userLayout;
     }
 }
 

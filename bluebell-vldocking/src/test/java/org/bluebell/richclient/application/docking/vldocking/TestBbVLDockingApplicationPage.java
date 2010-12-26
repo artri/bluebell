@@ -296,6 +296,9 @@ public class TestBbVLDockingApplicationPage extends AbstractBbSamplesTests {
         TestCase.assertEquals(vlPage.getAutoLayout(), vlPage.getLayout());
     }
 
+    /**
+     * Tests the correct behaviour of <code>BbVLDockingApplicationPage</code> when setting invalid auto layout template.
+     */
     @Test
     public void testInvalidAutoLayoutTemplate() {
 

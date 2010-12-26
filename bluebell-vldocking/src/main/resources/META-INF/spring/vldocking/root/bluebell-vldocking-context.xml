@@ -40,12 +40,13 @@
 	</bean>
 
 	<!--
-		Bean: applicationPageFactory
+		Bean: vldockingApplicationPageFactory
 		Type: platform optional
 		Description: TODO
 	-->
 	<bean id="vldockingApplicationPageFactory" class="org.bluebell.richclient.application.docking.vldocking.BbVLDockingApplicationPageFactory"
-		p:autoLayoutTemplate="${richclient.autoLayoutTemplateLocation}" />
+		p:autoLayoutTemplate="${richclient.autoLayoutTemplateLocation}" p:initialLayoutLocation="/META-INF/${richclient.vldockingFolder}/{0}.xml"
+		p:userLayoutLocation="${richclient.userPreferences}/${richclient.vldockingFolder}/{0}.xml" />
 
 
 	<!--
