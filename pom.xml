@@ -371,6 +371,21 @@
 								<groupId>com.googlecode.maven-overview-plugin</groupId>
 								<artifactId>maven-overview-plugin</artifactId>
 								<version>1.6</version>
+								<configuration>
+									<project>
+										${project}
+									</project>
+									<exclusions>
+										<exclusion>
+											<scope>test</scope>
+										</exclusion>
+									</exclusions>
+									<maxDepth>2</maxDepth>
+									<scopes>
+										<scope>compile</scope>
+										<scope>runtime</scope>
+									</scopes>
+								</configuration>
 							</plugin>
 							<plugin>
 								<groupId>org.apache.maven.plugins</groupId>
