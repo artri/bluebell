@@ -147,7 +147,7 @@ public final class ObjectUtils {
      * @see #unwrapProxy(Object, Boolean)
      * @since 20101223 thanks to <a href="http://jirabluebell.b2b2000.com/browse/BLUE-34">BLUE-34</a>
      */
-    public static final Object unwrapProxy(Object bean) {
+    public static Object unwrapProxy(Object bean) {
 
         return ObjectUtils.unwrapProxy(bean, Boolean.TRUE);
     }
@@ -168,7 +168,7 @@ public final class ObjectUtils {
      * @see Advised
      * @since 20101223 thanks to <a href="http://jirabluebell.b2b2000.com/browse/BLUE-34">BLUE-34</a>
      */
-    public static final Object unwrapProxy(Object bean, Boolean recursive) {
+    public static Object unwrapProxy(Object bean, Boolean recursive) {
 
         Assert.notNull(recursive, "recursive");
 

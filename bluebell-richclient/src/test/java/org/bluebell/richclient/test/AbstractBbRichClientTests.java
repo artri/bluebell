@@ -19,6 +19,9 @@
 package org.bluebell.richclient.test;
 
 import java.awt.Component;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -27,12 +30,17 @@ import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import javax.swing.JTextField;
 
+import junit.framework.TestCase;
+
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.ClassUtils;
 import org.apache.commons.lang.ObjectUtils;
+import org.apache.commons.lang.SystemUtils;
 import org.bluebell.richclient.application.config.BbApplicationConfig;
 import org.bluebell.richclient.swing.util.SwingUtils;
 import org.junit.AfterClass;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -41,18 +49,17 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.HierarchicalMessageSource;
 import org.springframework.context.MessageSource;
+import org.springframework.core.io.FileSystemResource;
 import org.springframework.richclient.application.Application;
 import org.springframework.richclient.application.ApplicationLauncher;
 import org.springframework.richclient.application.ApplicationPage;
 import org.springframework.richclient.application.ApplicationWindow;
-import org.springframework.richclient.application.WindowManager;
 import org.springframework.richclient.application.config.ApplicationLifecycleAdvisor;
 import org.springframework.richclient.command.TargetableActionCommand;
 import org.springframework.richclient.form.Form;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
 import org.springframework.util.Assert;
-import org.springframework.util.ReflectionUtils;
 
 /**
  * Base class for creating Spring Richclient tests.
@@ -66,6 +73,11 @@ public abstract class AbstractBbRichClientTests extends AbstractJUnit4SpringCont
      * The logger.
      */
     private static final Logger LOGGER = LoggerFactory.getLogger(AbstractBbRichClientTests.class);
+
+    /**
+     * Bluebell placeholder for storing user preferences.
+     */
+    private static final String USER_PREFERENCES = "richclient.userPreferences";
 
     /**
      * The global application instance.
@@ -84,6 +96,30 @@ public abstract class AbstractBbRichClientTests extends AbstractJUnit4SpringCont
      * The application launcher.
      */
     private static Boolean initialized = Boolean.FALSE;
+
+    /**
+     * Changes user preferences folder just for testing purposes.
+     * 
+     * @since 20101226 due to <a href="http://jirabluebell.b2b2000.com/browse/BLUE-40">BLUE-40</a>
+     */
+    @BeforeClass
+    public static void changeUserPreferences() {
+
+        final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyyMMdd");
+        final String relativePath = "bluebell/" + simpleDateFormat.format(new Date());
+
+        // (JAF), 20101226, last backslash is needed in order to create relative paths as expected
+        final FileSystemResource javaIoTmpResource = new FileSystemResource(SystemUtils.getJavaIoTmpDir() + "/");
+        final org.springframework.core.io.Resource bbTmpResource = javaIoTmpResource.createRelative(relativePath);
+
+        try {
+            FileUtils.forceDeleteOnExit(bbTmpResource.getFile());
+
+            System.setProperty(AbstractBbRichClientTests.USER_PREFERENCES, bbTmpResource.getFile().getAbsolutePath());
+        } catch (IOException e) {
+            TestCase.fail("Unable to change user preferences folder");
+        }
+    }
 
     /**
      * Close the application after every test is executed.
