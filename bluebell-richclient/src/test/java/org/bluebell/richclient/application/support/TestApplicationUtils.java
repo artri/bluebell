@@ -147,7 +147,7 @@ public class TestApplicationUtils extends AbstractBbSamplesTests {
         // Sequence 2
         this.initializeVariables(window1, this.getPersonPageDescriptor());
         this.doTestForceFocusGained(window1, this.getPersonPageDescriptor());
-        this.doTestForceFocusGained(window1, this.getPersonPageDescriptor(), this.getDetailView());
+        this.doTestForceFocusGained(window1, this.getPersonPageDescriptor(), this.getChildView());
 
         // Sequence 3
         this.initializeVariables(window1, this.initialPageDescriptor);
@@ -157,7 +157,7 @@ public class TestApplicationUtils extends AbstractBbSamplesTests {
         // Sequence 4
         this.initializeVariables(window1, this.getPersonPageDescriptor());
         this.doTestForceFocusGained(window2, this.getPersonPageDescriptor());
-        this.doTestForceFocusGained(window2, this.getPersonPageDescriptor(), this.getDetailView());
+        this.doTestForceFocusGained(window2, this.getPersonPageDescriptor(), this.getChildView());
     }
 
     /**

@@ -278,6 +278,9 @@ public class TestAbstractBbTableMasterForm extends AbstractBbSamplesTests {
         indexes = ListUtils.EMPTY_LIST;
         selectionModel.clearSelection();
         this.doTestGetSelection(masterForm, desEntities, indexes);
+        
+        // (JAF), 20110103, keep table unchanged
+        this.sortTable(masterTable, column, Boolean.TRUE);
     }
 
     /**
@@ -289,12 +292,12 @@ public class TestAbstractBbTableMasterForm extends AbstractBbSamplesTests {
 
         final int pos03 = 3;
         final MockPersonMasterForm masterForm = (MockPersonMasterForm) this.getBackingForm(this.getMasterView());
-        final PersonChildForm detailForm = (PersonChildForm) this.getBackingForm(this.getDetailView());
+        final PersonChildForm childForm = (PersonChildForm) this.getBackingForm(this.getChildView());
 
         List<Person> oldSelection = ListUtils.EMPTY_LIST;
         List<Person> newSelection = Arrays.asList(TestAbstractBbTableMasterForm.PERSONS_1.get(1));
         int requestCount = 0;
-
+        
         // Show entities:
         // EXPECTED: [1,2,3,4]
         masterForm.showEntities(TestAbstractBbTableMasterForm.PERSONS_1);
@@ -308,8 +311,8 @@ public class TestAbstractBbTableMasterForm extends AbstractBbSamplesTests {
 
         // Change age: detail form should get dirty
         // EXPECTED: [1, 2, -->[D]3<--, 4]
-        this.userAction(detailForm, "age", "22");
-        TestCase.assertTrue("detailForm.isDirty()", detailForm.isDirty());
+        this.userAction(childForm, "age", "22");
+        TestCase.assertTrue("detailForm.isDirty()", childForm.isDirty());
 
         // Abort selection change
         // EXPECTED: [1, 2, -->[D]3<--, 4]
@@ -320,24 +323,29 @@ public class TestAbstractBbTableMasterForm extends AbstractBbSamplesTests {
         // Confirm selection change
         // EXPECTED: [1, 2, 3, -->4<--]
         this.doTestRequestUserConfirmation(masterForm, Boolean.TRUE, newSelection, ++requestCount, newSelection);
-        TestCase.assertFalse("detailForm.isDirty()", detailForm.isDirty());
+        TestCase.assertFalse("childForm.isDirty()", childForm.isDirty());
 
         // Change age: detail form should get dirty
         // EXPECTED: [1, 2, 3, -->[D]4<--]
-        this.userAction(detailForm, "age", "22");
-        TestCase.assertTrue("detailForm.isDirty()", detailForm.isDirty());
+        this.userAction(childForm, "age", "22");
+        TestCase.assertTrue("childForm.isDirty()", childForm.isDirty());
 
         // Abort multiple selection
         // EXPECTED: [1, 2, 3, -->[D]4<--]
         oldSelection = newSelection;
         newSelection = Arrays.asList(//
-                TestAbstractBbTableMasterForm.PERSONS_1.get(pos03), TestAbstractBbTableMasterForm.PERSONS_1.get(2));
+                TestAbstractBbTableMasterForm.PERSONS_1.get(2), TestAbstractBbTableMasterForm.PERSONS_1.get(pos03));
         this.doTestRequestUserConfirmation(masterForm, Boolean.FALSE, newSelection, ++requestCount, oldSelection);
 
         // Confirm multiple selection
-        // EXPECTED: [1, 2, -->3<--, -->[D]4<--]
+        // EXPECTED: [1, 2, -->3<--, -->4<--]
         this.doTestRequestUserConfirmation(masterForm, Boolean.TRUE, newSelection, ++requestCount, newSelection);
-        TestCase.assertTrue("detailForm.isDirty()", detailForm.isDirty());
+        TestCase.assertFalse("childForm.isDirty()", childForm.isDirty());
+
+        // Change age again: detail form should get dirty
+        // EXPECTED: [1, 2, 3, -->[D]4<--]
+        this.userAction(childForm, "age", "220");
+        TestCase.assertTrue("childForm.isDirty()", childForm.isDirty());
 
         // Abort single selection again
         oldSelection = newSelection;
@@ -346,7 +354,7 @@ public class TestAbstractBbTableMasterForm extends AbstractBbSamplesTests {
 
         // Confirm single selection again
         this.doTestRequestUserConfirmation(masterForm, Boolean.TRUE, newSelection, ++requestCount, newSelection);
-        TestCase.assertFalse("detailForm.isDirty()", detailForm.isDirty());
+        TestCase.assertFalse("detailForm.isDirty()", childForm.isDirty());
     }
 
     /**
@@ -431,7 +439,7 @@ public class TestAbstractBbTableMasterForm extends AbstractBbSamplesTests {
      * @param expectedCount
      *            the expected number of user requests.
      * @param expectedSelection
-     *            the expected selection after proceeding.
+     *            the expected selection after isProceeding.
      */
     private void doTestRequestUserConfirmation(MockPersonMasterForm masterForm, Boolean confirm,
             List<Person> newSelection, int expectedCount, List<Person> expectedSelection) {
@@ -439,7 +447,8 @@ public class TestAbstractBbTableMasterForm extends AbstractBbSamplesTests {
         masterForm.setConfirm(confirm);
         masterForm.changeSelection(newSelection);
         TestCase.assertEquals(expectedCount, masterForm.getCount());
-        TestCase.assertTrue(ListUtils.isEqualList(expectedSelection, masterForm.getSelection()));
+        TestCase.assertTrue("ListUtils.isEqualList(expectedSelection, masterForm.getSelection())\n" + expectedSelection
+                + "\n" + masterForm.getSelection(), ListUtils.isEqualList(expectedSelection, masterForm.getSelection()));
     }
 
     /**

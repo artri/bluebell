@@ -166,14 +166,7 @@
 				<enabled>false</enabled>
 			</snapshots>
 		</repository>
-	</repositories>
-	<pluginRepositories>
-		<pluginRepository>
-			<id>codehaus</id>
-			<name>Codehaus Release Repo</name>
-			<url>http://repository.codehaus.org</url>
-		</pluginRepository>
-		<pluginRepository>
+		<repository>
 			<!--
 				(JAF), 20101210, "org.jboss.apiviz.apiviz" doclet needs "jboss.releases" repository.
 			-->
@@ -183,6 +176,13 @@
 			<snapshots>
 				<enabled>false</enabled>
 			</snapshots>
+		</repository>
+	</repositories>
+	<pluginRepositories>
+		<pluginRepository>
+			<id>codehaus</id>
+			<name>Codehaus Release Repo</name>
+			<url>http://repository.codehaus.org</url>
 		</pluginRepository>
 	</pluginRepositories>
 
@@ -652,6 +652,13 @@
 							<property>
 								<name>net.sourceforge.cobertura.datafile</name>
 								<value>${project.build.directory}/cobertura/cobertura.ser</value>
+							</property>
+							<!--
+								(JAF), 20110103: According to http://wiki.apache.org/logging-log4j/UsefulCode
+							-->
+							<property>
+								<name>log4j.configuration</name>
+								<value>test-log4j.xml</value>
 							</property>
 						</systemProperties>
 					</configuration>

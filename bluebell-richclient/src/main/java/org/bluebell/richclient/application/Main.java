@@ -54,12 +54,12 @@ public abstract class Main {
      * El nombre del parámetro del <code>main</code> especificando el directorio base desde el que cargar la
      * configuración específica del entorno.
      */
-    private static final String BASE_DIR_ARG = "-baseDir";
+    protected static final String BASE_DIR_ARG = "-baseDir";
 
     /**
      * El nombre del parámetro del <code>main</code> especificando la clase a instanciar para arrancar la aplicación.
      */
-    private static final String CLASS_ARG = "-class";
+    protected static final String CLASS_ARG = "-class";
 
     /**
      * El nombre del parámetro del <code>main</code> especificando los recursos con el contexto de aplicación de Spring

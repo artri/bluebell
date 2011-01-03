@@ -52,7 +52,7 @@ public final class TableUtils {
      * The {@value #TABLE} parameter name.
      */
     private static final String TABLE = "table";
-    
+
     /**
      * The {@value #TABLE_MODEL} parameter name.
      */
@@ -293,7 +293,7 @@ public final class TableUtils {
         final List<Q> rows = new ArrayList<Q>(table.getRowCount());
         for (int i = 0; i < table.getRowCount(); ++i) {
 
-            // JAF, 20100411, fixed a bug retrieving elements: rows.add((Q) tableModel.getElementAt(i));
+            // JAF, 20100411, fixed a BIG bug retrieving elements: rows.add((Q) tableModel.getElementAt(i));
             rows.add((Q) tableModel.getElementAt(TableUtils.getModelIndex(table, i)));
         }
 
@@ -379,7 +379,7 @@ public final class TableUtils {
     /**
      * Gets the current selection.
      * <p>
-     * Ensures entities are returned in the same order that are viewed.
+     * Ensures entities are returned in the same order as are viewed.
      * 
      * @param <Q>
      *            the type of the rows.
@@ -388,14 +388,42 @@ public final class TableUtils {
      * @param tableModel
      *            the table model.
      * @return the selected entities.
+     * 
+     * @see #getSelection(JTable, GlazedTableModel, List)
      */
     public static <Q> List<Q> getSelection(JTable table, GlazedTableModel tableModel) {
 
         Assert.notNull(table, TableUtils.TABLE);
         Assert.notNull(tableModel, TableUtils.TABLE_MODEL);
 
-        final EventList<Q> eventList = TableUtils.getSource(tableModel);
         final List<Integer> modelIndexes = TableUtils.getSelectedModelIndexes(table);
+
+        return TableUtils.getSelection(table, tableModel, modelIndexes);
+    }
+
+    /**
+     * Gets the current selection.
+     * <p>
+     * Ensures entities are returned in the same order as <code>modelIndexes</code>.
+     * <p>
+     * <em>This method exists for performance reasons when <code>modelIndexes</code> are already known</em>.
+     * 
+     * @param <Q>
+     *            the type of the rows.
+     * @param table
+     *            the table.
+     * @param tableModel
+     *            the table model.
+     * @param modelIndexes
+     *            the model indexes.
+     * @return the selected entities.
+     */
+    public static <Q> List<Q> getSelection(JTable table, GlazedTableModel tableModel, List<Integer> modelIndexes) {
+
+        Assert.notNull(table, TableUtils.TABLE);
+        Assert.notNull(tableModel, TableUtils.TABLE_MODEL);
+
+        final EventList<Q> eventList = TableUtils.getSource(tableModel);
         final List<Q> selectedEntities = new ArrayList<Q>(modelIndexes.size());
 
         for (Integer modelIndex : modelIndexes) {
@@ -407,6 +435,8 @@ public final class TableUtils {
 
     /**
      * Changes selection.
+     * <p>
+     * This method ensures listeners are invoked just once.
      * 
      * @param <Q>
      *            the type of the rows.
@@ -415,7 +445,10 @@ public final class TableUtils {
      * @param tableModel
      *            the table model.
      * @param newSelection
-     *            the entities to be selected.
+     *            the entities to be selected. If any entity does not belong to entities currently being shown then it
+     *            is ignored.
+     * 
+     * @see #changeSelection(JTable, List)
      */
     public static <Q> void changeSelection(final JTable table, final GlazedTableModel tableModel,
             final List<Q> newSelection) {
@@ -424,39 +457,25 @@ public final class TableUtils {
         Assert.notNull(tableModel, TableUtils.TABLE_MODEL);
         Assert.notNull(newSelection, "entities");
 
-        // Replace current selection (do it in the event dispatcher thread to avoid race conditions)
-        SwingUtils.runInEventDispatcherThread(new Runnable() {
+        // Calculate view indexes and call overloaded method
 
-            @Override
-            public void run() {
+        final List<Integer> modelIndexes = TableUtils.getModelIndexes(tableModel, newSelection);
+        final List<Integer> viewIndexes = TableUtils.getViewIndexes(table, modelIndexes);
 
-                final List<Q> currentSelection = TableUtils.getSelection(table, tableModel);
-                final Boolean proceed = !CollectionUtils.isEqualCollection(currentSelection, newSelection);
-
-                if (proceed) {
-                    final List<Q> visibleEntities = TableUtils.getVisibleEntities(table);
-
-                    table.clearSelection();
-                    for (final Q entity : newSelection) {
-                        final int viewIndexToSelect = visibleEntities.indexOf(entity);
-                        if (viewIndexToSelect >= 0) {
-                            table.addRowSelectionInterval(viewIndexToSelect, viewIndexToSelect);
-                        }
-                    }
-                }
-            }
-        });
+        TableUtils.changeSelection(table, viewIndexes);
     }
 
     /**
      * Change current selection.
+     * <p>
+     * This method ensures listeners are invoked just once.
      * 
      * @param <Q>
      *            the type of the rows.
      * @param table
      *            the table.
      * @param viewIndexes
-     *            the indexes to select.
+     *            the indexes to select. <code>-1</code> indexes are ignored.
      */
     public static <Q> void changeSelection(final JTable table, final List<Integer> viewIndexes) {
 
@@ -475,15 +494,22 @@ public final class TableUtils {
                 final List<Integer> currentViewIndexes = TableUtils.getSelectedViewIndexes(table);
                 final Boolean proceed = !CollectionUtils.isEqualCollection(currentViewIndexes, viewIndexes);
 
+                // PRE-CONDITION: new selection is different from previous
                 if (proceed) {
 
-                    table.clearSelection();
+                    // INVARIANT: Change selection taking care of setting "valueIsAdjusting":
+                    // otherwise multiple events will be raised
+                    final ListSelectionModel listSelectionModel = table.getSelectionModel();
 
-                    for (final Integer viewIndex : viewIndexes) {
+                    listSelectionModel.setValueIsAdjusting(Boolean.TRUE);
+                    listSelectionModel.clearSelection();
+                    for (Integer viewIndex : viewIndexes) {
                         if (viewIndex >= 0) {
                             table.addRowSelectionInterval(viewIndex, viewIndex);
                         }
                     }
+                    // POST-CONDITION: listeners are notified
+                    listSelectionModel.setValueIsAdjusting(Boolean.FALSE);
                 }
             }
         });

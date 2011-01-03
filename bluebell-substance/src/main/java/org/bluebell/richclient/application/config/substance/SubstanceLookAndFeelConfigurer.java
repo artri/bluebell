@@ -51,22 +51,22 @@ import org.springframework.util.Assert;
 
 /**
  * Substance look and feel configurer.
- * <p>
+ * <p />
  * The simplest configuration requires the following bean in the startup aplication context:
  * 
  * <pre>
- * {@code
- *      <bean id="substanceLookAndFeelConfigurer" parent="vldockingLookAndFeelConfigurer"
- *                 class="org.bluebell.richclient.application.config.substance.SubstanceLookAndFeelConfigurer" 
- *                 lazy-init="true">
- *                 <constructor-arg index="0" value="${richclient.substanceSkinName}" />
+ *      <bean id="substanceLookAndFeelConfigurer" parent="vldockingLookAndFeelConfigurer" 
+ *      class="org.bluebell.richclient.application.config.substance.SubstanceLookAndFeelConfigurer"  lazy-init="true">
+ *                 <constructor-arg index="0" value="${richclient.substanceSkinName}"/>
  *      </bean>
+ * </pre>
+ * 
+ * <pre>
  *      &lt;bean id=&quot;substanceLookAndFeelConfigurer&quot; 
  *              class=&quot;org.bluebell.richclient.application.config.SubstanceLookAndFeelConfigurer&quot; &gt;
  *              &lt;constructor-arg index=&quot;0&quot; 
  *              value=&quot;org.jvnet.substance.skin.SubstanceCremeCoffeeLookAndFeel&quot;/&gt;
  *      &lt;/bean&gt;
- * }
  * </pre>
  * 
  * However is better to define the following beans in the startup application context:
@@ -79,7 +79,11 @@ import org.springframework.util.Assert;
  *              class=&quot;org.springframework.richclient.application.splash.ProgressSplashScreen&quot; /&gt;
  * 
  *      &lt;util:property-path id=&quot;progressMonitor&quot; path=&quot;splashScreen.progressMonitor&quot;/&gt;
+ * }
+ * </pre>
  * 
+ * <pre>
+ * {@code
  *        <bean id="substanceLookAndFeelConfigurer" parent="vldockingLookAndFeelConfigurer"
  *                 class="org.bluebell.richclient.application.config.substance.SubstanceLookAndFeelConfigurer" 
  *                 lazy-init="true">
@@ -221,7 +225,7 @@ public class SubstanceLookAndFeelConfigurer extends VLDockingLookAndFeelConfigur
      * This advice ensures the intercepted method is executed in the EDT.
      * 
      * @param pjp
-     *            the proceeding join point.
+     *            the isProceeding join point.
      * @return the value returned by the intercepted method.
      * @throws Throwable
      *             in case of error.
@@ -256,7 +260,7 @@ public class SubstanceLookAndFeelConfigurer extends VLDockingLookAndFeelConfigur
      * factory, capable of being intercepted using AOP mechanism.
      * 
      * @param pjp
-     *            the proceeding join point.
+     *            the isProceeding join point.
      * @return the appropiate object.
      * @throws Throwable
      *             in case of error.
@@ -275,7 +279,7 @@ public class SubstanceLookAndFeelConfigurer extends VLDockingLookAndFeelConfigur
      * This advice adapts Substance to splash screen displaying.
      * 
      * @param pjp
-     *            the proceeding join point.
+     *            the isProceeding join point.
      * @throws Throwable
      *             in case of error.
      */

@@ -27,7 +27,7 @@ import org.springframework.richclient.form.binding.BindingFactoryProvider;
 import org.springframework.richclient.util.Assert;
 
 /**
- * Provider that constructs instances of {@link BindingFactory} on demand using Spring Application instance as object
+ * Provider that constructs instances of {@link BindingFactory} on demand using Spring Application context as object
  * factory.
  * 
  * @author <a href = "mailto:julio.arguello@gmail.com" >Julio Argüello (JAF)</a>

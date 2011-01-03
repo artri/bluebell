@@ -51,6 +51,7 @@ public class PersonSearchForm extends AbstractBbSearchForm<Person, Person> {
     protected List<Person> doSearch(Person searchParams) {
 
         final int numberOfPersons = 10000;
+        // final int numberOfPersons = 1;
 
         return Person.createPersons(numberOfPersons);
     }

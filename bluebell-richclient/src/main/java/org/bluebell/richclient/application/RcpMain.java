@@ -18,6 +18,9 @@
 
 package org.bluebell.richclient.application;
 
+import java.util.Arrays;
+
+import org.apache.commons.lang.ArrayUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.richclient.application.Application;
@@ -96,13 +99,29 @@ public class RcpMain extends Main {
 
     /**
      * Override {@link Main#main(String[])}, this is needed for JNLP compliance.
+     * <p>
+     * If not class param is specified then <code>RcpMain</code> is applied.
      * 
      * @param args
      *            the main args.
      */
     public static void main(String[] args) {
 
-        Main.main(args);
+        final int argSize = 2;
+        final String[] argsToApply;
+
+        // (JAF), 20101227, check whether main class has been specified
+        final Boolean hasClassParam = (ArrayUtils.lastIndexOf(args, Main.CLASS_ARG) != ArrayUtils.INDEX_NOT_FOUND);
+        if (hasClassParam) {
+            argsToApply = args;
+        } else {
+            argsToApply = Arrays.copyOf(args, args.length + argSize);
+            argsToApply[args.length + 0] = Main.CLASS_ARG;
+            argsToApply[args.length + 1] = RcpMain.class.getName();
+        }
+
+        // Call definitely to main
+        Main.main(argsToApply);
     }
 
     /**

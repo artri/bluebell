@@ -38,13 +38,13 @@ import com.jidesoft.swing.DefaultOverlayable;
  * created by this factory has overlay support based on Jide OSS {@link DefaultOverlayable}.
  * <p>
  * A first approach was to intercept methods returning <code>Binding</code> objects using Spring AOP, this has a pitfall
- * consisting on the fact that user level code used to invoke <code>SwingBindingFactory</code> extension methods. When
- * using AOP interception the returned binding factory is a <code>$Proxy</code> like class that cannot be assigned to
+ * consisting on exists user level code used that invokes <code>SwingBindingFactory</code> extension methods. When using
+ * AOP interception the returned binding factory is a <code>$Proxy</code> class that cannot be assigned to
  * <code>SwingBindingFactory</code>. That's the reason why rewriting interface methods is the more suitable way.
  * 
  * @author <a href = "mailto:julio.arguello@gmail.com" >Julio Argüello (JAF)</a>
  * 
- * @see JideRepaintManager since according to <a href="http://forums.sun.com/thread.jspa?threadID=725127">this
+ * @see JideRepaintManager, since according to <a href="http://forums.sun.com/thread.jspa?threadID=725127">this
  *      thread</a> the "unique" way to listen for repaint changes is overriding <code>RepaintManager</code>. This is not
  *      a recommended practice but works anyway...
  */
@@ -127,7 +127,7 @@ public class JideBindingFactory extends SwingBindingFactory {
      * @author <a href = "mailto:julio.arguello@gmail.com" >Julio Argüello (JAF)</a>
      * 
      * @see DefaultOverlayable
-     * @see JideRepaintManager
+     * @see JideRepaintManagerWrapper
      */
     private static class OverlayableBinding implements Binding {
 
@@ -175,7 +175,7 @@ public class JideBindingFactory extends SwingBindingFactory {
             this.setFormModel(formModel);
             this.setProperty(property);
 
-            // Install the JideRepaintManager if not already done.
+            // Install the JideRepaintManagerWrapper if not already done.
             // Note it is installed in a lazy way to avoid unnecessary installations when the binding factory is
             // instantiated (but not employed)
             JideRepaintManager.installJideRepaintManagerIfNeeded();

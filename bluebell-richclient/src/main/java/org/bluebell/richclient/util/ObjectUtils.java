@@ -30,6 +30,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.aop.framework.Advised;
 import org.springframework.aop.support.AopUtils;
+import org.springframework.beans.InvalidPropertyException;
 import org.springframework.beans.PropertyAccessor;
 import org.springframework.beans.PropertyAccessorFactory;
 import org.springframework.util.Assert;
@@ -53,6 +54,59 @@ public final class ObjectUtils {
     private ObjectUtils() {
 
         super();
+    }
+
+    /**
+     * Gets the value of a given property into a given bean.
+     * 
+     * @param <Q>
+     *            the bean type.
+     * @param bean
+     *            the bean itself.
+     * @param propertyName
+     *            the property name.
+     * 
+     * @return the property value.
+     * 
+     * @see #getPropertyValue(Object, String, Class)
+     */
+    public static <Q> Object getPropertyValue(Q bean, String propertyName) {
+
+        return ObjectUtils.getPropertyValue(bean, propertyName, Object.class);
+    }
+
+    /**
+     * Gets the value of a given property into a given bean.
+     * 
+     * @param <T>
+     *            the property type.
+     * @param <Q>
+     *            the bean type.
+     * @param bean
+     *            the bean itself.
+     * @param propertyName
+     *            the property name.
+     * @param propertyType
+     *            the property type.
+     * @return the property value.
+     * 
+     * @see PropertyAccessorFactory
+     */
+    @SuppressWarnings("unchecked")
+    public static <T, Q> T getPropertyValue(Q bean, String propertyName, Class<T> propertyType) {
+
+        Assert.notNull(bean, "bean");
+        Assert.notNull(propertyName, "propertyName");
+
+        final PropertyAccessor propertyAccessor = PropertyAccessorFactory.forDirectFieldAccess(bean);
+
+        try {
+            Assert.isAssignable(propertyType, propertyAccessor.getPropertyType(propertyName));
+        } catch (InvalidPropertyException e) {
+            throw new IllegalStateException("Invalid property \"" + propertyName + "\"", e);
+        }
+
+        return (T) propertyAccessor.getPropertyValue(propertyName);
     }
 
     /**

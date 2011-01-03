@@ -40,7 +40,7 @@ import org.springframework.util.Assert;
  *            el tipo de la entidad maestra con la que se vincula este formulario.
  * 
  * @see AbstractB2TableMasterForm
- * @see org.bluebell.richclient.test.form.BbCompositeDetailForm
+ * @see BbDispatcherForm
  * 
  * @author <a href = "mailto:julio.arguello@gmail.com" >Julio Argüello (JAF)</a>
  */
@@ -54,7 +54,7 @@ public abstract class AbstractBbChildForm<T extends Object> extends ApplicationW
     /**
      * El formulario padre (el formulario detalle compuesto).
      */
-    private BbDispatcherForm<T> detailForm;
+    private BbDispatcherForm<T> dispatcherForm;
 
     /**
      * <em>Listener</em> para escuchar cambios en el índice que identifica el elemento seleccionado con respecto a la
@@ -103,17 +103,6 @@ public abstract class AbstractBbChildForm<T extends Object> extends ApplicationW
     public String toString() {
 
         return new ToStringBuilder(this, ToStringStyle.SIMPLE_STYLE).append("id", this.getId()).toString();
-    }
-
-    /**
-     * Manejador para aquellos casos en los que no se seleccione ningún elemento.
-     * <p>
-     * Esta implementación no realiza ninguna tarea. Las subclases pueden sobreescribirla para llevar a cabo un
-     * comportamiento adicional cada vez que se cambie el elemento seleccionado.
-     */
-    protected void onNoSelection() {
-
-        // Nothing to do.
     }
 
     /**
@@ -189,7 +178,7 @@ public abstract class AbstractBbChildForm<T extends Object> extends ApplicationW
      */
     protected AbstractBbChildForm<T> getSiblingForm(String formId) {
 
-        return this.detailForm.getChildForm(formId);
+        return this.getDispatcherForm().getChildForm(formId);
     }
 
     /**
@@ -200,7 +189,7 @@ public abstract class AbstractBbChildForm<T extends Object> extends ApplicationW
      * 
      * @see org.springframework.richclient.form.AbstractForm#setEditableFormObjects
      */
-    void setEditableFormObjectFromDispatcherForm(ObservableList editableFormObjects) {
+    void setEditableFormObjectsFromDispatcherForm(ObservableList editableFormObjects) {
 
         // TODO, (JAF), 20090927, eliminar este método
         super.setEditableFormObjects(editableFormObjects);
@@ -225,7 +214,7 @@ public abstract class AbstractBbChildForm<T extends Object> extends ApplicationW
      * Permite al formulario compuesto establecer el modelo de este formulario a partir del formulario padre.
      * <p>
      * Añade el <em>value change listener</em> {@link #indexHolderPropertyChangeListener} y establece el formulario
-     * padre {@link #detailForm}.
+     * padre {@link #dispatcherForm}.
      * <p>
      * El nuevo modelo permanecerá deshabilitado y sin validaciones.
      * <p>
@@ -240,8 +229,8 @@ public abstract class AbstractBbChildForm<T extends Object> extends ApplicationW
         // Assert.isTrue(!this.isControlCreated(),
         // "Cannot change form model if control is already created");
 
-        this.setDetailForm(parentForm);
-        this.getParentForm().getEditingIndexHolder().addValueChangeListener(this.indexHolderPropertyChangeListener);
+        this.setDispatcherForm(parentForm);
+        this.getDispatcherForm().getEditingIndexHolder().addValueChangeListener(this.indexHolderPropertyChangeListener);
 
         // Crear el nuevo modelo, deshabilitarlo y desactivar las validaciones
         // TODO cambiar y pensar la forma de crear los form models
@@ -255,21 +244,21 @@ public abstract class AbstractBbChildForm<T extends Object> extends ApplicationW
      * 
      * @return el formulario padre.
      */
-    private BbDispatcherForm<T> getParentForm() {
+    private BbDispatcherForm<T> getDispatcherForm() {
 
         // Se declará sin <T> para que funcione la ingeniería inversa
-        return this.detailForm;
+        return this.dispatcherForm;
     }
 
     /**
      * Establece el formulario padre.
      * 
-     * @param parentForm
+     * @param dispatcherForm
      *            el formulario padre.
      */
-    private void setDetailForm(BbDispatcherForm<T> parentForm) {
+    private void setDispatcherForm(BbDispatcherForm<T> dispatcherForm) {
 
-        this.detailForm = parentForm;
+        this.dispatcherForm = dispatcherForm;
     }
 
     /**
@@ -290,8 +279,7 @@ public abstract class AbstractBbChildForm<T extends Object> extends ApplicationW
 
             final Integer newIndex = (Integer) evt.getNewValue();
 
-            // Establecer el índice del elemento seleccionado en el formulario
-            // hijo.
+            // Establecer el índice del elemento seleccionado en el formulario hijo.
             AbstractBbChildForm.this.setEditingFormObjectIndexSilently(newIndex);
         }
     }

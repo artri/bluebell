@@ -137,7 +137,7 @@ public final class DirtyTrackingUtils {
     }
 
     /**
-     * Limpia todos los <em>value model</em> de un formulario.
+     * Limpia todos los <em>value model</em> de un formulario y sus hijos.
      * 
      * @param formModel
      *            el modelo del formulario.
@@ -145,7 +145,7 @@ public final class DirtyTrackingUtils {
     @SuppressWarnings("unchecked")
     public static void clearDirty(FormModel formModel) {
 
-        // Limpiar los formularios hijos si es que los tuviera
+        // Recursive call
         if (formModel instanceof HierarchicalFormModel) {
             final HierarchicalFormModel parentFormModel = (HierarchicalFormModel) formModel;
 
@@ -154,7 +154,7 @@ public final class DirtyTrackingUtils {
             }
         }
 
-        // Limpiar los value model del form model
+        // Clean all form model value models
         final Set<String> fieldNames = formModel.getFieldNames();
         for (final String fieldName : fieldNames) {
             final ValueModel valueModel = formModel.getValueModel(fieldName);

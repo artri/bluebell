@@ -32,6 +32,7 @@ import org.bluebell.richclient.application.support.FormBackedView;
 import org.bluebell.richclient.form.AbstractB2TableMasterForm;
 import org.bluebell.richclient.form.AbstractBbChildForm;
 import org.bluebell.richclient.form.AbstractBbSearchForm;
+import org.bluebell.richclient.form.BbDispatcherForm;
 import org.bluebell.richclient.form.BbValidationForm;
 import org.bluebell.richclient.samples.simple.bean.Person;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -131,9 +132,14 @@ public abstract class AbstractBbSamplesTests extends AbstractBbRichClientTests {
     private FormBackedView<AbstractB2TableMasterForm<Person>> masterView;
 
     /**
-     * The detail view to be tested.
+     * The dispatcher form.
      */
-    private FormBackedView<AbstractBbChildForm<Person>> detailView;
+    private BbDispatcherForm<Person> dispatcherForm;
+
+    /**
+     * The child view to be tested.
+     */
+    private FormBackedView<AbstractBbChildForm<Person>> childView;
 
     /**
      * The search view to be tested.
@@ -174,9 +180,11 @@ public abstract class AbstractBbSamplesTests extends AbstractBbRichClientTests {
         TestCase.assertNotNull(this.getInitializedPage());
         TestCase.assertNotNull(this.getMasterView());
         TestCase.assertNotNull(this.getSearchView());
-        TestCase.assertNotNull(this.getDetailView());
+        TestCase.assertNotNull(this.getChildView());
         TestCase.assertNotNull(this.getValidationView());
         TestCase.assertNotNull(this.getInitialView());
+
+        TestCase.assertNotNull(this.getDispatcherForm());
     }
 
 /**
@@ -228,9 +236,10 @@ public abstract class AbstractBbSamplesTests extends AbstractBbRichClientTests {
         AbstractView foundInitialView = applicationWindow.getPage().getView(
                 AbstractBbSamplesTests.INITIAL_VIEW_DESCRIPTOR_BEAN_NAME);
         if (foundInitialView == null) {
-            foundInitialView = (AbstractView) this.getApplication().getApplicationContext().getBean(//
-                    AbstractBbSamplesTests.INITIAL_VIEW_DESCRIPTOR_BEAN_NAME, ViewDescriptor.class)
-                    .createPageComponent();
+            final ViewDescriptor initialViewDescriptor = this.getApplication().getApplicationContext().getBean(//
+                    AbstractBbSamplesTests.INITIAL_VIEW_DESCRIPTOR_BEAN_NAME, ViewDescriptor.class);
+
+            foundInitialView = (AbstractView) initialViewDescriptor.createPageComponent();
         }
         this.setInitialView(foundInitialView);
 
@@ -239,10 +248,14 @@ public abstract class AbstractBbSamplesTests extends AbstractBbRichClientTests {
                 AbstractBbSamplesTests.MASTER_VIEW_DESCRIPTOR_BEAN_NAME));
         this.setSearchView((FormBackedView<AbstractBbSearchForm<Person, Person>>) applicationWindow.getPage().getView(
                 AbstractBbSamplesTests.SEARCH_VIEW_DESCRIPTOR_BEAN_NAME));
-        this.setDetailView((FormBackedView<AbstractBbChildForm<Person>>) applicationWindow.getPage().getView(
+        this.setChildView((FormBackedView<AbstractBbChildForm<Person>>) applicationWindow.getPage().getView(
                 AbstractBbSamplesTests.DETAIL_VIEW_DESCRIPTOR_BEAN_NAME));
         this.setValidationView((FormBackedView<BbValidationForm<Person>>) applicationWindow.getPage().getView(
                 AbstractBbSamplesTests.VALIDATION_VIEW_DESCRIPTOR_BEAN_NAME));
+
+        if (this.getMasterView() != null) {
+            this.setDispatcherForm(this.getBackingForm(this.getMasterView()).getDispatcherForm());
+        }
     }
 
     /**
@@ -370,13 +383,23 @@ public abstract class AbstractBbSamplesTests extends AbstractBbRichClientTests {
     }
 
     /**
-     * Gets the detailView.
+     * Gets the dispatcher form.
      * 
-     * @return the detailView
+     * @return the dispatcher form.
      */
-    protected FormBackedView<AbstractBbChildForm<Person>> getDetailView() {
+    protected BbDispatcherForm<Person> getDispatcherForm() {
 
-        return this.detailView;
+        return this.dispatcherForm;
+    }
+
+    /**
+     * Gets the childView.
+     * 
+     * @return the childView
+     */
+    protected FormBackedView<AbstractBbChildForm<Person>> getChildView() {
+
+        return this.childView;
     }
 
     /**
@@ -447,14 +470,27 @@ public abstract class AbstractBbSamplesTests extends AbstractBbRichClientTests {
     }
 
     /**
-     * Sets the detailView.
+     * Sets the dispatcher form.
      * 
-     * @param detailView
-     *            the detailView to set
+     * @param dispatcherForm
+     *            the dispatcher form to set.
      */
-    private void setDetailView(FormBackedView<AbstractBbChildForm<Person>> detailView) {
+    private void setDispatcherForm(BbDispatcherForm<Person> dispatcherForm) {
 
-        this.detailView = detailView;
+        Assert.notNull(dispatcherForm, "dispatcherForm");
+
+        this.dispatcherForm = dispatcherForm;
+    }
+
+    /**
+     * Sets the childView.
+     * 
+     * @param childView
+     *            the childView to set
+     */
+    private void setChildView(FormBackedView<AbstractBbChildForm<Person>> childView) {
+
+        this.childView = childView;
     }
 
     /**

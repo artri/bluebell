@@ -113,7 +113,7 @@ public class TestMultipleValidationResultsReporter extends AbstractBbSamplesTest
         Assert.assertEquals(0, this.detailFormModel.getValidationResults().getMessageCount());
 
         // Set a illegal age and a validation error is raised
-        this.userAction(this.getBackingForm(this.getDetailView()), "age", "IllegalValue");
+        this.userAction(this.getBackingForm(this.getChildView()), "age", "IllegalValue");
         Assert.assertEquals(1, this.getValidationMessages().size());
         Assert.assertEquals("age", this.getValidationMessages().get(0).getProperty());
 
@@ -163,12 +163,12 @@ public class TestMultipleValidationResultsReporter extends AbstractBbSamplesTest
         this.getBackingForm(this.getMasterView()).addChildForm(siblingForm);
 
         // After executing new form object command validation messages are empty
-        this.getBackingFormModel(this.getDetailView()).getValidationResults().getMessages();
+        this.getBackingFormModel(this.getChildView()).getValidationResults().getMessages();
         this.getBackingForm(this.getMasterView()).getNewFormObjectCommand().execute();
         Assert.assertEquals(0, this.getValidationMessages().size());
 
         // Set a illegal age on detail form and a validation message is raised
-        this.userAction(this.getBackingForm(this.getDetailView()), "age", "IllegalValue");
+        this.userAction(this.getBackingForm(this.getChildView()), "age", "IllegalValue");
         Assert.assertEquals(1, this.getValidationMessages().size());
         Assert.assertEquals(1, this.dispatcherFormModel.getValidationResults().getMessageCount());
         Assert.assertEquals(1, this.detailFormModel.getValidationResults().getMessageCount());
@@ -212,7 +212,7 @@ public class TestMultipleValidationResultsReporter extends AbstractBbSamplesTest
         super.initializeVariables(pageDescriptor);
 
         this.masterFormModel = this.getBackingFormModel(this.getMasterView());
-        this.detailFormModel = this.getBackingFormModel(this.getDetailView());
+        this.detailFormModel = this.getBackingFormModel(this.getChildView());
         this.dispatcherFormModel = (ValidatingFormModel) this.detailFormModel.getParent();
 
         // Ensure detail form model is not linked with master form model

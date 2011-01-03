@@ -144,6 +144,9 @@ public class BbDispatcherForm<T> extends AbstractBbDetailForm<T> {
         childForm.updateFormModelUsingParentForm(this);
         this.childForms.add(childForm);
 
+        // (JAF), 20101229, see #setEditableFormObjects
+        final ObservableList editableFormObjects = FormUtils.getEditableFormObjects(this);
+        childForm.setEditableFormObjectsFromDispatcherForm(editableFormObjects);
     }
 
     /**
@@ -245,12 +248,15 @@ public class BbDispatcherForm<T> extends AbstractBbDetailForm<T> {
      * 
      * @see DispatcherFormModel#doInternalSetFormObject(Object)
      */
+    @SuppressWarnings("unchecked")
     @Override
     public void setFormObject(Object formObject) {
 
         for (final AbstractForm childForm : this.childForms) {
             childForm.setFormObject(formObject);
         }
+
+        ((DispatcherFormModel) this.getFormModel()).doInternalSetFormObject(formObject);
     }
 
     /**
@@ -301,9 +307,12 @@ public class BbDispatcherForm<T> extends AbstractBbDetailForm<T> {
     @Override
     protected void setEditableFormObjects(ObservableList editableFormObjects) {
 
+        // (JAF), 20101229T
+        // This approach is not enough because child forms are not added at the moment of setting editable form objects
+
         if (this.isControlCreated()) {
-            for (final AbstractBbChildForm<T> childForm : this.childForms) {
-                childForm.setEditableFormObjectFromDispatcherForm(editableFormObjects);
+            for (final AbstractBbChildForm<T> childForm : this.getChildForms()) {
+                childForm.setEditableFormObjectsFromDispatcherForm(editableFormObjects);
             }
         }
 
@@ -459,8 +468,7 @@ public class BbDispatcherForm<T> extends AbstractBbDetailForm<T> {
         @Override
         public void setValidating(boolean validating) {
 
-            // Child form models checks parent form model validating state at
-            // first
+            // Child form models checks parent form model validating state at first
             super.setValidating(validating);
 
             for (final FormModel childFormModel : this.getChildren()) {

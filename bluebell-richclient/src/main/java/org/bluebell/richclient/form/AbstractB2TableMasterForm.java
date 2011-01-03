@@ -40,22 +40,19 @@ import org.springframework.richclient.command.ActionCommandExecutor;
 import org.springframework.richclient.command.TargetableActionCommand;
 import org.springframework.richclient.command.support.GlobalCommandIds;
 import org.springframework.richclient.exceptionhandling.delegation.ExceptionHandlerDelegate;
-import org.springframework.richclient.form.AbstractDetailForm;
 import org.springframework.richclient.form.Form;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.StringUtils;
 
 /**
- * Extiende el comportamiento de {@link org.springframework.richclient.form.AbstractTableMasterForm } simplificando
- * la utilización de formularios maestros y añadiéndole capacidades adicionales.
- * Los cambios realizados son:
+ * Extiende el comportamiento de {@link org.springframework.richclient.form.AbstractTableMasterForm } simplificando la
+ * utilización de formularios maestros y añadiéndole capacidades adicionales. Los cambios realizados son:
  * <ul>
  * <li>Implementa {@link GlobalCommandsAccessor}.
  * <li>Notifica a la barra de estado ante errores de validación.
  * <li>Incorpora métodos de conveniencia para realizar operaciones
- * <em>CRUD (<b>C</b>reate, <b>R</b>ead, <b>U</b>pdate, <b>D</b>elete</em>)
- * básicas en la capa de servicio.
+ * <em>CRUD (<b>C</b>reate, <b>R</b>ead, <b>U</b>pdate, <b>D</b>elete</em>) básicas en la capa de servicio.
  * <dl>
  * <dt><em>C</em>reate
  * <dd>{@link #doInsert(Object)}
@@ -170,12 +167,12 @@ public abstract class AbstractB2TableMasterForm<T extends Object> extends Abstra
      * 
      * @param formId
      *            el idetificador del formulario maestro.
-     * @param detailType
-     *            la clase del tipo detalle.
+     * @param type
+     *            the managed class (<code><T></code>).
      */
-    public AbstractB2TableMasterForm(String formId, Class<T> detailType) {
+    public AbstractB2TableMasterForm(String formId, Class<T> type) {
 
-        super(formId, detailType);
+        super(formId, type);
 
         this.setSearchForms(new ArrayList<AbstractBbSearchForm<T, ?>>());
     }
@@ -196,12 +193,12 @@ public abstract class AbstractB2TableMasterForm<T extends Object> extends Abstra
     public final void addChildForm(Form childForm) {
 
         Assert.notNull(childForm);
-        Assert.notNull(this.getDetailForm());
+        Assert.notNull(this.getDispatcherForm());
         Assert.isInstanceOf(AbstractBbChildForm.class, childForm);
 
         // Añadir el formulario hijo e indicarle cual es su maestro
         ((AbstractBbChildForm<T>) childForm).setMasterForm(this);
-        this.getDetailForm().addChildForm(childForm);
+        this.getDispatcherForm().addChildForm(childForm);
     }
 
     /**
@@ -240,10 +237,9 @@ public abstract class AbstractB2TableMasterForm<T extends Object> extends Abstra
      * 
      * @return los formularios hijos.
      */
-    @SuppressWarnings("unchecked")
-    public Collection<AbstractBbChildForm<T>> getDetailForms() {
+    public Collection<AbstractBbChildForm<T>> getChildForms() {
 
-        return ((BbDispatcherForm<T>) this.getDetailForm()).getChildForms();
+        return ((BbDispatcherForm<T>) this.getDispatcherForm()).getChildForms();
     }
 
     /**
@@ -271,37 +267,37 @@ public abstract class AbstractB2TableMasterForm<T extends Object> extends Abstra
 
         // Comprobar los parámetros
         Assert.notNull(childForm);
-        Assert.notNull(this.getDetailForm());
+        Assert.notNull(this.getDispatcherForm());
 
         // Eliminar el formulario hijo
-        this.getDetailForm().removeChildForm(childForm);
+        this.getDispatcherForm().removeChildForm(childForm);
     }
 
-    /**
-     * Establece las entidades a mostrar añadiendo al comportamiento de la clase padre la notificación a los formularios
-     * hijos en caso de que no haya ninguna entidad seleccionada.
-     * 
-     * @param entities
-     *            las entidades a mostrar.
-     * 
-     * @param attach
-     *            <em>flag</em> indicando si las nuevas entidades se han de sumar a las anteriores (<code>true</code>) o
-     *            si por el contrario deben sustituirlos (<code>false</code>).
-     * @see AbstractBb1TableMasterForm#showEntities(Collection, boolean)
-     */
-    @Override
-    public final void showEntities(List<T> entities, Boolean attach) {
-
-        super.showEntities(entities, attach);
-
-        // Si una vez establecido el listado de entidades no hay ninguna seleccionada entonces notificar a los
-        // formularios hijos.
-        // Esto se hace necesario porque el método en super desinstala el selectionHandler
-        // (JAF), 20081001, esta comprobación debería ser siempre true
-        if (this.getMasterTable().getSelectionModel().getMaxSelectionIndex() < 0) {
-            this.onNoSelection();
-        }
-    }
+//    /**
+//     * Establece las entidades a mostrar añadiendo al comportamiento de la clase padre la notificación a los formularios
+//     * hijos en caso de que no haya ninguna entidad seleccionada.
+//     * 
+//     * @param entities
+//     *            las entidades a mostrar.
+//     * 
+//     * @param attach
+//     *            <em>flag</em> indicando si las nuevas entidades se han de sumar a las anteriores (<code>true</code>) o
+//     *            si por el contrario deben sustituirlos (<code>false</code>).
+//     * @see AbstractBb1TableMasterForm#showEntities(Collection, boolean)
+//     */
+//    @Override
+//    public final void showEntities(List<T> entities, Boolean attach) {
+//
+//        super.showEntities(entities, attach);
+//
+//        // Si una vez establecido el listado de entidades no hay ninguna seleccionada entonces notificar a los
+//        // formularios hijos.
+//        // Esto se hace necesario porque el método en super desinstala el selectionHandler
+//        // (JAF), 20081001, esta comprobación debería ser siempre true
+//        if (this.getMasterTable().getSelectionModel().getMaxSelectionIndex() < 0) {
+//            this.onNoSelection();
+//        }
+//    }
 
     /**
      * Obtiene el comando para cancelar la creación de una nueva entidad.
@@ -380,7 +376,7 @@ public abstract class AbstractB2TableMasterForm<T extends Object> extends Abstra
     public void keepAliveAfterFailure() {
 
         this.changeSelection(null);
-        this.getDetailForm().reset();
+        this.getDispatcherForm().reset();
     }
 
     /**
@@ -431,9 +427,9 @@ public abstract class AbstractB2TableMasterForm<T extends Object> extends Abstra
      */
     protected final String getCommandName(String defaultCommandName) {
 
-        final String detailType = StringUtils.capitalize(ClassUtils.getShortName(this.getDetailType()));
+        final String type = StringUtils.capitalize(ClassUtils.getShortName(this.getDetailType()));
 
-        return CommandUtils.getCommandFaceDescriptorId(defaultCommandName, detailType);
+        return CommandUtils.getCommandFaceDescriptorId(defaultCommandName, type);
     }
 
     /**
@@ -507,14 +503,15 @@ public abstract class AbstractB2TableMasterForm<T extends Object> extends Abstra
      */
     protected ActionCommand createCancelCommand() {
 
-        Assert.notNull(this.getDetailForm());
+        Assert.notNull(this.getDispatcherForm());
 
         // Obtener los identificadores del comando, separados por comas y
         // ordenados según prioridad
         final String commandId = this.getCancelCommandFaceDescriptorId();
 
         // Crear el comando y sincronizar su estado enabled/disabled
-        final ActionCommand command = new TargetableActionCommand(commandId, this.getDetailForm().getCancelCommand());
+        final ActionCommand command = new TargetableActionCommand(commandId, this.getDispatcherForm()
+                .getCancelCommand());
 
         // Determinar cuando ha de estar habilitado el comando.
         command.setEnabled(Boolean.FALSE);
@@ -565,14 +562,15 @@ public abstract class AbstractB2TableMasterForm<T extends Object> extends Abstra
      */
     protected ActionCommand createRevertAllCommand() {
 
-        Assert.notNull(this.getDetailForm());
+        Assert.notNull(this.getDispatcherForm());
 
         // Obtener los identificadores del comando, separados por comas y
         // ordenados según prioridad
         final String commandId = this.getRevertAllCommandFaceDescriptorId();
 
         // Crear el comando
-        final ActionCommand command = new TargetableActionCommand(commandId, this.getDetailForm().getRevertCommand());
+        final ActionCommand command = new TargetableActionCommand(commandId, this.getDispatcherForm()
+                .getRevertCommand());
 
         // Configurar el comando
         return this.configureCommand(command, Boolean.FALSE);
@@ -585,14 +583,14 @@ public abstract class AbstractB2TableMasterForm<T extends Object> extends Abstra
      */
     protected ActionCommand createSaveCommand() {
 
-        Assert.notNull(this.getDetailForm());
+        Assert.notNull(this.getDispatcherForm());
 
         // Obtener los identificadores del comando, separados por comas y
         // ordenados según prioridad
         final String commandId = this.getSaveCommandFaceDescriptorId();
 
         // Crear el comando
-        final ActionCommand command = new TargetableActionCommand(commandId, this.getDetailForm().getCommitCommand());
+        final ActionCommand command = new TargetableActionCommand(commandId, this.getDispatcherForm().getCommitCommand());
 
         // Configurar el comando
         return this.configureCommand(command, Boolean.TRUE);
@@ -634,7 +632,7 @@ public abstract class AbstractB2TableMasterForm<T extends Object> extends Abstra
     protected final void deleteSelectedItems() {
 
         // Resetear el formulario detalle para que no dé falsos avisos de dirty
-        this.getDetailForm().reset();
+        this.getDispatcherForm().reset();
 
         final List<T> selection = TableUtils.getSelection(this.getMasterTable(), this.getMasterTableModel());
 
@@ -674,7 +672,7 @@ public abstract class AbstractB2TableMasterForm<T extends Object> extends Abstra
      *            el objeto a insertar.
      * @return el objeto insertado y <code>null</code> en caso de error.
      * 
-     * @see AbstractBbDetailForm#postCommit(org.springframework.binding.form.FormModel)
+     * @see BbDispatcherForm#postCommit(org.springframework.binding.form.FormModel)
      */
     protected abstract T doInsert(T object);
 
@@ -685,7 +683,7 @@ public abstract class AbstractB2TableMasterForm<T extends Object> extends Abstra
      *            el objeto a insertar.
      * @return el objeto actualizado y <code>null</code> en caso de error.
      * 
-     * @see AbstractBbDetailForm#postCommit(org.springframework.binding.form.FormModel)
+     * @see BbDispatcherForm#postCommit(org.springframework.binding.form.FormModel)
      */
     protected abstract T doUpdate(T object);
 
@@ -849,7 +847,7 @@ public abstract class AbstractB2TableMasterForm<T extends Object> extends Abstra
      * @return el formulario detalle.
      */
     @Override
-    protected final AbstractDetailForm createDetailForm(HierarchicalFormModel parentFormModel, ValueModel valueHolder,
+    protected final BbDispatcherForm<T> createDetailForm(HierarchicalFormModel parentFormModel, ValueModel valueHolder,
             ObservableList masterList) {
 
         // Crear el formulario detalle compuesto.
@@ -1011,26 +1009,12 @@ public abstract class AbstractB2TableMasterForm<T extends Object> extends Abstra
      * {@inheritDoc}
      */
     @Override
-    protected void onNoSelection() {
-
-        super.onNoSelection();
-
-        // Notify detail forms about empty selection
-        for (final AbstractBbChildForm<T> childForm : this.getDetailForms()) {
-            childForm.onNoSelection();
-        }
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
     protected final List<T> beforeSelectionChange(List<Integer> modelIndexes, List<T> selection) {
 
         final List<T> newSelection = this.doRefresh(selection);
 
-        // Notify detail forms about selection
-        for (final AbstractBbChildForm<T> childForm : this.getDetailForms()) {
+        // Notify child forms about selection
+        for (final AbstractBbChildForm<T> childForm : this.getChildForms()) {
             childForm.beforeSelectionChange(modelIndexes, newSelection);
         }
 
@@ -1045,8 +1029,8 @@ public abstract class AbstractB2TableMasterForm<T extends Object> extends Abstra
 
         super.afterSelectionChange(modelIndexes, selection);
 
-        // Notify detail forms about selection
-        for (final AbstractBbChildForm<T> childForm : this.getDetailForms()) {
+        // Notify child forms about selection
+        for (final AbstractBbChildForm<T> childForm : this.getChildForms()) {
             childForm.afterSelectionChange(modelIndexes, selection);
         }
     }

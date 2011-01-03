@@ -90,7 +90,7 @@ public class TestVLDockingBeanPostProcessor extends AbstractBbSamplesTests {
 
         // The test view descriptors
         final VLDockingViewDescriptor masViewDesc = (VLDockingViewDescriptor) this.getMasterView().getDescriptor();
-        final VLDockingViewDescriptor detViewDesc = (VLDockingViewDescriptor) this.getDetailView().getDescriptor();
+        final VLDockingViewDescriptor detViewDesc = (VLDockingViewDescriptor) this.getChildView().getDescriptor();
         final VLDockingViewDescriptor seaViewDesc = (VLDockingViewDescriptor) this.getSearchView().getDescriptor();
         final VLDockingViewDescriptor valViewDesc = (VLDockingViewDescriptor) this.getValidationView().getDescriptor();
         final VLDockingViewDescriptor iniViewDesc = (VLDockingViewDescriptor) this.getInitialView().getDescriptor();

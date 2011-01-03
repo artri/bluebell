@@ -274,22 +274,22 @@ public class TestDefaultApplicationPageConfigurer extends AbstractBbSamplesTests
 
         // Page views related assertions
         TestCase.assertTrue(masterViewIsNull == (this.getMasterView() == null));
-        TestCase.assertTrue(detailViewIsNull == (this.getDetailView() == null));
+        TestCase.assertTrue(detailViewIsNull == (this.getChildView() == null));
         TestCase.assertTrue(searchViewIsNull == (this.getSearchView() == null));
         TestCase.assertTrue(validationViewIsNull == (this.getValidationView() == null));
 
         // Master form related assertions
         final AbstractB2TableMasterForm<Person> masterForm = this.getBackingForm(this.getMasterView());
-        final AbstractBbChildForm<Person> detailForm = this.getBackingForm(this.getDetailView());
+        final AbstractBbChildForm<Person> detailForm = this.getBackingForm(this.getChildView());
         final AbstractBbSearchForm<Person, ?> searchForm = this.getBackingForm(this.getSearchView());
         final BbValidationForm<Person> validationForm = this.getBackingForm(this.getValidationView());
 
         if (masterForm != null) {
             if (detailForm != null) {
-                TestCase.assertTrue(masterForm.getDetailForms().contains(detailForm));
-                TestCase.assertNotNull(this.getDetailView().getGlobalCommandsAccessor());
+                TestCase.assertTrue(masterForm.getChildForms().contains(detailForm));
+                TestCase.assertNotNull(this.getChildView().getGlobalCommandsAccessor());
             } else {
-                TestCase.assertTrue(masterForm.getDetailForms().isEmpty());
+                TestCase.assertTrue(masterForm.getChildForms().isEmpty());
             }
             if (searchForm != null) {
                 TestCase.assertTrue(masterForm.getSearchForms().contains(searchForm));
