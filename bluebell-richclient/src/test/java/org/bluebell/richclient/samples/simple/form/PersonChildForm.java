@@ -67,24 +67,6 @@ public class PersonChildForm extends AbstractBbChildForm<Person> {
      * {@inheritDoc}
      */
     @Override
-    public void setFormModel(ValidatingFormModel formModel) {
-
-        super.setFormModel(formModel);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected ValidatingFormModel createFormModel(ValidatingFormModel parentFormModel) {
-
-        return BbFormModelHelper.createValidatingFormModel(parentFormModel.getFormObject(), this.getId());
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
     protected JComponent createFormControl() {
 
         final BindingFactory bindingFactory = this.getBindingFactory();

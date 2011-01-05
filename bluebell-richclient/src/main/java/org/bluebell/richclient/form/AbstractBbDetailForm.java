@@ -25,6 +25,8 @@ import org.apache.commons.lang.builder.ToStringStyle;
 import org.springframework.binding.form.FormModel;
 import org.springframework.binding.value.ValueModel;
 import org.springframework.binding.value.support.ObservableList;
+import org.springframework.richclient.command.ActionCommand;
+import org.springframework.richclient.command.ActionCommandInterceptor;
 import org.springframework.richclient.form.AbstractDetailForm;
 
 /**
@@ -108,6 +110,79 @@ abstract class AbstractBbDetailForm<T> extends AbstractDetailForm {
     }
 
     /**
+     * {@inheritDoc}
+     * <p>
+     * Overrides parent in order to attach an action command interceptor that justs set
+     * <code>editingNewFormObject</code> flag as <code>true</code>. Flag is reverted at {@link #postCommit(FormModel)}.
+     * <p>
+     * This is needed due to <code>AbstractForm</code> not always employs accessor methods so changes are not propagated
+     * to children, find bellow a sample code snippet:
+     * 
+     * <pre>
+     * public void postCommit(FormModel formModel) {
+     * 
+     *     if (editableFormObjects != null) {
+     *         if (editingNewFormObject) {
+     *             editableFormObjects.add(formModel.getFormObject());
+     *             setEditingFormObjectIndexSilently(editableFormObjects.size() - 1);
+     *         } else {
+     *             int index = getEditingFormObjectIndex();
+     *             // Avoid updating unless we have actually selected an object for
+     *             // edit
+     *             if (index &gt;= 0) {
+     *                 IndexAdapter adapter = editableFormObjects.getIndexAdapter(index);
+     *                 adapter.setValue(formModel.getFormObject());
+     *                 adapter.fireIndexedObjectChanged();
+     *             }
+     *         }
+     *     }
+     *     if (clearFormOnCommit) {
+     *         setFormObject(null);
+     *     }
+     *     editingNewFormObject = false;
+     * }
+     * </pre>
+     * 
+     * @see #postCommit(FormModel)
+     * @see #setEditingNewFormObject(boolean)
+     * @see <a href="http://jirabluebell.b2b2000.com/browse/BLUE-22">BLUE-22</a>
+     */
+    @Override
+    public ActionCommand getNewFormObjectCommand() {
+
+        ActionCommand newFormObjectCommand = FormUtils.getNewFormObjectCommand(this);
+
+        if (newFormObjectCommand == null) {
+
+            newFormObjectCommand = super.getNewFormObjectCommand();
+            newFormObjectCommand.addCommandInterceptor(new ActionCommandInterceptor() {
+
+                /**
+                 * {@inheritDoc}
+                 */
+                @Override
+                public boolean preExecution(ActionCommand command) {
+
+                    AbstractBbDetailForm.this.setEditingNewFormObject(Boolean.TRUE);
+
+                    return Boolean.TRUE;
+                }
+
+                /**
+                 * {@inheritDoc}
+                 */
+                @Override
+                public void postExecution(ActionCommand command) {
+
+                    // Nothing to do
+                }
+            });
+        }
+
+        return newFormObjectCommand;
+    }
+
+    /**
      * Realiza la operación de salvado conforme a {@link #doPostCommit(FormModel)} y finalmente marca que ya <b>no</b>
      * se está ejecutando una operación de salvado.
      * 
@@ -121,6 +196,8 @@ abstract class AbstractBbDetailForm<T> extends AbstractDetailForm {
     public final void postCommit(FormModel formModel) {
 
         this.doPostCommit(formModel);
+        
+        this.setEditingNewFormObject(Boolean.FALSE);
         this.setCommiting(Boolean.FALSE);
     }
 
@@ -167,13 +244,13 @@ abstract class AbstractBbDetailForm<T> extends AbstractDetailForm {
         final Boolean isInserting = this.isEditingNewFormObject();
         T entity = (T) formModel.getFormObject();
 
-        if (isInserting) { // es una inserción.
+        if (isInserting) {
             entity = this.getMasterForm().doInsert(entity);
-        } else { // es una actualización.
+        } else { // is an update
             entity = this.getMasterForm().doUpdate(entity);
         }
 
-        // En caso de éxito actualizar la vista y publicar un evento.
+        // If success update view and publish an event
         final boolean success = entity != null;
         if (success) {
             // (JAF), 20090323, está línea es innecesaria e ineficiente ya que dispara múltiples eventos prescindibles

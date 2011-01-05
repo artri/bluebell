@@ -34,7 +34,7 @@ import ca.odell.glazedlists.event.ListEventAssembler;
 
 /**
  * An observable event list that manages <code>addAll</code> methods in an atomic way. So, a single event is raised
- * instead of one per single isolated new list element addition or removal.
+ * instead of one per each single addition or removal.
  * 
  * @param <S>
  *            the type of list elements.

@@ -21,12 +21,11 @@
  */
 package org.bluebell.richclient.form;
 
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.util.List;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
+import org.bluebell.richclient.form.util.BbFormModelHelper;
 import org.springframework.binding.form.ValidatingFormModel;
 import org.springframework.binding.value.support.ObservableList;
 import org.springframework.binding.value.support.ValueHolder;
@@ -57,14 +56,6 @@ public abstract class AbstractBbChildForm<T extends Object> extends ApplicationW
     private BbDispatcherForm<T> dispatcherForm;
 
     /**
-     * <em>Listener</em> para escuchar cambios en el índice que identifica el elemento seleccionado con respecto a la
-     * lista de elementos editables por el formulario.
-     * 
-     * @see IndexHolderPropertyChangeListener
-     */
-    private final PropertyChangeListener indexHolderPropertyChangeListener;
-
-    /**
      * El formulario maestro.
      */
     private AbstractB2TableMasterForm<T> masterForm;
@@ -79,11 +70,9 @@ public abstract class AbstractBbChildForm<T extends Object> extends ApplicationW
 
         super(formId);
 
-        // Permanecer a la escucha de los cambios en la selección del usuario.
-        this.indexHolderPropertyChangeListener = new IndexHolderPropertyChangeListener();
-
-        // Establecer el index holder donde consultar el elemento seleccionado.
-        this.setEditingFormObjectIndexHolder(new ValueHolder(Integer.valueOf(-1)));
+        // Set editing form object index holder
+        final ValueHolder editingFormObjectIndexHolder = new ValueHolder(-1);
+        this.setEditingFormObjectIndexHolder(editingFormObjectIndexHolder);
     }
 
     /**
@@ -91,9 +80,22 @@ public abstract class AbstractBbChildForm<T extends Object> extends ApplicationW
      * 
      * @return el formulario maestro.
      */
-    public AbstractB2TableMasterForm<T> getMasterForm() {
+    public final AbstractB2TableMasterForm<T> getMasterForm() {
 
         return this.masterForm;
+    }
+
+    /**
+     * Devuelve un formulario hermano con el identificador dado y <code>null</code> si no existe.
+     * 
+     * @param formId
+     *            el identificador del formulario.
+     * 
+     * @return el formulario hermano,
+     */
+    public final AbstractBbChildForm<T> getSiblingForm(String formId) {
+
+        return this.getDispatcherForm().getChildForm(formId);
     }
 
     /**
@@ -103,6 +105,29 @@ public abstract class AbstractBbChildForm<T extends Object> extends ApplicationW
     public String toString() {
 
         return new ToStringBuilder(this, ToStringStyle.SIMPLE_STYLE).append("id", this.getId()).toString();
+    }
+
+    /**
+     * Crea el modelo del formulario hijo a partir del modelo de su padre.
+     * <p>
+     * Este método es invocado durante la construcción del formulario con el fin de obtener y establecer un nuevo
+     * <em>form model</em> para el mismo.
+     * 
+     * @param parentFormModel
+     *            el modelo del formulario padre.
+     * 
+     * @return el modelo del formulario.
+     * 
+     * @see org.springframework.richclient.form.AbstractForm#setFormModel(ValidatingFormModel)
+     * @see org.springframework.richclient.form.AbstractMasterForm#configure()
+     */
+    protected ValidatingFormModel createFormModel(ValidatingFormModel parentFormModel) {
+
+        // (JAF), 20110105, fix me!!! This method is not invoked!! http://jirabluebell.b2b2000.com/browse/BLUE-53
+        final ValidatingFormModel formModel = BbFormModelHelper.createValidatingFormModel(//
+                parentFormModel, this.getId());
+
+        return formModel;
     }
 
     /**
@@ -144,55 +169,12 @@ public abstract class AbstractBbChildForm<T extends Object> extends ApplicationW
     }
 
     /**
-     * Crea el modelo del formulario hijo a partir del modelo de su padre.
-     * <p>
-     * Este método es invocado durante la construcción del formulario con el fin de obtener y establecer un nuevo
-     * <em>form model</em> para el mismo.
-     * 
-     * @param parentFormModel
-     *            el modelo del formulario padre.
-     * 
-     * @return el modelo del formulario.
-     * 
-     * @see org.springframework.richclient.form.AbstractForm#setFormModel(ValidatingFormModel)
-     * @see org.springframework.richclient.form.AbstractMasterForm#configure()
-     */
-    protected abstract ValidatingFormModel createFormModel(ValidatingFormModel parentFormModel);
-
-    /**
      * {@inheritDoc}
      */
     @Override
     protected String getRevertCommandFaceDescriptorId() {
 
         return AbstractBbChildForm.REVERT_COMMAND_ID;
-    }
-
-    /**
-     * Devuelve un formulario hermano con el identificador dado y <code>null</code> si no existe.
-     * 
-     * @param formId
-     *            el identificador del formulario.
-     * 
-     * @return el formulario hermano,
-     */
-    protected AbstractBbChildForm<T> getSiblingForm(String formId) {
-
-        return this.getDispatcherForm().getChildForm(formId);
-    }
-
-    /**
-     * Permite al formulario compuesto establecer la lista de objetos editados del formulario.
-     * 
-     * @param editableFormObjects
-     *            la lista de objetos editables.
-     * 
-     * @see org.springframework.richclient.form.AbstractForm#setEditableFormObjects
-     */
-    void setEditableFormObjectsFromDispatcherForm(ObservableList editableFormObjects) {
-
-        // TODO, (JAF), 20090927, eliminar este método
-        super.setEditableFormObjects(editableFormObjects);
     }
 
     /**
@@ -203,51 +185,11 @@ public abstract class AbstractBbChildForm<T extends Object> extends ApplicationW
      * @param masterForm
      *            el formulario maestro.
      */
-    void setMasterForm(AbstractB2TableMasterForm<T> masterForm) {
+    final void setMasterForm(AbstractB2TableMasterForm<T> masterForm) {
 
         Assert.isNull(this.masterForm);
 
         this.masterForm = masterForm;
-    }
-
-    /**
-     * Permite al formulario compuesto establecer el modelo de este formulario a partir del formulario padre.
-     * <p>
-     * Añade el <em>value change listener</em> {@link #indexHolderPropertyChangeListener} y establece el formulario
-     * padre {@link #dispatcherForm}.
-     * <p>
-     * El nuevo modelo permanecerá deshabilitado y sin validaciones.
-     * <p>
-     * Provoca una excepción en caso de que el control del formulario ya haya sido creado.
-     * 
-     * @param parentForm
-     *            el formulario padre.
-     */
-    final void updateFormModelUsingParentForm(BbDispatcherForm<T> parentForm) {
-
-        // TODO revisar este método, sobre todo esta invocación
-        // Assert.isTrue(!this.isControlCreated(),
-        // "Cannot change form model if control is already created");
-
-        this.setDispatcherForm(parentForm);
-        this.getDispatcherForm().getEditingIndexHolder().addValueChangeListener(this.indexHolderPropertyChangeListener);
-
-        // Crear el nuevo modelo, deshabilitarlo y desactivar las validaciones
-        // TODO cambiar y pensar la forma de crear los form models
-        // this.setFormModel(this.createFormModel(parentForm.getFormModel()));
-        this.getFormModel().setEnabled(Boolean.FALSE);
-        this.getFormModel().setValidating(Boolean.FALSE);
-    }
-
-    /**
-     * Obtiene el formulario padre.
-     * 
-     * @return el formulario padre.
-     */
-    private BbDispatcherForm<T> getDispatcherForm() {
-
-        // Se declará sin <T> para que funcione la ingeniería inversa
-        return this.dispatcherForm;
     }
 
     /**
@@ -256,31 +198,63 @@ public abstract class AbstractBbChildForm<T extends Object> extends ApplicationW
      * @param dispatcherForm
      *            el formulario padre.
      */
-    private void setDispatcherForm(BbDispatcherForm<T> dispatcherForm) {
+    final void setDispatcherForm(BbDispatcherForm<T> dispatcherForm) {
 
         this.dispatcherForm = dispatcherForm;
     }
 
     /**
-     * <em>Listener</em> que controla el cambio del elemento seleccionado en el formulario compuesto con el fin de
-     * establecerlo de forma silenciosa en el formulario hijo.
+     * Let (<em>exclusively</em>) dispatcher form set the list of editable form objects.
      * 
-     * @author <a href = "mailto:julio.arguello@gmail.com" >Julio Argüello (JAF)</a>
+     * @param editableFormObjects
+     *            the list of editable form objects
+     * 
+     * @see org.springframework.richclient.form.AbstractForm#setEditableFormObjects
      */
-    private class IndexHolderPropertyChangeListener implements PropertyChangeListener {
+    final void doSetEditableFormObjects(ObservableList editableFormObjects) {
 
-        /**
-         * Establece de forma silenciosa el índice del elemento seleccionado.
-         * 
-         * @param evt
-         *            el evento de cambio.
-         */
-        public void propertyChange(PropertyChangeEvent evt) {
+        super.setEditableFormObjects(editableFormObjects);
+    }
 
-            final Integer newIndex = (Integer) evt.getNewValue();
+    /**
+     * {@inheritDoc}
+     */
+    final void doSetEditingFormObjectIndexSilently(int index) {
 
-            // Establecer el índice del elemento seleccionado en el formulario hijo.
-            AbstractBbChildForm.this.setEditingFormObjectIndexSilently(newIndex);
-        }
+        super.setEditingFormObjectIndexSilently(index);
+    }
+
+    /**
+     * Let (<em>exclusively</em>) dispatcher form set whether this form is editing or not a new object.
+     * 
+     * @param editingNewFormOject
+     *            the value to set.
+     * 
+     * @see org.springframework.richclient.form.AbstractForm#setEditingNewFormObject
+     */
+    final void doSetEditingNewFormObject(boolean editingNewFormOject) {
+
+        super.setEditingNewFormObject(editingNewFormOject);
+    }
+
+    /**
+     * Gets the dispatcher form.
+     * <p>
+     * <blockquote>Why should a child form want to know something about its dispatcher form?</blockquote>
+     * <p>
+     * Note:
+     * <ul>
+     * <li>Every child form knows its associated master and sibling forms.
+     * <li>Form state is synchronized with dispatcher form.
+     * </ul>
+     * 
+     * @return the dispatcher form.
+     * 
+     * @see BbDispatcherForm
+     * @see BbDispatcherForm.DispatcherFormModel
+     */
+    private BbDispatcherForm<T> getDispatcherForm() {
+
+        return this.dispatcherForm;
     }
 }

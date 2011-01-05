@@ -62,7 +62,7 @@ public class Person implements Comparable<Person>, Serializable {
          */
         FEMALE
     };
-
+    
     /**
      * The person name.
      */

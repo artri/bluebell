@@ -25,6 +25,7 @@ import org.springframework.beans.PropertyAccessor;
 import org.springframework.beans.PropertyAccessorFactory;
 import org.springframework.binding.value.ValueModel;
 import org.springframework.binding.value.support.ObservableList;
+import org.springframework.richclient.command.ActionCommand;
 import org.springframework.richclient.form.AbstractForm;
 import org.springframework.richclient.util.Assert;
 
@@ -34,11 +35,6 @@ import org.springframework.richclient.util.Assert;
  * @author <a href = "mailto:julio.arguello@gmail.com" >Julio Argüello (JAF)</a>
  */
 public class FormUtils {
-
-    /**
-     * The field with name {@value #EDITING_NEW_FORM_OBJECT} from {@link AbstractForm}.
-     */
-    private static final String EDITING_NEW_FORM_OBJECT = "editingNewFormObject";
 
     /**
      * The field with name {@value #EDITING_FORM_OBJECT_INDEX_HOLDER} from {@link AbstractForm}.
@@ -51,7 +47,12 @@ public class FormUtils {
     private static final String EDITABLE_FORM_OBJECTS = "editableFormObjects";
 
     /**
-     * Gets the list of editable form objects for a given form.
+     * The field with name {@value #NEW_FORM_OBJECT_COMMAND} from {@link AbstractForm}.
+     */
+    private static final String NEW_FORM_OBJECT_COMMAND = "newFormObjectCommand";
+
+    /**
+     * Gets the list of editable form objects of a given form.
      * 
      * @param form
      *            the form.
@@ -88,20 +89,20 @@ public class FormUtils {
     }
 
     /**
-     * Returns whether a form is editing a new form object.
+     * Gets the new form object command of a given form.
      * 
      * @param form
      *            the form.
-     * @return <code>true</code> if editing new form object.
+     * @return the list of editable form objects.
      */
-    public static Boolean isEditingNewFormObject(AbstractForm form) {
+    public static ActionCommand getNewFormObjectCommand(AbstractForm form) {
 
         Assert.notNull(form, "form");
 
         final PropertyAccessor propertyAccessor = PropertyAccessorFactory.forDirectFieldAccess(form);
-        final Boolean editingNewFormObject = (Boolean) propertyAccessor.getPropertyValue(//
-                FormUtils.EDITING_NEW_FORM_OBJECT);
+        final ActionCommand actionCommand = (ActionCommand) propertyAccessor.getPropertyValue(//
+                FormUtils.NEW_FORM_OBJECT_COMMAND);
 
-        return editingNewFormObject;
+        return actionCommand;
     }
 }

@@ -733,7 +733,7 @@ public class BbFormModelHelper extends FormModelHelper {
      * Crea un modelo internacionalizado, validable y <em>buffered</em> dado el <em>value model</em> del
      * <em>backing object</em> y su identificador.
      * <p>
-     * Para la validación utiliza las reglas definidas en el propio objeto de dominio usando Hibernate Validator.
+     * Para la validación utiliza las reglas definidas en el prtopio objeto de dominio usando Hibernate Validator.
      * 
      * @param formObjectHolder
      *            el <em>value model</em> del objeto sobre el que se construye el modelo.

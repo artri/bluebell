@@ -21,12 +21,11 @@
  */
 package org.bluebell.richclient.util;
 
-import java.lang.reflect.Field;
 import java.util.List;
 
 import org.apache.commons.collections.Predicate;
+import org.springframework.beans.PropertyAccessorFactory;
 import org.springframework.util.Assert;
-import org.springframework.util.ReflectionUtils;
 
 import ca.odell.glazedlists.TransformedList;
 
@@ -36,15 +35,6 @@ import ca.odell.glazedlists.TransformedList;
  * @author <a href = "mailto:julio.arguello@gmail.com" >Julio Argüello (JAF)</a>
  */
 public final class GlazedListsUtils {
-
-    /**
-     * The field <code>source</code> from {@link TransformedList}.
-     */
-    private static final Field SOURCE_FIELD = ReflectionUtils.findField(TransformedList.class, "source");
-
-    static {
-        ReflectionUtils.makeAccessible(GlazedListsUtils.SOURCE_FIELD);
-    }
 
     /**
      * Utility classes should have a private constructor.
@@ -110,7 +100,7 @@ public final class GlazedListsUtils {
             }
 
             if (source instanceof TransformedList<?, ?>) {
-                source = ReflectionUtils.getField(GlazedListsUtils.SOURCE_FIELD, source);
+                source = PropertyAccessorFactory.forDirectFieldAccess(source).getPropertyValue("source");
             } else {
                 source = null;
             }

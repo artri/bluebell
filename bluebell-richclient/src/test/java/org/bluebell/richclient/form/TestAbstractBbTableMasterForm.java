@@ -278,7 +278,7 @@ public class TestAbstractBbTableMasterForm extends AbstractBbSamplesTests {
         indexes = ListUtils.EMPTY_LIST;
         selectionModel.clearSelection();
         this.doTestGetSelection(masterForm, desEntities, indexes);
-        
+
         // (JAF), 20110103, keep table unchanged
         this.sortTable(masterTable, column, Boolean.TRUE);
     }
@@ -297,7 +297,7 @@ public class TestAbstractBbTableMasterForm extends AbstractBbSamplesTests {
         List<Person> oldSelection = ListUtils.EMPTY_LIST;
         List<Person> newSelection = Arrays.asList(TestAbstractBbTableMasterForm.PERSONS_1.get(1));
         int requestCount = 0;
-        
+
         // Show entities:
         // EXPECTED: [1,2,3,4]
         masterForm.showEntities(TestAbstractBbTableMasterForm.PERSONS_1);
