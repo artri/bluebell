@@ -96,11 +96,11 @@ public class TestVLDockingBeanPostProcessor extends AbstractBbSamplesTests {
         final VLDockingViewDescriptor iniViewDesc = (VLDockingViewDescriptor) this.getInitialView().getDescriptor();
 
         // The templates to be used
-        final VLDockingViewDescriptor masTmp = this.getTemplate(DefaultApplicationPageConfigurer.BbViewType.MASTER);
-        final VLDockingViewDescriptor detTmp = this.getTemplate(DefaultApplicationPageConfigurer.BbViewType.DETAIL);
-        final VLDockingViewDescriptor seaTmp = this.getTemplate(DefaultApplicationPageConfigurer.BbViewType.SEARCH);
-        final VLDockingViewDescriptor valTmp = this.getTemplate(DefaultApplicationPageConfigurer.BbViewType.VALIDATION);
-        final VLDockingViewDescriptor iniTmp = this.getTemplate(DefaultApplicationPageConfigurer.BbViewType.UNKNOWN);
+        final VLDockingViewDescriptor masTmp = this.getTemplate(DefaultApplicationPageConfigurer.BbViewType.MASTER_TYPE);
+        final VLDockingViewDescriptor detTmp = this.getTemplate(DefaultApplicationPageConfigurer.BbViewType.CHILD_TYPE);
+        final VLDockingViewDescriptor seaTmp = this.getTemplate(DefaultApplicationPageConfigurer.BbViewType.SEARCH_TYPE);
+        final VLDockingViewDescriptor valTmp = this.getTemplate(DefaultApplicationPageConfigurer.BbViewType.VALIDATION_TYPE);
+        final VLDockingViewDescriptor iniTmp = this.getTemplate(DefaultApplicationPageConfigurer.BbViewType.UNKNOWN_TYPE);
 
         // Ensure returned view descriptors employs the expected templates
         this.doTestTemplatesAreExpected(masTmp, masViewDesc);
@@ -121,7 +121,7 @@ public class TestVLDockingBeanPostProcessor extends AbstractBbSamplesTests {
 
         final String beanName = this.vldockingBeanPostProcessor.getViewDescriptorsTemplates().get(type.name());
 
-        TestCase.assertNotNull("beanName", beanName);
+        TestCase.assertNotNull("beanName", beanName);       
 
         return this.getApplication().getApplicationContext().getBean(beanName, VLDockingViewDescriptor.class);
     }

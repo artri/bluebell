@@ -50,10 +50,10 @@ public class TestDefaultApplicationPageConfigurer extends AbstractBbSamplesTests
     private PageDescriptor masterViewPageDescriptor;
 
     /**
-     * A page descriptor containing a detail view descriptor.
+     * A page descriptor containing a child view descriptor.
      */
     @Resource
-    private PageDescriptor detailViewPageDescriptor;
+    private PageDescriptor childViewPageDescriptor;
 
     /**
      * A page descriptor containing a search view descriptor.
@@ -68,16 +68,16 @@ public class TestDefaultApplicationPageConfigurer extends AbstractBbSamplesTests
     private PageDescriptor validationViewPageDescriptor;
 
     /**
-     * A page descriptor containing a master and a detail view descriptors.
+     * A page descriptor containing a master and a child view descriptors.
      */
     @Resource
-    private PageDescriptor masterAndDetailViewsPageDescriptor;
+    private PageDescriptor masterAndChildViewsPageDescriptor;
 
     /**
      * A page descriptor containing a master and a detail view descriptors (reverse order).
      */
     @Resource
-    private PageDescriptor rMasterAndDetailViewsPageDescriptor;
+    private PageDescriptor rMasterAndChildViewsPageDescriptor;
 
     /**
      * A page descriptor containing a master and a search view descriptors.
@@ -120,11 +120,11 @@ public class TestDefaultApplicationPageConfigurer extends AbstractBbSamplesTests
         super.testDependencyInjection();
 
         TestCase.assertNotNull("masterViewPageDescriptor", this.masterViewPageDescriptor);
-        TestCase.assertNotNull("detailViewPageDescriptor", this.detailViewPageDescriptor);
+        TestCase.assertNotNull("childViewPageDescriptor", this.childViewPageDescriptor);
         TestCase.assertNotNull("searchViewPageDescriptor", this.searchViewPageDescriptor);
         TestCase.assertNotNull("validationViewPageDescriptor", this.validationViewPageDescriptor);
-        TestCase.assertNotNull("masterAndDetailViewsPageDescriptor", this.masterAndDetailViewsPageDescriptor);
-        TestCase.assertNotNull("rMasterAndDetailViewsPageDescriptor", this.rMasterAndDetailViewsPageDescriptor);
+        TestCase.assertNotNull("masterAndChildViewsPageDescriptor", this.masterAndChildViewsPageDescriptor);
+        TestCase.assertNotNull("rMasterAndChildViewsPageDescriptor", this.rMasterAndChildViewsPageDescriptor);
         TestCase.assertNotNull("masterAndSearchViewsPageDescriptor", this.masterAndSearchViewsPageDescriptor);
         TestCase.assertNotNull("rMasterAndSearchViewsPageDescriptor", this.rMasterAndSearchViewsPageDescriptor);
         TestCase.assertNotNull("fullPageDescriptor", this.fullPageDescriptor);
@@ -143,12 +143,12 @@ public class TestDefaultApplicationPageConfigurer extends AbstractBbSamplesTests
     }
 
     /**
-     * Case that tests pages with a single detail view descriptor.
+     * Case that tests pages with a single child view descriptor.
      */
     @Test
-    public void testDetailViewDescriptor() {
+    public void testChildViewDescriptor() {
 
-        this.initializeVariables(this.detailViewPageDescriptor);
+        this.initializeVariables(this.childViewPageDescriptor);
 
         this.assertViewDescriptors(Boolean.TRUE, Boolean.FALSE, Boolean.TRUE, Boolean.TRUE);
     }
@@ -176,23 +176,23 @@ public class TestDefaultApplicationPageConfigurer extends AbstractBbSamplesTests
     }
 
     /**
-     * Case that tests pages with a master view descriptor and a detail view descriptor.
+     * Case that tests pages with a master view descriptor and a child view descriptor.
      */
     @Test
-    public void testMasterAndDetailViewDescriptors() {
+    public void testMasterAndChildViewDescriptors() {
 
-        this.initializeVariables(this.masterAndDetailViewsPageDescriptor);
+        this.initializeVariables(this.masterAndChildViewsPageDescriptor);
 
         this.assertViewDescriptors(Boolean.FALSE, Boolean.FALSE, Boolean.TRUE, Boolean.TRUE);
     }
 
     /**
-     * The same test as {@link #testMasterAndDetailViewDescriptors()} but with inverse view descriptors order.
+     * The same test as {@link #testMasterAndChildViewDescriptors()} but with inverse view descriptors order.
      */
     @Test
-    public void testMasterAndDetailViewDescriptorsReverse() {
+    public void testMasterAndChildViewDescriptorsReverse() {
 
-        this.initializeVariables(this.rMasterAndDetailViewsPageDescriptor);
+        this.initializeVariables(this.rMasterAndChildViewsPageDescriptor);
 
         this.assertViewDescriptors(Boolean.FALSE, Boolean.FALSE, Boolean.TRUE, Boolean.TRUE);
     }
@@ -262,31 +262,31 @@ public class TestDefaultApplicationPageConfigurer extends AbstractBbSamplesTests
      * 
      * @param masterViewIsNull
      *            <code>true</code> if master view is null.
-     * @param detailViewIsNull
-     *            <code>true</code> if detail view is null.
+     * @param childViewIsNull
+     *            <code>true</code> if child view is null.
      * @param searchViewIsNull
      *            <code>true</code> if search view is null.
      * @param validationViewIsNull
      *            <code>true</code> if validation view is null.
      */
-    private void assertViewDescriptors(Boolean masterViewIsNull, Boolean detailViewIsNull, Boolean searchViewIsNull,
+    private void assertViewDescriptors(Boolean masterViewIsNull, Boolean childViewIsNull, Boolean searchViewIsNull,
             Boolean validationViewIsNull) {
 
         // Page views related assertions
         TestCase.assertTrue(masterViewIsNull == (this.getMasterView() == null));
-        TestCase.assertTrue(detailViewIsNull == (this.getChildView() == null));
+        TestCase.assertTrue(childViewIsNull == (this.getChildView() == null));
         TestCase.assertTrue(searchViewIsNull == (this.getSearchView() == null));
         TestCase.assertTrue(validationViewIsNull == (this.getValidationView() == null));
 
         // Master form related assertions
         final AbstractB2TableMasterForm<Person> masterForm = this.getBackingForm(this.getMasterView());
-        final AbstractBbChildForm<Person> detailForm = this.getBackingForm(this.getChildView());
+        final AbstractBbChildForm<Person> childForm = this.getBackingForm(this.getChildView());
         final AbstractBbSearchForm<Person, ?> searchForm = this.getBackingForm(this.getSearchView());
         final BbValidationForm<Person> validationForm = this.getBackingForm(this.getValidationView());
 
         if (masterForm != null) {
-            if (detailForm != null) {
-                TestCase.assertTrue(masterForm.getChildForms().contains(detailForm));
+            if (childForm != null) {
+                TestCase.assertTrue(masterForm.getChildForms().contains(childForm));
                 TestCase.assertNotNull(this.getChildView().getGlobalCommandsAccessor());
             } else {
                 TestCase.assertTrue(masterForm.getChildForms().isEmpty());
@@ -307,8 +307,8 @@ public class TestDefaultApplicationPageConfigurer extends AbstractBbSamplesTests
                 // TestCase.assertTrue(masterForm.getSearchForms().isEmpty());
             }
         }
-        if (detailForm != null) {
-            TestCase.assertEquals(masterForm, detailForm.getMasterForm());
+        if (childForm != null) {
+            TestCase.assertEquals(masterForm, childForm.getMasterForm());
         }
         if (searchForm != null) {
             TestCase.assertEquals(masterForm, searchForm.getMasterForm());

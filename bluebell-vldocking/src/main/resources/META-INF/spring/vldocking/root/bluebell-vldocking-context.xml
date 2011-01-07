@@ -76,7 +76,7 @@
 		</property>
 	</bean>
 
-	<bean id="detailVldockingViewDescriptorTemplate" parent="abstractVldockingViewDescriptor" scope="prototype" />
+	<bean id="childVldockingViewDescriptorTemplate" parent="abstractVldockingViewDescriptor" scope="prototype" />
 
 	<bean id="validationVldockingViewDescriptorTemplate" parent="abstractVldockingViewDescriptor" scope="prototype">
 		<property name="autoHideBorder">
@@ -94,11 +94,11 @@
 	<bean id="vldockingBeanPostProcessor" class="org.bluebell.richclient.application.docking.vldocking.VLDockingBeanPostProcessor">
 		<property name="viewDescriptorsTemplates">
 			<util:map>
-				<entry key="MASTER" value="${richclient.masterVldockingViewDescriptorTemplate}" />
-				<entry key="DETAIL" value="${richclient.detailVldockingViewDescriptorTemplate}" />
-				<entry key="SEARCH" value="${richclient.searchVldockingViewDescriptorTemplate}" />
-				<entry key="VALIDATION" value="${richclient.validationVldockingViewDescriptorTemplate}" />
-				<entry key="UNKNOWN" value="${richclient.unknownVldockingViewDescriptorTemplate}" />
+				<entry key="MASTER_TYPE" value="${richclient.masterVldockingViewDescriptorTemplate}" />
+				<entry key="CHILD_TYPE" value="${richclient.childVldockingViewDescriptorTemplate}" />
+				<entry key="SEARCH_TYPE" value="${richclient.searchVldockingViewDescriptorTemplate}" />
+				<entry key="VALIDATION_TYPE" value="${richclient.validationVldockingViewDescriptorTemplate}" />
+				<entry key="UNKNOWN_TYPE" value="${richclient.unknownVldockingViewDescriptorTemplate}" />
 			</util:map>
 		</property>
 	</bean>

@@ -33,7 +33,7 @@ import org.springframework.richclient.form.builder.TableFormBuilder;
 /**
  * @author <a href = "mailto:julio.arguello@gmail.com" >Julio Argüello (JAF)</a>
  */
-public class PersonVetsDetailForm extends AbstractBbChildForm<Person> {
+public class PersonVetsChildForm extends AbstractBbChildForm<Person> {
 
     /**
      * 
@@ -42,9 +42,9 @@ public class PersonVetsDetailForm extends AbstractBbChildForm<Person> {
 
     /**
      */
-    public PersonVetsDetailForm() {
+    public PersonVetsChildForm() {
 
-        this(PersonVetsDetailForm.FORM_ID);
+        this(PersonVetsChildForm.FORM_ID);
     }
 
     /**
@@ -53,13 +53,13 @@ public class PersonVetsDetailForm extends AbstractBbChildForm<Person> {
      * @param formId
      *            the form id.
      */
-    public PersonVetsDetailForm(String formId) {
+    public PersonVetsChildForm(String formId) {
 
         super(formId);
 
         final ValidatingFormModel formModel = BbFormModelHelper.createValidatingFormModel(new Person());
         formModel.setId(formId);
-        
+
         this.setFormModel(formModel);
     }
 

@@ -36,12 +36,12 @@
 	</bean>
 
 	<!--
-		A page descriptor containing a detail view descriptor.
+		A page descriptor containing a child view descriptor.
 	-->
-	<bean id="detailViewPageDescriptor" parent="abstractPageDescriptor">
+	<bean id="childViewPageDescriptor" parent="abstractPageDescriptor">
 		<property name="viewDescriptors">
 			<list>
-				<value>personDetailViewDescriptor</value>
+				<value>personChildViewDescriptor</value>
 			</list>
 		</property>
 	</bean>
@@ -69,24 +69,24 @@
 	</bean>
 	
 	<!--
-		A page descriptor containing a master and a detail view descriptors.
+		A page descriptor containing a master and a child view descriptors.
 	-->
-	<bean id="masterAndDetailViewsPageDescriptor" parent="abstractPageDescriptor">
+	<bean id="masterAndChildViewsPageDescriptor" parent="abstractPageDescriptor">
 		<property name="viewDescriptors">
 			<list>
 				<value>personMasterViewDescriptor</value>
-				<value>personDetailViewDescriptor</value>
+				<value>personChildViewDescriptor</value>
 			</list>
 		</property>
 	</bean>
 	
 	<!--
-		A page descriptor containing a master and a detail view descriptors (reverse order).
+		A page descriptor containing a master and a child view descriptors (reverse order).
 	-->
-	<bean id="rMasterAndDetailViewsPageDescriptor" parent="abstractPageDescriptor">
+	<bean id="rMasterAndChildViewsPageDescriptor" parent="abstractPageDescriptor">
 		<property name="viewDescriptors">
 			<list>
-				<value>personDetailViewDescriptor</value>
+				<value>personChildViewDescriptor</value>
 				<value>personMasterViewDescriptor</value>
 			</list>
 		</property>
@@ -123,7 +123,7 @@
 		<property name="viewDescriptors">
 			<list>
 				<value>personMasterViewDescriptor</value>
-				<value>personDetailViewDescriptor</value>
+				<value>personChildViewDescriptor</value>
 				<value>personSearchViewDescriptor</value>
 				<value>validationViewDescriptor</value>
 			</list>
@@ -138,7 +138,7 @@
 			<list>
 				<value>validationViewDescriptor</value>
 				<value>personSearchViewDescriptor</value>
-				<value>personDetailViewDescriptor</value>
+				<value>personChildViewDescriptor</value>
 				<value>personMasterViewDescriptor</value>				
 			</list>
 		</property>

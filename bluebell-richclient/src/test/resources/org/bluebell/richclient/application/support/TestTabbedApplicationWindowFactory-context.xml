@@ -41,7 +41,7 @@
 	<bean id="pageDescriptor2" parent="abstractPageDescriptor">
 		<property name="viewDescriptors">
 			<list>
-				<value>personDetailViewDescriptor</value>
+				<value>personChildViewDescriptor</value>
 			</list>
 		</property>
 	</bean>
@@ -53,7 +53,7 @@
 		<property name="viewDescriptors">
 			<list>
 				<value>personSearchViewDescriptor</value>
-				<value>personDetailViewDescriptor</value>
+				<value>personChildViewDescriptor</value>
 			</list>
 		</property>
 	</bean>

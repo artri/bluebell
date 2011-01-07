@@ -299,7 +299,32 @@
 	<bean id="defaultRulesSource" class="org.springframework.rules.support.DefaultRulesSource" />
 
 	<!-- -->
-	<bean id="defaultValueChangeDetector" class="org.bluebell.binding.value.support.CollectionAwareValueChangeDetector" />
+	<bean id="defaultValueChangeDetector" class="org.bluebell.binding.value.support.CollectionAwareValueChangeDetector"
+		p:classesWithSafeEquals-ref="${richclient.classesWithSafeEquals}" />
+
+
+	<util:set id="defaultClassesWithSafeEquals" value-type="java.lang.Class">
+		<value>java.lang.Boolean</value>
+		<value>java.lang.Byte</value>
+		<value>java.lang.Short</value>
+		<value>java.lang.Integer</value>
+		<value>java.lang.Long</value>
+		<value>java.lang.Float</value>
+		<value>java.lang.Double</value>
+		<value>java.lang.String</value>
+		<value>java.lang.Character</value>
+		<value>java.math.BigDecimal</value>
+		<value>java.math.BigInteger</value>
+		<value>java.util.Date</value>
+		<value>java.util.Calendar</value>
+	</util:set>
+
+	<!-- Arrays.asList( new Class[] { Boolean.class, Byte.class, -->
+	<!-- Short.class, Integer.class, Long.class, Float.class, -->
+	<!-- Double.class, String.class, Character.class, -->
+	<!-- BigDecimal.class, BigInteger.class, Date.class, Calendar.class } -->
+
+	<!-- <util:property-path id="defaultClassesWithSafeEquals" path="defaultValueChangeDetector.classesWithSafeEquals" /> -->
 
 	<!--
 		###############################################################################################################

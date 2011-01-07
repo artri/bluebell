@@ -41,8 +41,11 @@ import junit.framework.TestCase;
 import org.apache.commons.collections.ListUtils;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang.StringUtils;
+import org.bluebell.richclient.form.TestBbDispatcherForm.CountersListener.CounterName;
+import org.bluebell.richclient.form.builder.support.DirtyTrackingUtils;
 import org.bluebell.richclient.samples.simple.bean.Person;
 import org.bluebell.richclient.samples.simple.form.PersonMasterForm;
+import org.bluebell.richclient.swing.util.SwingUtils;
 import org.bluebell.richclient.test.AbstractBbSamplesTests;
 import org.junit.After;
 import org.junit.Before;
@@ -154,9 +157,16 @@ public class TestBbDispatcherForm extends AbstractBbSamplesTests {
         final BbDispatcherForm<Person> dispatcherForm = masterForm.getDispatcherForm();
         final AbstractBbChildForm<Person> childForm = this.getBackingForm(this.getChildView());
 
-        this.doTestCommit(masterForm, childForm, new CountersListener(masterForm, dispatcherForm));
+        // Test insert operations listening to dispatcher form and child form respectively
+        this.doTestCommit(masterForm, childForm, new CountersListener(masterForm, dispatcherForm), Boolean.TRUE);
         this.cleanMasterEventList();
-        this.doTestCommit(masterForm, childForm, new CountersListener(masterForm, childForm, "name"));
+        this.doTestCommit(masterForm, childForm, new CountersListener(masterForm, childForm, "name"), Boolean.TRUE);
+        this.cleanMasterEventList();
+
+        // Test update operations listening to dispatcher form and child form respectively
+        this.doTestCommit(masterForm, childForm, new CountersListener(masterForm, dispatcherForm), Boolean.FALSE);
+        this.cleanMasterEventList();
+        this.doTestCommit(masterForm, childForm, new CountersListener(masterForm, childForm, "name"), Boolean.FALSE);
     }
 
     /**
@@ -177,7 +187,10 @@ public class TestBbDispatcherForm extends AbstractBbSamplesTests {
     @After
     public void cleanMasterEventList() {
 
-        final AbstractBbTableMasterForm<Person> masterForm = this.getBackingForm(this.getMasterView());
+        final AbstractB2TableMasterForm<Person> masterForm = this.getBackingForm(this.getMasterView());
+        final BbDispatcherForm<Person> dispatcherForm = masterForm.getDispatcherForm();
+
+        DirtyTrackingUtils.clearDirty(dispatcherForm.getFormModel());
         masterForm.showEntities(ListUtils.EMPTY_LIST);
     }
 
@@ -202,6 +215,7 @@ public class TestBbDispatcherForm extends AbstractBbSamplesTests {
          * 0. Ensures master table is empty at the beginning
          */
         TestCase.assertTrue("masterForm.getMasterEventList().isEmpty()", masterForm.getMasterEventList().isEmpty());
+        TestBbDispatcherForm.assertDispatcherFormPropagatesChanges(dispatcherForm);
 
         /*
          * 1. Show entities.
@@ -209,7 +223,7 @@ public class TestBbDispatcherForm extends AbstractBbSamplesTests {
          * EXPECTED: [1,2,3,4]
          */
         entities = TestBbDispatcherForm.PERSONS_1;
-        countersListener.increment(expectedCounters, CountersListener.CounterName.TABLE);
+        countersListener.increment(expectedCounters, CounterName.TABLE);
 
         masterForm.showEntities(entities);
 
@@ -222,22 +236,18 @@ public class TestBbDispatcherForm extends AbstractBbSamplesTests {
          * EXPECTED: [-->1<--,2,3,4]
          */
         selection = entities.subList(0, 1);
-        countersListener.increment(expectedCounters, CountersListener.CounterName.SELECTION);
-        countersListener.increment(expectedCounters, CountersListener.CounterName.INDEX_HOLDER);
-        countersListener.increment(expectedCounters, CountersListener.CounterName.FORM_OBJECT);
-        countersListener.increment(expectedCounters, CountersListener.CounterName.VALUE_MODEL);
+        countersListener.increment(expectedCounters, //
+                CounterName.SELECTION, CounterName.INDEX_HOLDER, CounterName.FORM_OBJECT, CounterName.VALUE_MODEL);
         this.changeSelectionAndTestAssertions(masterForm, countersListener, selection, expectedCounters);
 
         /*
-         * 3.Select all entities: detail form
+         * 3.Select all entities: child form
          * 
          * EXPECTED: [-->1<--,-->2<--,-->3<--,-->4<--]
          */
         selection = entities;
-        countersListener.increment(expectedCounters, CountersListener.CounterName.SELECTION);
-        countersListener.increment(expectedCounters, CountersListener.CounterName.INDEX_HOLDER);
-        countersListener.increment(expectedCounters, CountersListener.CounterName.FORM_OBJECT); // reset
-        countersListener.increment(expectedCounters, CountersListener.CounterName.VALUE_MODEL);
+        countersListener.increment(expectedCounters, // form object is incremented due to a form reset operation
+                CounterName.SELECTION, CounterName.INDEX_HOLDER, CounterName.FORM_OBJECT, CounterName.VALUE_MODEL);
         this.changeSelectionAndTestAssertions(masterForm, countersListener, selection, expectedCounters);
 
         /*
@@ -264,10 +274,8 @@ public class TestBbDispatcherForm extends AbstractBbSamplesTests {
          * EXPECTED: [1,-->2<--,3,4]
          */
         selection = entities.subList(1, 2);
-        countersListener.increment(expectedCounters, CountersListener.CounterName.SELECTION);
-        countersListener.increment(expectedCounters, CountersListener.CounterName.INDEX_HOLDER);
-        countersListener.increment(expectedCounters, CountersListener.CounterName.FORM_OBJECT);
-        countersListener.increment(expectedCounters, CountersListener.CounterName.VALUE_MODEL);
+        countersListener.increment(expectedCounters, //
+                CounterName.SELECTION, CounterName.INDEX_HOLDER, CounterName.FORM_OBJECT, CounterName.VALUE_MODEL);
         this.changeSelectionAndTestAssertions(masterForm, countersListener, selection, expectedCounters);
 
         /*
@@ -276,10 +284,8 @@ public class TestBbDispatcherForm extends AbstractBbSamplesTests {
          * EXPECTED: [1,2,3,4]
          */
         selection = ListUtils.EMPTY_LIST;
-        countersListener.increment(expectedCounters, CountersListener.CounterName.SELECTION);
-        countersListener.increment(expectedCounters, CountersListener.CounterName.INDEX_HOLDER);
-        countersListener.increment(expectedCounters, CountersListener.CounterName.FORM_OBJECT);
-        countersListener.increment(expectedCounters, CountersListener.CounterName.VALUE_MODEL);
+        countersListener.increment(expectedCounters, //
+                CounterName.SELECTION, CounterName.INDEX_HOLDER, CounterName.FORM_OBJECT, CounterName.VALUE_MODEL);
         this.changeSelectionAndTestAssertions(masterForm, countersListener, selection, expectedCounters);
 
         /*
@@ -300,12 +306,8 @@ public class TestBbDispatcherForm extends AbstractBbSamplesTests {
          * EXPECTED: [1,2,3,4,-->5<--]
          */
         selection = TestBbDispatcherForm.PERSONS_2.subList(0, 1);
-        countersListener.increment(expectedCounters, CountersListener.CounterName.TABLE);
-        countersListener.increment(expectedCounters, CountersListener.CounterName.SELECTION);
-        countersListener.increment(expectedCounters, CountersListener.CounterName.SELECTION); // <-- expected
-        countersListener.increment(expectedCounters, CountersListener.CounterName.INDEX_HOLDER);
-        countersListener.increment(expectedCounters, CountersListener.CounterName.FORM_OBJECT);
-        countersListener.increment(expectedCounters, CountersListener.CounterName.VALUE_MODEL);
+        countersListener.increment(expectedCounters, CounterName.TABLE, CounterName.SELECTION,// 2 selects are expected
+                CounterName.SELECTION, CounterName.INDEX_HOLDER, CounterName.FORM_OBJECT, CounterName.VALUE_MODEL);
         this.changeSelectionAndTestAssertions(masterForm, countersListener, selection, expectedCounters);
 
         /*
@@ -317,12 +319,8 @@ public class TestBbDispatcherForm extends AbstractBbSamplesTests {
          * EXPECTED: [1,2,3,4,5,-->6<--,-->7<--]
          */
         selection = TestBbDispatcherForm.PERSONS_2.subList(1, 3);
-        countersListener.increment(expectedCounters, CountersListener.CounterName.TABLE);
-        countersListener.increment(expectedCounters, CountersListener.CounterName.SELECTION);
-        countersListener.increment(expectedCounters, CountersListener.CounterName.SELECTION); // <-- expected
-        countersListener.increment(expectedCounters, CountersListener.CounterName.INDEX_HOLDER);
-        countersListener.increment(expectedCounters, CountersListener.CounterName.FORM_OBJECT);
-        countersListener.increment(expectedCounters, CountersListener.CounterName.VALUE_MODEL);
+        countersListener.increment(expectedCounters, CounterName.TABLE, CounterName.SELECTION,// 2 selects are expected
+                CounterName.SELECTION, CounterName.INDEX_HOLDER, CounterName.FORM_OBJECT, CounterName.VALUE_MODEL);
         this.changeSelectionAndTestAssertions(masterForm, countersListener, selection, expectedCounters);
     }
 
@@ -335,10 +333,20 @@ public class TestBbDispatcherForm extends AbstractBbSamplesTests {
      *            the child form.
      * @param countersListener
      *            the counter listener to be employed.
+     * @param inserting
+     *            wheter test should <em>insert</em> (<code>true</code>) or <em>update</em> (<code>false</code>) an
+     *            entity.
      */
-    protected void doTestCommit(PersonMasterForm masterForm, AbstractBbChildForm<Person> childForm,
-            CountersListener countersListener) {
+    protected void doTestCommit(final PersonMasterForm masterForm, AbstractBbChildForm<Person> childForm,
+            CountersListener countersListener, Boolean inserting) {
 
+        Assert.notNull(masterForm, "masterForm");
+        Assert.notNull(childForm, "childForm");
+        Assert.notNull(countersListener, "countersListener");
+        Assert.notNull(inserting, "insert");
+
+        final String name = "JAF";
+        final String age = "28";
         final Map<CountersListener.CounterName, Integer> expectedCounters = new HashMap<CountersListener.CounterName, Integer>();
         final BbDispatcherForm<Person> dispatcherForm = masterForm.getDispatcherForm();
 
@@ -347,39 +355,70 @@ public class TestBbDispatcherForm extends AbstractBbSamplesTests {
          */
         TestCase.assertTrue("masterForm.getMasterEventList().isEmpty()", masterForm.getMasterEventList().isEmpty());
 
-        // 1.Execute newFormObjectCommand
+        // 1.Insert or update
         TestCase.assertFalse("dispatcherForm.isEditingNewFormObject()", dispatcherForm.isEditingNewFormObject());
         TestCase.assertFalse("childForm.isEditingNewFormObject()", childForm.isEditingNewFormObject());
-        masterForm.getNewFormObjectCommand().execute();
 
-        countersListener.increment(expectedCounters, CountersListener.CounterName.FORM_OBJECT);
-        TestCase.assertTrue("dispatcherForm.isEditingNewFormObject()", dispatcherForm.isEditingNewFormObject());
-        TestCase.assertTrue("childForm.isEditingNewFormObject()", childForm.isEditingNewFormObject());
+        if (inserting) {
+            // 1a.Execute newFormObjectCommand
+            SwingUtils.runInEventDispatcherThread(new Runnable() {
+
+                @Override
+                public void run() {
+
+                    masterForm.getNewFormObjectCommand().execute();
+                }
+            });
+
+            countersListener.increment(expectedCounters, CountersListener.CounterName.FORM_OBJECT);
+        } else {
+            // 1b.Select an existing entity (#changeSelection ensures operation is done in the EDT)
+            masterForm.changeSelection(Arrays.asList(new Person(StringUtils.EMPTY)));
+
+            countersListener.increment(expectedCounters, CounterName.TABLE, //
+                    CounterName.SELECTION, CounterName.INDEX_HOLDER, CounterName.FORM_OBJECT, CounterName.VALUE_MODEL);
+        }
+
+        TestCase.assertTrue("dispatcher.isEditingNewFormObject", dispatcherForm.isEditingNewFormObject() || !inserting);
+        TestCase.assertTrue("child.isEditingNewFormObject()", childForm.isEditingNewFormObject() || !inserting);
         TestCase.assertEquals(expectedCounters, countersListener.getCounters());
         TestBbDispatcherForm.assertDispatcherFormPropagatesChanges(dispatcherForm);
 
         // 2.Make some changes
-        TestBbDispatcherForm.this.userAction(childForm, "name", "JAF");
-        TestBbDispatcherForm.this.userAction(childForm, "age", "28");
+        TestBbDispatcherForm.this.userAction(childForm, "name", name);
+        TestBbDispatcherForm.this.userAction(childForm, "age", age);
 
         countersListener.increment(expectedCounters, CountersListener.CounterName.VALUE_MODEL);
-        TestCase.assertTrue("dispatcherForm.isEditingNewFormObject()", dispatcherForm.isEditingNewFormObject());
-        TestCase.assertTrue("childForm.isEditingNewFormObject()", childForm.isEditingNewFormObject());
+        TestCase.assertTrue("dispatcher.isEditingNewFormObject", dispatcherForm.isEditingNewFormObject() || !inserting);
+        TestCase.assertTrue("child.EditingNewFormObject()", childForm.isEditingNewFormObject() || !inserting);
         TestCase.assertEquals(expectedCounters, countersListener.getCounters());
         TestBbDispatcherForm.assertDispatcherFormPropagatesChanges(dispatcherForm);
 
         // 3.Execute saveCommand
-        masterForm.getSaveCommand().execute();
+        SwingUtils.runInEventDispatcherThread(new Runnable() {
 
-        countersListener.increment(expectedCounters, CountersListener.CounterName.TABLE);
-        countersListener.increment(expectedCounters, CountersListener.CounterName.SELECTION);
-        countersListener.increment(expectedCounters, CountersListener.CounterName.INDEX_HOLDER);
+            @Override
+            public void run() {
+
+                masterForm.getSaveCommand().execute();
+            }
+        });
+
+        // Table changes in any case since a #set(i, T) operation is done even when updating on postCommit
+        countersListener.increment(expectedCounters, CounterName.TABLE, CounterName.FORM_OBJECT);
+        if (inserting) {
+            countersListener.increment(expectedCounters, CounterName.SELECTION, CounterName.INDEX_HOLDER);
+        }
         TestCase.assertFalse("dispatcherForm.isEditingNewFormObject()", dispatcherForm.isEditingNewFormObject());
         TestCase.assertFalse("childForm.isEditingNewFormObject()", childForm.isEditingNewFormObject());
         TestCase.assertEquals(expectedCounters, countersListener.getCounters());
         TestBbDispatcherForm.assertDispatcherFormPropagatesChanges(dispatcherForm);
 
-        childForm.getFormObject();
+        // 4.Commit works as expected
+        final Person person = (Person) dispatcherForm.getFormObject();
+        TestCase.assertEquals(name, person.getName());
+        TestCase.assertEquals(age, person.getAge().toString());
+        TestCase.assertSame(dispatcherForm.getFormObject(), childForm.getFormObject());
     }
 
     /**
@@ -446,7 +485,8 @@ public class TestBbDispatcherForm extends AbstractBbSamplesTests {
      * 
      * @author <a href = "mailto:julio.arguello@gmail.com" >Julio Argüello (JAF)</a>
      */
-    private static class CountersListener implements TableModelListener, ListSelectionListener, PropertyChangeListener {
+    protected static class CountersListener implements TableModelListener, ListSelectionListener,
+            PropertyChangeListener {
 
         /**
          * The kind of counters handled by this listener.
@@ -617,17 +657,16 @@ public class TestBbDispatcherForm extends AbstractBbSamplesTests {
          *            the counter name.
          * @return the new counter value.
          */
-        public final Integer increment(Map<CounterName, Integer> counters, CounterName counterName) {
+        public final void increment(Map<CounterName, Integer> counters, CounterName... counterNames) {
 
-            Integer count = 0;
+            for (CounterName counterName : counterNames) {
+                if (!this.getIgnoredCounters().contains(counterName)) {
 
-            if (!this.getIgnoredCounters().contains(counterName)) {
-
-                count = this.getCount(counters, counterName);
-                counters.put(counterName, ++count);
+                    Integer count = 0;
+                    count = this.getCount(counters, counterName);
+                    counters.put(counterName, ++count);
+                }
             }
-
-            return count;
         }
 
         /**
@@ -637,13 +676,11 @@ public class TestBbDispatcherForm extends AbstractBbSamplesTests {
          *            the counter name.
          * @return the new counter value.
          */
-        private Integer increment(CounterName counterName) {
+        private void increment(CounterName counterName) {
 
             Assert.notNull(counterName, "counterName");
 
-            Integer count = this.increment(this.getCounters(), counterName);
-
-            return count;
+            this.increment(this.getCounters(), counterName);
         }
     }
 }

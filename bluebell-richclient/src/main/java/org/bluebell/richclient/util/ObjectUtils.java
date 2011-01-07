@@ -23,9 +23,11 @@ package org.bluebell.richclient.util;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.commons.lang.ArrayUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.aop.framework.Advised;
@@ -122,30 +124,54 @@ public final class ObjectUtils {
      */
     public static void shallowCopy(Object source, Object target) {
 
-        Assert.notNull(source, "source");
-        Assert.notNull(target, "target");
+        ObjectUtils.doShallowCopy(source, target, Boolean.TRUE);
+    }
 
-        final PropertyAccessor sourceAccessor = PropertyAccessorFactory.forDirectFieldAccess(source);
-        final PropertyAccessor targetAccessor = PropertyAccessorFactory.forDirectFieldAccess(target);
+    /**
+     * Makes a shallow copy of the source object into the target one excluding properties not in
+     * <code>propertyNames</code>.
+     * <p>
+     * This method differs from {@link ReflectionUtils#shallowCopyFieldState(Object, Object)} this doesn't require
+     * source and target objects to share the same class hierarchy.
+     * 
+     * @param source
+     *            the source object.
+     * @param target
+     *            the target object.
+     * @param propertyNames
+     *            the property names to be processed. Never mind if property names are invalid, in such a case are
+     *            ignored.
+     */
+    public static void shallowCopy(Object source, Object target, final String... propertyNames) {
 
-        // Try to copy every property
-        ReflectionUtils.doWithFields(source.getClass(), new ReflectionUtils.FieldCallback() {
+        ObjectUtils.doShallowCopy(source, target, Boolean.FALSE, propertyNames);
+    }
 
-            /**
-             * {@inheritDoc}
-             */
+    /**
+     * Get all declared fields on the leaf class and all superclasses. Leaf class methods are included first.
+     * 
+     * @param leafClass
+     *            the leaf class.
+     * @return all declared fields.
+     * 
+     * @see ReflectionUtils#getAllDeclaredMethods(Class) since is the same approach as this one.
+     */
+    public static Field[] getAllDeclaredFields(Class<?> leafClass) {
+
+        Assert.notNull(leafClass, "leafClass");
+
+        final List<Field> fields = new ArrayList<Field>(32);
+
+        ReflectionUtils.doWithFields(leafClass, new ReflectionUtils.FieldCallback() {
+
             @Override
-            public void doWith(Field field) { // throws IllegalArgumentException, IllegalAccessException {
+            public void doWith(Field field) throws IllegalArgumentException, IllegalAccessException {
 
-                final String name = field.getName();
-
-                if (!Modifier.isFinal(field.getModifiers()) && (targetAccessor.isWritableProperty(name))) {
-
-                    final Object value = sourceAccessor.getPropertyValue(name);
-                    targetAccessor.setPropertyValue(name, value);
-                }
+                fields.add(field);
             }
         });
+
+        return fields.toArray(new Field[fields.size()]);
     }
 
     /**
@@ -244,5 +270,57 @@ public final class ObjectUtils {
         }
 
         return unwrapped;
+    }
+
+    /**
+     * Makes a shallow copy of the source object into the target one excluding properties not in
+     * <code>propertyNames</code> unless <code>allProperties</code> is true.
+     * <p>
+     * This method differs from {@link ReflectionUtils#shallowCopyFieldState(Object, Object)} this doesn't require
+     * source and target objects to share the same class hierarchy.
+     * 
+     * @param source
+     *            the source object.
+     * @param target
+     *            the target object.
+     * @param allProperties
+     *            if <code>true</code> then <code>propertyNames</code> will be ignored and all properties processed.
+     * @param propertyNames
+     *            the property names to be processed. Never mind if property names are invalid, in such a case are
+     *            ignored.
+     */
+    private static void doShallowCopy(Object source, Object target, final Boolean allProperties,
+            final String... propertyNames) {
+
+        Assert.notNull(source, "source");
+        Assert.notNull(target, "target");
+        Assert.notNull(allProperties, "allProperties");
+        Assert.notNull(propertyNames, "propertyNames");
+
+        final PropertyAccessor sourceAccessor = PropertyAccessorFactory.forDirectFieldAccess(source);
+        final PropertyAccessor targetAccessor = PropertyAccessorFactory.forDirectFieldAccess(target);
+
+        // Try to copy every property
+        ReflectionUtils.doWithFields(source.getClass(), new ReflectionUtils.FieldCallback() {
+
+            /**
+             * {@inheritDoc}
+             */
+            @Override
+            public void doWith(Field field) { // throws IllegalArgumentException, IllegalAccessException {
+
+                final String fieldName = field.getName();
+
+                Boolean proceed = !Modifier.isFinal(field.getModifiers());
+                proceed &= (targetAccessor.isWritableProperty(fieldName));
+                proceed &= (allProperties | ArrayUtils.contains(propertyNames, fieldName));
+
+                if (proceed) {
+
+                    final Object value = sourceAccessor.getPropertyValue(fieldName);
+                    targetAccessor.setPropertyValue(fieldName, value);
+                }
+            }
+        });
     }
 }

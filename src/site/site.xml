@@ -43,9 +43,9 @@
 	</poweredBy>
 	<body>
 		<head>
-			<!-- 
+			<!--
 				(JAF), 20110103, according to http://chkal.blogspot.com/2009/10/google-analytics-and-maven-project.html
-		 	-->
+			-->
 			<!-- Google Analytics - Start -->
 			<script type="text/javascript">
 				var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
@@ -83,6 +83,12 @@
 		<menu ref="parent" inherit="top" />
 		<menu ref="modules" inherit="bottom" />
 		<menu ref="reports" inherit="top" />
+		<menu name="Project links">
+			<item name="Bluebell Confluence" href="http://saber.b2b2000.com/display/BLUE/Bluebell" />
+			<item name="Bluebell JIRA" href="http://jirabluebell.b2b2000.com/browse/BLUE" />
+			<item name="Bluebell Google Code" href="http://code.google.com/p/bluebell" />
+			<item name="Bluebell Blog" href="http://saber.b2b2000.com/pages/viewrecentblogposts.action?key=BLUE" />
+		</menu>
 
 	</body>
 </project>

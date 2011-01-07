@@ -83,7 +83,7 @@ public class DispatcherFormModel extends BbDefaultFormModel {
      * @see org.springframework.binding.form.support.AbstractFormModel#reset()
      */
     // FIXME, (JAF), 20090910, since this method is referenced from
-    // BbCompositeDetailForm its visibility is changed from "protected" to
+    // DispatcherFormModel its visibility is changed from "protected" to
     // "public"
     public final void doInternalReset() {
 
@@ -96,7 +96,7 @@ public class DispatcherFormModel extends BbDefaultFormModel {
      * @see org.springframework.binding.form.support.AbstractFormModel#revert()
      */
     // FIXME, (JAF), 20090910, since this method is referenced from
-    // BbCompositeDetailForm its visibility is changed from "protected" to
+    // DispatcherFormModel its visibility is changed from "protected" to
     // "public"
     public final void doInternalRevert() {
 
@@ -112,7 +112,7 @@ public class DispatcherFormModel extends BbDefaultFormModel {
      * @see org.springframework.binding.form.support.AbstractFormModel#setEnabled(boolean)
      */
     // FIXME, (JAF), 20090910, since this method is referenced from
-    // BbCompositeDetailForm its visibility is changed from "protected" to
+    // DispatcherFormModel its visibility is changed from "protected" to
     // "public"
     public final void doInternalSetEnabled(boolean enabled) {
 

@@ -44,6 +44,7 @@ import org.bluebell.richclient.application.ApplicationPageConfigurer;
 import org.bluebell.richclient.application.ApplicationPageException;
 import org.bluebell.richclient.application.support.ApplicationUtils;
 import org.bluebell.richclient.application.support.DefaultApplicationPageConfigurer;
+import org.bluebell.richclient.application.support.DefaultApplicationPageConfigurer.BbViewType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.ByteArrayResource;
@@ -533,18 +534,18 @@ public class BbVLDockingApplicationPage<T> extends VLDockingApplicationPage {
          * Trait unknown views as master views: *This code should be moved to the template*
          */
         final List<PageComponent> newMasterViews = new ArrayList<PageComponent>();
-        newMasterViews.addAll(classification.get(DefaultApplicationPageConfigurer.BbViewType.MASTER.name()));
-        newMasterViews.addAll(classification.get(DefaultApplicationPageConfigurer.BbViewType.UNKNOWN.name()));
-        classification.put(DefaultApplicationPageConfigurer.BbViewType.MASTER.name(), newMasterViews);
+        newMasterViews.addAll(classification.get(DefaultApplicationPageConfigurer.BbViewType.MASTER_TYPE.name()));
+        newMasterViews.addAll(classification.get(DefaultApplicationPageConfigurer.BbViewType.UNKNOWN_TYPE.name()));
+        classification.put(DefaultApplicationPageConfigurer.BbViewType.MASTER_TYPE.name(), newMasterViews);
 
         // Merge context
         final Map<String, Object> context = new HashMap<String, Object>();
         context.put("classification", classification);
-        context.put("MASTER_TYPE", DefaultApplicationPageConfigurer.BbViewType.MASTER.name());
-        context.put("DETAIL_TYPE", DefaultApplicationPageConfigurer.BbViewType.DETAIL.name());
-        context.put("SEARCH_TYPE", DefaultApplicationPageConfigurer.BbViewType.SEARCH.name());
-        context.put("VALIDATION_TYPE", DefaultApplicationPageConfigurer.BbViewType.VALIDATION.name());
-        context.put("UNKNOWN_TYPE", DefaultApplicationPageConfigurer.BbViewType.UNKNOWN.name());
+        context.put(BbViewType.MASTER_TYPE.name(), BbViewType.MASTER_TYPE.name());
+        context.put(BbViewType.CHILD_TYPE.name(), BbViewType.CHILD_TYPE.name());
+        context.put(BbViewType.SEARCH_TYPE.name(), BbViewType.SEARCH_TYPE.name());
+        context.put(BbViewType.VALIDATION_TYPE.name(), BbViewType.VALIDATION_TYPE.name());
+        context.put(BbViewType.UNKNOWN_TYPE.name(), BbViewType.UNKNOWN_TYPE.name());
 
         Resource resource;
         try {

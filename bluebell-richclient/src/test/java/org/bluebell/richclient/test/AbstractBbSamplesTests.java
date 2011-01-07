@@ -65,7 +65,7 @@ import org.springframework.util.Assert;
  *  +-------------------------------+-------------+
  *  |_______|     |_______________________________|
  *  |                                             |
- *  |                 Detail View                 |
+ *  |                 Child View                  |
  *  |                                             |
  *  |                                             |
  *  +---------------------------------------------+
@@ -96,9 +96,9 @@ public abstract class AbstractBbSamplesTests extends AbstractBbRichClientTests {
     protected static final String SEARCH_VIEW_DESCRIPTOR_BEAN_NAME = "personSearchViewDescriptor";
 
     /**
-     * The person detail view descriptor bean name.
+     * The person child view descriptor bean name.
      */
-    protected static final String DETAIL_VIEW_DESCRIPTOR_BEAN_NAME = "personDetailViewDescriptor";
+    protected static final String CHILD_VIEW_DESCRIPTOR_BEAN_NAME = "personChildViewDescriptor";
 
     /**
      * The validation view descriptor bean name.
@@ -249,7 +249,7 @@ public abstract class AbstractBbSamplesTests extends AbstractBbRichClientTests {
         this.setSearchView((FormBackedView<AbstractBbSearchForm<Person, Person>>) applicationWindow.getPage().getView(
                 AbstractBbSamplesTests.SEARCH_VIEW_DESCRIPTOR_BEAN_NAME));
         this.setChildView((FormBackedView<AbstractBbChildForm<Person>>) applicationWindow.getPage().getView(
-                AbstractBbSamplesTests.DETAIL_VIEW_DESCRIPTOR_BEAN_NAME));
+                AbstractBbSamplesTests.CHILD_VIEW_DESCRIPTOR_BEAN_NAME));
         this.setValidationView((FormBackedView<BbValidationForm<Person>>) applicationWindow.getPage().getView(
                 AbstractBbSamplesTests.VALIDATION_VIEW_DESCRIPTOR_BEAN_NAME));
 

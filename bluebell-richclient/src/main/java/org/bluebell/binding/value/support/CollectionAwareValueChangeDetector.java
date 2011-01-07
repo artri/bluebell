@@ -118,10 +118,9 @@ public class CollectionAwareValueChangeDetector extends DefaultValueChangeDetect
         }
         if ((oldValue instanceof List) && (newValue instanceof List)) {
             // (JAF), 20100424, for performance reasons check this before proceed.
+            final Boolean wrapped = GlazedListsUtils.isWrapped(((List) oldValue), (List) newValue);
 
-            final Boolean isWrapped = GlazedListsUtils.isWrapped(((List) oldValue), (List) newValue);
-
-            return isWrapped ? Boolean.FALSE : !ObjectUtils.isEqualList((List) oldValue, (List) newValue);
+            return (wrapped) ? Boolean.FALSE : !ObjectUtils.isEqualList((List) oldValue, (List) newValue);
         }
         if ((oldValue instanceof Collection) && (newValue instanceof Collection)) {
             return !CollectionUtils.isEqualCollection((Collection) oldValue, (Collection) newValue);

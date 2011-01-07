@@ -26,6 +26,8 @@ import java.util.List;
 import org.bluebell.richclient.form.AbstractB2TableMasterForm;
 import org.bluebell.richclient.samples.simple.bean.Person;
 import org.bluebell.richclient.samples.simple.bean.Vet;
+import org.bluebell.richclient.util.ObjectUtils;
+import org.springframework.util.Assert;
 
 /**
  * @author <a href = "mailto:julio.arguello@gmail.com" >Julio Argüello (JAF)</a>
@@ -46,7 +48,7 @@ public class PersonMasterForm extends AbstractB2TableMasterForm<Person> {
     @Override
     protected Person doDelete(Person person) {
 
-        return person;
+        return this.mockOperation(person);
     }
 
     /**
@@ -55,13 +57,13 @@ public class PersonMasterForm extends AbstractB2TableMasterForm<Person> {
     @Override
     protected Person doInsert(Person person) {
 
-        return person;
+        return this.mockOperation(person);
     }
 
     /**
      * {@inheritDoc}
      */
-    @Override   
+    @Override
     protected List<Person> doRefresh(List<Person> persons) {
 
         final int numberOfVets = 1000;
@@ -81,7 +83,7 @@ public class PersonMasterForm extends AbstractB2TableMasterForm<Person> {
     @Override
     protected Person doUpdate(Person person) {
 
-        return person;
+        return this.mockOperation(person);
     }
 
     /**
@@ -91,5 +93,23 @@ public class PersonMasterForm extends AbstractB2TableMasterForm<Person> {
     protected String[] getColumnPropertyNames() {
 
         return new String[] { "name", "age", "name", "age", "name", "age", "name", "age" };
+    }
+
+    /**
+     * Makes a shallow copy of the given person. Useful for mocking <code>doXXX</code> operations.
+     * 
+     * @param person
+     *            the target person.
+     * @return a shallow copy.
+     */
+    private Person mockOperation(Person person) {
+
+        Assert.notNull(person, "person");
+
+        final Person newPerson = new Person();
+
+        ObjectUtils.shallowCopy(person, newPerson);
+
+        return newPerson;
     }
 }

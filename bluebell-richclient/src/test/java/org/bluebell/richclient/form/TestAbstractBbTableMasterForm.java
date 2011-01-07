@@ -309,10 +309,10 @@ public class TestAbstractBbTableMasterForm extends AbstractBbSamplesTests {
         newSelection = Arrays.asList(TestAbstractBbTableMasterForm.PERSONS_1.get(2));
         this.doTestRequestUserConfirmation(masterForm, Boolean.TRUE, newSelection, requestCount, newSelection);
 
-        // Change age: detail form should get dirty
+        // Change age: child form should get dirty
         // EXPECTED: [1, 2, -->[D]3<--, 4]
         this.userAction(childForm, "age", "22");
-        TestCase.assertTrue("detailForm.isDirty()", childForm.isDirty());
+        TestCase.assertTrue("childForm.isDirty()", childForm.isDirty());
 
         // Abort selection change
         // EXPECTED: [1, 2, -->[D]3<--, 4]
@@ -325,7 +325,7 @@ public class TestAbstractBbTableMasterForm extends AbstractBbSamplesTests {
         this.doTestRequestUserConfirmation(masterForm, Boolean.TRUE, newSelection, ++requestCount, newSelection);
         TestCase.assertFalse("childForm.isDirty()", childForm.isDirty());
 
-        // Change age: detail form should get dirty
+        // Change age: child form should get dirty
         // EXPECTED: [1, 2, 3, -->[D]4<--]
         this.userAction(childForm, "age", "22");
         TestCase.assertTrue("childForm.isDirty()", childForm.isDirty());
@@ -342,7 +342,7 @@ public class TestAbstractBbTableMasterForm extends AbstractBbSamplesTests {
         this.doTestRequestUserConfirmation(masterForm, Boolean.TRUE, newSelection, ++requestCount, newSelection);
         TestCase.assertFalse("childForm.isDirty()", childForm.isDirty());
 
-        // Change age again: detail form should get dirty
+        // Change age again: child form should get dirty
         // EXPECTED: [1, 2, 3, -->[D]4<--]
         this.userAction(childForm, "age", "220");
         TestCase.assertTrue("childForm.isDirty()", childForm.isDirty());
@@ -354,7 +354,7 @@ public class TestAbstractBbTableMasterForm extends AbstractBbSamplesTests {
 
         // Confirm single selection again
         this.doTestRequestUserConfirmation(masterForm, Boolean.TRUE, newSelection, ++requestCount, newSelection);
-        TestCase.assertFalse("detailForm.isDirty()", childForm.isDirty());
+        TestCase.assertFalse("childForm.isDirty()", childForm.isDirty());
     }
 
     /**

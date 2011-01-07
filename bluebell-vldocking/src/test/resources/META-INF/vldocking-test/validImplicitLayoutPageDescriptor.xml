@@ -32,7 +32,7 @@
 					</Dockable>
 				</Split>
 				<Dockable>
-					<Key dockName="personDetailViewDescriptor" dockLabel="personDetailViewDescriptor" />
+					<Key dockName="personChildViewDescriptor" dockLabel="personDetailViewDescriptor" />
 				</Dockable>
 			</Split>
 		</DockingPanel>

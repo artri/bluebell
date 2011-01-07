@@ -31,7 +31,7 @@
 		<property name="viewDescriptors">
 			<list>
 				<value>personMasterViewDescriptor</value>
-				<value>personDetailViewDescriptor</value>
+				<value>personChildViewDescriptor</value>
 			</list>
 		</property>
 	</bean>

@@ -183,6 +183,24 @@ abstract class AbstractBbDetailForm<T> extends AbstractDetailForm {
     }
 
     /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void commit() {
+
+        try {
+            this.setCommiting(Boolean.TRUE);
+            
+            super.commit();
+        } catch (RuntimeException e) {
+            throw e;
+        } finally {
+            // (JAF), 2011010t, ensures committing flag is always reset
+            this.setCommiting(Boolean.FALSE);
+        }
+    }
+
+    /**
      * Realiza la operación de salvado conforme a {@link #doPostCommit(FormModel)} y finalmente marca que ya <b>no</b>
      * se está ejecutando una operación de salvado.
      * 
@@ -196,25 +214,9 @@ abstract class AbstractBbDetailForm<T> extends AbstractDetailForm {
     public final void postCommit(FormModel formModel) {
 
         this.doPostCommit(formModel);
-        
+
+        // (JAF), 20110105, call #setEditingNewFormObject since AbstractForm uses direct field access instead of setter
         this.setEditingNewFormObject(Boolean.FALSE);
-        this.setCommiting(Boolean.FALSE);
-    }
-
-    /**
-     * Marca que se está efectuando una operación de salvado.
-     * 
-     * @param formModel
-     *            el modelo de formulario objeto del salvado.
-     * 
-     * @see #isCommiting()
-     * @see #postCommit(FormModel)
-     */
-    @Override
-    public final void preCommit(FormModel formModel) {
-
-        this.setCommiting(Boolean.TRUE);
-        super.preCommit(formModel);
     }
 
     /**
@@ -241,29 +243,35 @@ abstract class AbstractBbDetailForm<T> extends AbstractDetailForm {
     @SuppressWarnings("unchecked")
     private void doPostCommit(FormModel formModel) {
 
-        final Boolean isInserting = this.isEditingNewFormObject();
-        T entity = (T) formModel.getFormObject();
+        final Boolean inserting = this.isEditingNewFormObject();
+        final T committedEntity = (T) formModel.getFormObject();
+        final T managedEntity;
 
-        if (isInserting) {
-            entity = this.getMasterForm().doInsert(entity);
+        if (inserting) {
+            managedEntity = this.getMasterForm().doInsert(committedEntity);
         } else { // is an update
-            entity = this.getMasterForm().doUpdate(entity);
+            managedEntity = this.getMasterForm().doUpdate(committedEntity);
         }
 
-        // If success update view and publish an event
-        final boolean success = entity != null;
+        // If success then update view and publish an event
+        final boolean success = (managedEntity != null);
         if (success) {
-            // (JAF), 20090323, está línea es innecesaria e ineficiente ya que dispara múltiples eventos prescindibles
-            // formModel.getFormObjectHolder().setValue(entity);
+            // [1] Change form object in order to reflect (on call to super) the managed entity instead of committed ono
+            this.setFormObject(managedEntity);
 
-            // Ejecutar la lógica original de commit y seleccionar la fila apropiada.
+            // [2] Call super
             super.postCommit(formModel);
-            this.getMasterForm().changeSelection(Arrays.asList(entity));
+
+            // [3] Select managed entity
+            this.getMasterForm().changeSelection(Arrays.asList(managedEntity));
 
             // Publicar el evento
+            // [4] Publish application event notifying an insert / update has been successfully done
+            this.getMasterForm().publishApplicationEvent(//
+                    inserting ? EventType.CREATED : EventType.MODIFIED, managedEntity);
+
             // TODO, (JAF), 20080428, la publicación de eventos debería de ser un método privada del formulario maestro.
             // Los tipos de eventos también deberían ser un tipo de dato privado.
-            this.getMasterForm().publishApplicationEvent(isInserting ? EventType.CREATED : EventType.MODIFIED, entity);
         }
     }
 

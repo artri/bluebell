@@ -112,7 +112,7 @@ public class TestBbVLDockingApplicationPage extends AbstractBbSamplesTests {
     private PageDescriptor emptyPageDescriptor;
 
     /**
-     * A page descriptor with multiple components, including to detail view descriptors and two search vies descriptors.
+     * A page descriptor with multiple components, including to child view descriptors and two search vies descriptors.
      * 
      * @see #testBuildWholePageAutoLayout()
      */
@@ -120,7 +120,7 @@ public class TestBbVLDockingApplicationPage extends AbstractBbSamplesTests {
     private PageDescriptor wholePageDescriptor;
 
     /**
-     * A page descriptor with multiple components, including to detail view descriptors and two search vies descriptors.
+     * A page descriptor with multiple components, including to child view descriptors and two search vies descriptors.
      * 
      * @see #testInvalidAutoLayoutTemplate()
      */
@@ -274,7 +274,7 @@ public class TestBbVLDockingApplicationPage extends AbstractBbSamplesTests {
     @Test
     public void testBuildWholePageAutoLayout() {
 
-        final int numberOfDetailViews = 3;
+        final int numberOfChildViews = 3;
         final int numberOfSearchViews = 2;
 
         // Raise page control creation
@@ -284,8 +284,8 @@ public class TestBbVLDockingApplicationPage extends AbstractBbSamplesTests {
         final Map<String, List<? extends PageComponent>> classification = //
         this.defaultApplicationPageConfigurer.classifyApplicationPage(this.getInitializedPage());
 
-        TestCase.assertTrue(classification.get(BbViewType.DETAIL.name()).size() == numberOfDetailViews);
-        TestCase.assertTrue(classification.get(BbViewType.SEARCH.name()).size() == numberOfSearchViews);
+        TestCase.assertTrue(classification.get(BbViewType.CHILD_TYPE.name()).size() == numberOfChildViews);
+        TestCase.assertTrue(classification.get(BbViewType.SEARCH_TYPE.name()).size() == numberOfSearchViews);
 
         // Ensure no exception is thrown
         final Throwable cause = RememberExceptionHandler.getLastThrowable();
@@ -386,7 +386,7 @@ public class TestBbVLDockingApplicationPage extends AbstractBbSamplesTests {
      * 
      * @author <a href = "mailto:julio.arguello@gmail.com" >Julio Argüello (JAF)</a>
      */
-    public static class PersonDetailFormBis extends PersonChildForm {
+    public static class PersonChildFormBis extends PersonChildForm {
 
         /**
          * {@inheritDoc}
@@ -394,7 +394,7 @@ public class TestBbVLDockingApplicationPage extends AbstractBbSamplesTests {
         @Override
         public String getId() {
 
-            return PersonDetailFormBis.class.getName();
+            return PersonChildFormBis.class.getName();
         }
     }
 

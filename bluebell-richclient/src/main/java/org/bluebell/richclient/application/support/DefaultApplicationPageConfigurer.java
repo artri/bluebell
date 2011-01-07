@@ -68,7 +68,7 @@ import org.springframework.util.Assert;
  * | e +-------------------------------+-------------+-+
  * |   |_____|     |_____|_____|_____________________|
  * | V |                                             |
- * | i |                Detail Views                 |
+ * | i |                Child Views                  |
  * | e |                                             |
  * | w |                                             |
  * +---+---------------------------------------------+
@@ -95,7 +95,7 @@ public class DefaultApplicationPageConfigurer<T> implements ApplicationPageConfi
      * The generic aspect 'org.bluebell.richclient.application.support.DefaultApplicationPageConfigurer' must be
      * declared abstract
      * 
-     * However it works at runtime!! Anyway this class has been refactored, splitting it into an aspect and the
+     * However it works at runtime!! Anyway, this class has been refactored, splitting it into an aspect and the
      * application page configurer itself.
      * 
      * See org.bluebell.richclient.application.support.ApplicationPageConfigurerAspect
@@ -110,27 +110,27 @@ public class DefaultApplicationPageConfigurer<T> implements ApplicationPageConfi
         /**
          * Tree view.
          */
-        TREE,
+        TREE_TYPE,
         /**
          * Master view.
          */
-        MASTER,
+        MASTER_TYPE,
         /**
-         * Detail view.
+         * Child view.
          */
-        DETAIL,
+        CHILD_TYPE,
         /**
          * Search view.
          */
-        SEARCH,
+        SEARCH_TYPE,
         /**
          * Validation view.
          */
-        VALIDATION,
+        VALIDATION_TYPE,
         /**
          * Unknown view.
          */
-        UNKNOWN
+        UNKNOWN_TYPE
     }
 
     /**
@@ -201,11 +201,11 @@ public class DefaultApplicationPageConfigurer<T> implements ApplicationPageConfi
         }
 
         final Map<String, List<? extends PageComponent>> res = new HashMap<String, List<? extends PageComponent>>();
-        res.put(BbViewType.MASTER.name(), masterViews);
-        res.put(BbViewType.SEARCH.name(), ListUtils.unmodifiableList(state.searchViews));
-        res.put(BbViewType.DETAIL.name(), ListUtils.unmodifiableList(state.detailViews));
-        res.put(BbViewType.VALIDATION.name(), validationViews);
-        res.put(BbViewType.UNKNOWN.name(), ListUtils.unmodifiableList(state.unknownPageComponents));
+        res.put(BbViewType.MASTER_TYPE.name(), masterViews);
+        res.put(BbViewType.SEARCH_TYPE.name(), ListUtils.unmodifiableList(state.searchViews));
+        res.put(BbViewType.CHILD_TYPE.name(), ListUtils.unmodifiableList(state.childViews));
+        res.put(BbViewType.VALIDATION_TYPE.name(), validationViews);
+        res.put(BbViewType.UNKNOWN_TYPE.name(), ListUtils.unmodifiableList(state.unknownPageComponents));
 
         return res;
     }
@@ -233,7 +233,7 @@ public class DefaultApplicationPageConfigurer<T> implements ApplicationPageConfi
             }
         }
 
-        return BbViewType.UNKNOWN.name();
+        return BbViewType.UNKNOWN_TYPE.name();
     }
 
     /**
@@ -255,7 +255,7 @@ public class DefaultApplicationPageConfigurer<T> implements ApplicationPageConfi
             return this.getViewType(form.getClass());
         }
 
-        return BbViewType.UNKNOWN;
+        return BbViewType.UNKNOWN_TYPE;
     }
 
     /**
@@ -270,16 +270,16 @@ public class DefaultApplicationPageConfigurer<T> implements ApplicationPageConfi
         Assert.notNull(formClass, FORM_CLASS_KEY);
 
         if (AbstractBbTableMasterForm.class.isAssignableFrom(formClass)) {
-            return BbViewType.MASTER;
+            return BbViewType.MASTER_TYPE;
         } else if (BbValidationForm.class.isAssignableFrom(formClass)) {
-            return BbViewType.VALIDATION;
+            return BbViewType.VALIDATION_TYPE;
         } else if (AbstractBbChildForm.class.isAssignableFrom(formClass)) {
-            return BbViewType.DETAIL;
+            return BbViewType.CHILD_TYPE;
         } else if (AbstractBbSearchForm.class.isAssignableFrom(formClass)) {
-            return BbViewType.SEARCH;
+            return BbViewType.SEARCH_TYPE;
         }
 
-        return BbViewType.UNKNOWN;
+        return BbViewType.UNKNOWN_TYPE;
     }
 
     /**
@@ -315,16 +315,16 @@ public class DefaultApplicationPageConfigurer<T> implements ApplicationPageConfi
          */
         final BbViewType viewType = this.getViewType(view);
         switch (viewType) {
-            case MASTER:
+            case MASTER_TYPE:
                 this.processMasterView((FormBackedView<AbstractB2TableMasterForm<T>>) view, state);
                 break;
-            case DETAIL:
-                this.processDetailView((FormBackedView<AbstractBbChildForm<T>>) view, state);
+            case CHILD_TYPE:
+                this.processChildView((FormBackedView<AbstractBbChildForm<T>>) view, state);
                 break;
-            case SEARCH:
+            case SEARCH_TYPE:
                 this.processSearchView((FormBackedView<AbstractBbSearchForm<T, ?>>) view, state);
                 break;
-            case VALIDATION:
+            case VALIDATION_TYPE:
                 this.processValidatingView((FormBackedView<BbValidationForm<T>>) view, state);
                 break;
             default:
@@ -400,30 +400,30 @@ public class DefaultApplicationPageConfigurer<T> implements ApplicationPageConfi
      * <p>
      * Vincula el formulario hijo con su padre y recuerda el primer formulario hijo.
      * 
-     * @param detailView
+     * @param childView
      *            la vista a configurar.
      * @param state
      *            the processing state.
      */
-    protected void processDetailView(final FormBackedView<AbstractBbChildForm<T>> detailView, State<T> state) {
+    protected void processChildView(final FormBackedView<AbstractBbChildForm<T>> childView, State<T> state) {
 
         // Validation checks
-        Assert.notNull(detailView, "detailView");
+        Assert.notNull(childView, "childView");
 
-        final AbstractBbChildForm<T> targetDetailForm = DefaultApplicationPageConfigurer.backingForm(detailView);
+        final AbstractBbChildForm<T> targetChildForm = DefaultApplicationPageConfigurer.backingForm(childView);
         final AbstractB2TableMasterForm<T> masterForm = DefaultApplicationPageConfigurer.backingForm(state.masterView);
-        final AbstractB2TableMasterForm<T> targetMasterForm = targetDetailForm.getMasterForm();
+        final AbstractB2TableMasterForm<T> targetMasterForm = targetChildForm.getMasterForm();
 
         this.assertNotAlreadySet(targetMasterForm, masterForm);
 
-        // Link master form and new detail form
+        // Link master form and new child form
         if ((masterForm != null) && (targetMasterForm == null)) {
-            masterForm.addChildForm(targetDetailForm);
+            masterForm.addChildForm(targetChildForm);
         }
 
-        // Add a new detail view
-        if (!state.detailViews.contains(detailView)) {
-            state.detailViews.add(detailView);
+        // Add a new child view
+        if (!state.childViews.contains(childView)) {
+            state.childViews.add(childView);
         }
     }
 
@@ -669,9 +669,9 @@ public class DefaultApplicationPageConfigurer<T> implements ApplicationPageConfi
         private FormBackedView<AbstractB2TableMasterForm<Q>> masterView;
 
         /**
-         * Page detail views.
+         * Page child views.
          */
-        private List<FormBackedView<AbstractBbChildForm<Q>>> detailViews;
+        private List<FormBackedView<AbstractBbChildForm<Q>>> childViews;
 
         /**
          * The search views.
@@ -705,7 +705,7 @@ public class DefaultApplicationPageConfigurer<T> implements ApplicationPageConfi
          */
         private State() {
 
-            this.detailViews = new ArrayList<FormBackedView<AbstractBbChildForm<Q>>>();
+            this.childViews = new ArrayList<FormBackedView<AbstractBbChildForm<Q>>>();
             this.searchViews = new ArrayList<FormBackedView<AbstractBbSearchForm<Q, ?>>>();
             this.unknownPageComponents = new ArrayList<PageComponent>();
         }

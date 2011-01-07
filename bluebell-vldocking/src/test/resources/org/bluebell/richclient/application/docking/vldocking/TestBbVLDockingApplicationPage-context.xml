@@ -88,20 +88,20 @@
 	</bean>
 
 	<!--
-		A whole page descriptor with two detail views and two search views.
+		A whole page descriptor with two child views and two search views.
 	-->
 	<bean id="wholePageDescriptor" class="org.springframework.richclient.application.docking.vldocking.VLDockingPageDescriptor"
 		parent="personPageDescriptor">
 		<property name="viewDescriptors">
 			<list merge="true">
-				<idref bean="personDetailViewDescriptorBis" />
+				<idref bean="personChildViewDescriptorBis" />
 				<idref bean="personSearchViewDescriptorBis" />
 			</list>
 		</property>
 	</bean>
 
 	<!--
-		A whole page descriptor with two detail views and two search views exclusive for testInvalidAutoLayoutTemplate
+		A whole page descriptor with two child views and two search views exclusive for testInvalidAutoLayoutTemplate
 	-->
 	<bean id="testInvalidAutoLayoutTemplatePageDescriptor" parent="wholePageDescriptor" />
 
@@ -117,13 +117,13 @@
 	</bean>
 
 	<!--
-		A view descriptor equals to personDetailViewDescriptor.
+		A view descriptor equals to personChildViewDescriptor.
 	-->
-	<bean id="personDetailViewDescriptorBis" parent="personDetailViewDescriptor">
+	<bean id="personChildViewDescriptorBis" parent="personChildViewDescriptor">
 		<property name="viewProperties">
 			<util:map>
 				<entry key="formClass"
-					value="org.bluebell.richclient.application.docking.vldocking.TestBbVLDockingApplicationPage$PersonDetailFormBis" />
+					value="org.bluebell.richclient.application.docking.vldocking.TestBbVLDockingApplicationPage.PersonChildFormBis" />
 			</util:map>
 		</property>
 	</bean>

@@ -310,11 +310,11 @@ public abstract class AbstractBbSearchForm<T extends Object, U extends Object> e
      *  |(Errores de validación y nº de resultados) |
      *  |+=========================================+|
      *  ||                                         ||
-     *  ||           SEARCH PARAMS CONTROL         ||
+     *  ||           SEARCH_TYPE PARAMS CONTROL         ||
      *  ||         (Parámetros de búsqueda)        ||            
      *  ||                                         ||
      *  |+=========================================+|
-     *  |         RETAIN | SEARCH | REFRESH | RESET |
+     *  |         RETAIN | SEARCH_TYPE | REFRESH | RESET |
      *  +-------------------------------------------+
      * </pre>
      * 

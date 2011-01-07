@@ -38,7 +38,7 @@ public class PersonChildForm extends AbstractBbChildForm<Person> {
     /**
      * 
      */
-    private static final String FORM_ID = "personDetailForm";
+    private static final String FORM_ID = "personChildForm";
 
     /**
      */
@@ -57,9 +57,8 @@ public class PersonChildForm extends AbstractBbChildForm<Person> {
 
         super(formId);
 
-        final ValidatingFormModel formModel = BbFormModelHelper.createValidatingFormModel(new Person());
-        formModel.setId(formId);
-        
+        final ValidatingFormModel formModel = BbFormModelHelper.createValidatingFormModel(new Person(), formId);
+
         this.setFormModel(formModel);
     }
 
@@ -72,9 +71,6 @@ public class PersonChildForm extends AbstractBbChildForm<Person> {
         final BindingFactory bindingFactory = this.getBindingFactory();
         final TableFormBuilder formBuilder = new TableFormBuilder(bindingFactory);
 
-        // final JComponent overlayableForName = new DefaultOverlayable(name,
-        // SwingUtils.generateComponent(Application.instance().getImage()));
-        //        
         formBuilder.add("name");
         formBuilder.row();
         formBuilder.add("age");

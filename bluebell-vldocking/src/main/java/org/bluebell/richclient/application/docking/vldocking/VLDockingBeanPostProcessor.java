@@ -55,6 +55,8 @@ public class VLDockingBeanPostProcessor extends ApplicationServicesAccessor impl
      * <p>
      * The key is the page component type and the value the name of the prototype bean with the VLDocking view
      * descriptor template.
+     * <p>
+     * Key is intencionally defined as <code>String</code> in order to make it easy defining new view types.
      * 
      * @see ApplicationPageConfigurer
      *      #getPageComponentType(org.springframework.richclient.application.PageComponentDescriptor)
@@ -170,7 +172,7 @@ public class VLDockingBeanPostProcessor extends ApplicationServicesAccessor impl
         final VLDockingViewDescriptor vlDockingViewDescriptor;
 
         // Obtain the page component type
-        final ApplicationPageConfigurer<?> applicationPageConfigurer = // 
+        final ApplicationPageConfigurer<?> applicationPageConfigurer = //
         (ApplicationPageConfigurer<?>) this.getService(ApplicationPageConfigurer.class);
 
         final String pageComponentType = applicationPageConfigurer.getPageComponentType(viewDescriptor);

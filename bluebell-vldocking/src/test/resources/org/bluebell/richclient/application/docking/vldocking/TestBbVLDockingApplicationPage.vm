@@ -3,7 +3,7 @@
 	Parameters:
  		classification: the page components classification.
  		MASTER_TYPE: master type string constant. 
- 		DETAIL_TYPE: detail type string constant. 
+ 		CHILD_TYPE: child type string constant. 
  		SEARCH_TYPE: search type string constant. 
  		VALIDATION_TYPE: validation type string constant. 
  		UNKWNOWN_TYPE: unknown type string constant. 
@@ -19,7 +19,7 @@
    | e +-------------------------------+-------------+-+
    |   |_____|     |_____|_____|_____________________|
    | V |                                             |
-   | i |(2)            Detail Views                  |
+   | i |(2)            Child Views                   |
    | e |                                             |
    | w |                                             |
    +---+---------------------------------------------+
@@ -34,7 +34,7 @@
 *#
 
 #set( $masterViews = [] )
-#set( $detailViews = [] )
+#set( $childViews = [] )
 #set( $searchViews = [] )
 #set( $validationViews = [] )
 #set( $unknownViews = [] )
@@ -48,8 +48,8 @@
 	#set( $viewSet = $classification.get($viewType) )
 	#if( $viewType.equals($MASTER_TYPE) )
 		#set( $masterViews = $viewSet )
-	#elseif( $viewType.equals($DETAIL_TYPE) )
-		#set( $detailViews = $viewSet )
+	#elseif( $viewType.equals($CHILD_TYPE) )
+		#set( $childViews = $viewSet )
 	#elseif( $viewType.equals($SEARCH_TYPE) )
 		#set( $searchViews = $viewSet )
 	#elseif( $viewType.equals($VALIDATION_TYPE) )
@@ -62,7 +62,7 @@
 #end
 
 #set( $hasMasterViews     = ! $masterViews.isEmpty())
-#set( $hasDetailViews     = ! $detailViews.isEmpty())
+#set( $hasChildViews      = ! $childViews.isEmpty())
 #set( $hasSearchViews     = ! $searchViews.isEmpty())
 #set( $hasValidationViews = ! $validationViews.isEmpty())
 #set( $hasUnkwnownViews   = ! $unkwnownViews.isEmpty())
@@ -118,7 +118,7 @@
 		<DockingPanel>		
 			
 			## (1) - (2)
-			#set( $verticalSplit = (($hasMasterViews || $hasSearchViews) && $hasDetailViews) )			
+			#set( $verticalSplit = (($hasMasterViews || $hasSearchViews) && $hasChildViews) )			
 			#if( $verticalSplit ) <Split orientation="0"> #end
 				## (1.1) | (1.2) 		
 				#set( $topHorizontalSplit = $hasMasterViews && $hasSearchViews )
@@ -126,7 +126,7 @@
 					#paintDockables( $masterViews ) ## (1.1)
 					#paintDockables( $searchViews ) ## (1.2)
 				#if( $topHorizontalSplit ) </Split> #end 		
-				#paintDockables( $detailViews ) ## (2)
+				#paintDockables( $childViews ) ## (2)
 			#if( $verticalSplit ) </Split> #end			
 		</DockingPanel>
 
@@ -137,7 +137,7 @@
 
 		<TabGroups>
 			#paintTabGroup( $masterViews )
-			#paintTabGroup( $detailViews )
+			#paintTabGroup( $childViews )
 			#paintTabGroup( $searchViews )
 			#paintTabGroup( $validationViews )
 			#paintTabGroup( $unknownViews )

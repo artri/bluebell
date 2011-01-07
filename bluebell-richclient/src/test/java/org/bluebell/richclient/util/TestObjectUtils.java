@@ -91,6 +91,17 @@ public class TestObjectUtils extends TestCase {
         TestCase.assertEquals("a2", a2.a);
         TestCase.assertEquals("c2", a2.c);
         TestCase.assertTrue(a2.c == b2.c);
+
+        // Shallow copy excluding a property
+        final A a3 = new A("a3", "c3");
+        final B b3 = new B("b3", "x!$%&_)(");
+
+        ObjectUtils.shallowCopy(a3, b3, "x");
+        TestCase.assertEquals("a3", a3.a);
+        TestCase.assertEquals("c3", a3.c);
+        TestCase.assertEquals("b3", b3.b);
+        TestCase.assertEquals("x!$%&_)(", b3.c);
+        TestCase.assertFalse(a3.c == b3.c);
     }
 
     /**

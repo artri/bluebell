@@ -240,6 +240,7 @@ public abstract class AbstractBbRichClientTests extends AbstractJUnit4SpringCont
             @Override
             public void run() {
 
+                // textField.selectAll();
                 textField.replaceSelection(value);
             }
         });

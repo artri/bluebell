@@ -31,8 +31,8 @@
 			<list>
 				<value>personMasterViewDescriptor</value>
 				<value>personSearchViewDescriptor</value>
-				<value>personDetailViewDescriptor</value>
-				<value>personVetsDetailViewDescriptor</value>
+				<value>personChildViewDescriptor</value>
+				<value>personVetsChildViewDescriptor</value>
 				<value>validationViewDescriptor</value>
 			</list>
 		</property>
@@ -54,7 +54,7 @@
 		</property>
 	</bean>
 
-	<bean id="personDetailViewDescriptor" parent="abstractViewDescriptor">
+	<bean id="personChildViewDescriptor" parent="abstractViewDescriptor">
 		<property name="viewProperties">
 			<util:map>
 				<entry key="formClass" value="org.bluebell.richclient.samples.simple.form.PersonChildForm" />
@@ -62,10 +62,10 @@
 		</property>
 	</bean>
 
-	<bean id="personVetsDetailViewDescriptor" parent="abstractViewDescriptor">
+	<bean id="personVetsChildViewDescriptor" parent="abstractViewDescriptor">
 		<property name="viewProperties">
 			<util:map>
-				<entry key="formClass" value="org.bluebell.richclient.samples.simple.form.PersonVetsDetailForm" />
+				<entry key="formClass" value="org.bluebell.richclient.samples.simple.form.PersonVetsChildForm" />
 			</util:map>
 		</property>
 	</bean>

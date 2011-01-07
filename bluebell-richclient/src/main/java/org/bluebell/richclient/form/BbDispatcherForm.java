@@ -95,7 +95,7 @@ public class BbDispatcherForm<T> extends AbstractBbDetailForm<T> {
     /**
      * El nombre de la página compuesta de los formularios detalle.
      */
-    private static final String FORM_ID = "compositeDetailForm";
+    private static final String FORM_ID = "dispatcherForm";
 
     /**
      * Importante que sea ordenada.
@@ -178,16 +178,17 @@ public class BbDispatcherForm<T> extends AbstractBbDetailForm<T> {
         Assert.isInstanceOf(AbstractBbChildForm.class, form);
         Assert.isNull(this.getChildForm(form.getId()), "this.getChildForm(form.getId())");
 
+        @SuppressWarnings("unchecked")
+        final AbstractBbChildForm<T> childForm = (AbstractBbChildForm<T>) form;
+
         // [0] Call super
         super.addChildForm(form);
 
         // [1] Treat child form
-        @SuppressWarnings("unchecked")
-        final AbstractBbChildForm<T> childForm = (AbstractBbChildForm<T>) form;
-
         childForm.setFormObject(this.getFormObject());
         childForm.setEnabled(Boolean.FALSE);
         childForm.getFormModel().setValidating(Boolean.FALSE);
+        childForm.getFormModel().setParent(this.getFormModel());
         this.setEditableFormObjectsOnChildForm(childForm);
 
         // [2] Bidirectional linking
@@ -425,6 +426,8 @@ public class BbDispatcherForm<T> extends AbstractBbDetailForm<T> {
         editableFormObjects.addListEventListener(new ListEventListener<T>() {
 
             /**
+             * Synchs one list with other.
+             * 
              * @param listChanges
              */
             @SuppressWarnings("unchecked")
