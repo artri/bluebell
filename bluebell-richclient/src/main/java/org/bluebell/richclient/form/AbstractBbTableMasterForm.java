@@ -1,19 +1,16 @@
 /*
  * Copyright (C) 2009 Julio Arg\u00fcello <julio.arguello@gmail.com>
- *
+ * 
  * This file is part of Bluebell Rich Client.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *         http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
+ * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations under the License.
  */
 
 /**
@@ -70,6 +67,7 @@ import org.springframework.richclient.application.config.ApplicationWindowAware;
 import org.springframework.richclient.command.CommandGroup;
 import org.springframework.richclient.command.CommandGroupFactoryBean;
 import org.springframework.richclient.command.support.GlobalCommandIds;
+import org.springframework.richclient.dialog.CloseAction;
 import org.springframework.richclient.dialog.ConfirmationDialog;
 import org.springframework.richclient.form.AbstractMasterForm;
 import org.springframework.richclient.table.ListSelectionListenerSupport;
@@ -321,6 +319,8 @@ public abstract class AbstractBbTableMasterForm<T extends Object> extends Abstra
                 if (AbstractBbTableMasterForm.LOGGER.isDebugEnabled()) {
                     AbstractBbTableMasterForm.LOGGER.debug("User cancel request");
                 }
+                
+                super.onCancel();
             };
         };
 
@@ -397,7 +397,7 @@ public abstract class AbstractBbTableMasterForm<T extends Object> extends Abstra
         final Boolean isEmptySelection = (selection.isEmpty());
         final Boolean isSingleSelection = (selection.size() == 1);
         final Integer indexToSelect;
-        
+
         if (isEmptySelection) {
             indexToSelect = -1;
         } else if (isSingleSelection) {
@@ -990,6 +990,8 @@ public abstract class AbstractBbTableMasterForm<T extends Object> extends Abstra
         public RequestUserConfirmationDialog(String title, String message) {
 
             super(title, message);
+
+            this.setCloseAction(CloseAction.DISPOSE);
         }
 
         /**

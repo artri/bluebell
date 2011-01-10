@@ -1,19 +1,16 @@
 /*
  * Copyright (C) 2009 Julio Arg\u00fcello <julio.arguello@gmail.com>
- *
+ * 
  * This file is part of Bluebell Rich Client.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *         http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
+ * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations under the License.
  */
 
 package org.bluebell.richclient.test;
@@ -56,6 +53,7 @@ import org.springframework.richclient.application.ApplicationPage;
 import org.springframework.richclient.application.ApplicationWindow;
 import org.springframework.richclient.application.config.ApplicationLifecycleAdvisor;
 import org.springframework.richclient.command.TargetableActionCommand;
+import org.springframework.richclient.exceptionhandling.AbstractRegisterableExceptionHandler;
 import org.springframework.richclient.form.Form;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
@@ -326,5 +324,31 @@ public abstract class AbstractBbRichClientTests extends AbstractJUnit4SpringCont
         }
 
         return null;
+    }
+
+    /**
+     * An exception handler for testing purposes. Avoid assert failures be managed by the
+     * <code>registerableExceptionHandler</code> instead of JUnit.
+     * <p>
+     * (JAF), 20110107, this exception handler is included provisionally and may not work.
+     * 
+     * 
+     * @author <a href = "mailto:julio.arguello@gmail.com" >Julio Argüello (JAF)</a>
+     */
+    public static class TestExceptionHandler extends AbstractRegisterableExceptionHandler {
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public void uncaughtException(Thread t, Throwable e) {
+
+            if (e instanceof RuntimeException) {
+                final RuntimeException runtimeException = (RuntimeException) e;
+                throw runtimeException;
+            } else {
+                throw new RuntimeException(e);
+            }
+        }
     }
 }
