@@ -1,16 +1,19 @@
 /*
  * Copyright (C) 2009 Julio Arg\u00fcello <julio.arguello@gmail.com>
- * 
+ *
  * This file is part of Bluebell Rich Client.
- * 
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
- * the License. You may obtain a copy of the License at
- * 
- * http://www.apache.org/licenses/LICENSE-2.0
- * 
- * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
- * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
- * specific language governing permissions and limitations under the License.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *         http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 package org.bluebell.richclient.test;
@@ -18,6 +21,7 @@ package org.bluebell.richclient.test;
 import java.awt.Component;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
@@ -25,7 +29,12 @@ import java.util.Map;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
+import javax.swing.JTable;
 import javax.swing.JTextField;
+import javax.swing.RowSorter;
+import javax.swing.SortOrder;
+import javax.swing.table.TableModel;
+import javax.swing.table.TableRowSorter;
 
 import junit.framework.TestCase;
 
@@ -54,6 +63,7 @@ import org.springframework.richclient.application.ApplicationWindow;
 import org.springframework.richclient.application.config.ApplicationLifecycleAdvisor;
 import org.springframework.richclient.command.TargetableActionCommand;
 import org.springframework.richclient.exceptionhandling.AbstractRegisterableExceptionHandler;
+import org.springframework.richclient.exceptionhandling.RegisterableExceptionHandler;
 import org.springframework.richclient.form.Form;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
@@ -175,6 +185,18 @@ public abstract class AbstractBbRichClientTests extends AbstractJUnit4SpringCont
         // specific test framework
         Assert.notNull(this.applicationContext, "this.applicationContext");
         Assert.notNull(this.applicationConfig, "this.applicationConfig");
+        Assert.isInstanceOf(this.getRegisterableExceptionHandlerClass(), //
+                Application.instance().getLifecycleAdvisor().getRegisterableExceptionHandler());
+    }
+
+    /**
+     * Gets the expected <code>RegisterableExceptionHandler</code> class for this test.
+     * 
+     * @return the class.
+     */
+    protected Class<? extends RegisterableExceptionHandler> getRegisterableExceptionHandlerClass() {
+
+        return TestExceptionHandler.class;
     }
 
     /**
@@ -194,7 +216,7 @@ public abstract class AbstractBbRichClientTests extends AbstractJUnit4SpringCont
             messageSources.append(">>");
 
             if (messageSource == childMessageSource) {
-                AbstractBbRichClientTests.LOGGER.error("OEOEOOEOEO");
+                AbstractBbRichClientTests.LOGGER.error("Recursive message source set");
                 break;
             } else if (messageSource instanceof HierarchicalMessageSource) {
                 childMessageSource = (HierarchicalMessageSource) messageSource;
@@ -220,6 +242,40 @@ public abstract class AbstractBbRichClientTests extends AbstractJUnit4SpringCont
     }
 
     /**
+     * Sort the given table in the given order.
+     * 
+     * @param table
+     *            the table.
+     * @param column
+     *            the column.
+     * @param ascending
+     *            the order.
+     */
+    protected final void sortTable(final JTable table, final int column, final Boolean ascending) {
+
+        Assert.notNull(table, "table");
+        Assert.notNull(ascending, "ascending");
+
+        SwingUtils.runInEventDispatcherThread(new Runnable() {
+
+            @Override
+            public void run() {
+
+                // The sort keys
+                final List<RowSorter.SortKey> sortKeys = new ArrayList<RowSorter.SortKey>();
+                sortKeys.add(new RowSorter.SortKey(column, (ascending) ? SortOrder.ASCENDING : SortOrder.DESCENDING));
+
+                // The sorter
+                final RowSorter<TableModel> sorter = new TableRowSorter<TableModel>(table.getModel());
+                sorter.setSortKeys(sortKeys);
+
+                // Install the sorter
+                table.setRowSorter(sorter);
+            }
+        });
+    }
+
+    /**
      * Simulate an user action changing the text value of a component.
      * 
      * @param form
@@ -229,7 +285,7 @@ public abstract class AbstractBbRichClientTests extends AbstractJUnit4SpringCont
      * @param value
      *            the new text value to set.
      */
-    protected void userAction(Form form, String property, final String value) {
+    protected final void userAction(Form form, String property, final String value) {
 
         final JTextField textField = (JTextField) this.getComponentNamed(form, property);
 
@@ -327,11 +383,7 @@ public abstract class AbstractBbRichClientTests extends AbstractJUnit4SpringCont
     }
 
     /**
-     * An exception handler for testing purposes. Avoid assert failures be managed by the
-     * <code>registerableExceptionHandler</code> instead of JUnit.
-     * <p>
-     * (JAF), 20110107, this exception handler is included provisionally and may not work.
-     * 
+     * An exception handler for testing purposes. Avoids freezing the application with a message when running testst.
      * 
      * @author <a href = "mailto:julio.arguello@gmail.com" >Julio Argüello (JAF)</a>
      */
@@ -343,12 +395,8 @@ public abstract class AbstractBbRichClientTests extends AbstractJUnit4SpringCont
         @Override
         public void uncaughtException(Thread t, Throwable e) {
 
-            if (e instanceof RuntimeException) {
-                final RuntimeException runtimeException = (RuntimeException) e;
-                throw runtimeException;
-            } else {
-                throw new RuntimeException(e);
-            }
+            // (JAF), 20110111, this call makes nothing. Anyway this is better than freeze effect
+            TestCase.fail();
         }
     }
 }

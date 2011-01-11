@@ -1,16 +1,19 @@
 /*
  * Copyright (C) 2009 Julio Arg\u00fcello <julio.arguello@gmail.com>
- * 
+ *
  * This file is part of Bluebell Rich Client.
- * 
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
- * the License. You may obtain a copy of the License at
- * 
- * http://www.apache.org/licenses/LICENSE-2.0
- * 
- * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
- * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
- * specific language governing permissions and limitations under the License.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *         http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 /**
@@ -151,6 +154,14 @@ public abstract class AbstractBbTableMasterForm<T extends Object> extends Abstra
     private Boolean changingSelection = Boolean.FALSE;
 
     /**
+     * Determines when a <code>showEntities</code> invocation is currently being processed in order to avoid redundant
+     * user confirmation requests.
+     * 
+     * @see MasterFormListSelectionHandler invocations <b>1.b</b> and <b>4</b>.
+     */
+    private Boolean showingEntities = Boolean.FALSE;
+
+    /**
      * Creates the master form given its identifier and the detail type.
      * <p>
      * Employs a backing bean property that always returns an empty collection.
@@ -245,16 +256,35 @@ public abstract class AbstractBbTableMasterForm<T extends Object> extends Abstra
     }
 
     /**
-     * Show the given entities within the master table. If would there be some entities then replace them.
+     * Show the given entities within the master table.
+     * <p>
+     * If would there be some entities currently being shown then would replace them.
      * 
      * @param entities
      *            the entities to be shown.
      * 
-     * @see #showEntities(Collection, boolean)
+     * @see #showEntities(Collection, Boolean, Boolean)
      */
-    public final void showEntities(List<T> entities) {
+    public final Boolean showEntities(List<T> entities) {
 
-        this.showEntities(entities, Boolean.FALSE);
+        return this.showEntities(entities, Boolean.FALSE, Boolean.FALSE);
+    }
+
+    /**
+     * Show the given entities within the master table.
+     * <p>
+     * If would there be some entities currently being shown then would replace them.
+     * 
+     * @param entities
+     *            the entities to be shown.
+     * @param attach
+     *            whether to attach the entities to those currently being shown.
+     * 
+     * @see #showEntities(Collection, Boolean, Boolean)
+     */
+    public Boolean showEntities(List<T> entities, Boolean attach) {
+
+        return this.showEntities(entities, attach, Boolean.FALSE);
     }
 
     /**
@@ -262,25 +292,52 @@ public abstract class AbstractBbTableMasterForm<T extends Object> extends Abstra
      * 
      * @param entities
      *            the entities to be shown.
-     * 
      * @param attach
-     *            whether to attach the entities to currents.
+     *            whether to attach the entities to those currently being shown.
+     * @param force
+     *            whether to force showing entities without requesting user confirmation.
      * 
      * @return <code>true</code> if success and <code>false</code> in other case (i.e.:user declined selection change).
+     * 
+     * @see #shouldProceed()
      */
-    public Boolean showEntities(List<T> entities, Boolean attach) {
+    public Boolean showEntities(List<T> entities, Boolean attach, Boolean force) {
+
+        Assert.notNull(entities, "entities");
+        Assert.notNull(attach, "attach");
+        Assert.notNull(force, "force");
 
         // Reset selection remembering indexes (requests user confirmation)
-        final Boolean proceed = this.shouldProceed();
+        final Boolean proceed = force || this.shouldProceed();
 
         // if (attach | proceed) { // (JAF), 20110103, selection is lost even when attaching
         if (proceed) {
 
-            @SuppressWarnings("unchecked")
-            final List<T> allEntities = SetUniqueList.decorate(entities);
+            /*
+             * (JAF), 20110111, at this point two user confirmation requests may be thrown
+             * 
+             * To avoid this situation the flag "showingEntities" does the trick.
+             * 
+             * @see MasterFormListSelectionHandler sequence diagram
+             * 
+             * @see #shouldProceed()
+             */
+            try {
+                this.showingEntities = Boolean.TRUE;
 
-            // Update master event list keeping order and removing duplicates.
-            TableUtils.showEntities(this.getMasterTableModel(), allEntities, attach);
+                // Update master event list keeping order and removing duplicates.
+                @SuppressWarnings("unchecked")
+                final List<T> allEntities = SetUniqueList.decorate(entities);
+
+                // PRE-CONDITION: user has confirmed change (if needed)
+                TableUtils.showEntities(this.getMasterTableModel(), allEntities, attach);
+                // POST-CONDITION: new entities are shown and listeners notified
+            } catch (RuntimeException e) {
+                throw e;
+            } finally {
+                // (JAF), 20110111, ensures showingEntities flag is always reset
+                this.showingEntities = Boolean.FALSE;
+            }
         }
 
         return proceed;
@@ -319,7 +376,7 @@ public abstract class AbstractBbTableMasterForm<T extends Object> extends Abstra
                 if (AbstractBbTableMasterForm.LOGGER.isDebugEnabled()) {
                     AbstractBbTableMasterForm.LOGGER.debug("User cancel request");
                 }
-                
+
                 super.onCancel();
             };
         };
@@ -696,6 +753,30 @@ public abstract class AbstractBbTableMasterForm<T extends Object> extends Abstra
     }
 
     /**
+     * Returns whether should proceed with an user action that can breaks a current edition.
+     * 
+     * @return <code>true</code> to proceed and <code>false</code> in other case.
+     */
+    Boolean shouldProceed() {
+    
+        final Boolean shouldProceed;
+    
+        if (this.changingSelection) {
+            // (JAF), 20110102, avoids unnecessary and redundant user confirmation requests (@see #changeSelection)
+            shouldProceed = Boolean.TRUE;
+        } else if (this.showingEntities) {
+            // (JAF), 20110102, avoids unnecessary and redundant user confirmation requests (@see #showEntities)
+            shouldProceed = Boolean.TRUE;
+        } else if (!this.getDetailForm().isDirty()) {
+            shouldProceed = Boolean.TRUE;
+        } else {
+            shouldProceed = this.requestUserConfirmation();
+        }
+    
+        return shouldProceed;
+    }
+
+    /**
      * Template method that manages selection change events.
      * <p>
      * Allow master form implementors to treat selected entities before selection gets definitive. Note it's also
@@ -721,9 +802,14 @@ public abstract class AbstractBbTableMasterForm<T extends Object> extends Abstra
     private final void handleSelectionChange(List<Integer> newModelIndexes, List<Integer> newViewIndexes,
             List<T> newSelection) {
 
+        // (JAF), 20110110, at this point old indexes become newer, so employing TableUtils is not a valid way
+        // @see http://jirabluebell.b2b2000.com/browse/BLUE-45
+        // final List<Integer> oldViewIndexes = TableUtils.getSelectedViewIndexes(this.getMasterTable());
+        // final List<Integer> oldModelIndexes = TableUtils.getModelIndexes(this.getMasterTable(), oldViewIndexes);
+
         // Old view and model indexes
-        final List<Integer> oldViewIndexes = TableUtils.getSelectedViewIndexes(this.getMasterTable());
-        final List<Integer> oldModelIndexes = TableUtils.getModelIndexes(this.getMasterTable(), oldViewIndexes);
+        final List<Integer> oldModelIndexes = Arrays.asList(this.getDetailForm().getSelectedIndex());
+        final List<Integer> oldViewIndexes = TableUtils.getViewIndexes(this.getMasterTable(), oldModelIndexes);
 
         /*
          * Do changes silently (uninstall selection handler before and install later)
@@ -740,27 +826,6 @@ public abstract class AbstractBbTableMasterForm<T extends Object> extends Abstra
         }
 
         this.installSelectionHandler();
-    }
-
-    /**
-     * Returns whether should proceed with an user action that can breaks a current edition.
-     * 
-     * @return <code>true</code> to proceed and <code>false</code> in other case.
-     */
-    private Boolean shouldProceed() {
-
-        final Boolean shouldProceed;
-
-        if (this.changingSelection) {
-            // (JAF), 20110102, avoids unnecessary and redundant user confirmation requests (@see #changeSelection)
-            shouldProceed = Boolean.TRUE;
-        } else if (!this.getDetailForm().isDirty()) {
-            shouldProceed = Boolean.TRUE;
-        } else {
-            shouldProceed = this.requestUserConfirmation();
-        }
-
-        return shouldProceed;
     }
 
     /**

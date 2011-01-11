@@ -25,17 +25,18 @@
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
 		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.0.xsd
 		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd">
+
 	<bean id="abstractPPC" abstract="true" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer"
 		p:ignoreUnresolvablePlaceholders="true" p:ignoreResourceNotFound="false" />
 
-	<!-- 
+	<!--
 		PPC's:
-			- Highest
-			- Intermediate
-			- Lowest
-			- Intermediate
-			- Highest	
-	 -->
+		- Highest
+		- Intermediate
+		- Lowest
+		- Intermediate
+		- Highest
+	-->
 	<bean id="highestPrecedencePPC" parent="abstractPPC" p:location="/org/bluebell/richclient/application/config/highest_precedence.properties">
 		<property name="order">
 			<util:constant static-field="org.bluebell.richclient.application.config.TestBbApplicationConfig.HIGHEST_PRECEDENCE" />
@@ -61,13 +62,13 @@
 
 	<!--
 		The BBApplicationConfig bean to be tested.
- 	-->
+	-->
 	<bean id="applicationConfig" class="org.bluebell.richclient.application.config.BbApplicationConfig" />
 
 
 	<!--
 		Beans helpful for testing purposes.
-	 -->
+	-->
 	<bean id="bean1" class="java.lang.String">
 		<constructor-arg value="${bean1}" />
 	</bean>
@@ -80,7 +81,7 @@
 	<bean id="bean3" class="java.lang.String">
 		<constructor-arg value="${bean3}" />
 	</bean>
-	
+
 	<!-- This property also works with this technique -->
 	<bean id="bean4" class="java.lang.String">
 		<constructor-arg value="${bean1}${bean2}" />

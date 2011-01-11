@@ -42,12 +42,15 @@ import org.bluebell.richclient.application.support.FormBackedView;
 import org.bluebell.richclient.samples.simple.bean.Person;
 import org.bluebell.richclient.samples.simple.form.PersonChildForm;
 import org.bluebell.richclient.samples.simple.form.PersonMasterForm;
+import org.bluebell.richclient.samples.simple.form.PersonSearchForm;
+import org.bluebell.richclient.swing.util.SwingUtils;
 import org.bluebell.richclient.test.AbstractBbSamplesTests;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.richclient.application.PageDescriptor;
+import org.springframework.richclient.command.ActionCommand;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.util.Assert;
 
@@ -288,7 +291,7 @@ public class TestAbstractBbTableMasterForm extends AbstractBbSamplesTests {
      */
     @SuppressWarnings("unchecked")
     @Test
-    public void testRequestUserConfirmation() {
+    public void testRequestUserConfirmationOnChangeSelection() {
 
         final int pos03 = 3;
         final MockPersonMasterForm masterForm = (MockPersonMasterForm) this.getBackingForm(this.getMasterView());
@@ -355,6 +358,85 @@ public class TestAbstractBbTableMasterForm extends AbstractBbSamplesTests {
         // Confirm single selection again
         this.doTestRequestUserConfirmation(masterForm, Boolean.TRUE, newSelection, ++requestCount, newSelection);
         TestCase.assertFalse("childForm.isDirty()", childForm.isDirty());
+    }
+
+    /**
+     * Tests the correct behaviour of <code>requestUserConfirmation</code> on search.
+     */
+    @SuppressWarnings("unchecked")
+    @Test
+    public void testRequestUserConfirmationOnSearch() {
+
+        final MockPersonMasterForm masterForm = (MockPersonMasterForm) this.getBackingForm(this.getMasterView());
+        final PersonChildForm childForm = (PersonChildForm) this.getBackingForm(this.getChildView());
+        final PersonSearchForm searchForm = (PersonSearchForm) this.getBackingForm(this.getSearchView());
+
+        List<Person> newSelection = ListUtils.EMPTY_LIST;
+        ActionCommand actionCommand = null;
+        int requestCount = masterForm.getCount();
+
+        // Show entities:
+        // EXPECTED: [1,2,3,4]
+        masterForm.showEntities(TestAbstractBbTableMasterForm.PERSONS_1);
+        masterForm.changeSelection(newSelection);
+
+        /*
+         * (A) SEARCH COMMAND
+         */
+        actionCommand = searchForm.getSearchCommand();
+
+        // (a.1) Change selection: requests count should keep invariable
+        // EXPECTED: [1, 2, -->3<--, 4]
+        newSelection = Arrays.asList(TestAbstractBbTableMasterForm.PERSONS_1.get(2));
+        this.doTestRequestUserConfirmation(masterForm, Boolean.TRUE, newSelection, requestCount, newSelection);
+
+        // (a.2) Change age: child form should get dirty
+        // EXPECTED: [1, 2, -->[D]3<--, 4]
+        this.userAction(childForm, "age", "22");
+        TestCase.assertTrue("childForm.isDirty()", childForm.isDirty());
+
+        // (a.3) Abort search command execution
+        // EXPECTED: [1, 2, -->[D]3<--, 4]
+        this.doTestRequestUserConfirmation(masterForm, Boolean.FALSE, actionCommand, ++requestCount, newSelection);
+
+        // (a.4) Confirm search command execution
+        // EXPECTED: [X, Y, ... Z]
+        newSelection = ListUtils.EMPTY_LIST;
+        this.doTestRequestUserConfirmation(masterForm, Boolean.TRUE, actionCommand, ++requestCount, newSelection);
+
+        /*
+         * (B) REFRESH LAST SEARCH COMMAND
+         */
+        actionCommand = searchForm.getRefreshLastSearchCommand();
+
+        // (b.1) Change selection again: requests count should keep invariable
+        // EXPECTED: [-->X<--, Y, ... Z]
+        newSelection = masterForm.getMasterEventList().subList(0, 1);
+        this.doTestRequestUserConfirmation(masterForm, Boolean.TRUE, newSelection, requestCount, newSelection);
+
+        // (b.2) Change age: child form should get dirty
+        // EXPECTED: [-->[D]X<--, Y, ... Z]
+        this.userAction(childForm, "age", "22");
+        TestCase.assertTrue("childForm.isDirty()", childForm.isDirty());
+
+        // (b.3) Abort refresh last search command execution
+        // EXPECTED: [-->[D]X<--, Y, ... Z]
+        this.doTestRequestUserConfirmation(masterForm, Boolean.FALSE, actionCommand, ++requestCount, newSelection);
+
+        // (b.4) Confirm refresh last search command execution
+        // EXPECTED: [X, Y, ... Z]
+        newSelection = ListUtils.EMPTY_LIST;
+        this.doTestRequestUserConfirmation(masterForm, Boolean.TRUE, actionCommand, ++requestCount, newSelection);
+    }
+
+    @Test
+    public void testRequestUserConfirmationOnCancel() {
+
+    }
+
+    @Test
+    public void testRequestUserConfirmationOnRefresh() {
+
     }
 
     /**
@@ -428,7 +510,7 @@ public class TestAbstractBbTableMasterForm extends AbstractBbSamplesTests {
     }
 
     /**
-     * Checks the correct behaviour of requesting user confirmation.
+     * Checks the correct behaviour of requesting user confirmation after changing selection.
      * 
      * @param masterForm
      *            the master form.
@@ -441,43 +523,65 @@ public class TestAbstractBbTableMasterForm extends AbstractBbSamplesTests {
      * @param expectedSelection
      *            the expected selection after isProceeding.
      */
+    private void doTestRequestUserConfirmation(final MockPersonMasterForm masterForm, Boolean confirm,
+            final List<Person> newSelection, int expectedCount, List<Person> expectedSelection) {
+
+        Assert.notNull(masterForm, "masterForm");
+        Assert.notNull(confirm, "confirm");
+        Assert.notNull(newSelection, "newSelection");
+        Assert.notNull(expectedCount, "expectedCount");
+        Assert.notNull(expectedSelection, "expectedSelection");
+
+        this.doTestRequestUserConfirmation(masterForm, confirm, new ActionCommand() {
+
+            @Override
+            protected void doExecuteCommand() {
+
+                masterForm.changeSelection(newSelection);
+
+            }
+        }, expectedCount, expectedSelection);
+    }
+
+    /**
+     * Checks the correct behaviour of requesting user confirmation after executing a command.
+     * 
+     * @param masterForm
+     *            the master form.
+     * @param confirm
+     *            whether to confirm selection change.
+     * @param actionCommand
+     *            the command to execute.
+     * @param expectedCount
+     *            the expected number of user requests.
+     * @param expectedSelection
+     *            the expected selection after isProceeding.
+     */
     private void doTestRequestUserConfirmation(MockPersonMasterForm masterForm, Boolean confirm,
-            List<Person> newSelection, int expectedCount, List<Person> expectedSelection) {
+            final ActionCommand actionCommand, int expectedCount, List<Person> expectedSelection) {
+
+        Assert.notNull(masterForm, "masterForm");
+        Assert.notNull(confirm, "confirm");
+        Assert.notNull(actionCommand, "actionCommand");
+        Assert.notNull(expectedCount, "expectedCount");
+        Assert.notNull(expectedSelection, "expectedSelection");
 
         masterForm.setConfirm(confirm);
-        masterForm.changeSelection(newSelection);
+
+        SwingUtils.runInEventDispatcherThread(new Runnable() {
+
+            @Override
+            public void run() {
+
+                actionCommand.execute();
+            }
+        });
+
         TestCase.assertEquals(expectedCount, masterForm.getCount());
         TestCase.assertTrue("ListUtils.isEqualList(expectedSelection, masterForm.getSelection())\n" + expectedSelection
                 + "\n" + masterForm.getSelection(), ListUtils.isEqualList(expectedSelection, masterForm.getSelection()));
     }
-
-    /**
-     * Sort the given table in the given order.
-     * 
-     * @param table
-     *            the table.
-     * @param column
-     *            the column.
-     * @param ascending
-     *            the order.
-     */
-    private void sortTable(JTable table, int column, final Boolean ascending) {
-
-        Assert.notNull(table, "table");
-        Assert.notNull(ascending, "ascending");
-
-        // The sort keys
-        final List<RowSorter.SortKey> sortKeys = new ArrayList<RowSorter.SortKey>();
-        sortKeys.add(new RowSorter.SortKey(column, (ascending) ? SortOrder.ASCENDING : SortOrder.DESCENDING));
-
-        // The sorter
-        final RowSorter<TableModel> sorter = new TableRowSorter<TableModel>(table.getModel());
-        sorter.setSortKeys(sortKeys);
-
-        // Install the sorter
-        table.setRowSorter(sorter);
-    }
-
+   
     /**
      * Mock version of person master form.
      * 

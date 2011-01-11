@@ -105,7 +105,7 @@ public final class TableUtils {
      *            the table.
      * @param modelIndex
      *            the model index.
-     * @return the view index.
+     * @return the view index or <code>-1</code> if not found.
      * 
      * @see #getModelIndex(JTable, Integer)
      */
@@ -114,11 +114,17 @@ public final class TableUtils {
         Assert.notNull(table, TableUtils.TABLE);
         Assert.notNull(modelIndex, "modelIndex");
 
+        final Integer viewIndex;
+
         if (modelIndex < 0) {
-            return modelIndex;
+            viewIndex = modelIndex;
+        } else if (modelIndex >= table.getRowCount()) {
+            viewIndex = -1;
         } else {
-            return table.convertRowIndexToView(modelIndex);
+            viewIndex = table.convertRowIndexToView(modelIndex);
         }
+
+        return viewIndex;
     }
 
     /**
