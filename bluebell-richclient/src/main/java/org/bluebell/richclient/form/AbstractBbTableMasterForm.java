@@ -330,8 +330,11 @@ public abstract class AbstractBbTableMasterForm<T extends Object> extends Abstra
                 final List<T> allEntities = SetUniqueList.decorate(entities);
 
                 // PRE-CONDITION: user has confirmed change (if needed)
-                TableUtils.showEntities(this.getMasterTableModel(), allEntities, attach);
-                // POST-CONDITION: new entities are shown and listeners notified
+                final Boolean done = TableUtils.showEntities(this.getMasterTableModel(), allEntities, attach);
+                // POST-CONDITION: if done new entities are shown, listeners notified and selection emptied
+
+                Assert.isTrue(!done || this.getSelection().isEmpty(), "!done || this.getSelection().isEmpty()");
+
             } catch (RuntimeException e) {
                 throw e;
             } finally {
@@ -451,13 +454,13 @@ public abstract class AbstractBbTableMasterForm<T extends Object> extends Abstra
         // TableUtils.changeSelection(this.getMasterTable(), this.getMasterTableModel(), selection);
 
         final Integer oldSelectedIndex = this.getDetailForm().getSelectedIndex();
-        final Boolean isEmptySelection = (selection.isEmpty());
-        final Boolean isSingleSelection = (selection.size() == 1);
+        final Boolean emptySelection = (selection.isEmpty());
+        final Boolean singleSelection = (selection.size() == 1);
         final Integer indexToSelect;
 
-        if (isEmptySelection) {
+        if (emptySelection) {
             indexToSelect = -1;
-        } else if (isSingleSelection) {
+        } else if (singleSelection) {
             indexToSelect = newModelIndexes.get(0);
         } else { // Multiple selection. (JAF), 20110102
             indexToSelect = -1;
@@ -758,9 +761,9 @@ public abstract class AbstractBbTableMasterForm<T extends Object> extends Abstra
      * @return <code>true</code> to proceed and <code>false</code> in other case.
      */
     Boolean shouldProceed() {
-    
+
         final Boolean shouldProceed;
-    
+
         if (this.changingSelection) {
             // (JAF), 20110102, avoids unnecessary and redundant user confirmation requests (@see #changeSelection)
             shouldProceed = Boolean.TRUE;
@@ -772,7 +775,7 @@ public abstract class AbstractBbTableMasterForm<T extends Object> extends Abstra
         } else {
             shouldProceed = this.requestUserConfirmation();
         }
-    
+
         return shouldProceed;
     }
 

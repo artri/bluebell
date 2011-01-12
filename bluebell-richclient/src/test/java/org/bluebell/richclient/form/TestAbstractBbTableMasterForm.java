@@ -29,10 +29,6 @@ import java.util.List;
 
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
-import javax.swing.RowSorter;
-import javax.swing.SortOrder;
-import javax.swing.table.TableModel;
-import javax.swing.table.TableRowSorter;
 
 import junit.framework.TestCase;
 
@@ -429,9 +425,40 @@ public class TestAbstractBbTableMasterForm extends AbstractBbSamplesTests {
         this.doTestRequestUserConfirmation(masterForm, Boolean.TRUE, actionCommand, ++requestCount, newSelection);
     }
 
+    /**
+     * Tests the correct behaviour of <code>requestUserConfirmation</code> on new form object creation.
+     */
+    @SuppressWarnings("unchecked")
     @Test
-    public void testRequestUserConfirmationOnCancel() {
+    public void testRequestUserConfirmationOnNewFormObject() {
 
+        final MockPersonMasterForm masterForm = (MockPersonMasterForm) this.getBackingForm(this.getMasterView());
+        final PersonChildForm childForm = (PersonChildForm) this.getBackingForm(this.getChildView());
+        final PersonSearchForm searchForm = (PersonSearchForm) this.getBackingForm(this.getSearchView());
+        final String name = "JAF";
+
+        List<Person> newSelection = ListUtils.EMPTY_LIST;
+        ActionCommand actionCommand = null;
+        int requestCount = masterForm.getCount();
+
+        actionCommand = masterForm.getNewFormObjectCommand();
+        this.doTestRequestUserConfirmation(masterForm, Boolean.TRUE, actionCommand, requestCount, newSelection);
+
+        this.userAction(childForm, "name", name);
+        TestCase.assertTrue("childForm.isDirty()", childForm.isDirty());
+        
+        actionCommand = searchForm.getSearchCommand();
+        this.doTestRequestUserConfirmation(masterForm, Boolean.FALSE, actionCommand, ++requestCount, newSelection);
+        TestCase.assertTrue("childForm.isEditingNewFormObject()", childForm.isEditingNewFormObject());
+        
+        this.doTestRequestUserConfirmation(masterForm, Boolean.TRUE, actionCommand, ++requestCount, newSelection);
+        TestCase.assertTrue("childForm.isEditingNewFormObject()", childForm.isEditingNewFormObject());
+        
+        actionCommand = masterForm.getSaveCommand();
+        newSelection = Arrays.asList(new Person(name));
+        this.doTestRequestUserConfirmation(masterForm, Boolean.TRUE, actionCommand, requestCount, newSelection);
+        TestCase.assertFalse("childForm.isEditingNewFormObject()", childForm.isEditingNewFormObject());
+        TestCase.assertFalse("childForm.isDirty()", childForm.isDirty());
     }
 
     @Test
@@ -581,7 +608,7 @@ public class TestAbstractBbTableMasterForm extends AbstractBbSamplesTests {
         TestCase.assertTrue("ListUtils.isEqualList(expectedSelection, masterForm.getSelection())\n" + expectedSelection
                 + "\n" + masterForm.getSelection(), ListUtils.isEqualList(expectedSelection, masterForm.getSelection()));
     }
-   
+
     /**
      * Mock version of person master form.
      * 

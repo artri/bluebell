@@ -320,9 +320,11 @@ public final class TableUtils {
      *            the entities to be shown.
      * @param attach
      *            whether to attach new entities to currents. If <code>false</code> currents are replaced.
+     * 
+     * @return <code>true</code> if success and <code>false</code> in other case (i.e.:user rejected change).
      */
     @SuppressWarnings("unchecked")
-    public static <Q> void showEntities(GlazedTableModel tableModel, final List<Q> entities, final Boolean attach) {
+    public static <Q> Boolean showEntities(GlazedTableModel tableModel, final List<Q> entities, final Boolean attach) {
 
         Assert.notNull(tableModel, TableUtils.TABLE_MODEL);
         Assert.notNull(entities, "entities");
@@ -380,6 +382,8 @@ public final class TableUtils {
             // Since listeners were uninstalled notification should be explicit
             tableModel.fireTableDataChanged();
         }
+
+        return proceed;
     }
 
     /**
