@@ -24,6 +24,7 @@
 		KO (15)- (JAF), 20101218, deploy to google code, maven-googlecode-plugin.googlecode.com/svn/site/index.html
 		KO (16)- (JAF), 20101223, eclipse plugin should include checkstyle validationenabled
 		OK (17)- (JAF), 20101224, include http://code.google.com/p/maven-overview-plugin/
+		KO (18)- (JAF), 20110111, configure checkstyle and codestyle http://maven.apache.org/plugins/maven-eclipse-plugin/examples/configure-checkstyle.html
 	-->
 
 	<modelVersion>4.0.0</modelVersion>
@@ -198,28 +199,27 @@
 
 	<build>
 		<extensions>
+			<!-- <extension> -->
+			<!-- <groupId>org.apache.maven.wagon</groupId> -->
+			<!-- <artifactId>wagon-webdav</artifactId> -->
+			<!-- <version>1.0-beta-2</version> -->
+			<!-- </extension> -->
+			<!-- <extension> -->
+			<!-- <groupId>org.apache.maven.wagon</groupId> -->
+			<!-- <artifactId>wagon-scm</artifactId> -->
+			<!-- <version>1.0-beta-6</version> -->
+			<!-- </extension> -->
+			<!-- <extension> -->
+			<!-- <groupId>org.apache.maven.scm</groupId> -->
+			<!-- <artifactId>maven-scm-manager-plexus</artifactId> -->
+			<!-- <version>1.0</version> -->
+			<!-- </extension> -->
+			<!-- <extension> -->
+			<!-- <groupId>org.apache.maven.scm</groupId> -->
+			<!-- <artifactId>maven-scm-provider-svnexe</artifactId> -->
+			<!-- <version>1.0</version> -->
+			<!-- </extension> -->
 
-			<extension>
-				<groupId>org.apache.maven.wagon</groupId>
-				<artifactId>wagon-webdav</artifactId>
-				<version>1.0-beta-2</version>
-			</extension>
-
-			<extension>
-				<groupId>org.apache.maven.wagon</groupId>
-				<artifactId>wagon-scm</artifactId>
-				<version>1.0-beta-6</version>
-			</extension>
-			<extension>
-				<groupId>org.apache.maven.scm</groupId>
-				<artifactId>maven-scm-manager-plexus</artifactId>
-				<version>1.0</version>
-			</extension>
-			<extension>
-				<groupId>org.apache.maven.scm</groupId>
-				<artifactId>maven-scm-provider-svnexe</artifactId>
-				<version>1.0</version>
-			</extension>
 			<!-- <extension> -->
 			<!--
 				(JAF) 20091228: a customized wagon-svn version is used to make SVN work as HTTP server...
@@ -629,6 +629,7 @@
 							<phase>verify</phase>
 							<goals>
 								<goal>jar</goal>
+								<goal>test-jar</goal>
 							</goals>
 						</execution>
 					</executions>
@@ -668,21 +669,6 @@
 					<artifactId>build-helper-maven-plugin</artifactId>
 					<version>1.5</version>
 					<executions>
-						<execution>
-							<!--
-								(JAF) 20091222: include an additional source folder
-							-->
-							<id>add-source</id>
-							<phase>generate-sources</phase>
-							<goals>
-								<goal>add-source</goal>
-							</goals>
-							<configuration>
-								<sources>
-									<source>src/ext/java</source>
-								</sources>
-							</configuration>
-						</execution>
 						<execution>
 							<!--
 								(JAF) 20101118: parsedVersion property contains interesting information according to
