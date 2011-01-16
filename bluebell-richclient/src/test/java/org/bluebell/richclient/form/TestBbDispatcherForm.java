@@ -130,19 +130,6 @@ public class TestBbDispatcherForm extends AbstractBbSamplesTests {
         TestCase.assertNotNull("pageDescriptor", this.pageDescriptor);
     }
 
-    // @Test
-    // public void testfoo() {
-    //
-    // SwingUtils.runInEventDispatcherThread(new Runnable() {
-    //
-    // @Override
-    // public void run() {
-    //
-    // TestCase.fail();
-    // }
-    // });
-    // }
-
     /**
      * Tests the correct behaviour of dispatcher form and child forms synchronization.
      * <p>
@@ -224,19 +211,117 @@ public class TestBbDispatcherForm extends AbstractBbSamplesTests {
          */
         countersListener.increment(expectedCounters, CounterName.SELECTION);
 
-        SwingUtils.runInEventDispatcherThread(new Runnable() {
-
-            @Override
-            public void run() {
-
-                masterForm.getSelectAllCommand().execute();
-            }
-        });
+        SwingUtils.runInEventDispatcherThread(masterForm.getSelectAllCommand());
 
         TestCase.assertEquals(expectedCounters, countersListener.getCounters());
         TestBbDispatcherForm.assertDispatcherFormPropagatesChanges(dispatcherForm);
         TestCase.assertTrue(ListUtils.isEqualList(//
                 entities, TableUtils.getSelection(masterForm.getMasterTable(), masterForm.getMasterTableModel())));
+    }
+
+    /**
+     * Tests the correct behaviour of the global command <code>Refresh</code>.
+     * <p>
+     * This test may be better allocated on <code>TestBbAbstractTableMasterForm</code>, however it is easier to keep it
+     * here in order to get beneficiated from counters listener approach.
+     */
+    @SuppressWarnings("unchecked")
+    @Test
+    public void testRefreshCommand() {
+
+        final PersonMasterForm masterForm = (PersonMasterForm) this.getBackingForm(this.getMasterView());
+        final BbDispatcherForm<Person> dispatcherForm = masterForm.getDispatcherForm();
+        final CountersListener countersListener = new CountersListener(masterForm, dispatcherForm);
+
+        final Map<CountersListener.CounterName, Integer> expectedCounters = new HashMap<CountersListener.CounterName, Integer>();
+        final List<Person> entities = TestBbDispatcherForm.PERSONS_1;
+        List<Person> selection;
+
+        /*
+         * 0. Ensures master table is empty at the beginning
+         */
+        TestCase.assertTrue("masterForm.getMasterEventList().isEmpty()", masterForm.getMasterEventList().isEmpty());
+        TestBbDispatcherForm.assertDispatcherFormPropagatesChanges(dispatcherForm);
+
+        /*
+         * 1. Show entities.
+         * 
+         * EXPECTED: [1,2,3,4]
+         */
+        countersListener.increment(expectedCounters, CounterName.TABLE);
+
+        masterForm.showEntities(entities);
+
+        TestCase.assertEquals(expectedCounters, countersListener.getCounters());
+        TestBbDispatcherForm.assertDispatcherFormPropagatesChanges(dispatcherForm);
+
+        /*
+         * 2. Execute refresh command with empty selection
+         * 
+         * EXPECTED: [1,2,3,4]
+         */
+        selection = ListUtils.EMPTY_LIST;
+        SwingUtils.runInEventDispatcherThread(masterForm.getRefreshCommand());
+
+        TestCase.assertEquals(expectedCounters, countersListener.getCounters());
+        TestBbDispatcherForm.assertDispatcherFormPropagatesChanges(dispatcherForm);
+        TestCase.assertTrue(ListUtils.isEqualList(//
+                selection, TableUtils.getSelection(masterForm.getMasterTable(), masterForm.getMasterTableModel())));
+
+        /*
+         * 3. Make a single selection
+         * 
+         * EXPECTED: [-->1<--,2,3,4]
+         */
+        countersListener.increment(expectedCounters, CounterName.TABLE, // table is changed due to doRefresh
+                CounterName.SELECTION, CounterName.INDEX_HOLDER, CounterName.FORM_OBJECT, CounterName.VALUE_MODEL);
+        selection = entities.subList(0, 1);
+        this.changeSelectionAndTestAssertions(masterForm, countersListener, selection, expectedCounters);
+
+        /*
+         * 4. Execute refresh command with single selection
+         * 
+         * EXPECTED: [-->1<--,2,3,4]
+         */
+        countersListener.increment(expectedCounters, // Clear selection
+                CounterName.SELECTION, CounterName.INDEX_HOLDER, CounterName.FORM_OBJECT, CounterName.VALUE_MODEL);
+        countersListener.increment(expectedCounters, CounterName.TABLE, // Refreshed selection
+                CounterName.SELECTION, CounterName.INDEX_HOLDER, CounterName.FORM_OBJECT, CounterName.VALUE_MODEL);
+
+        SwingUtils.runInEventDispatcherThread(masterForm.getRefreshCommand());
+
+        TestCase.assertEquals(expectedCounters, countersListener.getCounters());
+        TestBbDispatcherForm.assertDispatcherFormPropagatesChanges(dispatcherForm);
+        TestCase.assertTrue(ListUtils.isEqualList(//
+                selection, TableUtils.getSelection(masterForm.getMasterTable(), masterForm.getMasterTableModel())));
+
+        /*
+         * 5. Make a multiple selection
+         * 
+         * EXPECTED: [-->1<--,-->2<--,3,4]
+         */
+        countersListener.increment(expectedCounters,
+        // Note table is NOT changed since PersonMasterForm#doRefresh does nothing with multiple selection
+                CounterName.SELECTION, CounterName.INDEX_HOLDER, CounterName.FORM_OBJECT, CounterName.VALUE_MODEL);
+        selection = entities.subList(0, 2);
+        this.changeSelectionAndTestAssertions(masterForm, countersListener, selection, expectedCounters);
+
+        /*
+         * 6. Execute refresh command with multiple selection
+         * 
+         * EXPECTED: [-->1<--,-->2<--,3,4]
+         */
+        countersListener.increment(expectedCounters, CounterName.SELECTION); // Clear selection
+        countersListener.increment(expectedCounters,
+        // Note table is NOT changed since PersonMasterForm#doRefresh does nothing with multiple selection
+                CounterName.SELECTION);
+
+        SwingUtils.runInEventDispatcherThread(masterForm.getRefreshCommand());
+
+        TestCase.assertEquals(expectedCounters, countersListener.getCounters());
+        TestBbDispatcherForm.assertDispatcherFormPropagatesChanges(dispatcherForm);
+        TestCase.assertTrue(ListUtils.isEqualList(//
+                selection, TableUtils.getSelection(masterForm.getMasterTable(), masterForm.getMasterTableModel())));
     }
 
     /**
@@ -433,14 +518,7 @@ public class TestBbDispatcherForm extends AbstractBbSamplesTests {
 
         if (inserting) {
             // 1a.Execute newFormObjectCommand
-            SwingUtils.runInEventDispatcherThread(new Runnable() {
-
-                @Override
-                public void run() {
-
-                    masterForm.getNewFormObjectCommand().execute();
-                }
-            });
+            SwingUtils.runInEventDispatcherThread(masterForm.getNewFormObjectCommand());
 
             countersListener.increment(expectedCounters, CountersListener.CounterName.FORM_OBJECT);
         } else {
@@ -468,14 +546,7 @@ public class TestBbDispatcherForm extends AbstractBbSamplesTests {
         TestBbDispatcherForm.assertDispatcherFormPropagatesChanges(dispatcherForm);
 
         // 3.Execute saveCommand
-        SwingUtils.runInEventDispatcherThread(new Runnable() {
-
-            @Override
-            public void run() {
-
-                masterForm.getSaveCommand().execute();
-            }
-        });
+        SwingUtils.runInEventDispatcherThread(masterForm.getSaveCommand());
 
         // Table changes in any case since a #set(i, T) operation is done even when updating on postCommit
         countersListener.increment(expectedCounters, CounterName.TABLE, CounterName.FORM_OBJECT);
@@ -527,7 +598,7 @@ public class TestBbDispatcherForm extends AbstractBbSamplesTests {
      * @param dispatcherForm
      *            the dispatcher form.
      */
-    private static void assertDispatcherFormPropagatesChanges(BbDispatcherForm<?> dispatcherForm) {
+    private static void assertDispatcherFormPropagatesChanges(BbDispatcherForm<Person> dispatcherForm) {
 
         Assert.notNull(dispatcherForm, "dispatcherForm");
 

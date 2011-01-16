@@ -581,6 +581,8 @@ public class TestAbstractBbTableMasterForm extends AbstractBbSamplesTests {
             List<Person> expectedSelection) {
 
         masterForm.changeSelection(expectedSelection);
+        TestCase.assertNotSame(expectedSelection, masterForm.getSelection());
+        TestCase.assertNotSame(expectedSelection, masterForm.getMasterEventList());
         TestCase.assertTrue(CollectionUtils.isEqualCollection(expectedSelection, masterForm.getSelection()));
         TestCase.assertTrue(CollectionUtils.isEqualCollection(expectedView, masterForm.getMasterEventList()));
     }

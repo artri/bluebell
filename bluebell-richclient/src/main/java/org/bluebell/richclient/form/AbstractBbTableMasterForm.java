@@ -472,6 +472,7 @@ public abstract class AbstractBbTableMasterForm<T extends Object> extends Abstra
          */
         final ValueChangeDetector valueChangeDetector = //
         (ValueChangeDetector) this.getService(ValueChangeDetector.class);
+
         for (int i = 0; i < newModelIndexes.size(); ++i) {
 
             final Integer modelIndex = newModelIndexes.get(i);

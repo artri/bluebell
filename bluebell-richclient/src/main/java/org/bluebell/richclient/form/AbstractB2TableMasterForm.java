@@ -39,12 +39,10 @@ import org.springframework.binding.value.support.ObservableList;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.richclient.application.event.LifecycleApplicationEvent;
 import org.springframework.richclient.command.ActionCommand;
-import org.springframework.richclient.command.ActionCommandExecutor;
 import org.springframework.richclient.command.TargetableActionCommand;
 import org.springframework.richclient.command.support.GlobalCommandIds;
 import org.springframework.richclient.exceptionhandling.delegation.ExceptionHandlerDelegate;
 import org.springframework.richclient.form.Form;
-import org.springframework.richclient.table.support.GlazedTableModel;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.StringUtils;
@@ -393,10 +391,10 @@ public abstract class AbstractB2TableMasterForm<T extends Object> extends Abstra
      * {@inheritDoc}
      */
     @Override
-    public ActionCommandExecutor getRefreshCommand() {
+    public ActionCommand getRefreshCommand() {
 
         if (this.refreshCommand == null) {
-            this.refreshCommand = this.createSelectAllCommand();
+            this.refreshCommand = this.createRefreshCommand();
         }
         return this.refreshCommand;
     }
@@ -651,16 +649,8 @@ public abstract class AbstractB2TableMasterForm<T extends Object> extends Abstra
             protected void doExecuteCommand() {
 
                 final JTable table = AbstractB2TableMasterForm.this.getMasterTable();
-                final GlazedTableModel tableModel = AbstractB2TableMasterForm.this.getMasterTableModel();
-                final List<Integer> viewIndexes = TableUtils.getSelectedViewIndexes(table);
-                final List<Integer> modelIndexes = TableUtils.getModelIndexes(table, viewIndexes);
-                final List<T> selection = TableUtils.getSelection(table, tableModel, modelIndexes);
 
-                AbstractB2TableMasterForm.this.doRefresh(selection);
-                // (JAF), 20110113, TODO, it is to boring form me at 7:20 AM...
-
-                // TableUtils.changeSelection(masterTable, viewIndexes, Boolean.TRUE);
-                // AbstractB2TableMasterForm.this.getMasterTable().selectAll();
+                TableUtils.refreshSelection(table);
             }
         };
 

@@ -444,6 +444,30 @@ public final class TableUtils {
     }
 
     /**
+     * Refresh current selection.
+     * <p>
+     * This method ensures listeners are invoked just once.
+     * 
+     * @param <Q>
+     *            the type of the rows.
+     * @param table
+     *            the table.
+     * 
+     * @see #changeSelection(JTable, List, Boolean)
+     */
+    public static <Q> void refreshSelection(final JTable table) {
+
+        Assert.notNull(table, "table");
+
+        final List<Integer> selectedViewIndexes = TableUtils.getSelectedViewIndexes(table);
+
+        // (JAF), 20110116, clear selection before turning on valueIsAdjusting, otherwise listeners may not be notified
+        table.clearSelection();
+        
+        TableUtils.changeSelection(table, selectedViewIndexes, Boolean.TRUE);
+    }
+
+    /**
      * Changes selection.
      * <p>
      * This method ensures listeners are invoked just once.
@@ -468,7 +492,6 @@ public final class TableUtils {
         Assert.notNull(newSelection, "entities");
 
         // Calculate view indexes and call overloaded method
-
         final List<Integer> modelIndexes = TableUtils.getModelIndexes(tableModel, newSelection);
         final List<Integer> viewIndexes = TableUtils.getViewIndexes(table, modelIndexes);
 
@@ -476,7 +499,7 @@ public final class TableUtils {
     }
 
     /**
-     * Change current selection.
+     * Changes current selection if newer is different.
      * <p>
      * This method ensures listeners are invoked just once.
      * 
@@ -486,11 +509,33 @@ public final class TableUtils {
      *            the table.
      * @param viewIndexes
      *            the indexes to select. <code>-1</code> indexes are ignored.
+     * 
+     * @see #changeSelection(JTable, List, Boolean)
      */
     public static <Q> void changeSelection(final JTable table, final List<Integer> viewIndexes) {
 
+        TableUtils.changeSelection(table, viewIndexes, Boolean.FALSE);
+    }
+
+    /**
+     * Changes current selection if newer is different or <code>force</code> param is <code>true</code>.
+     * <p>
+     * This method ensures listeners are invoked just once.
+     * 
+     * @param <Q>
+     *            the type of the rows.
+     * @param table
+     *            the table.
+     * @param viewIndexes
+     *            the indexes to select. <code>-1</code> indexes are ignored.
+     * @param force
+     *            whether to force selection change in spite of new selection is the same as previous.
+     */
+    public static <Q> void changeSelection(final JTable table, final List<Integer> viewIndexes, final Boolean force) {
+
         Assert.notNull(table, TableUtils.TABLE);
         Assert.notNull(viewIndexes, "viewIndexes");
+        Assert.notNull(force, "force");
 
         // Replace current selection (do it in the event dispatcher thread to avoid race conditions)
         SwingUtils.runInEventDispatcherThread(new Runnable() {
@@ -501,10 +546,13 @@ public final class TableUtils {
             @Override
             public void run() {
 
-                final List<Integer> currentViewIndexes = TableUtils.getSelectedViewIndexes(table);
-                final Boolean proceed = !CollectionUtils.isEqualCollection(currentViewIndexes, viewIndexes);
-                
-                // PRE-CONDITION: new selection is different from previous
+                Boolean proceed = force;
+                if (!proceed) {
+                    final List<Integer> currentViewIndexes = TableUtils.getSelectedViewIndexes(table);
+                    proceed |= !CollectionUtils.isEqualCollection(currentViewIndexes, viewIndexes);
+                }
+
+                // PRE-CONDITION: new selection is different from previous or force is true
                 if (proceed) {
 
                     // INVARIANT: Change selection taking care of setting "valueIsAdjusting":

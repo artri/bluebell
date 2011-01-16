@@ -236,4 +236,56 @@ public class TestMockAbstractBbTableMasterForm extends AbstractBbSamplesTests {
         TestCase.assertEquals(nameAfterRefresh, valueModel.getValue());
         TestCase.assertEquals(nameAfterRefresh, nameComponent.getText());
     }
+    
+    /**
+     * Tests the correct behaviour of refresh command.
+     */
+    @Test
+    public void testRefreshCommand() {
+
+        final PersonMasterForm masterForm = (PersonMasterForm) this.getBackingForm(this.getMasterView());
+        final PersonSearchForm searchForm = (PersonSearchForm) this.getBackingForm(this.getSearchView());
+        final PersonChildForm childForm = (PersonChildForm) this.getBackingForm(this.getChildView());
+        final PersonService mockPersonService = masterForm.getPersonService();
+
+        final ActionCommand searchCommand = searchForm.getSearchCommand();
+        final ActionCommand refreshCommand = masterForm.getRefreshCommand();
+
+        final String property = "name";
+        final ValueModel valueModel = childForm.getFormModel().getValueModel(property);
+        final JTextField nameComponent = ((JTextField) SwingUtils.getDescendantNamed(property, childForm.getControl()));
+
+        // Record expected behaviour
+        final String nameAfter1stRefresh = "nameAfter1stRefresh";
+        final String nameAfter2ndRefresh = "nameAfter2ndRefresh";
+        final Person personAfter1stRefresh = Person.createPerson(nameAfter1stRefresh);
+        final Person personAfter2ndRefresh = Person.createPerson(nameAfter2ndRefresh);
+        final List<Person> searchResults = TestMockAbstractBbTableMasterForm.PERSONS_1;
+        final Person personToSelect = searchResults.get(0);
+
+        EasyMock.expect(mockPersonService.searchPersons((Person) searchForm.getFormObject())).andReturn(searchResults);
+        EasyMock.expect(mockPersonService.refreshPerson(personToSelect)).andReturn(personAfter1stRefresh);
+        EasyMock.expect(mockPersonService.refreshPerson(personAfter1stRefresh)).andReturn(personAfter2ndRefresh);
+
+        this.iMocksControl.replay();
+
+        // (1). Begin new person creation
+        SwingUtils.runInEventDispatcherThread(searchCommand);
+
+        // (2). Change selection and make assertions
+        masterForm.changeSelection(Arrays.asList(personToSelect));
+
+        TestCase.assertTrue(ListUtils.isEqualList(Arrays.asList(personAfter1stRefresh), masterForm.getSelection()));
+        TestCase.assertEquals(personAfter1stRefresh, childForm.getFormObject());
+        TestCase.assertEquals(nameAfter1stRefresh, valueModel.getValue());
+        TestCase.assertEquals(nameAfter1stRefresh, nameComponent.getText());
+        
+        // (3). Call refresh and make assertions
+        SwingUtils.runInEventDispatcherThread(refreshCommand);
+
+        TestCase.assertTrue(ListUtils.isEqualList(Arrays.asList(personAfter2ndRefresh), masterForm.getSelection()));
+        TestCase.assertEquals(personAfter2ndRefresh, childForm.getFormObject());
+        TestCase.assertEquals(nameAfter2ndRefresh, valueModel.getValue());
+        TestCase.assertEquals(nameAfter2ndRefresh, nameComponent.getText());
+    }
 }

@@ -21,17 +21,23 @@ package org.bluebell.richclient.form;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
 import javax.swing.JComponent;
 
+import org.apache.commons.lang.builder.ToStringBuilder;
+import org.apache.commons.lang.builder.ToStringStyle;
 import org.bluebell.richclient.form.util.BbDefaultFormModel;
 import org.springframework.binding.form.FormModel;
 import org.springframework.binding.form.ValidatingFormModel;
 import org.springframework.binding.value.ValueModel;
 import org.springframework.binding.value.support.ListListModel;
 import org.springframework.binding.value.support.ObservableList;
+import org.springframework.richclient.command.ActionCommand;
+import org.springframework.richclient.command.ActionCommandInterceptor;
+import org.springframework.richclient.form.AbstractDetailForm;
 import org.springframework.richclient.form.AbstractForm;
 import org.springframework.richclient.form.Form;
 import org.springframework.util.Assert;
@@ -90,17 +96,47 @@ import ca.odell.glazedlists.event.ListEventListener;
  * 
  * @author <a href = "mailto:julio.arguello@gmail.com" >Julio Argüello (JAF)</a>
  */
-public class BbDispatcherForm<T> extends AbstractBbDetailForm<T> {
+public class BbDispatcherForm<T> extends AbstractDetailForm {
 
     /**
-     * El nombre de la página compuesta de los formularios detalle.
+     * The form id.
      */
     private static final String FORM_ID = "dispatcherForm";
+
+    /**
+     * El formulario maestro.
+     */
+    private AbstractB2TableMasterForm<T> masterForm;
 
     /**
      * Importante que sea ordenada.
      */
     private List<AbstractBbChildForm<T>> childForms;
+
+    /**
+     * <em>Flag</em> indicando si hay una operación de salvado en curso.
+     * 
+     * @see #preCommit(FormModel)
+     * @see #postCommit(FormModel)
+     */
+    private Boolean committing = Boolean.FALSE;
+
+    /**
+     * Crea el formulario detalle a partir del formulario maestro, el identificador y un <em>value model</em>.
+     * 
+     * @param masterForm
+     *            el formulario maestro.
+     * @param formId
+     *            el identificador del formulario.
+     * @param valueModel
+     *            <em>value model</em> a partir del cual crear el modelo de este formulario.
+     */
+    public BbDispatcherForm(AbstractB2TableMasterForm<T> masterForm, String formId, ValueModel valueModel) {
+
+        super(masterForm.getFormModel(), formId, valueModel, masterForm.getMasterEventList());
+
+        this.setMasterForm(masterForm);
+    }
 
     /**
      * Crea el formulario compuesto a partir del formulario maestro y un <em>value model</em>.
@@ -115,7 +151,7 @@ public class BbDispatcherForm<T> extends AbstractBbDetailForm<T> {
      */
     public BbDispatcherForm(AbstractB2TableMasterForm<T> masterForm, ValueModel valueModel) {
 
-        super(masterForm, BbDispatcherForm.FORM_ID, valueModel);
+        this(masterForm, BbDispatcherForm.FORM_ID, valueModel);
 
         this.setFormModel(new DispatcherFormModel(valueModel));
 
@@ -123,37 +159,23 @@ public class BbDispatcherForm<T> extends AbstractBbDetailForm<T> {
     }
 
     /**
-     * Devuelve el formulario hijo con el identificador dado y <code>null</code> si no existe.
+     * Crea el formulario detalle a partir de su modelo, el identificador y una lista observable de entidades editables.
      * 
+     * @param masterForm
+     *            el formulario maestro.
+     * @param formModel
+     *            el modelo del formulario.
      * @param formId
      *            el identificador del formulario.
-     * 
-     * @return el formulario hijo.
+     * @param editableItemList
+     *            la lista observable de entidades editables.
      */
-    @Override
-    public final AbstractBbChildForm<T> getChildForm(String formId) {
+    protected BbDispatcherForm(AbstractB2TableMasterForm<T> masterForm, FormModel formModel, String formId,
+            ObservableList editableItemList) {
 
-        for (final AbstractBbChildForm<T> childForm : this.getChildForms()) {
-            if (formId.equals(childForm.getId())) {
-                return childForm;
-            }
-        }
+        super(formModel, formId, editableItemList);
 
-        return null;
-    }
-
-    /**
-     * Obtiene los formularios hijos de este formulario.
-     * 
-     * @return una colección <em>unmodifiable</em> con los formularios hijos de este formulario.
-     */
-    public final List<AbstractBbChildForm<T>> getChildForms() {
-
-        if (this.childForms == null) {
-            this.childForms = new ArrayList<AbstractBbChildForm<T>>();
-        }
-
-        return Collections.unmodifiableList(this.childForms);
+        this.setMasterForm(masterForm);
     }
 
     /**
@@ -206,52 +228,99 @@ public class BbDispatcherForm<T> extends AbstractBbDetailForm<T> {
      */
     @Override
     public final void removeChildForm(Form form) {
-
+    
         Assert.isTrue(this.getChildForms().contains(form), "The form to remove must be a children of this form");
         Assert.isInstanceOf(AbstractBbChildForm.class, form);
-
+    
         // [1] Call super
         super.removeChildForm(form);
-
+    
         // [2] Bidirection unlinking
         @SuppressWarnings("unchecked")
         final AbstractBbChildForm<T> childForm = (AbstractBbChildForm<T>) form;
-
+    
         this.childForms.remove(childForm.getId());
         childForm.setDispatcherForm(null);
     }
 
     /**
-     * {@inheritDoc}
-     * <p>
-     * If a commit is in process and index to select is <code>-1</code> then this call is ignored. This happens at
-     * {@link org.springframework.richclient.form.AbstractDetailForm#postCommit(FormModel)} and it is not the expected
-     * behaviour anymore:
+     * Obtiene los formularios hijos de este formulario.
      * 
-     * <pre>
-     * public void postCommit(FormModel formModel) {
+     * @return una colección <em>unmodifiable</em> con los formularios hijos de este formulario.
+     */
+    public final List<AbstractBbChildForm<T>> getChildForms() {
+    
+        if (this.childForms == null) {
+            this.childForms = new ArrayList<AbstractBbChildForm<T>>();
+        }
+    
+        return Collections.unmodifiableList(this.childForms);
+    }
+
+    /**
+     * Devuelve el formulario hijo con el identificador dado y <code>null</code> si no existe.
      * 
-     *     super.postCommit(formModel);
+     * @param formId
+     *            el identificador del formulario.
      * 
-     *     // Now set the selected index back to -1 so that the forms properly reset
-     *     setSelectedIndex(-1); // &lt;------
-     * }
-     * </pre>
-     * 
-     * @see EditingIndexHolderListener
-     * @since 20110105
+     * @return el formulario hijo.
      */
     @Override
-    public final void setSelectedIndex(int index) {
-
-        // (JAF), 20110105, hack to avoid changing select index three times on commit!
-        if (this.isCommitting() && (index == -1)) {
-            return;
+    public final AbstractBbChildForm<T> getChildForm(String formId) {
+    
+        for (final AbstractBbChildForm<T> childForm : this.getChildForms()) {
+            if (formId.equals(childForm.getId())) {
+                return childForm;
+            }
         }
+    
+        return null;
+    }
 
-        super.setSelectedIndex(index);
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public final void commit() {
 
-        // (JAF), 20110105, note children are notified thanks to EditingIndexHolderListener
+        try {
+            this.setCommitting(Boolean.TRUE);
+            super.commit();
+        } catch (RuntimeException e) {
+            throw e;
+        } finally {
+            // (JAF), 2011010t, ensures committing flag is always reset
+            this.setCommitting(Boolean.FALSE);
+        }
+    }
+
+    /**
+     * Realiza la operación de salvado conforme a {@link #doPostCommit(FormModel)} y finalmente marca que ya <b>no</b>
+     * se está ejecutando una operación de salvado.
+     * 
+     * @param formModel
+     *            el modelo del formulario objeto del salvado.
+     * 
+     * @see #isCommitting()
+     * @see #preCommit(FormModel)
+     */
+    @Override
+    public final void postCommit(FormModel formModel) {
+    
+        this.doPostCommit(formModel);
+    
+        // (JAF), 20110105, call #setEditingNewFormObject since AbstractForm uses direct field access instead of setter
+        this.setEditingNewFormObject(Boolean.FALSE);
+    }
+
+    /**
+     * Indica si hay una operación de salvado en curso.
+     * 
+     * @return <code>true</code> en caso afirmativo.
+     */
+    public final Boolean isCommitting() {
+    
+        return this.committing;
     }
 
     /**
@@ -259,13 +328,13 @@ public class BbDispatcherForm<T> extends AbstractBbDetailForm<T> {
      */
     @Override
     public final boolean isDirty() {
-
+    
         for (final AbstractForm childForm : this.getChildForms()) {
             if (childForm.isDirty()) {
                 return Boolean.TRUE;
             }
         }
-
+    
         return Boolean.FALSE;
     }
 
@@ -276,12 +345,12 @@ public class BbDispatcherForm<T> extends AbstractBbDetailForm<T> {
      */
     @Override
     public final void reset() {
-
+    
         this.getDispatcherFormModel().doInternalReset();
-
+    
         // (JAF), 20080914, AbstractFormModel#reset internally executes #setFormObject(null) over this form and its
         // children. To avoid redundant calls its better to make a single invocation
-
+    
         // for (Form childForm : this.formsById.values()) { childForm.reset(); }
     }
 
@@ -292,9 +361,9 @@ public class BbDispatcherForm<T> extends AbstractBbDetailForm<T> {
      */
     @Override
     public final void revert() {
-
+    
         this.getDispatcherFormModel().doInternalRevert();
-
+    
         for (final Form childForm : this.getChildForms()) {
             childForm.revert();
         }
@@ -332,6 +401,131 @@ public class BbDispatcherForm<T> extends AbstractBbDetailForm<T> {
         for (final AbstractForm childForm : this.getChildForms()) {
             childForm.setFormObject(formObjectToSet);
         }
+    }
+
+    /**
+     * {@inheritDoc}
+     * <p>
+     * If a commit is in process and index to select is <code>-1</code> then this call is ignored. This happens at
+     * {@link org.springframework.richclient.form.AbstractDetailForm#postCommit(FormModel)} and it is not the expected
+     * behaviour anymore:
+     * 
+     * <pre>
+     * public void postCommit(FormModel formModel) {
+     * 
+     *     super.postCommit(formModel);
+     * 
+     *     // Now set the selected index back to -1 so that the forms properly reset
+     *     setSelectedIndex(-1); // &lt;------
+     * }
+     * </pre>
+     * 
+     * @see EditingIndexHolderListener
+     * @since 20110105
+     */
+    @Override
+    public final void setSelectedIndex(int index) {
+
+        // (JAF), 20110105, hack to avoid changing select index three times on commit!
+        if (this.isCommitting() && (index == -1)) {
+            return;
+        }
+
+        super.setSelectedIndex(index);
+
+        // (JAF), 20110105, note children are notified thanks to EditingIndexHolderListener
+    }
+
+    /**
+     * Obtiene el formulario maestro.
+     * 
+     * @return el formulario maestro.
+     */
+    public final AbstractB2TableMasterForm<T> getMasterForm() {
+    
+        return this.masterForm;
+    }
+
+    /**
+     * {@inheritDoc}
+     * <p>
+     * Overrides parent in order to attach an action command interceptor that justs set
+     * <code>editingNewFormObject</code> flag as <code>true</code>. Flag is reverted at {@link #postCommit(FormModel)}.
+     * <p>
+     * This is needed due to <code>AbstractForm</code> not always employs accessor methods so changes are not propagated
+     * to children, find bellow a sample code snippet:
+     * 
+     * <pre>
+     * public void postCommit(FormModel formModel) {
+     * 
+     *     if (editableFormObjects != null) {
+     *         if (editingNewFormObject) {
+     *             editableFormObjects.add(formModel.getFormObject());
+     *             setEditingFormObjectIndexSilently(editableFormObjects.size() - 1);
+     *         } else {
+     *             int index = getEditingFormObjectIndex();
+     *             // Avoid updating unless we have actually selected an object for
+     *             // edit
+     *             if (index &gt;= 0) {
+     *                 IndexAdapter adapter = editableFormObjects.getIndexAdapter(index);
+     *                 adapter.setValue(formModel.getFormObject());
+     *                 adapter.fireIndexedObjectChanged();
+     *             }
+     *         }
+     *     }
+     *     if (clearFormOnCommit) {
+     *         setFormObject(null);
+     *     }
+     *     editingNewFormObject = false;
+     * }
+     * </pre>
+     * 
+     * @see #postCommit(FormModel)
+     * @see #setEditingNewFormObject(boolean)
+     * @see <a href="http://jirabluebell.b2b2000.com/browse/BLUE-22">BLUE-22</a>
+     */
+    @Override
+    public final ActionCommand getNewFormObjectCommand() {
+    
+        ActionCommand newFormObjectCommand = FormUtils.getNewFormObjectCommand(this);
+    
+        if (newFormObjectCommand == null) {
+    
+            newFormObjectCommand = super.getNewFormObjectCommand();
+            newFormObjectCommand.addCommandInterceptor(new ActionCommandInterceptor() {
+    
+                /**
+                 * {@inheritDoc}
+                 */
+                @Override
+                public void postExecution(ActionCommand command) {
+    
+                    // Nothing to do
+                }
+    
+                /**
+                 * {@inheritDoc}
+                 */
+                @Override
+                public boolean preExecution(ActionCommand command) {
+    
+                    BbDispatcherForm.this.setEditingNewFormObject(Boolean.TRUE);
+    
+                    return Boolean.TRUE;
+                }
+            });
+        }
+    
+        return newFormObjectCommand;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public final String toString() {
+
+        return new ToStringBuilder(this, ToStringStyle.SIMPLE_STYLE).append("id", this.getId()).toString();
     }
 
     /**
@@ -385,20 +579,58 @@ public class BbDispatcherForm<T> extends AbstractBbDetailForm<T> {
     }
 
     /**
-     * Gets the form model ensuring it is a instance of {@link DispatcherFormModel}.
+     * Redirige el <em>post commit</em> al método {@link AbstractBb1TableMasterForm#doInsert(Object)} o
+     * {@link AbstractBb1TableMasterForm#doUpdate(Object)} en función de {@link #isEditingNewFormObject()}.
+     * <p>
+     * Además en caso de éxito publica un evento notificando que se ha insertado o actualizado una entidad.
      * 
-     * @return the form model.
+     * @param formModel
+     *            el modelo sobre el que tuvo lugar la operación <em>commit</em> .
      * 
-     * @see #getFormModel()
+     * @see org.springframework.binding.form.CommitListener#postCommit(FormModel)
+     * @see org.springframework.richclient.application.event.LifecycleApplicationEvent
      */
-    private DispatcherFormModel getDispatcherFormModel() {
+    @SuppressWarnings("unchecked")
+    private void doPostCommit(FormModel formModel) {
 
-        Assert.isInstanceOf(DispatcherFormModel.class, this.getFormModel());
+        final Boolean inserting = this.isEditingNewFormObject();
+        final T committedEntity = (T) formModel.getFormObject();
+        final T managedEntity;
 
-        @SuppressWarnings("unchecked")
-        final DispatcherFormModel dispatcherFormModel = (DispatcherFormModel) this.getFormModel();
+        if (inserting) {
+            managedEntity = this.getMasterForm().doInsert(committedEntity);
+        } else { // is an update
+            managedEntity = this.getMasterForm().doUpdate(committedEntity);
+        }
 
-        return dispatcherFormModel;
+        // If success then update view and publish an event
+        final boolean success = (managedEntity != null);
+        if (success) {
+            // [1] Change form object in order to reflect (on call to super) the managed entity instead of committed ono
+            this.setFormObject(managedEntity);
+
+            // [2] Call super
+            super.postCommit(formModel);
+
+            // [3] Select managed entity
+            this.getMasterForm().changeSelection(Arrays.asList(managedEntity));
+
+            // Publicar el evento
+            // [4] Publish application event notifying an insert / update has been successfully done
+            this.getMasterForm().publishApplicationEvent(//
+                    inserting ? EventType.CREATED : EventType.MODIFIED, managedEntity);
+        }
+    }
+
+    /**
+     * Establece si hay una operación de salvado en curso.
+     * 
+     * @param committing
+     *            <code>true</code> en caso afirmativo.
+     */
+    private void setCommitting(Boolean committing) {
+
+        this.committing = committing;
     }
 
     /**
@@ -444,41 +676,31 @@ public class BbDispatcherForm<T> extends AbstractBbDetailForm<T> {
     }
 
     /**
-     * Listens to editing index holder value changes and notify child forms silently.
-     * <p>
-     * <b>Note</b> the typical iteration based approach over
-     * {@link org.springframework.richclient.form.AbstractDetailForm#setSelectedIndex(int)} is not valid because of the
-     * selected index may be changed directly without this method. For instance on
-     * {@link AbstractForm#setEditingFormObjectIndexSilently}:
+     * Establece el formulario maestro.
      * 
-     * <pre>
-     * protected void setEditingFormObjectIndexSilently(int index) {
-     * 
-     *     editingFormObjectIndexHolder.removeValueChangeListener(editingFormObjectSetter);
-     *     editingFormObjectIndexHolder.setValue(new Integer(index)); // &lt;------
-     *     editingFormObjectIndexHolder.addValueChangeListener(editingFormObjectSetter);
-     * }
-     * </pre>
-     * 
-     * @author <a href = "mailto:julio.arguello@gmail.com" >Julio Argüello (JAF)</a>
+     * @param masterForm
+     *            el formulario maestro.
      */
-    private class EditingIndexHolderListener implements PropertyChangeListener {
+    private void setMasterForm(AbstractB2TableMasterForm<T> masterForm) {
+    
+        this.masterForm = masterForm;
+    }
 
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        public void propertyChange(PropertyChangeEvent evt) {
-
-            final Integer newIndex = (Integer) evt.getNewValue();
-
-            for (AbstractBbChildForm<T> childForm : BbDispatcherForm.this.getChildForms()) {
-
-                // (JAF), 20110105, do it silently. EditingFormObject setter is not needed in this case because
-                // #setFormObject does the trick
-                childForm.doSetEditingFormObjectIndexSilently(newIndex);
-            }
-        }
+    /**
+     * Gets the form model ensuring it is a instance of {@link DispatcherFormModel}.
+     * 
+     * @return the form model.
+     * 
+     * @see #getFormModel()
+     */
+    private DispatcherFormModel getDispatcherFormModel() {
+    
+        Assert.isInstanceOf(DispatcherFormModel.class, this.getFormModel());
+    
+        @SuppressWarnings("unchecked")
+        final DispatcherFormModel dispatcherFormModel = (DispatcherFormModel) this.getFormModel();
+    
+        return dispatcherFormModel;
     }
 
     /**
@@ -685,6 +907,44 @@ public class BbDispatcherForm<T> extends AbstractBbDetailForm<T> {
         protected final void doInternalSetFormObject(Object formObject) {
 
             super.setFormObject(formObject);
+        }
+    }
+
+    /**
+     * Listens to editing index holder value changes and notify child forms silently.
+     * <p>
+     * <b>Note</b> the typical iteration based approach over
+     * {@link org.springframework.richclient.form.AbstractDetailForm#setSelectedIndex(int)} is not valid because of the
+     * selected index may be changed directly without this method. For instance on
+     * {@link AbstractForm#setEditingFormObjectIndexSilently}:
+     * 
+     * <pre>
+     * protected void setEditingFormObjectIndexSilently(int index) {
+     * 
+     *     editingFormObjectIndexHolder.removeValueChangeListener(editingFormObjectSetter);
+     *     editingFormObjectIndexHolder.setValue(new Integer(index)); // &lt;------
+     *     editingFormObjectIndexHolder.addValueChangeListener(editingFormObjectSetter);
+     * }
+     * </pre>
+     * 
+     * @author <a href = "mailto:julio.arguello@gmail.com" >Julio Argüello (JAF)</a>
+     */
+    private class EditingIndexHolderListener implements PropertyChangeListener {
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public void propertyChange(PropertyChangeEvent evt) {
+
+            final Integer newIndex = (Integer) evt.getNewValue();
+
+            for (AbstractBbChildForm<T> childForm : BbDispatcherForm.this.getChildForms()) {
+
+                // (JAF), 20110105, do it silently. EditingFormObject setter is not needed in this case because
+                // #setFormObject does the trick
+                childForm.doSetEditingFormObjectIndexSilently(newIndex);
+            }
         }
     }
 }
