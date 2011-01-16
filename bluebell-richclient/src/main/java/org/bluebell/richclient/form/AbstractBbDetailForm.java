@@ -45,7 +45,7 @@ abstract class AbstractBbDetailForm<T> extends AbstractDetailForm {
      * @see #preCommit(FormModel)
      * @see #postCommit(FormModel)
      */
-    private Boolean commiting = Boolean.FALSE;
+    private Boolean committing = Boolean.FALSE;
 
     /**
      * El formulario maestro.
@@ -94,7 +94,7 @@ abstract class AbstractBbDetailForm<T> extends AbstractDetailForm {
      * 
      * @return el formulario maestro.
      */
-    public AbstractB2TableMasterForm<T> getMasterForm() {
+    public final AbstractB2TableMasterForm<T> getMasterForm() {
 
         return this.masterForm;
     }
@@ -104,9 +104,9 @@ abstract class AbstractBbDetailForm<T> extends AbstractDetailForm {
      * 
      * @return <code>true</code> en caso afirmativo.
      */
-    public Boolean isCommiting() {
+    public final Boolean isCommitting() {
 
-        return this.commiting;
+        return this.committing;
     }
 
     /**
@@ -189,14 +189,13 @@ abstract class AbstractBbDetailForm<T> extends AbstractDetailForm {
     public void commit() {
 
         try {
-            this.setCommiting(Boolean.TRUE);
-            
+            this.setCommitting(Boolean.TRUE);            
             super.commit();
         } catch (RuntimeException e) {
             throw e;
         } finally {
             // (JAF), 2011010t, ensures committing flag is always reset
-            this.setCommiting(Boolean.FALSE);
+            this.setCommitting(Boolean.FALSE);
         }
     }
 
@@ -207,7 +206,7 @@ abstract class AbstractBbDetailForm<T> extends AbstractDetailForm {
      * @param formModel
      *            el modelo del formulario objeto del salvado.
      * 
-     * @see #isCommiting()
+     * @see #isCommitting()
      * @see #preCommit(FormModel)
      */
     @Override
@@ -269,21 +268,18 @@ abstract class AbstractBbDetailForm<T> extends AbstractDetailForm {
             // [4] Publish application event notifying an insert / update has been successfully done
             this.getMasterForm().publishApplicationEvent(//
                     inserting ? EventType.CREATED : EventType.MODIFIED, managedEntity);
-
-            // TODO, (JAF), 20080428, la publicación de eventos debería de ser un método privada del formulario maestro.
-            // Los tipos de eventos también deberían ser un tipo de dato privado.
         }
     }
 
     /**
      * Establece si hay una operación de salvado en curso.
      * 
-     * @param commiting
+     * @param committing
      *            <code>true</code> en caso afirmativo.
      */
-    private void setCommiting(Boolean commiting) {
+    private void setCommitting(Boolean committing) {
 
-        this.commiting = commiting;
+        this.committing = committing;
     }
 
     /**

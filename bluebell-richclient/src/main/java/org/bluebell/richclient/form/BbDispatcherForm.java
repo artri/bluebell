@@ -245,7 +245,7 @@ public class BbDispatcherForm<T> extends AbstractBbDetailForm<T> {
     public final void setSelectedIndex(int index) {
 
         // (JAF), 20110105, hack to avoid changing select index three times on commit!
-        if (this.isCommiting() && (index == -1)) {
+        if (this.isCommitting() && (index == -1)) {
             return;
         }
 
@@ -332,7 +332,6 @@ public class BbDispatcherForm<T> extends AbstractBbDetailForm<T> {
         for (final AbstractForm childForm : this.getChildForms()) {
             childForm.setFormObject(formObjectToSet);
         }
-
     }
 
     /**

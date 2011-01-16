@@ -46,6 +46,7 @@ import org.bluebell.richclient.form.builder.support.DirtyTrackingUtils;
 import org.bluebell.richclient.samples.simple.bean.Person;
 import org.bluebell.richclient.samples.simple.form.PersonMasterForm;
 import org.bluebell.richclient.swing.util.SwingUtils;
+import org.bluebell.richclient.table.support.TableUtils;
 import org.bluebell.richclient.test.AbstractBbSamplesTests;
 import org.junit.After;
 import org.junit.Before;
@@ -129,18 +130,18 @@ public class TestBbDispatcherForm extends AbstractBbSamplesTests {
         TestCase.assertNotNull("pageDescriptor", this.pageDescriptor);
     }
 
-//    @Test
-//    public void testfoo() {
-//
-//        SwingUtils.runInEventDispatcherThread(new Runnable() {
-//
-//            @Override
-//            public void run() {
-//
-//                TestCase.fail();
-//            }
-//        });
-//    }
+    // @Test
+    // public void testfoo() {
+    //
+    // SwingUtils.runInEventDispatcherThread(new Runnable() {
+    //
+    // @Override
+    // public void run() {
+    //
+    // TestCase.fail();
+    // }
+    // });
+    // }
 
     /**
      * Tests the correct behaviour of dispatcher form and child forms synchronization.
@@ -180,6 +181,62 @@ public class TestBbDispatcherForm extends AbstractBbSamplesTests {
         this.doTestCommit(masterForm, childForm, new CountersListener(masterForm, dispatcherForm), Boolean.FALSE);
         this.cleanMasterEventList();
         this.doTestCommit(masterForm, childForm, new CountersListener(masterForm, childForm, "name"), Boolean.FALSE);
+    }
+
+    /**
+     * Tests the correct behaviour of the global command <code>SelectAllEntities</code>.
+     * <p>
+     * This test may be better allocated on <code>TestBbAbstractTableMasterForm</code>, however it is easier to keep it
+     * here in order to get beneficiated from counters listener approach.
+     */
+    @Test
+    public void testSelectAllEntitiesCommand() {
+
+        final PersonMasterForm masterForm = (PersonMasterForm) this.getBackingForm(this.getMasterView());
+        final BbDispatcherForm<Person> dispatcherForm = masterForm.getDispatcherForm();
+        final CountersListener countersListener = new CountersListener(masterForm, dispatcherForm);
+
+        final Map<CountersListener.CounterName, Integer> expectedCounters = new HashMap<CountersListener.CounterName, Integer>();
+        final List<Person> entities = TestBbDispatcherForm.PERSONS_1;
+
+        /*
+         * 0. Ensures master table is empty at the beginning
+         */
+        TestCase.assertTrue("masterForm.getMasterEventList().isEmpty()", masterForm.getMasterEventList().isEmpty());
+        TestBbDispatcherForm.assertDispatcherFormPropagatesChanges(dispatcherForm);
+
+        /*
+         * 1. Show entities.
+         * 
+         * EXPECTED: [1,2,3,4]
+         */
+        countersListener.increment(expectedCounters, CounterName.TABLE);
+
+        masterForm.showEntities(entities);
+
+        TestCase.assertEquals(expectedCounters, countersListener.getCounters());
+        TestBbDispatcherForm.assertDispatcherFormPropagatesChanges(dispatcherForm);
+
+        /*
+         * 2. Execute select all command
+         * 
+         * EXPECTED: [-->1<--,-->2<--,-->3<--,-->4<--]
+         */
+        countersListener.increment(expectedCounters, CounterName.SELECTION);
+
+        SwingUtils.runInEventDispatcherThread(new Runnable() {
+
+            @Override
+            public void run() {
+
+                masterForm.getSelectAllCommand().execute();
+            }
+        });
+
+        TestCase.assertEquals(expectedCounters, countersListener.getCounters());
+        TestBbDispatcherForm.assertDispatcherFormPropagatesChanges(dispatcherForm);
+        TestCase.assertTrue(ListUtils.isEqualList(//
+                entities, TableUtils.getSelection(masterForm.getMasterTable(), masterForm.getMasterTableModel())));
     }
 
     /**
@@ -249,7 +306,7 @@ public class TestBbDispatcherForm extends AbstractBbSamplesTests {
          * EXPECTED: [-->1<--,2,3,4]
          */
         selection = entities.subList(0, 1);
-        countersListener.increment(expectedCounters, //
+        countersListener.increment(expectedCounters, CounterName.TABLE,// (JAF), 20110116, note #doRefresh changes table
                 CounterName.SELECTION, CounterName.INDEX_HOLDER, CounterName.FORM_OBJECT, CounterName.VALUE_MODEL);
         this.changeSelectionAndTestAssertions(masterForm, countersListener, selection, expectedCounters);
 
@@ -287,7 +344,7 @@ public class TestBbDispatcherForm extends AbstractBbSamplesTests {
          * EXPECTED: [1,-->2<--,3,4]
          */
         selection = entities.subList(1, 2);
-        countersListener.increment(expectedCounters, //
+        countersListener.increment(expectedCounters, CounterName.TABLE,// (JAF), 20110116, note #doRefresh changes table
                 CounterName.SELECTION, CounterName.INDEX_HOLDER, CounterName.FORM_OBJECT, CounterName.VALUE_MODEL);
         this.changeSelectionAndTestAssertions(masterForm, countersListener, selection, expectedCounters);
 
@@ -319,8 +376,10 @@ public class TestBbDispatcherForm extends AbstractBbSamplesTests {
          * EXPECTED: [1,2,3,4,-->5<--]
          */
         selection = TestBbDispatcherForm.PERSONS_2.subList(0, 1);
-        countersListener.increment(expectedCounters, CounterName.TABLE, CounterName.SELECTION,// 2 selects are expected
-                CounterName.SELECTION, CounterName.INDEX_HOLDER, CounterName.FORM_OBJECT, CounterName.VALUE_MODEL);
+        countersListener.increment(expectedCounters, //
+                CounterName.TABLE, CounterName.TABLE, // addition and refresh
+                CounterName.SELECTION, CounterName.SELECTION,// 2 selects: empty due to table structure change and ->5<-
+                CounterName.INDEX_HOLDER, CounterName.FORM_OBJECT, CounterName.VALUE_MODEL);
         this.changeSelectionAndTestAssertions(masterForm, countersListener, selection, expectedCounters);
 
         /*
@@ -388,7 +447,8 @@ public class TestBbDispatcherForm extends AbstractBbSamplesTests {
             // 1b.Select an existing entity (#changeSelection ensures operation is done in the EDT)
             masterForm.changeSelection(Arrays.asList(new Person(StringUtils.EMPTY)));
 
-            countersListener.increment(expectedCounters, CounterName.TABLE, //
+            countersListener.increment(expectedCounters, //
+                    CounterName.TABLE, CounterName.TABLE,// attaching new entity and refreshing it :(
                     CounterName.SELECTION, CounterName.INDEX_HOLDER, CounterName.FORM_OBJECT, CounterName.VALUE_MODEL);
         }
 

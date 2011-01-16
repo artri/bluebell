@@ -221,13 +221,10 @@ public class FormBackedView<T extends Form> extends AbstractView {
             context.register(GlobalCommandsAccessor.REVERT, this.getRevertCommand(this.getBackingForm()));
             context.register(GlobalCommandsAccessor.REVERT_ALL, this.getGlobalCommandsAccessor().getRevertAllCommand());
 
-            // (JAF), 20090630, este comando se deshabilita ya que puede causar
-            // más problemas que beneficios...
-            // context.register(GlobalCommandsAccesor.SELECT_ALL_ENTITIES, //
-            // this.globalCommandsAccesor.getSelectAllCommand());
+            context.register(GlobalCommandsAccessor.SELECT_ALL_ENTITIES,
+                    this.globalCommandsAccessor.getSelectAllCommand());
 
-            // (JAF), 20090113, "TextComponentPopup" registra sus propios global
-            // command executors
+            // (JAF), 20090113, "TextComponentPopup" registra sus propios global command executors
             context.register(GlobalCommandIds.CUT, null);
             context.register(GlobalCommandIds.COPY, null);
             context.register(GlobalCommandIds.PASTE, null);

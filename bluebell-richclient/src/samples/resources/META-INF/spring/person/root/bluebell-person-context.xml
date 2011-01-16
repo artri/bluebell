@@ -42,6 +42,11 @@
 		<property name="viewProperties">
 			<util:map>
 				<entry key="formClass" value="org.bluebell.richclient.samples.simple.form.PersonMasterForm" />
+				<entry key="formProperties">
+					<util:map>
+						<entry key="personService" value-ref="defaultPersonService" />
+					</util:map>
+				</entry>
 			</util:map>
 		</property>
 	</bean>
@@ -50,6 +55,11 @@
 		<property name="viewProperties">
 			<util:map>
 				<entry key="formClass" value="org.bluebell.richclient.samples.simple.form.PersonSearchForm" />
+				<entry key="formProperties">
+					<util:map>
+						<entry key="personService" value-ref="defaultPersonService" />
+					</util:map>
+				</entry>
 			</util:map>
 		</property>
 	</bean>
@@ -103,5 +113,7 @@
 	</bean>
 
 	<bean id="personRulesSource" class="org.bluebell.richclient.samples.simple.validation.PersonRulesSource" />
+
+	<bean id="defaultPersonService" class="org.bluebell.richclient.samples.simple.service.impl.DefaultPersonService" />
 </beans>
 	

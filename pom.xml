@@ -1133,8 +1133,14 @@
 			</dependency>
 			<dependency>
 				<groupId>org.easymock</groupId>
+				<artifactId>com.springsource.org.easymock</artifactId>
+				<version>${easymock-version}</version>
+				<scope>test</scope>
+			</dependency>
+			<dependency>
+				<groupId>org.easymock</groupId>
 				<artifactId>com.springsource.org.easymock.classextension</artifactId>
-				<version>2.3.0</version>
+				<version>${easymock-version}</version>
 				<scope>test</scope>
 			</dependency>
 		</dependencies>
@@ -1252,5 +1258,6 @@
 		<subtance-version>6.1</subtance-version>
 		<velocity-version>1.6.2</velocity-version>
 		<cobertura-version>2.4</cobertura-version>
+		<easymock-version>2.5.2</easymock-version>
 	</properties>
 </project>

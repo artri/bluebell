@@ -42,6 +42,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.ClassUtils;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.SystemUtils;
+import org.apache.commons.lang.exception.ExceptionUtils;
 import org.bluebell.richclient.application.config.BbApplicationConfig;
 import org.bluebell.richclient.swing.util.SwingUtils;
 import org.junit.AfterClass;
@@ -395,8 +396,9 @@ public abstract class AbstractBbRichClientTests extends AbstractJUnit4SpringCont
         @Override
         public void uncaughtException(Thread t, Throwable e) {
 
-            // (JAF), 20110111, this call makes nothing. Anyway this is better than freeze effect
-            TestCase.fail();
+            final Throwable cause = (Throwable) ObjectUtils.defaultIfNull(ExceptionUtils.getCause(e), e);
+
+            TestCase.fail(cause.getMessage());
         }
     }
 }

@@ -90,7 +90,7 @@
 									</resource>
 								</resources>
 							</configuration>
-						</execution>						
+						</execution>
 					</executions>
 				</plugin>
 			</plugins>
@@ -225,7 +225,7 @@
 		</dependency>
 		<dependency>
 			<groupId>org.easymock</groupId>
-			<artifactId>com.springsource.org.easymock.classextension</artifactId>
+			<artifactId>com.springsource.org.easymock</artifactId>
 		</dependency>
 	</dependencies>
 

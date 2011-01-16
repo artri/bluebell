@@ -503,7 +503,7 @@ public final class TableUtils {
 
                 final List<Integer> currentViewIndexes = TableUtils.getSelectedViewIndexes(table);
                 final Boolean proceed = !CollectionUtils.isEqualCollection(currentViewIndexes, viewIndexes);
-
+                
                 // PRE-CONDITION: new selection is different from previous
                 if (proceed) {
 

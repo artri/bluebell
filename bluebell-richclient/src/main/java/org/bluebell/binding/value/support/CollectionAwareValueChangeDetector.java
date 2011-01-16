@@ -35,10 +35,11 @@ import org.springframework.binding.value.support.DefaultValueChangeDetector;
  * are equal if and only if they have same elements".
  * <p>
  * <b>How does Bluebell works with it?</b>
+ * </p>
  * <dl>
- * <dt>Application context
- * <dd>Main application context
- * <dt>Bean declaration
+ * <dt>Application context</dt>
+ * <dd>Main application context</dd>
+ * <dt>Bean declaration</dt>
  * <dd>Find below provided bean declaration:
  * 
  * <pre>
@@ -54,7 +55,8 @@ import org.springframework.binding.value.support.DefaultValueChangeDetector;
  * }
  * </pre>
  * 
- * <dt>Bean configuration
+ * </dd>
+ * <dt>Bean configuration</dt>
  * <dd>Find below the main bean with whom it collaborates:
  * 
  * <pre>
@@ -77,7 +79,8 @@ import org.springframework.binding.value.support.DefaultValueChangeDetector;
  * }
  * </pre>
  * 
- * <dt>Aditional configuration
+ * </dd>
+ * <dt>Aditional configuration</dt>
  * <dd>A PPC (<code>PropertyPlaceholderConfigurer</code>) must provide a valid replacement for
  * <code>${richclient.valueChangeDetector}</code>. Default configuration defines
  * <code>defaultPropertyPlaceholderConfigurer</code> with the following property:
@@ -86,6 +89,7 @@ import org.springframework.binding.value.support.DefaultValueChangeDetector;
  * richclient.valueChangeDetector = defaultValueChangeDetector
  * </pre>
  * 
+ * </dd>
  * </dl>
  * 
  * @see CollectionUtils#isEqualCollection(Collection, Collection)

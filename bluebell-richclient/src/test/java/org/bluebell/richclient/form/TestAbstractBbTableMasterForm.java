@@ -441,24 +441,94 @@ public class TestAbstractBbTableMasterForm extends AbstractBbSamplesTests {
         ActionCommand actionCommand = null;
         int requestCount = masterForm.getCount();
 
+        /*
+         * (A) NEW FORM OBJECT COMMAND
+         */
         actionCommand = masterForm.getNewFormObjectCommand();
+
+        // (a.1) Create a new entity: requests count should keep invariable
+        // EXPECTED: []
         this.doTestRequestUserConfirmation(masterForm, Boolean.TRUE, actionCommand, requestCount, newSelection);
 
+        // (a.2) Change name: child form should get dirty
+        // EXPECTED: [] Child gets dirty
         this.userAction(childForm, "name", name);
         TestCase.assertTrue("childForm.isDirty()", childForm.isDirty());
-        
+
+        /*
+         * (B) SEARCH COMMAND
+         */
         actionCommand = searchForm.getSearchCommand();
+
+        // (b.1) Abort search command execution
+        // EXPECTED: [] Child is dirty and editing new form object
         this.doTestRequestUserConfirmation(masterForm, Boolean.FALSE, actionCommand, ++requestCount, newSelection);
+        TestCase.assertTrue("childForm.isDirty()", childForm.isDirty());
         TestCase.assertTrue("childForm.isEditingNewFormObject()", childForm.isEditingNewFormObject());
-        
+
+        // (b.1) Confirm search command execution
+        // EXPECTED: [] Child is dirty and editing new form object
+        // Note JIRA issue http://jirabluebell.b2b2000.com/browse/BLUE-55 was wrong since this is the expected behaviour
         this.doTestRequestUserConfirmation(masterForm, Boolean.TRUE, actionCommand, ++requestCount, newSelection);
+        TestCase.assertTrue("childForm.isDirty()", childForm.isDirty());
         TestCase.assertTrue("childForm.isEditingNewFormObject()", childForm.isEditingNewFormObject());
-        
+
+        /*
+         * (C) SAVE COMMAND
+         */
         actionCommand = masterForm.getSaveCommand();
+
+        // (c.1) Save command execution
+        // EXPECTED: [P] Child is neither dirty nor editing new form object
         newSelection = Arrays.asList(new Person(name));
         this.doTestRequestUserConfirmation(masterForm, Boolean.TRUE, actionCommand, requestCount, newSelection);
         TestCase.assertFalse("childForm.isEditingNewFormObject()", childForm.isEditingNewFormObject());
         TestCase.assertFalse("childForm.isDirty()", childForm.isDirty());
+    }
+
+    /**
+     * Tests the correct behaviour of <code>requestUserConfirmation</code> on select all command execution.
+     */
+    @SuppressWarnings("unchecked")
+    @Test
+    public void testRequestUserConfirmationOnSelectAllEntities() {
+
+        final MockPersonMasterForm masterForm = (MockPersonMasterForm) this.getBackingForm(this.getMasterView());
+        final PersonChildForm childForm = (PersonChildForm) this.getBackingForm(this.getChildView());
+
+        List<Person> newSelection = ListUtils.EMPTY_LIST;
+        ActionCommand actionCommand = null;
+        int requestCount = masterForm.getCount();
+
+        // Show entities:
+        // EXPECTED: [1,2,3,4]
+        masterForm.showEntities(TestAbstractBbTableMasterForm.PERSONS_1);
+        masterForm.changeSelection(newSelection);
+
+        /*
+         * (A) SELECT ALL COMMAND
+         */
+        actionCommand = masterForm.getSelectAllCommand();
+
+        // (a.1) Change selection: requests count should keep invariable
+        // EXPECTED: [1, 2, -->3<--, 4]
+        newSelection = Arrays.asList(TestAbstractBbTableMasterForm.PERSONS_1.get(2));
+        this.doTestRequestUserConfirmation(masterForm, Boolean.TRUE, newSelection, requestCount, newSelection);
+
+        // (a.2) Change age: child form should get dirty
+        // EXPECTED: [1, 2, -->[D]3<--, 4]
+        this.userAction(childForm, "age", "22");
+        TestCase.assertTrue("childForm.isDirty()", childForm.isDirty());
+
+        // (a.3) Abort selectAll command execution
+        // EXPECTED: [1, 2, -->[D]3<--, 4]
+        this.doTestRequestUserConfirmation(masterForm, Boolean.FALSE, actionCommand, ++requestCount, newSelection);
+
+        // (a.4) Confirm selectAll command execution
+        // EXPECTED: [-->1<--, -->2<--, -->3<--, -->4<--]
+        newSelection = TestAbstractBbTableMasterForm.PERSONS_1;
+        this.doTestRequestUserConfirmation(masterForm, Boolean.TRUE, actionCommand, ++requestCount, newSelection);
+        TestCase.assertFalse("childForm.isDirty()", childForm.isDirty());        
     }
 
     @Test
@@ -594,15 +664,8 @@ public class TestAbstractBbTableMasterForm extends AbstractBbSamplesTests {
         Assert.notNull(expectedSelection, "expectedSelection");
 
         masterForm.setConfirm(confirm);
-
-        SwingUtils.runInEventDispatcherThread(new Runnable() {
-
-            @Override
-            public void run() {
-
-                actionCommand.execute();
-            }
-        });
+        
+        SwingUtils.runInEventDispatcherThread(actionCommand);
 
         TestCase.assertEquals(expectedCount, masterForm.getCount());
         TestCase.assertTrue("ListUtils.isEqualList(expectedSelection, masterForm.getSelection())\n" + expectedSelection

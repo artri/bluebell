@@ -80,6 +80,7 @@ public final class AtomicObservableEventList<S> extends ObservableEventList {
         }
     }
 
+
     /**
      * {@inheritDoc}
      */
@@ -115,8 +116,8 @@ public final class AtomicObservableEventList<S> extends ObservableEventList {
 
         final String elementClazz = (!this.isEmpty()) ? this.get(0).getClass().getSimpleName() : "EMPTY";
 
-        return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE).append("size", this.getSize()).append(
-                "elementClass", elementClazz).toString();
+        return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE).append("size", this.getSize())
+                .append("elementClass", elementClazz).toString();
     }
 
     /**

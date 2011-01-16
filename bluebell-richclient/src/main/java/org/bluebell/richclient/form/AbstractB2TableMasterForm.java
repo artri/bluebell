@@ -26,6 +26,9 @@ import java.util.Collections;
 import java.util.List;
 
 import javax.swing.JPanel;
+import javax.swing.JTable;
+import javax.swing.event.TableModelEvent;
+import javax.swing.event.TableModelListener;
 
 import org.bluebell.richclient.application.config.FilterCommand;
 import org.bluebell.richclient.command.support.CommandUtils;
@@ -41,6 +44,7 @@ import org.springframework.richclient.command.TargetableActionCommand;
 import org.springframework.richclient.command.support.GlobalCommandIds;
 import org.springframework.richclient.exceptionhandling.delegation.ExceptionHandlerDelegate;
 import org.springframework.richclient.form.Form;
+import org.springframework.richclient.table.support.GlazedTableModel;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.StringUtils;
@@ -158,6 +162,11 @@ public abstract class AbstractB2TableMasterForm<T extends Object> extends Abstra
     private ActionCommand selectAllCommand;
 
     /**
+     * Refresh current selection.
+     */
+    private ActionCommand refreshCommand;
+
+    /**
      * 
      */
     private List<AbstractBbSearchForm<T, ?>> searchForms;
@@ -273,31 +282,32 @@ public abstract class AbstractB2TableMasterForm<T extends Object> extends Abstra
         this.getDispatcherForm().removeChildForm(childForm);
     }
 
-//    /**
-//     * Establece las entidades a mostrar añadiendo al comportamiento de la clase padre la notificación a los formularios
-//     * hijos en caso de que no haya ninguna entidad seleccionada.
-//     * 
-//     * @param entities
-//     *            las entidades a mostrar.
-//     * 
-//     * @param attach
-//     *            <em>flag</em> indicando si las nuevas entidades se han de sumar a las anteriores (<code>true</code>) o
-//     *            si por el contrario deben sustituirlos (<code>false</code>).
-//     * @see AbstractBb1TableMasterForm#showEntities(Collection, boolean)
-//     */
-//    @Override
-//    public final void showEntities(List<T> entities, Boolean attach) {
-//
-//        super.showEntities(entities, attach);
-//
-//        // Si una vez establecido el listado de entidades no hay ninguna seleccionada entonces notificar a los
-//        // formularios hijos.
-//        // Esto se hace necesario porque el método en super desinstala el selectionHandler
-//        // (JAF), 20081001, esta comprobación debería ser siempre true
-//        if (this.getMasterTable().getSelectionModel().getMaxSelectionIndex() < 0) {
-//            this.onNoSelection();
-//        }
-//    }
+    // /**
+    // * Establece las entidades a mostrar añadiendo al comportamiento de la clase padre la notificación a los
+    // formularios
+    // * hijos en caso de que no haya ninguna entidad seleccionada.
+    // *
+    // * @param entities
+    // * las entidades a mostrar.
+    // *
+    // * @param attach
+    // * <em>flag</em> indicando si las nuevas entidades se han de sumar a las anteriores (<code>true</code>) o
+    // * si por el contrario deben sustituirlos (<code>false</code>).
+    // * @see AbstractBb1TableMasterForm#showEntities(Collection, boolean)
+    // */
+    // @Override
+    // public final void showEntities(List<T> entities, Boolean attach) {
+    //
+    // super.showEntities(entities, attach);
+    //
+    // // Si una vez establecido el listado de entidades no hay ninguna seleccionada entonces notificar a los
+    // // formularios hijos.
+    // // Esto se hace necesario porque el método en super desinstala el selectionHandler
+    // // (JAF), 20081001, esta comprobación debería ser siempre true
+    // if (this.getMasterTable().getSelectionModel().getMaxSelectionIndex() < 0) {
+    // this.onNoSelection();
+    // }
+    // }
 
     /**
      * Obtiene el comando para cancelar la creación de una nueva entidad.
@@ -385,8 +395,10 @@ public abstract class AbstractB2TableMasterForm<T extends Object> extends Abstra
     @Override
     public ActionCommandExecutor getRefreshCommand() {
 
-        // FIXME
-        return this.getNewFormObjectCommand();
+        if (this.refreshCommand == null) {
+            this.refreshCommand = this.createSelectAllCommand();
+        }
+        return this.refreshCommand;
     }
 
     /**
@@ -430,25 +442,6 @@ public abstract class AbstractB2TableMasterForm<T extends Object> extends Abstra
         final String type = StringUtils.capitalize(ClassUtils.getShortName(this.getDetailType()));
 
         return CommandUtils.getCommandFaceDescriptorId(defaultCommandName, type);
-    }
-
-    /**
-     * Actualiza los controles en función del estado del formulario.
-     * <p>
-     * Añade al comportamiento original (
-     * {@link org.springframework.richclient.form.AbstractTableMasterForm#updateControlsForState()}) la capacidad de
-     * habilitar/deshabilitar el comando de refresco.
-     */
-    @Override
-    protected void updateControlsForState() {
-
-        super.updateControlsForState();
-
-        // v2.5.18: el comando se activa si hay alguna fila seleccionada
-        // final Boolean enabled = !this.getSelectedEntities().isEmpty();
-        // this.getRefreshCommand().setEnabled(enabled);
-
-        // this.getRefreshCommand().setEnabled(this.getDeleteCommand().isEnabled());
     }
 
     /**
@@ -590,7 +583,8 @@ public abstract class AbstractB2TableMasterForm<T extends Object> extends Abstra
         final String commandId = this.getSaveCommandFaceDescriptorId();
 
         // Crear el comando
-        final ActionCommand command = new TargetableActionCommand(commandId, this.getDispatcherForm().getCommitCommand());
+        final ActionCommand command = new TargetableActionCommand(commandId, this.getDispatcherForm()
+                .getCommitCommand());
 
         // Configurar el comando
         return this.configureCommand(command, Boolean.TRUE);
@@ -617,6 +611,56 @@ public abstract class AbstractB2TableMasterForm<T extends Object> extends Abstra
             protected void doExecuteCommand() {
 
                 AbstractB2TableMasterForm.this.getMasterTable().selectAll();
+            }
+        };
+
+        // (JAF), 20110113, enable/disable command dependending on table state
+        this.getMasterTableModel().addTableModelListener(new TableModelListener() {
+
+            @Override
+            public void tableChanged(TableModelEvent e) {
+
+                final Boolean enabled = (AbstractB2TableMasterForm.this.getMasterTable().getRowCount() > 0);
+
+                command.setEnabled(enabled);
+            }
+        });
+
+        // Configurar el comando
+        return this.configureCommand(command, Boolean.TRUE);
+    }
+
+    /**
+     * Crea y configura el comando de selección de todos los elementos de la tabla maestra.
+     * 
+     * @return el comando de selección
+     */
+    protected ActionCommand createRefreshCommand() {
+
+        // Obtener los identificadores del comando, separados por comas y
+        // ordenados según prioridad
+        final String commandId = this.getRefreshCommandFaceDescriptorId();
+
+        // Crear el comando
+        final ActionCommand command = new ActionCommand(commandId) {
+
+            /**
+             * Selecciona todas las entidades de la tabla maestra.
+             */
+            @Override
+            protected void doExecuteCommand() {
+
+                final JTable table = AbstractB2TableMasterForm.this.getMasterTable();
+                final GlazedTableModel tableModel = AbstractB2TableMasterForm.this.getMasterTableModel();
+                final List<Integer> viewIndexes = TableUtils.getSelectedViewIndexes(table);
+                final List<Integer> modelIndexes = TableUtils.getModelIndexes(table, viewIndexes);
+                final List<T> selection = TableUtils.getSelection(table, tableModel, modelIndexes);
+
+                AbstractB2TableMasterForm.this.doRefresh(selection);
+                // (JAF), 20110113, TODO, it is to boring form me at 7:20 AM...
+
+                // TableUtils.changeSelection(masterTable, viewIndexes, Boolean.TRUE);
+                // AbstractB2TableMasterForm.this.getMasterTable().selectAll();
             }
         };
 
@@ -855,40 +899,6 @@ public abstract class AbstractB2TableMasterForm<T extends Object> extends Abstra
     }
 
     /**
-     * Redefine {@link AbstractBb1TableMasterForm#createFormControl()} del siguiente modo:
-     * <ul>
-     * <li>Invoca al método de la clase padre.
-     * <li>Da la oportunidad a las clases hijas de modificar el control creado ( {@link #onCreateFormControl()}).
-     * <li>Excluye el formulario detalle.
-     * <li>Actualiza los controles en función del estado.
-     * </ul>
-     * 
-     * @return el componente con el formulario maestro excluyendo el formulario detalle.
-     */
-    // @Override
-    // protected final JComponent createFormControl() {
-    //
-    // // Obtener el control del formulario maestro.
-    // final JPanel panel = (JPanel) super.createFormControl();
-    //
-    // // El formulario maestro consta de una tabla y botones.
-    // // final JPanel panel = new JPanel(new BorderLayout());
-    // // panel.add(new JScrollPane(this.getMasterTable()), BorderLayout.CENTER);
-    // // panel.add(this.createButtonBar(), BorderLayout.SOUTH);
-    // // panel.setBorder(BorderFactory.createTitledBorder(//
-    // // BorderFactory.createEtchedBorder()));
-    //
-    // // Dar la oportunidad a la clase hija de modificar el control.
-    // this.onCreateFormControl(panel);
-    //
-    // // Actualizar los controles en función del estado.
-    // super.updateControlsForState();
-    // this.setEnabled(true);
-    //
-    // return panel;
-    // }
-
-    /**
      * Método al que es posible invocar con el objetivo de modificar el control del formulario antes de su creación
      * defintiva.
      * <p>
@@ -900,46 +910,6 @@ public abstract class AbstractB2TableMasterForm<T extends Object> extends Abstra
     protected void onCreateFormControl(JPanel panel) {
 
         // Nothing to do
-    }
-
-    /**
-     * Manejador para los cambios del elemento seleccionado.
-     * <p>
-     * Esta implementación no realiza tarea alguna. Las subclases pueden sobreescribirla para llevar a cabo un
-     * comportamiento adicional cada vez que se cambie el elemento seleccionado.
-     * <p>
-     * Los usuarios de <b>JPA</b> pueden emplear este método para cargar las relaciones <em>lazy</em>.
-     * <p>
-     * Ejemplo:
-     * 
-     * <pre>
-     * Assert.isInstanceOf(Departamento.class, selectedObject);
-     * 
-     * // El departamento seleccionado
-     * Departamento departamento = (Departamento) selectedObject;
-     * 
-     * if (!JpaUtil.isInitialized(departamento.getCargosAcademicos())) {
-     *     // Cargar los cargos académicos
-     *     departamento = this.departamentoService //
-     *             .cargarCargosAcademicosPorDepartamento(departamento);
-     *     return departamento;
-     * }
-     * </pre>
-     * 
-     * @param selectedIndex
-     *            el índice del elemento seleccionado.
-     * @param selectedObject
-     *            el objeto seleccionado.
-     * 
-     * @return el objeto seleccionado.
-     * 
-     * @see #createSelectionHandler()
-     * @deprecated En favor de {@link #beforeSelectionChange(int, Object)} y {@link #afterSelectionChange(int, Object)}.
-     */
-    @Deprecated
-    protected T onSelectionChange(int selectedIndex, T selectedObject) {
-
-        return selectedObject;
     }
 
     /**
@@ -1011,7 +981,13 @@ public abstract class AbstractB2TableMasterForm<T extends Object> extends Abstra
     @Override
     protected final List<T> beforeSelectionChange(List<Integer> modelIndexes, List<T> selection) {
 
-        final List<T> newSelection = this.doRefresh(selection);
+        /*
+         * Bug http://jirabluebell.b2b2000.com/browse/BLUE-61 fixed
+         * 
+         * final List<T> newSelection = this.doRefresh(selection);
+         */
+        final Boolean committing = this.getDispatcherForm().isCommitting();
+        final List<T> newSelection = (committing) ? selection : this.doRefresh(selection);
 
         // Notify child forms about selection
         for (final AbstractBbChildForm<T> childForm : this.getChildForms()) {

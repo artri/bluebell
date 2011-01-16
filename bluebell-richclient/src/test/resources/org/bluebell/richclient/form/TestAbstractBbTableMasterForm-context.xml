@@ -44,6 +44,11 @@
 		<property name="viewProperties">
 			<util:map>
 				<entry key="formClass" value="org.bluebell.richclient.form.TestAbstractBbTableMasterForm$MockPersonMasterForm" />
+				<entry key="formProperties">
+					<util:map>
+						<entry key="personService" value-ref="defaultPersonService" />
+					</util:map>
+				</entry>
 			</util:map>
 		</property>
 	</bean>

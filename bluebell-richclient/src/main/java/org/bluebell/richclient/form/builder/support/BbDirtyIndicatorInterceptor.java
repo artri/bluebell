@@ -219,15 +219,18 @@ public class BbDirtyIndicatorInterceptor extends AbstractOverlayFormComponentInt
          */
         public void dirtyChanged(PropertyChangeEvent evt) {
 
-            this.isDirty((Boolean) evt.getNewValue());
+            this.setDirty((Boolean) evt.getNewValue());
 
             if (this.isDirty() && !this.isOriginalValueKnown()) {
-                this.hasReset(Boolean.FALSE).isOriginalValueKnown(Boolean.TRUE).originalValue(this.getPreviousValue());
+
+                this.setHasReset(Boolean.FALSE)//
+                        .setOriginalValueKnown(Boolean.TRUE)//
+                        .setOriginalValue(this.getPreviousValue());
 
             } else if (!this.isDirty()) {
                 // HACK, (JAF), 20081020: let user change original value when using
                 // DirtyTrackingUtils#setValueWithoutTrackDirtythis
-                this.hasReset(Boolean.TRUE);
+                this.setHasReset(Boolean.TRUE);
             }
 
             this.refreshOverlay(this.isDirty());
@@ -238,7 +241,11 @@ public class BbDirtyIndicatorInterceptor extends AbstractOverlayFormComponentInt
          */
         public void objectChanged() {
 
-            this.hasReset(true).isDirty(false).isOriginalValueKnown(false).originalValue(null).previousValue(null);
+            this.setHasReset(Boolean.TRUE)//
+                    .setDirty(Boolean.FALSE)//
+                    .setOriginalValueKnown(Boolean.FALSE)//
+                    .setOriginalValue(null)//
+                    .setPreviousValue(null);
 
             this.hideOverlay();
         }
@@ -253,11 +260,21 @@ public class BbDirtyIndicatorInterceptor extends AbstractOverlayFormComponentInt
 
             final Boolean show = this.isDirty() && !this.hasReset();
 
-            this.originalValue(null).previousValue(evt.getOldValue());
+            /*
+             * (JAF), 20110114, http://jirabluebell.b2b2000.com/browse/BLUE-59
+             * 
+             * Second and sucesive changes remembers null instead of original value.
+             * 
+             * this.setOriginalValue(null).setPreviousValue(evt.getOldValue());
+             */
+
+            if (!this.isOriginalValueKnown()) {
+                this.setOriginalValue(null).setPreviousValue(evt.getOldValue());
+            }
 
             if (this.hasReset()) {
                 // It's time for updating (after a previous call to "objectChanged")
-                this.hasReset(Boolean.FALSE).isOriginalValueKnown(Boolean.FALSE);
+                this.setHasReset(Boolean.FALSE).setOriginalValueKnown(Boolean.FALSE);
             }
 
             this.refreshOverlay(show);
@@ -335,7 +352,7 @@ public class BbDirtyIndicatorInterceptor extends AbstractOverlayFormComponentInt
          * 
          * @return <code> this</code>.
          */
-        private DirtyOverlayHandler hasReset(Boolean reset) {
+        private DirtyOverlayHandler setHasReset(Boolean reset) {
 
             Assert.notNull(reset, "reset");
 
@@ -362,7 +379,7 @@ public class BbDirtyIndicatorInterceptor extends AbstractOverlayFormComponentInt
          * 
          * @return <code> this</code>.
          */
-        private DirtyOverlayHandler isDirty(Boolean dirty) {
+        private DirtyOverlayHandler setDirty(Boolean dirty) {
 
             Assert.notNull(dirty, "dirty");
 
@@ -389,7 +406,7 @@ public class BbDirtyIndicatorInterceptor extends AbstractOverlayFormComponentInt
          * 
          * @return <code> this</code>.
          */
-        private DirtyOverlayHandler isOriginalValueKnown(Boolean originalValueKnown) {
+        private DirtyOverlayHandler setOriginalValueKnown(Boolean originalValueKnown) {
 
             Assert.notNull(originalValueKnown, "originalValueKnown");
 
@@ -416,7 +433,7 @@ public class BbDirtyIndicatorInterceptor extends AbstractOverlayFormComponentInt
          * 
          * @return <code> this</code>.
          */
-        private DirtyOverlayHandler originalValue(Object originalValue) {
+        private DirtyOverlayHandler setOriginalValue(Object originalValue) {
 
             this.originalValue = originalValue;
 
@@ -471,7 +488,7 @@ public class BbDirtyIndicatorInterceptor extends AbstractOverlayFormComponentInt
          * 
          * @return <code> this</code>.
          */
-        private DirtyOverlayHandler previousValue(Object previousValue) {
+        private DirtyOverlayHandler setPreviousValue(Object previousValue) {
 
             this.previousValue = previousValue;
 

@@ -28,8 +28,10 @@ import javax.swing.JComponent;
 import org.bluebell.richclient.form.AbstractBbSearchForm;
 import org.bluebell.richclient.form.util.BbFormModelHelper;
 import org.bluebell.richclient.samples.simple.bean.Person;
+import org.bluebell.richclient.samples.simple.service.PersonService;
 import org.springframework.richclient.form.binding.BindingFactory;
 import org.springframework.richclient.form.builder.TableFormBuilder;
+import org.springframework.util.Assert;
 
 /**
  * @author <a href = "mailto:julio.arguello@gmail.com" >Julio Argüello (JAF)</a>
@@ -37,11 +39,45 @@ import org.springframework.richclient.form.builder.TableFormBuilder;
 public class PersonSearchForm extends AbstractBbSearchForm<Person, Person> {
 
     /**
+     * The default form id.
+     */
+    private static final String FORM_ID = "personSearchForm";
+
+    /**
+     * The person service.
+     */
+    private PersonService personService;
+
+    /**
+     * Creates the form.
      */
     public PersonSearchForm() {
 
-        super("personSearchForm");
+        super(PersonSearchForm.FORM_ID);
         this.setFormModel(BbFormModelHelper.createValidatingFormModel(new Person(), this.getId()));
+    }
+
+    /**
+     * Gets the person service.
+     * 
+     * @return the person service.
+     */
+    public final PersonService getPersonService() {
+
+        return this.personService;
+    }
+
+    /**
+     * Sets the person service.
+     * 
+     * @param personService
+     *            the person service to set.
+     */
+    public final void setPersonService(PersonService personService) {
+
+        Assert.notNull(personService, "personService");
+
+        this.personService = personService;
     }
 
     /**
@@ -50,10 +86,7 @@ public class PersonSearchForm extends AbstractBbSearchForm<Person, Person> {
     @Override
     protected List<Person> doSearch(Person searchParams) {
 
-        final int numberOfPersons = 10000;
-        // final int numberOfPersons = 1;
-
-        return Person.createPersons(numberOfPersons);
+        return this.getPersonService().searchPersons(searchParams);
     }
 
     /**

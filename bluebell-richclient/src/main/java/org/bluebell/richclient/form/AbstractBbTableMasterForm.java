@@ -63,6 +63,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.binding.form.ConfigurableFormModel;
 import org.springframework.binding.form.FormModel;
 import org.springframework.binding.form.HierarchicalFormModel;
+import org.springframework.binding.value.ValueChangeDetector;
 import org.springframework.binding.value.support.ValueHolder;
 import org.springframework.richclient.application.Application;
 import org.springframework.richclient.application.ApplicationWindow;
@@ -288,12 +289,12 @@ public abstract class AbstractBbTableMasterForm<T extends Object> extends Abstra
     }
 
     /**
-     * Shows the given entities within the master table.
+     * Shows the given entities into the master table.
      * 
      * @param entities
      *            the entities to be shown.
      * @param attach
-     *            whether to attach the entities to those currently being shown.
+     *            whether to attach these entities to those currently being shown.
      * @param force
      *            whether to force showing entities without requesting user confirmation.
      * 
@@ -444,18 +445,16 @@ public abstract class AbstractBbTableMasterForm<T extends Object> extends Abstra
      *            master event list relative indexes of the selection.
      * @param newViewIndexes
      *            user relative indexes of the selection.
-     * @param selection
+     * @param newSelection
      *            the selected entities.
      */
+    @SuppressWarnings("unchecked")
     protected final void doSelectionChange(List<Integer> oldModelIndexes, List<Integer> oldViewIndexes,
-            List<Integer> newModelIndexes, List<Integer> newViewIndexes, List<T> selection) {
-
-        // (JAF), 20110102, I don't understand this line, we are currently handling a selection change!!
-        // TableUtils.changeSelection(this.getMasterTable(), this.getMasterTableModel(), selection);
+            List<Integer> newModelIndexes, List<Integer> newViewIndexes, List<T> newSelection) {
 
         final Integer oldSelectedIndex = this.getDetailForm().getSelectedIndex();
-        final Boolean emptySelection = (selection.isEmpty());
-        final Boolean singleSelection = (selection.size() == 1);
+        final Boolean emptySelection = (newSelection.isEmpty());
+        final Boolean singleSelection = (newSelection.size() == 1);
         final Integer indexToSelect;
 
         if (emptySelection) {
@@ -464,6 +463,24 @@ public abstract class AbstractBbTableMasterForm<T extends Object> extends Abstra
             indexToSelect = newModelIndexes.get(0);
         } else { // Multiple selection. (JAF), 20110102
             indexToSelect = -1;
+        }
+
+        /*
+         * BLUE-62, (JAF), 20110116, http://jirabluebell.b2b2000.com/browse/BLUE-62
+         * 
+         * Master event list have not changed so dispatcher form and child forms are not aware of new selection
+         */
+        final ValueChangeDetector valueChangeDetector = //
+        (ValueChangeDetector) this.getService(ValueChangeDetector.class);
+        for (int i = 0; i < newModelIndexes.size(); ++i) {
+
+            final Integer modelIndex = newModelIndexes.get(i);
+            final T oldValue = (T) this.getMasterEventList().get(modelIndex);
+            final T newValue = newSelection.get(i);
+
+            if (valueChangeDetector.hasValueChanged(oldValue, newValue)) {
+                this.getMasterEventList().set(modelIndex, newValue);
+            }
         }
 
         /*
@@ -476,6 +493,7 @@ public abstract class AbstractBbTableMasterForm<T extends Object> extends Abstra
             // (JAF), 20110103, form becomes empty and disabled when selected index changes from any to -1
             this.getDetailForm().reset();
         }
+
         DirtyTrackingUtils.clearDirty(this.getDetailFormModel());
     }
 
@@ -821,9 +839,9 @@ public abstract class AbstractBbTableMasterForm<T extends Object> extends Abstra
 
         final Boolean shouldProceed = this.shouldProceed();
         if (shouldProceed) {
-            final List<T> treatedSelection = this.beforeSelectionChange(newModelIndexes, newSelection);
-            this.doSelectionChange(oldModelIndexes, oldViewIndexes, newModelIndexes, newViewIndexes, treatedSelection);
-            this.afterSelectionChange(newModelIndexes, treatedSelection);
+            final List<T> managedSelection = this.beforeSelectionChange(newModelIndexes, newSelection);
+            this.doSelectionChange(oldModelIndexes, oldViewIndexes, newModelIndexes, newViewIndexes, managedSelection);
+            this.afterSelectionChange(newModelIndexes, managedSelection);
         } else {
             this.undoSelectionChange(oldModelIndexes, oldViewIndexes, newModelIndexes, newViewIndexes, newSelection);
         }

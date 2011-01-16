@@ -62,7 +62,7 @@ public class Person implements Comparable<Person>, Serializable {
          */
         FEMALE
     };
-    
+
     /**
      * The person name.
      */
@@ -108,7 +108,7 @@ public class Person implements Comparable<Person>, Serializable {
         this();
         this.setName(name);
     }
-    
+
     /**
      * Adds vets to this person.
      * 
@@ -338,8 +338,25 @@ public class Person implements Comparable<Person>, Serializable {
         final Long number = RandomUtils.nextLong();
         final String string = number.toString();
 
-        final Person person = new Person(string);
-        person.setAddress(string);
+        final Person person = Person.createPerson(string);
+
+        return person;
+    }
+
+    /**
+     * Creates an arbitrary person with the given name.
+     * 
+     * @param name
+     *            the name.
+     * 
+     * @return the person.
+     */
+    public static Person createPerson(String name) {
+
+        final Long number = RandomUtils.nextLong();
+
+        final Person person = new Person(name);
+        person.setAddress(name);
         person.setAge(number);
         person.setSex((number % 2 == 0) ? Sex.MALE : Sex.FEMALE);
 

@@ -34,6 +34,7 @@ import javax.swing.JLabel;
 import javax.swing.plaf.UIResource;
 
 import org.bluebell.richclient.application.RcpMain;
+import org.springframework.richclient.command.ActionCommand;
 import org.springframework.util.Assert;
 
 /**
@@ -49,6 +50,28 @@ public final class SwingUtils {
     private SwingUtils() {
 
         super();
+    }
+
+    /**
+     * Ensures the given actionCommand is executed in the event dispatcher thread and waits until executin is completed.
+     * 
+     * @param actionCommand
+     *            the action command.
+     * 
+     * @see #runInEventDispatcherThread(Runnable)
+     */
+    public static void runInEventDispatcherThread(final ActionCommand actionCommand) {
+
+        Assert.notNull(actionCommand, "actionCommand");
+
+        SwingUtils.runInEventDispatcherThread(new Runnable() {
+
+            @Override
+            public void run() {
+
+                actionCommand.execute();
+            }
+        });
     }
 
     /**
