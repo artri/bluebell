@@ -51,8 +51,9 @@ import org.springframework.util.Assert;
 
 /**
  * Substance look and feel configurer.
- * <p />
+ * <p>
  * The simplest configuration requires the following bean in the startup aplication context:
+ * </p>
  * 
  * <pre>
  *      <bean id="substanceLookAndFeelConfigurer" parent="vldockingLookAndFeelConfigurer" 

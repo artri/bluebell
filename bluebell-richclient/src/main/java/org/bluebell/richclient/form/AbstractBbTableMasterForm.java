@@ -33,6 +33,7 @@ import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
+import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
@@ -276,12 +277,12 @@ public abstract class AbstractBbTableMasterForm<T extends Object> extends Abstra
      */
     @Override
     public final void changeSelection(List<T> newSelection) {
-    
+
         // Selection must be included into entities currently being shown.
         final Boolean proceed = this.showEntities(new ArrayList<T>(newSelection), Boolean.TRUE);
-    
+
         if (proceed) {
-    
+
             /*
              * (JAF), 20110102, at this point two user confirmation requests may be thrown
              * 
@@ -293,7 +294,7 @@ public abstract class AbstractBbTableMasterForm<T extends Object> extends Abstra
              */
             try {
                 this.changingSelection = Boolean.TRUE;
-    
+
                 // PRE-CONDITION: user has confirmed selection (if needed) && new selection is currently being shown
                 TableUtils.changeSelection(this.getMasterTable(), this.getMasterTableModel(), newSelection);
                 // POST-CONDITION: selection is changed and listeners notified
@@ -387,12 +388,12 @@ public abstract class AbstractBbTableMasterForm<T extends Object> extends Abstra
     @SuppressWarnings("unchecked")
     protected final void doSelectionChange(List<Integer> oldModelIndexes, List<Integer> oldViewIndexes,
             List<Integer> newModelIndexes, List<Integer> newViewIndexes, List<T> newSelection) {
-    
+
         final Integer oldSelectedIndex = this.getDetailForm().getSelectedIndex();
         final Boolean emptySelection = (newSelection.isEmpty());
         final Boolean singleSelection = (newSelection.size() == 1);
         final Integer indexToSelect;
-    
+
         if (emptySelection) {
             indexToSelect = -1;
         } else if (singleSelection) {
@@ -400,7 +401,7 @@ public abstract class AbstractBbTableMasterForm<T extends Object> extends Abstra
         } else { // Multiple selection. (JAF), 20110102
             indexToSelect = -1;
         }
-    
+
         /*
          * BLUE-62, (JAF), 20110116, http://jirabluebell.b2b2000.com/browse/BLUE-62
          * 
@@ -408,18 +409,18 @@ public abstract class AbstractBbTableMasterForm<T extends Object> extends Abstra
          */
         final ValueChangeDetector valueChangeDetector = //
         (ValueChangeDetector) this.getService(ValueChangeDetector.class);
-    
+
         for (int i = 0; i < newModelIndexes.size(); ++i) {
-    
+
             final Integer modelIndex = newModelIndexes.get(i);
             final T oldValue = (T) this.getMasterEventList().get(modelIndex);
             final T newValue = newSelection.get(i);
-    
+
             if (valueChangeDetector.hasValueChanged(oldValue, newValue)) {
                 this.getMasterEventList().set(modelIndex, newValue);
             }
         }
-    
+
         /*
          * BLUE-41, (JAF), 20101227, http://jirabluebell.b2b2000.com/browse/BLUE-41
          * 
@@ -430,7 +431,7 @@ public abstract class AbstractBbTableMasterForm<T extends Object> extends Abstra
             // (JAF), 20110103, form becomes empty and disabled when selected index changes from any to -1
             this.getDetailForm().reset();
         }
-    
+
         DirtyTrackingUtils.clearDirty(this.getDetailFormModel());
     }
 
@@ -450,7 +451,7 @@ public abstract class AbstractBbTableMasterForm<T extends Object> extends Abstra
      */
     protected final void undoSelectionChange(List<Integer> oldModelIndexes, List<Integer> oldViewIndexes,
             List<Integer> newModelIndexes, List<Integer> newViewIndexes, List<T> selection) {
-    
+
         // If editing new form object then clear selection on cancel, else get back the former selected index
         if (this.getDetailForm().isEditingNewFormObject()) {
             this.getSelectionModel().clearSelection();
@@ -562,7 +563,7 @@ public abstract class AbstractBbTableMasterForm<T extends Object> extends Abstra
      *            el panel que conforma el formulario.
      */
     protected void onCreateFormControl(JPanel panel) {
-    
+
         // Nothing to do
     }
 
@@ -575,7 +576,7 @@ public abstract class AbstractBbTableMasterForm<T extends Object> extends Abstra
      */
     @Override
     protected final JPopupMenu getPopupMenu() {
-    
+
         return this.getPopupMenuCommandGroup().createPopupMenu();
     }
 
@@ -585,11 +586,11 @@ public abstract class AbstractBbTableMasterForm<T extends Object> extends Abstra
      * @return the popup menu command group.
      */
     protected final CommandGroup getPopupMenuCommandGroup() {
-    
+
         if (this.popupMenuCommandGroup == null) {
             this.popupMenuCommandGroup = this.createButtonsCommandGroup();
         }
-    
+
         return this.popupMenuCommandGroup;
     }
 
@@ -729,15 +730,14 @@ public abstract class AbstractBbTableMasterForm<T extends Object> extends Abstra
 
         Assert.notNull(this.getDispatcherForm());
 
-        // Obtener los identificadores del comando, separados por comas y
-        // ordenados según prioridad
+        // Obtener los identificadores del comando, separados por comas y ordenados según prioridad
         final String commandId = this.getCancelCommandFaceDescriptorId();
+        final BbDispatcherForm<T> dispatcherForm = this.getDispatcherForm();
 
         // Crear el comando y sincronizar su estado enabled/disabled
-        final ActionCommand command = new TargetableActionCommand(commandId, this.getDispatcherForm()
-                .getCancelCommand());
+        final ActionCommand command = new TargetableActionCommand(commandId, dispatcherForm.getCancelCommand());
 
-        // Determinar cuando ha de estar habilitado el comando.
+        // enable/disable command dependending on new form object command
         command.setEnabled(Boolean.FALSE);
         this.getNewFormObjectCommand().addEnabledListener(new PropertyChangeListener() {
             public void propertyChange(PropertyChangeEvent evt) {
@@ -757,8 +757,7 @@ public abstract class AbstractBbTableMasterForm<T extends Object> extends Abstra
      */
     protected ActionCommand createFilterCommand() {
 
-        // Obtener los identificadores del comando, separados por comas y
-        // ordenados según prioridad
+        // Obtener los identificadores del comando, separados por comas y ordenados según prioridad
         final String commandId = this.getFilterCommandFaceDescriptorId();
 
         // Crear el comando
@@ -786,8 +785,7 @@ public abstract class AbstractBbTableMasterForm<T extends Object> extends Abstra
      */
     protected ActionCommand createRefreshCommand() {
 
-        // Obtener los identificadores del comando, separados por comas y
-        // ordenados según prioridad
+        // Obtener los identificadores del comando, separados por comas y ordenados según prioridad
         final String commandId = this.getRefreshCommandFaceDescriptorId();
 
         // Crear el comando
@@ -800,10 +798,38 @@ public abstract class AbstractBbTableMasterForm<T extends Object> extends Abstra
             protected void doExecuteCommand() {
 
                 final JTable table = AbstractBbTableMasterForm.this.getMasterTable();
+                final Boolean proceed = AbstractBbTableMasterForm.this.shouldProceed();
 
-                TableUtils.refreshSelection(table);
+                if (proceed) {
+                    try {
+                        // Fix issue http://jirabluebell.b2b2000.com/browse/BLUE-56
+                        AbstractBbTableMasterForm.this.changingSelection = Boolean.TRUE;
+
+                        TableUtils.refreshSelection(table);
+                    } catch (RuntimeException e) {
+                        throw e;
+                    } finally {
+                        // (JAF), 20110117, ensures changingSelection flag is always reset
+                        AbstractBbTableMasterForm.this.changingSelection = Boolean.FALSE;
+                    }
+                }
             }
         };
+
+        // (JAF), 20110113, enable/disable command dependending on table state
+        command.setEnabled(Boolean.FALSE);
+        this.getMasterTable().getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+
+            @Override
+            public void valueChanged(ListSelectionEvent e) {
+
+                if (!e.getValueIsAdjusting()) {
+                    final JTable table = AbstractBbTableMasterForm.this.getMasterTable();
+                    final Boolean enabled = (table.getSelectionModel().getMaxSelectionIndex() > -1);
+                    command.setEnabled(enabled);
+                }
+            }
+        });
 
         // Configurar el comando
         return this.configureCommand(command, Boolean.TRUE);
@@ -818,13 +844,12 @@ public abstract class AbstractBbTableMasterForm<T extends Object> extends Abstra
 
         Assert.notNull(this.getDispatcherForm());
 
-        // Obtener los identificadores del comando, separados por comas y
-        // ordenados según prioridad
+        // Obtener los identificadores del comando, separados por comas y ordenados según prioridad
         final String commandId = this.getRevertAllCommandFaceDescriptorId();
+        final BbDispatcherForm<T> dispatcherForm = this.getDispatcherForm();
 
         // Crear el comando
-        final ActionCommand command = new TargetableActionCommand(commandId, this.getDispatcherForm()
-                .getRevertCommand());
+        final ActionCommand command = new TargetableActionCommand(commandId, dispatcherForm.getRevertCommand());
 
         // Configurar el comando
         return this.configureCommand(command, Boolean.FALSE);
@@ -839,13 +864,12 @@ public abstract class AbstractBbTableMasterForm<T extends Object> extends Abstra
 
         Assert.notNull(this.getDispatcherForm());
 
-        // Obtener los identificadores del comando, separados por comas y
-        // ordenados según prioridad
+        // Obtener los identificadores del comando, separados por comas y ordenados según prioridad
         final String commandId = this.getSaveCommandFaceDescriptorId();
+        final BbDispatcherForm<T> dispatcherForm = this.getDispatcherForm();
 
         // Crear el comando
-        final ActionCommand command = new TargetableActionCommand(commandId, this.getDispatcherForm()
-                .getCommitCommand());
+        final ActionCommand command = new TargetableActionCommand(commandId, dispatcherForm.getCommitCommand());
 
         // Configurar el comando
         return this.configureCommand(command, Boolean.TRUE);
@@ -858,8 +882,7 @@ public abstract class AbstractBbTableMasterForm<T extends Object> extends Abstra
      */
     protected ActionCommand createSelectAllCommand() {
 
-        // Obtener los identificadores del comando, separados por comas y
-        // ordenados según prioridad
+        // Obtener los identificadores del comando, separados por comas y ordenados según prioridad
         final String commandId = this.getSelectAllCommandFaceDescriptorId();
 
         // Crear el comando
@@ -882,7 +905,6 @@ public abstract class AbstractBbTableMasterForm<T extends Object> extends Abstra
             public void tableChanged(TableModelEvent e) {
 
                 final Boolean enabled = (AbstractBbTableMasterForm.this.getMasterTable().getRowCount() > 0);
-
                 command.setEnabled(enabled);
             }
         });

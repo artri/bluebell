@@ -528,12 +528,50 @@ public class TestAbstractBbTableMasterForm extends AbstractBbSamplesTests {
         // EXPECTED: [-->1<--, -->2<--, -->3<--, -->4<--]
         newSelection = TestAbstractBbTableMasterForm.PERSONS_1;
         this.doTestRequestUserConfirmation(masterForm, Boolean.TRUE, actionCommand, ++requestCount, newSelection);
-        TestCase.assertFalse("childForm.isDirty()", childForm.isDirty());        
+        TestCase.assertFalse("childForm.isDirty()", childForm.isDirty());
     }
 
+    /**
+     * Tests the correct behaviour of <code>requestUserConfirmation</code> on refresh command execution.
+     */
+    @SuppressWarnings("unchecked")
     @Test
     public void testRequestUserConfirmationOnRefresh() {
 
+        final MockPersonMasterForm masterForm = (MockPersonMasterForm) this.getBackingForm(this.getMasterView());
+        final PersonChildForm childForm = (PersonChildForm) this.getBackingForm(this.getChildView());
+
+        List<Person> newSelection = ListUtils.EMPTY_LIST;
+        ActionCommand actionCommand = null;
+        int requestCount = masterForm.getCount();
+
+        // Show entities:
+        // EXPECTED: [1,2,3,4]
+        masterForm.showEntities(TestAbstractBbTableMasterForm.PERSONS_1);
+        masterForm.changeSelection(newSelection);
+
+        /*
+         * REFRESH COMMAND
+         */
+        actionCommand = masterForm.getRefreshCommand();
+
+        // (1) Change selection: requests count should keep invariable
+        // EXPECTED: [1, 2, -->3<--, 4]
+        newSelection = Arrays.asList(TestAbstractBbTableMasterForm.PERSONS_1.get(2));
+        this.doTestRequestUserConfirmation(masterForm, Boolean.TRUE, newSelection, requestCount, newSelection);
+
+        // (2) Change age: child form should get dirty
+        // EXPECTED: [1, 2, -->[D]3<--, 4]
+        this.userAction(childForm, "age", "22");
+        TestCase.assertTrue("childForm.isDirty()", childForm.isDirty());
+
+        // (3) Abort refresh command execution
+        // EXPECTED: [1, 2, -->[D]3<--, 4]
+        this.doTestRequestUserConfirmation(masterForm, Boolean.FALSE, actionCommand, ++requestCount, newSelection);
+
+        // (4) Confirm refresh command execution
+        // EXPECTED: [1, 2, -->3<--, 4]
+        this.doTestRequestUserConfirmation(masterForm, Boolean.TRUE, actionCommand, ++requestCount, newSelection);
     }
 
     /**
@@ -666,7 +704,7 @@ public class TestAbstractBbTableMasterForm extends AbstractBbSamplesTests {
         Assert.notNull(expectedSelection, "expectedSelection");
 
         masterForm.setConfirm(confirm);
-        
+
         SwingUtils.runInEventDispatcherThread(actionCommand);
 
         TestCase.assertEquals(expectedCount, masterForm.getCount());
