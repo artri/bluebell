@@ -31,10 +31,9 @@ import java.util.Map;
 import org.apache.commons.collections.ListUtils;
 import org.apache.commons.lang.ClassUtils;
 import org.bluebell.richclient.application.ApplicationPageConfigurer;
-import org.bluebell.richclient.form.AbstractB2TableMasterForm;
 import org.bluebell.richclient.form.AbstractBbChildForm;
+import org.bluebell.richclient.form.AbstractBbMasterForm;
 import org.bluebell.richclient.form.AbstractBbSearchForm;
-import org.bluebell.richclient.form.AbstractBbTableMasterForm;
 import org.bluebell.richclient.form.BbDispatcherForm;
 import org.bluebell.richclient.form.BbValidationForm;
 import org.bluebell.richclient.form.GlobalCommandsAccessor;
@@ -269,7 +268,7 @@ public class DefaultApplicationPageConfigurer<T> implements ApplicationPageConfi
 
         Assert.notNull(formClass, FORM_CLASS_KEY);
 
-        if (AbstractBbTableMasterForm.class.isAssignableFrom(formClass)) {
+        if (AbstractBbMasterForm.class.isAssignableFrom(formClass)) {
             return BbViewType.MASTER_TYPE;
         } else if (BbValidationForm.class.isAssignableFrom(formClass)) {
             return BbViewType.VALIDATION_TYPE;
@@ -316,7 +315,7 @@ public class DefaultApplicationPageConfigurer<T> implements ApplicationPageConfi
         final BbViewType viewType = this.getViewType(view);
         switch (viewType) {
             case MASTER_TYPE:
-                this.processMasterView((FormBackedView<AbstractB2TableMasterForm<T>>) view, state);
+                this.processMasterView((FormBackedView<AbstractBbMasterForm<T>>) view, state);
                 break;
             case CHILD_TYPE:
                 this.processChildView((FormBackedView<AbstractBbChildForm<T>>) view, state);
@@ -374,12 +373,12 @@ public class DefaultApplicationPageConfigurer<T> implements ApplicationPageConfi
      * @param state
      *            the processing state.
      */
-    protected void processMasterView(FormBackedView<AbstractB2TableMasterForm<T>> masterView, State<T> state) {
+    protected void processMasterView(FormBackedView<AbstractBbMasterForm<T>> masterView, State<T> state) {
 
         // Validation checks
         Assert.notNull(masterView, "masterView");
 
-        final AbstractB2TableMasterForm<T> targetMasterForm = DefaultApplicationPageConfigurer.backingForm(masterView);
+        final AbstractBbMasterForm<T> targetMasterForm = DefaultApplicationPageConfigurer.backingForm(masterView);
 
         this.assertNotAlreadySet(state.masterView, masterView);
 
@@ -411,8 +410,8 @@ public class DefaultApplicationPageConfigurer<T> implements ApplicationPageConfi
         Assert.notNull(childView, "childView");
 
         final AbstractBbChildForm<T> targetChildForm = DefaultApplicationPageConfigurer.backingForm(childView);
-        final AbstractB2TableMasterForm<T> masterForm = DefaultApplicationPageConfigurer.backingForm(state.masterView);
-        final AbstractB2TableMasterForm<T> targetMasterForm = targetChildForm.getMasterForm();
+        final AbstractBbMasterForm<T> masterForm = DefaultApplicationPageConfigurer.backingForm(state.masterView);
+        final AbstractBbMasterForm<T> targetMasterForm = targetChildForm.getMasterForm();
 
         this.assertNotAlreadySet(targetMasterForm, masterForm);
 
@@ -443,15 +442,15 @@ public class DefaultApplicationPageConfigurer<T> implements ApplicationPageConfi
         // Validation checks
         Assert.notNull(searchView, "searchView");
 
-        final AbstractBbTableMasterForm<T> masterForm = DefaultApplicationPageConfigurer.backingForm(state.masterView);
+        final AbstractBbMasterForm<T> masterForm = DefaultApplicationPageConfigurer.backingForm(state.masterView);
         final AbstractBbSearchForm<T, ?> targetSearchForm = DefaultApplicationPageConfigurer.backingForm(searchView);
-        final AbstractBbTableMasterForm<T> targetMasterForm = targetSearchForm.getMasterForm();
+        final AbstractBbMasterForm<T> targetMasterForm = targetSearchForm.getMasterForm();
 
         this.assertNotAlreadySet(targetMasterForm, masterForm);
 
         // Link master form and new search form
         if ((masterForm != null) && (targetMasterForm == null)) {
-            ((AbstractB2TableMasterForm<T>) masterForm).addSearchForm(targetSearchForm);
+            ((AbstractBbMasterForm<T>) masterForm).addSearchForm(targetSearchForm);
         }
 
         if (!state.searchViews.contains(searchView)) {
@@ -475,10 +474,10 @@ public class DefaultApplicationPageConfigurer<T> implements ApplicationPageConfi
         // Validation checks
         Assert.notNull(validationView, "validationView");
 
-        final AbstractBbTableMasterForm<T> masterForm = DefaultApplicationPageConfigurer.backingForm(state.masterView);
+        final AbstractBbMasterForm<T> masterForm = DefaultApplicationPageConfigurer.backingForm(state.masterView);
         final BbDispatcherForm<T> theDispatcherForm = state.dispatcherForm;
         final BbValidationForm<T> targetValidationForm = DefaultApplicationPageConfigurer.backingForm(validationView);
-        final AbstractBbTableMasterForm<T> targetMasterForm = targetValidationForm.getMasterForm();
+        final AbstractBbMasterForm<T> targetMasterForm = targetValidationForm.getMasterForm();
 
         this.assertNotAlreadySet(targetMasterForm, masterForm);
 
@@ -489,7 +488,7 @@ public class DefaultApplicationPageConfigurer<T> implements ApplicationPageConfi
             theDispatcherForm.addValidationResultsReporter(new MultipleValidationResultsReporter(theDispatcherForm
                     .getFormModel(), targetValidationForm.getMessagable()));
 
-            targetValidationForm.setMasterForm((AbstractB2TableMasterForm<T>) masterForm);
+            targetValidationForm.setMasterForm((AbstractBbMasterForm<T>) masterForm);
         }
 
         // Subscribe for validation events and set the validation view
@@ -666,7 +665,7 @@ public class DefaultApplicationPageConfigurer<T> implements ApplicationPageConfi
         /**
          * The master view.
          */
-        private FormBackedView<AbstractB2TableMasterForm<Q>> masterView;
+        private FormBackedView<AbstractBbMasterForm<Q>> masterView;
 
         /**
          * Page child views.

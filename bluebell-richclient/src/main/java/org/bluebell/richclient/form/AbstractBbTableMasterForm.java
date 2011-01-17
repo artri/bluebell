@@ -16,28 +16,15 @@
  * limitations under the License.
  */
 
-/**
- * 
- * This file is part of Bluebell Rich Client.
- * 
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
- * the License. You may obtain a copy of the License at
- * 
- * http://www.apache.org/licenses/LICENSE-2.0
- * 
- * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
- * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
- * specific language governing permissions and limitations under the License.
- */
-
 package org.bluebell.richclient.form;
 
 import java.awt.BorderLayout;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 
 import javax.swing.JComponent;
@@ -47,13 +34,14 @@ import javax.swing.JPopupMenu;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionListener;
+import javax.swing.event.TableModelEvent;
+import javax.swing.event.TableModelListener;
 import javax.swing.table.TableModel;
 
 import org.apache.commons.collections.ListUtils;
 import org.apache.commons.collections.list.SetUniqueList;
 import org.apache.commons.lang.ArrayUtils;
-import org.apache.commons.lang.builder.ToStringBuilder;
-import org.apache.commons.lang.builder.ToStringStyle;
+import org.bluebell.richclient.application.config.FilterCommand;
 import org.bluebell.richclient.form.binding.swing.TableBinding;
 import org.bluebell.richclient.form.builder.support.DirtyTrackingUtils;
 import org.bluebell.richclient.form.util.BbFormModelHelper;
@@ -65,15 +53,15 @@ import org.springframework.binding.form.FormModel;
 import org.springframework.binding.form.HierarchicalFormModel;
 import org.springframework.binding.value.ValueChangeDetector;
 import org.springframework.binding.value.support.ValueHolder;
-import org.springframework.richclient.application.Application;
-import org.springframework.richclient.application.ApplicationWindow;
 import org.springframework.richclient.application.config.ApplicationWindowAware;
+import org.springframework.richclient.command.ActionCommand;
 import org.springframework.richclient.command.CommandGroup;
 import org.springframework.richclient.command.CommandGroupFactoryBean;
+import org.springframework.richclient.command.TargetableActionCommand;
 import org.springframework.richclient.command.support.GlobalCommandIds;
 import org.springframework.richclient.dialog.CloseAction;
 import org.springframework.richclient.dialog.ConfirmationDialog;
-import org.springframework.richclient.form.AbstractMasterForm;
+import org.springframework.richclient.exceptionhandling.delegation.ExceptionHandlerDelegate;
 import org.springframework.richclient.table.ListSelectionListenerSupport;
 import org.springframework.richclient.table.support.GlazedTableModel;
 import org.springframework.richclient.util.Assert;
@@ -82,7 +70,7 @@ import org.springframework.richclient.util.PopupMenuMouseListener;
 import ca.odell.glazedlists.EventList;
 
 /**
- * Extends <code>AbstractTableMasterForm</code> in the following way:
+ * Extends <code>AbstractBbMasterForm</code> in the following way:
  * <ul>
  * <li>Provides shortcuts to leading with selection changing and filling master table.
  * <li>Requests user confirmation before aborting a current edition.
@@ -96,13 +84,8 @@ import ca.odell.glazedlists.EventList;
  * 
  * @author <a href = "mailto:julio.arguello@gmail.com" >Julio Argüello (JAF)</a>
  */
-public abstract class AbstractBbTableMasterForm<T extends Object> extends AbstractMasterForm implements
-        ApplicationWindowAware {
-
-    /**
-     * Sufix that identifies the parent form model.
-     */
-    protected static final String PARENT_FORM_MODEL_SUFIX = "ParentFormModel";
+public abstract class AbstractBbTableMasterForm<T extends Object> extends AbstractBbMasterForm<T> implements
+        ApplicationWindowAware, GlobalCommandsAccessor {
 
     /**
      * The logger.
@@ -122,9 +105,12 @@ public abstract class AbstractBbTableMasterForm<T extends Object> extends Abstra
     new MessageFormat("After selecting model indexes \"{0}\" on {1}");
 
     /**
-     * The binding used to render the master table.
+     * Determines when a selection change is currently being processed in order to avoid redundant user confirmation
+     * requests.
+     * 
+     * @see MasterFormListSelectionHandler invocations <b>1.b</b> and <b>4</b>.
      */
-    private TableBinding masterTableBinding;
+    private Boolean changingSelection = Boolean.FALSE;
 
     /**
      * The list selection handler to be installed on the master event list.
@@ -132,27 +118,14 @@ public abstract class AbstractBbTableMasterForm<T extends Object> extends Abstra
     private ListSelectionListener listSelectionHandler;
 
     /**
-     * The command group used to build the buttons of this form.
+     * The binding used to render the master table.
      */
-    private CommandGroup buttonsCommandGroup;
+    private TableBinding masterTableBinding;
 
     /**
      * The command group used to build the popup menu of the master table.
      */
     private CommandGroup popupMenuCommandGroup;
-
-    /**
-     * The windows this form belongs to.
-     */
-    private ApplicationWindow applicationWindow;
-
-    /**
-     * Determines when a selection change is currently being processed in order to avoid redundant user confirmation
-     * requests.
-     * 
-     * @see MasterFormListSelectionHandler invocations <b>1.b</b> and <b>4</b>.
-     */
-    private Boolean changingSelection = Boolean.FALSE;
 
     /**
      * Determines when a <code>showEntities</code> invocation is currently being processed in order to avoid redundant
@@ -171,16 +144,10 @@ public abstract class AbstractBbTableMasterForm<T extends Object> extends Abstra
      *            the form id.
      * @param detailType
      *            the detail type.
-     * 
-     * @see #AbstractBb0TableMasterForm(HierarchicalFormModel, String, String, Class)
-     * @see ParentFormBackingBean
      */
     public AbstractBbTableMasterForm(String formId, Class<T> detailType) {
 
-        this(BbFormModelHelper.createValidatingFormModel(//
-                new ParentFormBackingBean(), Boolean.FALSE, //
-                formId + AbstractBbTableMasterForm.PARENT_FORM_MODEL_SUFIX), //
-                ParentFormBackingBean.PROPERTY_NAME, formId, detailType);
+        super(formId, detailType);
     }
 
     /**
@@ -199,65 +166,10 @@ public abstract class AbstractBbTableMasterForm<T extends Object> extends Abstra
             Class<T> detailType) {
 
         super(parentFormModel, property, formId, detailType);
-
-        this.getFormModel().setValidating(Boolean.FALSE);
     }
 
     /**
-     * Gets the selected entities.
-     * 
-     * @return the selected entities.
-     */
-    public final List<T> getSelection() {
-
-        return TableUtils.getSelection(this.getMasterTable(), this.getMasterTableModel());
-    }
-
-    /**
-     * Selects the given entities.
-     * <p>
-     * If new selection is either <code>null</code> or empty then clears selection.
-     * 
-     * @param newSelection
-     *            the entities to select.
-     * 
-     * @see #showEntities(List)
-     * @see TableUtils#changeSelection(JTable, GlazedTableModel, List)
-     * @see #shouldProceed()
-     */
-    public final void changeSelection(List<T> newSelection) {
-
-        // Selection must be included into entities currently being shown.
-        final Boolean proceed = this.showEntities(new ArrayList<T>(newSelection), Boolean.TRUE);
-
-        if (proceed) {
-
-            /*
-             * (JAF), 20110102, at this point two user confirmation requests may be thrown
-             * 
-             * To avoid this situation the flag "changingSelection" does the trick.
-             * 
-             * @see MasterFormListSelectionHandler sequence diagram
-             * 
-             * @see #shouldProceed()
-             */
-            try {
-                this.changingSelection = Boolean.TRUE;
-
-                // PRE-CONDITION: user has confirmed selection (if needed) && new selection is currently being shown
-                TableUtils.changeSelection(this.getMasterTable(), this.getMasterTableModel(), newSelection);
-                // POST-CONDITION: selection is changed and listeners notified
-            } catch (RuntimeException e) {
-                throw e;
-            } finally {
-                // (JAF), 20110102, ensures changingSelection flag is always reset
-                this.changingSelection = Boolean.FALSE;
-            }
-        }
-    }
-
-    /**
-     * Show the given entities within the master table.
+     * Show the given entities into the master table.
      * <p>
      * If would there be some entities currently being shown then would replace them.
      * 
@@ -266,13 +178,14 @@ public abstract class AbstractBbTableMasterForm<T extends Object> extends Abstra
      * 
      * @see #showEntities(Collection, Boolean, Boolean)
      */
+    @Override
     public final Boolean showEntities(List<T> entities) {
 
         return this.showEntities(entities, Boolean.FALSE, Boolean.FALSE);
     }
 
     /**
-     * Show the given entities within the master table.
+     * Show the given entities into the master table.
      * <p>
      * If would there be some entities currently being shown then would replace them.
      * 
@@ -283,7 +196,8 @@ public abstract class AbstractBbTableMasterForm<T extends Object> extends Abstra
      * 
      * @see #showEntities(Collection, Boolean, Boolean)
      */
-    public Boolean showEntities(List<T> entities, Boolean attach) {
+    @Override
+    public final Boolean showEntities(List<T> entities, Boolean attach) {
 
         return this.showEntities(entities, attach, Boolean.FALSE);
     }
@@ -302,7 +216,8 @@ public abstract class AbstractBbTableMasterForm<T extends Object> extends Abstra
      * 
      * @see #shouldProceed()
      */
-    public Boolean showEntities(List<T> entities, Boolean attach, Boolean force) {
+    @Override
+    public final Boolean showEntities(List<T> entities, Boolean attach, Boolean force) {
 
         Assert.notNull(entities, "entities");
         Assert.notNull(attach, "attach");
@@ -348,11 +263,73 @@ public abstract class AbstractBbTableMasterForm<T extends Object> extends Abstra
     }
 
     /**
+     * Selects the given entities.
+     * <p>
+     * If new selection is either <code>null</code> or empty then clears selection.
+     * 
+     * @param newSelection
+     *            the entities to select.
+     * 
+     * @see #showEntities(List)
+     * @see TableUtils#changeSelection(JTable, GlazedTableModel, List)
+     * @see #shouldProceed()
+     */
+    @Override
+    public final void changeSelection(List<T> newSelection) {
+    
+        // Selection must be included into entities currently being shown.
+        final Boolean proceed = this.showEntities(new ArrayList<T>(newSelection), Boolean.TRUE);
+    
+        if (proceed) {
+    
+            /*
+             * (JAF), 20110102, at this point two user confirmation requests may be thrown
+             * 
+             * To avoid this situation the flag "changingSelection" does the trick.
+             * 
+             * @see MasterFormListSelectionHandler sequence diagram
+             * 
+             * @see #shouldProceed()
+             */
+            try {
+                this.changingSelection = Boolean.TRUE;
+    
+                // PRE-CONDITION: user has confirmed selection (if needed) && new selection is currently being shown
+                TableUtils.changeSelection(this.getMasterTable(), this.getMasterTableModel(), newSelection);
+                // POST-CONDITION: selection is changed and listeners notified
+            } catch (RuntimeException e) {
+                throw e;
+            } finally {
+                // (JAF), 20110102, ensures changingSelection flag is always reset
+                this.changingSelection = Boolean.FALSE;
+            }
+        }
+    }
+
+    /**
+     * Gets the selected entities.
+     * 
+     * @return the selected entities.
+     */
+    @Override
+    public final List<T> getSelection() {
+
+        return TableUtils.getSelection(this.getMasterTable(), this.getMasterTableModel());
+    }
+
+    /**
+     * Gets the property names to show in columns of the master table.
+     * 
+     * @return an array of property names
+     */
+    protected abstract String[] getColumnPropertyNames();
+
+    /**
      * Requests user confirmation to proceed with an user action in order to prevent information lost.
      * 
      * @return <code>true</code> to proceed and <code>false</code> in any other case.
      */
-    public Boolean requestUserConfirmation() {
+    protected Boolean requestUserConfirmation() {
 
         // Dirty dialog
         final String title = AbstractBbTableMasterForm.this.getMessage(//
@@ -365,16 +342,6 @@ public abstract class AbstractBbTableMasterForm<T extends Object> extends Abstra
         final ConfirmationDialog dialog = new RequestUserConfirmationDialog(title, message) {
 
             @Override
-            protected void onConfirm() {
-
-                if (AbstractBbTableMasterForm.LOGGER.isDebugEnabled()) {
-                    AbstractBbTableMasterForm.LOGGER.debug("User confirmed request");
-                }
-
-                proceed.setValue(Boolean.TRUE);
-            }
-
-            @Override
             protected void onCancel() {
 
                 if (AbstractBbTableMasterForm.LOGGER.isDebugEnabled()) {
@@ -382,53 +349,22 @@ public abstract class AbstractBbTableMasterForm<T extends Object> extends Abstra
                 }
 
                 super.onCancel();
+            }
+
+            @Override
+            protected void onConfirm() {
+
+                if (AbstractBbTableMasterForm.LOGGER.isDebugEnabled()) {
+                    AbstractBbTableMasterForm.LOGGER.debug("User confirmed request");
+                }
+
+                proceed.setValue(Boolean.TRUE);
             };
         };
 
         dialog.showDialog();
 
         return (Boolean) proceed.getValue();
-    }
-
-    /**
-     * Gets the application windows this form belongs to.
-     * <p>
-     * Note someone should stablish it before. If <code>FormBackedView</code> is used then it will be the one.
-     * <p>
-     * If it's not stablished then returns the active window.
-     * <p>
-     * This is needed to avoid race conditions when dealing with <code>Application.instance().getActiveWindow()</code>
-     * since while creating a page the active window may be the former.
-     * 
-     * @return the application window.
-     * 
-     * @see Application#getActiveWindow()
-     */
-    public final ApplicationWindow getApplicationWindow() {
-
-        return (this.applicationWindow != null) ? this.applicationWindow : Application.instance().getActiveWindow();
-    }
-
-    /**
-     * Sets the application windows this form belongs to.
-     * 
-     * @param applicationWindow
-     *            the application window.
-     */
-    public void setApplicationWindow(ApplicationWindow applicationWindow) {
-
-        Assert.notNull(applicationWindow, "applicationWindow");
-
-        this.applicationWindow = applicationWindow;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public String toString() {
-
-        return new ToStringBuilder(this, ToStringStyle.SIMPLE_STYLE).append("id", this.getId()).toString();
     }
 
     /**
@@ -451,12 +387,12 @@ public abstract class AbstractBbTableMasterForm<T extends Object> extends Abstra
     @SuppressWarnings("unchecked")
     protected final void doSelectionChange(List<Integer> oldModelIndexes, List<Integer> oldViewIndexes,
             List<Integer> newModelIndexes, List<Integer> newViewIndexes, List<T> newSelection) {
-
+    
         final Integer oldSelectedIndex = this.getDetailForm().getSelectedIndex();
         final Boolean emptySelection = (newSelection.isEmpty());
         final Boolean singleSelection = (newSelection.size() == 1);
         final Integer indexToSelect;
-
+    
         if (emptySelection) {
             indexToSelect = -1;
         } else if (singleSelection) {
@@ -464,7 +400,7 @@ public abstract class AbstractBbTableMasterForm<T extends Object> extends Abstra
         } else { // Multiple selection. (JAF), 20110102
             indexToSelect = -1;
         }
-
+    
         /*
          * BLUE-62, (JAF), 20110116, http://jirabluebell.b2b2000.com/browse/BLUE-62
          * 
@@ -472,18 +408,18 @@ public abstract class AbstractBbTableMasterForm<T extends Object> extends Abstra
          */
         final ValueChangeDetector valueChangeDetector = //
         (ValueChangeDetector) this.getService(ValueChangeDetector.class);
-
+    
         for (int i = 0; i < newModelIndexes.size(); ++i) {
-
+    
             final Integer modelIndex = newModelIndexes.get(i);
             final T oldValue = (T) this.getMasterEventList().get(modelIndex);
             final T newValue = newSelection.get(i);
-
+    
             if (valueChangeDetector.hasValueChanged(oldValue, newValue)) {
                 this.getMasterEventList().set(modelIndex, newValue);
             }
         }
-
+    
         /*
          * BLUE-41, (JAF), 20101227, http://jirabluebell.b2b2000.com/browse/BLUE-41
          * 
@@ -494,7 +430,7 @@ public abstract class AbstractBbTableMasterForm<T extends Object> extends Abstra
             // (JAF), 20110103, form becomes empty and disabled when selected index changes from any to -1
             this.getDetailForm().reset();
         }
-
+    
         DirtyTrackingUtils.clearDirty(this.getDetailFormModel());
     }
 
@@ -514,7 +450,7 @@ public abstract class AbstractBbTableMasterForm<T extends Object> extends Abstra
      */
     protected final void undoSelectionChange(List<Integer> oldModelIndexes, List<Integer> oldViewIndexes,
             List<Integer> newModelIndexes, List<Integer> newViewIndexes, List<T> selection) {
-
+    
         // If editing new form object then clear selection on cancel, else get back the former selected index
         if (this.getDetailForm().isEditingNewFormObject()) {
             this.getSelectionModel().clearSelection();
@@ -534,14 +470,27 @@ public abstract class AbstractBbTableMasterForm<T extends Object> extends Abstra
      *            the selected entities.
      * @return the entities to be selected.
      */
-    protected List<T> beforeSelectionChange(List<Integer> modelIndexes, List<T> selection) {
+    protected final List<T> beforeSelectionChange(List<Integer> modelIndexes, List<T> selection) {
 
         if (AbstractBbTableMasterForm.LOGGER.isDebugEnabled()) {
             AbstractBbTableMasterForm.LOGGER.debug(AbstractBbTableMasterForm.BEFORE_SELECTION_FMT.format(//
                     new Object[] { ArrayUtils.toString(modelIndexes), this.getId() }));
         }
 
-        return selection;
+        /*
+         * Bug http://jirabluebell.b2b2000.com/browse/BLUE-61 fixed
+         * 
+         * final List<T> newSelection = this.doRefresh(selection);
+         */
+        final Boolean committing = this.getDispatcherForm().isCommitting();
+        final List<T> newSelection = (committing) ? selection : this.doRefresh(selection);
+
+        // Notify child forms about selection
+        for (final AbstractBbChildForm<T> childForm : this.getChildForms()) {
+            childForm.beforeSelectionChange(modelIndexes, newSelection);
+        }
+
+        return newSelection;
     }
 
     /**
@@ -554,11 +503,16 @@ public abstract class AbstractBbTableMasterForm<T extends Object> extends Abstra
      * @param selection
      *            the selected entities.
      */
-    protected void afterSelectionChange(List<Integer> modelIndexes, List<T> selection) {
+    protected final void afterSelectionChange(List<Integer> modelIndexes, List<T> selection) {
 
         if (AbstractBbTableMasterForm.LOGGER.isDebugEnabled()) {
             AbstractBbTableMasterForm.LOGGER.debug(AbstractBbTableMasterForm.AFTER_SELECTION_FMT.format(//
                     new Object[] { ArrayUtils.toString(modelIndexes), this.getId() }));
+        }
+
+        // Notify child forms about selection
+        for (final AbstractBbChildForm<T> childForm : this.getChildForms()) {
+            childForm.afterSelectionChange(modelIndexes, selection);
         }
     }
 
@@ -568,7 +522,7 @@ public abstract class AbstractBbTableMasterForm<T extends Object> extends Abstra
      * Employs a table binding for displaying the master form.
      */
     @Override
-    protected JComponent createFormControl() {
+    protected final JComponent createFormControl() {
 
         // Configure all sub-components
         this.configure();
@@ -599,48 +553,17 @@ public abstract class AbstractBbTableMasterForm<T extends Object> extends Abstra
     }
 
     /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected final CommandGroup getCommandGroup() {
-
-        return this.getButtonsCommandGroup();
-    }
-
-    /**
-     * Gets the buttons command group and if doesn't exist then creates it.
+     * Método al que es posible invocar con el objetivo de modificar el control del formulario antes de su creación
+     * defintiva.
+     * <p>
+     * Esta implementación no realiza tarea alguna.
      * 
-     * @return the buttons command group.
+     * @param panel
+     *            el panel que conforma el formulario.
      */
-    protected final CommandGroup getButtonsCommandGroup() {
-
-        if (this.buttonsCommandGroup == null) {
-            this.buttonsCommandGroup = this.createButtonsCommandGroup();
-        }
-
-        return this.buttonsCommandGroup;
-    }
-
-    /**
-     * Creates the buttons command group.
-     * 
-     * @return the buttons command group.
-     */
-    protected CommandGroup createButtonsCommandGroup() {
-
-        final CommandGroup group = CommandGroup.createCommandGroup(new Object[] {
-                // this.getFilterCommand(), //
-                // CommandGroupFactoryBean.SEPARATOR_MEMBER_CODE, //
-                // CommandGroupFactoryBean.SEPARATOR_MEMBER_CODE, //
-                GlobalCommandIds.PROPERTIES, //
-                GlobalCommandIds.SAVE, //
-                GlobalCommandsAccessor.CANCEL, //
-                GlobalCommandIds.DELETE //
-                });
-
-        group.setCommandRegistry(this.getApplicationWindow().getCommandManager());
-
-        return group;
+    protected void onCreateFormControl(JPanel panel) {
+    
+        // Nothing to do
     }
 
     /**
@@ -652,7 +575,7 @@ public abstract class AbstractBbTableMasterForm<T extends Object> extends Abstra
      */
     @Override
     protected final JPopupMenu getPopupMenu() {
-
+    
         return this.getPopupMenuCommandGroup().createPopupMenu();
     }
 
@@ -662,11 +585,11 @@ public abstract class AbstractBbTableMasterForm<T extends Object> extends Abstra
      * @return the popup menu command group.
      */
     protected final CommandGroup getPopupMenuCommandGroup() {
-
+    
         if (this.popupMenuCommandGroup == null) {
             this.popupMenuCommandGroup = this.createButtonsCommandGroup();
         }
-
+    
         return this.popupMenuCommandGroup;
     }
 
@@ -689,6 +612,61 @@ public abstract class AbstractBbTableMasterForm<T extends Object> extends Abstra
         group.setCommandRegistry(this.getApplicationWindow().getCommandManager());
 
         return group;
+    }
+
+    /**
+     * Creates the selection handler to be installed in the master event list.
+     * 
+     * @return the selection handler.
+     */
+    protected ListSelectionListener createSelectionHandler() {
+
+        return new MasterFormListSelectionHandler();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @SuppressWarnings("unchecked")
+    protected TableModel createTableModel() {
+
+        final EventList<T> eventList = this.getMasterEventList();
+
+        // Change backing form object in order to force table binding to use the event list as value model
+        final ConfigurableFormModel parentFormModel = (ConfigurableFormModel) this.getFormModel().getParent();
+        parentFormModel.setFormObject(new ParentFormBackingBean(eventList));
+
+        return BbFormModelHelper.createTableModel(eventList, this.getColumnPropertyNames(), this.getId());
+    }
+
+    /**
+     * Sobrescribe el método de la clase base que elimina de la tabla maestra el departamento seleccionado para su
+     * eliminación también de forma persistente.
+     */
+    @Override
+    protected final void deleteSelectedItems() {
+
+        // Resetear el formulario detalle para que no dé falsos avisos de dirty
+        this.getDispatcherForm().reset();
+
+        final List<T> selection = TableUtils.getSelection(this.getMasterTable(), this.getMasterTableModel());
+
+        for (T entity : selection) {
+
+            // Eliminar la entidad y retonar null en caso de fallo.
+            final boolean success = (AbstractBbTableMasterForm.this.doDelete(entity) != null);
+            if (!success) {
+
+                new String("Avoid CS warning");
+                // TODO, do something
+            }
+
+            // Actualizar la tabla maestra.
+            AbstractBbTableMasterForm.this.getMasterEventList().remove(entity);
+
+            // Publicar el evento de notificación de borrado.
+            AbstractBbTableMasterForm.this.publishApplicationEvent(EventType.DELETED, entity);
+        }
     }
 
     /**
@@ -720,11 +698,16 @@ public abstract class AbstractBbTableMasterForm<T extends Object> extends Abstra
     }
 
     /**
-     * Gets the property names to show in columns of the master table.
-     * 
-     * @return an array of property names
+     * {@inheritDoc}
      */
-    protected abstract String[] getColumnPropertyNames();
+    @Override
+    protected final ListSelectionListener getSelectionHandler() {
+
+        if (this.listSelectionHandler == null) {
+            this.listSelectionHandler = this.createSelectionHandler();
+        }
+        return this.listSelectionHandler;
+    }
 
     /**
      * Gets the selection model for the master list representation.
@@ -738,40 +721,174 @@ public abstract class AbstractBbTableMasterForm<T extends Object> extends Abstra
     }
 
     /**
-     * {@inheritDoc}
+     * Crea y configura el comando para cancelar la creación de una nueva entidad.
+     * 
+     * @return el comando de cancelación.
      */
-    @SuppressWarnings("unchecked")
-    protected TableModel createTableModel() {
+    protected ActionCommand createCancelCommand() {
 
-        final EventList<T> eventList = this.getMasterEventList();
+        Assert.notNull(this.getDispatcherForm());
 
-        // Change backing form object in order to force table binding to use the event list as value model
-        final ConfigurableFormModel parentFormModel = (ConfigurableFormModel) this.getFormModel().getParent();
-        parentFormModel.setFormObject(new ParentFormBackingBean(eventList));
+        // Obtener los identificadores del comando, separados por comas y
+        // ordenados según prioridad
+        final String commandId = this.getCancelCommandFaceDescriptorId();
 
-        return BbFormModelHelper.createTableModel(eventList, this.getColumnPropertyNames(), this.getId());
+        // Crear el comando y sincronizar su estado enabled/disabled
+        final ActionCommand command = new TargetableActionCommand(commandId, this.getDispatcherForm()
+                .getCancelCommand());
+
+        // Determinar cuando ha de estar habilitado el comando.
+        command.setEnabled(Boolean.FALSE);
+        this.getNewFormObjectCommand().addEnabledListener(new PropertyChangeListener() {
+            public void propertyChange(PropertyChangeEvent evt) {
+
+                command.setEnabled(!(Boolean) evt.getNewValue());
+            }
+        });
+
+        // Configurar el comando
+        return this.configureCommand(command, Boolean.FALSE);
+    }
+
+    /**
+     * Crea y configura el comando de filtrado de la tabla maestra.
+     * 
+     * @return el comando de filtrado.
+     */
+    protected ActionCommand createFilterCommand() {
+
+        // Obtener los identificadores del comando, separados por comas y
+        // ordenados según prioridad
+        final String commandId = this.getFilterCommandFaceDescriptorId();
+
+        // Crear el comando
+        final ActionCommand command = new FilterCommand(commandId, AbstractBbTableMasterForm.this.getMasterTable());
+
+        // Configurar el comando
+        return this.configureCommand(command, Boolean.FALSE);
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    protected final ListSelectionListener getSelectionHandler() {
+    protected ActionCommand createNewFormObjectCommand() {
 
-        if (this.listSelectionHandler == null) {
-            this.listSelectionHandler = this.createSelectionHandler();
-        }
-        return this.listSelectionHandler;
+        final ActionCommand newFormObjectCommand = super.createNewFormObjectCommand();
+
+        return this.configureCommand(newFormObjectCommand, Boolean.FALSE);
     }
 
     /**
-     * Creates the selection handler to be installed in the master event list.
+     * Crea y configura el comando de selección de todos los elementos de la tabla maestra.
      * 
-     * @return the selection handler.
+     * @return el comando de selección
      */
-    protected ListSelectionListener createSelectionHandler() {
+    protected ActionCommand createRefreshCommand() {
 
-        return new MasterFormListSelectionHandler();
+        // Obtener los identificadores del comando, separados por comas y
+        // ordenados según prioridad
+        final String commandId = this.getRefreshCommandFaceDescriptorId();
+
+        // Crear el comando
+        final ActionCommand command = new ActionCommand(commandId) {
+
+            /**
+             * Selecciona todas las entidades de la tabla maestra.
+             */
+            @Override
+            protected void doExecuteCommand() {
+
+                final JTable table = AbstractBbTableMasterForm.this.getMasterTable();
+
+                TableUtils.refreshSelection(table);
+            }
+        };
+
+        // Configurar el comando
+        return this.configureCommand(command, Boolean.TRUE);
+    }
+
+    /**
+     * Crea y configura el comando que deshace los cambios sobre una entidad.
+     * 
+     * @return el comando de <em>undo</em>.
+     */
+    protected ActionCommand createRevertAllCommand() {
+
+        Assert.notNull(this.getDispatcherForm());
+
+        // Obtener los identificadores del comando, separados por comas y
+        // ordenados según prioridad
+        final String commandId = this.getRevertAllCommandFaceDescriptorId();
+
+        // Crear el comando
+        final ActionCommand command = new TargetableActionCommand(commandId, this.getDispatcherForm()
+                .getRevertCommand());
+
+        // Configurar el comando
+        return this.configureCommand(command, Boolean.FALSE);
+    }
+
+    /**
+     * Crea y configura el comando para guardar los cambios realizados sobre una entidad.
+     * 
+     * @return el comando de salvado.
+     */
+    protected ActionCommand createSaveCommand() {
+
+        Assert.notNull(this.getDispatcherForm());
+
+        // Obtener los identificadores del comando, separados por comas y
+        // ordenados según prioridad
+        final String commandId = this.getSaveCommandFaceDescriptorId();
+
+        // Crear el comando
+        final ActionCommand command = new TargetableActionCommand(commandId, this.getDispatcherForm()
+                .getCommitCommand());
+
+        // Configurar el comando
+        return this.configureCommand(command, Boolean.TRUE);
+    }
+
+    /**
+     * Crea y configura el comando de selección de todos los elementos de la tabla maestra.
+     * 
+     * @return el comando de selección
+     */
+    protected ActionCommand createSelectAllCommand() {
+
+        // Obtener los identificadores del comando, separados por comas y
+        // ordenados según prioridad
+        final String commandId = this.getSelectAllCommandFaceDescriptorId();
+
+        // Crear el comando
+        final ActionCommand command = new ActionCommand(commandId) {
+
+            /**
+             * Selecciona todas las entidades de la tabla maestra.
+             */
+            @Override
+            protected void doExecuteCommand() {
+
+                AbstractBbTableMasterForm.this.getMasterTable().selectAll();
+            }
+        };
+
+        // (JAF), 20110113, enable/disable command dependending on table state
+        this.getMasterTableModel().addTableModelListener(new TableModelListener() {
+
+            @Override
+            public void tableChanged(TableModelEvent e) {
+
+                final Boolean enabled = (AbstractBbTableMasterForm.this.getMasterTable().getRowCount() > 0);
+
+                command.setEnabled(enabled);
+            }
+        });
+
+        // Configurar el comando
+        return this.configureCommand(command, Boolean.TRUE);
     }
 
     /**
@@ -864,6 +981,62 @@ public abstract class AbstractBbTableMasterForm<T extends Object> extends Abstra
     }
 
     /**
+     * Manejador de errores que mantiene "vivo" el formulario maestro después de un fallo.
+     * <p>
+     * Se hace necesario ya que ante una excepción no controlada los <em>backing objects</em> de los formularios quedan
+     * en un estado precario y provocan continuas excepciones dejando la aplicación insusable.
+     * <p>
+     * Por tanto esta implementación mantiene vivo el formulario en {@link #hasAppropriateHandler(Throwable)} y devuelve
+     * siempre <code>false</code> en {@link #uncaughtException(Thread, Throwable)}.
+     * 
+     * @author <a href = "mailto:julio.arguello@gmail.com" >Julio Argüello (JAF)</a>
+     */
+    public static class KeepAliveAfterFailureExceptionHandlerDelegate implements ExceptionHandlerDelegate {
+
+        // private void keepAliveAfterFailure() {
+        //
+        // this.changeSelection(null);
+        // this.getDispatcherForm().reset();
+        // }
+
+        /**
+         * {@inheritDoc}
+         */
+        public boolean hasAppropriateHandler(Throwable thrownTrowable) {
+
+            // final ApplicationWindow window =
+            // Application.instance().getActiveWindow();
+            // final ApplicationPage page = window != null ? window.getPage() //
+            // : null;
+
+            // TODO, 20090919, me da que haciendolo con hilos ya no habría estos
+            // problemas
+
+            // if (page != null && page instanceof BbVLDockingApplicationPage) {
+            //
+            // final BbVLDockingApplicationPage<Object> tPage =
+            // (BbVLDockingApplicationPage<Object>) page;
+            // final AbstractBbTableMasterForm<Object> masterForm =
+            // tPage.getLastMasterForm();
+            //
+            // if (masterForm != null) {
+            // masterForm.keepAliveAfterFailure();
+            // }
+            // }
+
+            return Boolean.FALSE;
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        public void uncaughtException(Thread t, Throwable e) {
+
+            // Nothing to do
+        }
+    }
+
+    /**
      * Improved list selection listener that request user confirmation before changing selection. This is really useful
      * to prevent information lost after changing selection.
      * <p>
@@ -935,6 +1108,20 @@ public abstract class AbstractBbTableMasterForm<T extends Object> extends Abstra
     protected class MasterFormListSelectionHandler extends ListSelectionListenerSupport {
 
         /**
+         * {@inheritDoc}
+         */
+        @Override
+        protected final void onMultiSelection(int[] viewIndexes) {
+
+            final List<Integer> list = new ArrayList<Integer>(viewIndexes.length);
+            for (int i = 0; i < viewIndexes.length; ++i) {
+                list.add(i, viewIndexes[i]);
+            }
+
+            this.delegateSelectionChange(list);
+        }
+
+        /**
          * Called when nothing gets selected.
          * <p>
          * Override this method to handle empty selection
@@ -958,68 +1145,6 @@ public abstract class AbstractBbTableMasterForm<T extends Object> extends Abstra
         protected final void onSingleSelection(int viewIndex) {
 
             this.delegateSelectionChange(Arrays.asList(viewIndex));
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        protected final void onMultiSelection(int[] viewIndexes) {
-
-            final List<Integer> list = new ArrayList<Integer>(viewIndexes.length);
-            for (int i = 0; i < viewIndexes.length; ++i) {
-                list.add(i, viewIndexes[i]);
-            }
-
-            this.delegateSelectionChange(list);
-        }
-
-        /**
-         * Called when a single entity gets selected.
-         * <p>
-         * Override this method to handle single selection
-         * 
-         * @param modelIndex
-         *            master event list relative index of the selection.
-         * @param viewIndex
-         *            user relative index of the selection.
-         * @param newSelection
-         *            the selected entity.
-         * 
-         * @see #doSelectionChange(List, List, List)
-         */
-        @SuppressWarnings("unchecked")
-        private void onSingleSelection(int modelIndex, int viewIndex, T newSelection) {
-
-            if (AbstractBbTableMasterForm.LOGGER.isDebugEnabled()) {
-                AbstractBbTableMasterForm.LOGGER.debug("Selected row " + viewIndex);
-            }
-
-            AbstractBbTableMasterForm.this.handleSelectionChange(//
-                    Arrays.asList(modelIndex), Arrays.asList(viewIndex), Arrays.asList(newSelection));
-        }
-
-        /**
-         * Called when multiple entities get selected.
-         * <p>
-         * Override this method to handle multi selection.
-         * 
-         * @param modelIndexes
-         *            master event list relative indexes of the selection.
-         * @param viewIndexes
-         *            user relative indexes of the selection.
-         * @param newSelection
-         *            the selected entities.
-         * 
-         * @see #doSelectionChange(List, List, List)
-         */
-        private void onMultiSelection(List<Integer> modelIndexes, List<Integer> viewIndexes, List<T> newSelection) {
-
-            if (AbstractBbTableMasterForm.LOGGER.isDebugEnabled()) {
-                AbstractBbTableMasterForm.LOGGER.debug("Selected rows " + ArrayUtils.toString(viewIndexes));
-            }
-
-            AbstractBbTableMasterForm.this.handleSelectionChange(modelIndexes, viewIndexes, newSelection);
         }
 
         /**
@@ -1056,6 +1181,54 @@ public abstract class AbstractBbTableMasterForm<T extends Object> extends Abstra
             } else if (isMultiSelection) {
                 this.onMultiSelection(modelIndexes, viewIndexes, newSelection);
             }
+        }
+
+        /**
+         * Called when multiple entities get selected.
+         * <p>
+         * Override this method to handle multi selection.
+         * 
+         * @param modelIndexes
+         *            master event list relative indexes of the selection.
+         * @param viewIndexes
+         *            user relative indexes of the selection.
+         * @param newSelection
+         *            the selected entities.
+         * 
+         * @see #doSelectionChange(List, List, List)
+         */
+        private void onMultiSelection(List<Integer> modelIndexes, List<Integer> viewIndexes, List<T> newSelection) {
+
+            if (AbstractBbTableMasterForm.LOGGER.isDebugEnabled()) {
+                AbstractBbTableMasterForm.LOGGER.debug("Selected rows " + ArrayUtils.toString(viewIndexes));
+            }
+
+            AbstractBbTableMasterForm.this.handleSelectionChange(modelIndexes, viewIndexes, newSelection);
+        }
+
+        /**
+         * Called when a single entity gets selected.
+         * <p>
+         * Override this method to handle single selection
+         * 
+         * @param modelIndex
+         *            master event list relative index of the selection.
+         * @param viewIndex
+         *            user relative index of the selection.
+         * @param newSelection
+         *            the selected entity.
+         * 
+         * @see #doSelectionChange(List, List, List)
+         */
+        @SuppressWarnings("unchecked")
+        private void onSingleSelection(int modelIndex, int viewIndex, T newSelection) {
+
+            if (AbstractBbTableMasterForm.LOGGER.isDebugEnabled()) {
+                AbstractBbTableMasterForm.LOGGER.debug("Selected row " + viewIndex);
+            }
+
+            AbstractBbTableMasterForm.this.handleSelectionChange(//
+                    Arrays.asList(modelIndex), Arrays.asList(viewIndex), Arrays.asList(newSelection));
         }
     }
 
@@ -1099,66 +1272,6 @@ public abstract class AbstractBbTableMasterForm<T extends Object> extends Abstra
             jPanel.add(formattedTextField, BorderLayout.SOUTH);
 
             return jPanel;
-        }
-
-    }
-
-    /**
-     * Backing bean for the parent form.
-     * <p>
-     * Makes it easy creating parent form model.
-     * 
-     * @author <a href = "mailto:julio.arguello@gmail.com" >Julio Argüello (JAF)</a>
-     */
-    protected static final class ParentFormBackingBean {
-
-        /**
-         * The property name.
-         */
-        public static final String PROPERTY_NAME = "entities";
-
-        /**
-         * The property of the backing bean holding the entities to be shown.
-         */
-        private Collection<? extends Object> entities = Collections.emptyList();
-
-        /**
-         * Creates the backing bean.
-         */
-        private ParentFormBackingBean() {
-
-        }
-
-        /**
-         * Creates the backing bean given the entities to be shown.
-         * 
-         * @param entities
-         *            the entities.
-         */
-        private ParentFormBackingBean(Collection<? extends Object> entities) {
-
-            this.setEntities(entities);
-        }
-
-        /**
-         * Gets the entities to be shown.
-         * 
-         * @return the entities.
-         */
-        public Collection<? extends Object> getEntities() {
-
-            return this.entities;
-        }
-
-        /**
-         * Sets the entities to be shown.
-         * 
-         * @param entities
-         *            the entities.
-         */
-        public void setEntities(Collection<? extends Object> entities) {
-
-            this.entities = entities;
         }
     }
 }

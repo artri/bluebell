@@ -29,7 +29,7 @@
 
 	<bean id="clearBusyIndicatorExceptionHandlerDelegate" class="org.bluebell.richclient.command.support.ClearBusyIndicatorExceptionHandlerDelegate" />
 
-	<bean id="keepAliveAfterFailureExceptionHandlerDelegate" class="org.bluebell.richclient.form.AbstractB2TableMasterForm$KeepAliveAfterFailureExceptionHandlerDelegate" />
+	<bean id="keepAliveAfterFailureExceptionHandlerDelegate" class="org.bluebell.richclient.form.AbstractBbTableMasterForm$KeepAliveAfterFailureExceptionHandlerDelegate" />
 
 	<!--
 		Configuration of ExceptionHandler, should be used in ApplicationAdvisor to catch all exceptions

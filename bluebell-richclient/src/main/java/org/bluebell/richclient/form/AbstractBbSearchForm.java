@@ -123,7 +123,7 @@ public abstract class AbstractBbSearchForm<T extends Object, U extends Object> e
     /**
      * El formulario maestro en el que mostrar los resultados de la búsqueda.
      */
-    private AbstractB2TableMasterForm<T> masterForm;
+    private AbstractBbMasterForm<T> masterForm;
 
     /**
      * Un diálogo que informa que la última búsqueda no arroja ningún resultado.
@@ -186,7 +186,7 @@ public abstract class AbstractBbSearchForm<T extends Object, U extends Object> e
      * 
      * @return el formulario maestro.
      */
-    public final AbstractB2TableMasterForm<T> getMasterForm() {
+    public final AbstractBbMasterForm<T> getMasterForm() {
 
         return this.masterForm;
     }
@@ -270,7 +270,7 @@ public abstract class AbstractBbSearchForm<T extends Object, U extends Object> e
      * @param masterForm
      *            el formulario maestro.
      */
-    public void setMasterForm(AbstractB2TableMasterForm<T> masterForm) {
+    public void setMasterForm(AbstractBbMasterForm<T> masterForm) {
 
         this.masterForm = masterForm;
     }
@@ -610,7 +610,7 @@ public abstract class AbstractBbSearchForm<T extends Object, U extends Object> e
             @SuppressWarnings("unchecked")
             protected void doExecuteCommand() {
 
-                final AbstractBbTableMasterForm<T> masterForm = AbstractBbSearchForm.this.getMasterForm();
+                final AbstractBbMasterForm<T> masterForm = AbstractBbSearchForm.this.getMasterForm();
 
                 // Commitear el formulario
                 AbstractBbSearchForm.this.commit();

@@ -106,7 +106,7 @@ public class BbDispatcherForm<T> extends AbstractDetailForm {
     /**
      * El formulario maestro.
      */
-    private AbstractB2TableMasterForm<T> masterForm;
+    private AbstractBbMasterForm<T> masterForm;
 
     /**
      * Importante que sea ordenada.
@@ -131,7 +131,7 @@ public class BbDispatcherForm<T> extends AbstractDetailForm {
      * @param valueModel
      *            <em>value model</em> a partir del cual crear el modelo de este formulario.
      */
-    public BbDispatcherForm(AbstractB2TableMasterForm<T> masterForm, String formId, ValueModel valueModel) {
+    public BbDispatcherForm(AbstractBbMasterForm<T> masterForm, String formId, ValueModel valueModel) {
 
         super(masterForm.getFormModel(), formId, valueModel, masterForm.getMasterEventList());
 
@@ -149,7 +149,7 @@ public class BbDispatcherForm<T> extends AbstractDetailForm {
      * @param valueModel
      *            <em>value model</em> a partir del cual crear el modelo de este formulario.
      */
-    public BbDispatcherForm(AbstractB2TableMasterForm<T> masterForm, ValueModel valueModel) {
+    public BbDispatcherForm(AbstractBbMasterForm<T> masterForm, ValueModel valueModel) {
 
         this(masterForm, BbDispatcherForm.FORM_ID, valueModel);
 
@@ -170,7 +170,7 @@ public class BbDispatcherForm<T> extends AbstractDetailForm {
      * @param editableItemList
      *            la lista observable de entidades editables.
      */
-    protected BbDispatcherForm(AbstractB2TableMasterForm<T> masterForm, FormModel formModel, String formId,
+    protected BbDispatcherForm(AbstractBbMasterForm<T> masterForm, FormModel formModel, String formId,
             ObservableList editableItemList) {
 
         super(formModel, formId, editableItemList);
@@ -441,7 +441,7 @@ public class BbDispatcherForm<T> extends AbstractDetailForm {
      * 
      * @return el formulario maestro.
      */
-    public final AbstractB2TableMasterForm<T> getMasterForm() {
+    public final AbstractBbMasterForm<T> getMasterForm() {
     
         return this.masterForm;
     }
@@ -681,7 +681,7 @@ public class BbDispatcherForm<T> extends AbstractDetailForm {
      * @param masterForm
      *            el formulario maestro.
      */
-    private void setMasterForm(AbstractB2TableMasterForm<T> masterForm) {
+    private void setMasterForm(AbstractBbMasterForm<T> masterForm) {
     
         this.masterForm = masterForm;
     }

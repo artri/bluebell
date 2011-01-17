@@ -342,7 +342,7 @@ public class TestBbDispatcherForm extends AbstractBbSamplesTests {
     @After
     public void cleanMasterEventList() {
 
-        final AbstractB2TableMasterForm<Person> masterForm = this.getBackingForm(this.getMasterView());
+        final AbstractBbTableMasterForm<Person> masterForm = this.getBackingForm(this.getMasterView());
         final BbDispatcherForm<Person> dispatcherForm = masterForm.getDispatcherForm();
 
         DirtyTrackingUtils.clearDirty(dispatcherForm.getFormModel());
@@ -682,7 +682,7 @@ public class TestBbDispatcherForm extends AbstractBbSamplesTests {
          * @param listened
          *            a form to be listened for object changes.
          */
-        public CountersListener(AbstractB2TableMasterForm<?> masterForm, AbstractForm listened) {
+        public CountersListener(AbstractBbTableMasterForm<?> masterForm, AbstractForm listened) {
 
             this(masterForm, listened, StringUtils.EMPTY, CounterName.VALUE_MODEL);
         }
@@ -699,7 +699,7 @@ public class TestBbDispatcherForm extends AbstractBbSamplesTests {
          * @param ignoredCounters
          *            the counters to be ignored (i.e.: user actions are not tracked by dispatcher form).
          */
-        public CountersListener(AbstractB2TableMasterForm<?> masterForm, AbstractForm listened, String propertyName,
+        public CountersListener(AbstractBbTableMasterForm<?> masterForm, AbstractForm listened, String propertyName,
                 CounterName... counterNamesToIgnore) {
 
             Assert.notNull(masterForm, "masterForm");

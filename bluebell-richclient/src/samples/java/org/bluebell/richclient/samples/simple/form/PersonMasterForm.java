@@ -23,7 +23,7 @@ package org.bluebell.richclient.samples.simple.form;
 
 import java.util.List;
 
-import org.bluebell.richclient.form.AbstractB2TableMasterForm;
+import org.bluebell.richclient.form.AbstractBbTableMasterForm;
 import org.bluebell.richclient.samples.simple.bean.Person;
 import org.bluebell.richclient.samples.simple.service.PersonService;
 import org.springframework.util.Assert;
@@ -33,7 +33,7 @@ import org.springframework.util.Assert;
  * 
  * @author <a href = "mailto:julio.arguello@gmail.com" >Julio Argüello (JAF)</a>
  */
-public class PersonMasterForm extends AbstractB2TableMasterForm<Person> {
+public class PersonMasterForm extends AbstractBbTableMasterForm<Person> {
 
     /**
      * The default form id.

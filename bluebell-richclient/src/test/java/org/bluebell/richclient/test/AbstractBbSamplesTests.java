@@ -29,9 +29,9 @@ import junit.framework.TestCase;
 import org.bluebell.richclient.application.RcpMain;
 import org.bluebell.richclient.application.support.DefaultApplicationPageConfigurer;
 import org.bluebell.richclient.application.support.FormBackedView;
-import org.bluebell.richclient.form.AbstractB2TableMasterForm;
 import org.bluebell.richclient.form.AbstractBbChildForm;
 import org.bluebell.richclient.form.AbstractBbSearchForm;
+import org.bluebell.richclient.form.AbstractBbTableMasterForm;
 import org.bluebell.richclient.form.BbDispatcherForm;
 import org.bluebell.richclient.form.BbValidationForm;
 import org.bluebell.richclient.samples.simple.bean.Person;
@@ -129,7 +129,7 @@ public abstract class AbstractBbSamplesTests extends AbstractBbRichClientTests {
     /**
      * The master view to be tested.
      */
-    private FormBackedView<AbstractB2TableMasterForm<Person>> masterView;
+    private FormBackedView<AbstractBbTableMasterForm<Person>> masterView;
 
     /**
      * The dispatcher form.
@@ -246,7 +246,7 @@ public abstract class AbstractBbSamplesTests extends AbstractBbRichClientTests {
         this.setInitialView(foundInitialView);
 
         // Retrieve page components
-        this.setMasterView((FormBackedView<AbstractB2TableMasterForm<Person>>) applicationWindow.getPage().getView(
+        this.setMasterView((FormBackedView<AbstractBbTableMasterForm<Person>>) applicationWindow.getPage().getView(
                 AbstractBbSamplesTests.MASTER_VIEW_DESCRIPTOR_BEAN_NAME));
         this.setSearchView((FormBackedView<AbstractBbSearchForm<Person, Person>>) applicationWindow.getPage().getView(
                 AbstractBbSamplesTests.SEARCH_VIEW_DESCRIPTOR_BEAN_NAME));
@@ -379,7 +379,7 @@ public abstract class AbstractBbSamplesTests extends AbstractBbRichClientTests {
      * 
      * @return the masterView
      */
-    protected FormBackedView<AbstractB2TableMasterForm<Person>> getMasterView() {
+    protected FormBackedView<AbstractBbTableMasterForm<Person>> getMasterView() {
 
         return this.masterView;
     }
@@ -466,7 +466,7 @@ public abstract class AbstractBbSamplesTests extends AbstractBbRichClientTests {
      * @param masterView
      *            the masterView to set
      */
-    private void setMasterView(FormBackedView<AbstractB2TableMasterForm<Person>> masterView) {
+    private void setMasterView(FormBackedView<AbstractBbTableMasterForm<Person>> masterView) {
 
         this.masterView = masterView;
     }

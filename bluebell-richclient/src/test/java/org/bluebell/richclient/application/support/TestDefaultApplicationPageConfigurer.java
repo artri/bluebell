@@ -25,9 +25,9 @@ import javax.annotation.Resource;
 
 import junit.framework.TestCase;
 
-import org.bluebell.richclient.form.AbstractB2TableMasterForm;
 import org.bluebell.richclient.form.AbstractBbChildForm;
 import org.bluebell.richclient.form.AbstractBbSearchForm;
+import org.bluebell.richclient.form.AbstractBbTableMasterForm;
 import org.bluebell.richclient.form.BbValidationForm;
 import org.bluebell.richclient.samples.simple.bean.Person;
 import org.bluebell.richclient.test.AbstractBbSamplesTests;
@@ -279,7 +279,7 @@ public class TestDefaultApplicationPageConfigurer extends AbstractBbSamplesTests
         TestCase.assertTrue(validationViewIsNull == (this.getValidationView() == null));
 
         // Master form related assertions
-        final AbstractB2TableMasterForm<Person> masterForm = this.getBackingForm(this.getMasterView());
+        final AbstractBbTableMasterForm<Person> masterForm = this.getBackingForm(this.getMasterView());
         final AbstractBbChildForm<Person> childForm = this.getBackingForm(this.getChildView());
         final AbstractBbSearchForm<Person, ?> searchForm = this.getBackingForm(this.getSearchView());
         final BbValidationForm<Person> validationForm = this.getBackingForm(this.getValidationView());

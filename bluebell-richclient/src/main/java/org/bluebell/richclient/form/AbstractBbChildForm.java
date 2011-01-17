@@ -38,7 +38,7 @@ import org.springframework.util.Assert;
  * @param <T>
  *            el tipo de la entidad maestra con la que se vincula este formulario.
  * 
- * @see AbstractB2TableMasterForm
+ * @see AbstractBbTableMasterForm
  * @see BbDispatcherForm
  * 
  * @author <a href = "mailto:julio.arguello@gmail.com" >Julio Argüello (JAF)</a>
@@ -58,7 +58,7 @@ public abstract class AbstractBbChildForm<T extends Object> extends ApplicationW
     /**
      * El formulario maestro.
      */
-    private AbstractB2TableMasterForm<T> masterForm;
+    private AbstractBbMasterForm<T> masterForm;
 
     /**
      * Construye el formulario hijo a partir de su padre y un identificador.
@@ -80,7 +80,7 @@ public abstract class AbstractBbChildForm<T extends Object> extends ApplicationW
      * 
      * @return el formulario maestro.
      */
-    public final AbstractB2TableMasterForm<T> getMasterForm() {
+    public final AbstractBbMasterForm<T> getMasterForm() {
 
         return this.masterForm;
     }
@@ -185,7 +185,7 @@ public abstract class AbstractBbChildForm<T extends Object> extends ApplicationW
      * @param masterForm
      *            el formulario maestro.
      */
-    final void setMasterForm(AbstractB2TableMasterForm<T> masterForm) {
+    final void setMasterForm(AbstractBbMasterForm<T> masterForm) {
 
         Assert.isNull(this.masterForm);
 
