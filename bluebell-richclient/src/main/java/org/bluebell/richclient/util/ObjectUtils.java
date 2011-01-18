@@ -165,7 +165,7 @@ public final class ObjectUtils {
         ReflectionUtils.doWithFields(leafClass, new ReflectionUtils.FieldCallback() {
 
             @Override
-            public void doWith(Field field) throws IllegalArgumentException, IllegalAccessException {
+            public void doWith(Field field) { // throws IllegalArgumentException, IllegalAccessException {
 
                 fields.add(field);
             }

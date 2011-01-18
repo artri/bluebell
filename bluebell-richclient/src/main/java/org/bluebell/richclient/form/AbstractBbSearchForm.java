@@ -610,24 +610,24 @@ public abstract class AbstractBbSearchForm<T extends Object, U extends Object> e
             @SuppressWarnings("unchecked")
             protected void doExecuteCommand() {
 
-                final AbstractBbMasterForm<T> masterForm = AbstractBbSearchForm.this.getMasterForm();
+                final AbstractBbMasterForm<T> theMasterForm = AbstractBbSearchForm.this.getMasterForm();
 
                 // Commitear el formulario
                 AbstractBbSearchForm.this.commit();
 
                 // (JAF), 20110111, from now on no search will be performed without having requested user confirmation
-                if (masterForm.shouldProceed()) {
+                if (theMasterForm.shouldProceed()) {
 
                     // Obtain and remmember search parameters
                     final U formObject = (U) AbstractBbSearchForm.this.getFormObject();
                     AbstractBbSearchForm.this.setLastSearchParams(formObject);
 
                     // Obtain search results and notify the number of results
-                    final List<T> searchResults = AbstractBbSearchForm.this.doSearch(formObject);
-                    AbstractBbSearchForm.this.showNumberOfResults(searchResults.size());
+                    final List<T> results = AbstractBbSearchForm.this.doSearch(formObject);
+                    AbstractBbSearchForm.this.showNumberOfResults(results.size());
 
                     // Show entities on master form
-                    masterForm.showEntities(searchResults, AbstractBbSearchForm.this.isAttachResults(), Boolean.TRUE);
+                    theMasterForm.showEntities(results, AbstractBbSearchForm.this.isAttachResults(), Boolean.TRUE);
                 }
             }
         };

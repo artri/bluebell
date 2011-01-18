@@ -90,8 +90,7 @@ public final class CommandUtils extends ApplicationServicesAccessor {
         Assert.notNull(busyIndicated);
 
         // Securizar el comando
-        final String scid = CommandUtils.constructSecurityControllerId(//
-                command.getId(), formModel);
+        final String scid = CommandUtils.constructSecurityControllerId(command.getId(), formModel);
         command.setSecurityControllerId(scid);
 
         // Configurar el comando
@@ -100,8 +99,7 @@ public final class CommandUtils extends ApplicationServicesAccessor {
 
         // Añade al comando un interceptor indicador de ocupación
         if (busyIndicated) {
-            command.addCommandInterceptor(//
-                    BusyIndicatorActionCommandInterceptor.getInstance());
+            command.addCommandInterceptor(BusyIndicatorActionCommandInterceptor.getInstance());
         }
 
         return (ActionCommand) commandConfigurer.configure(command);
@@ -128,13 +126,10 @@ public final class CommandUtils extends ApplicationServicesAccessor {
 
         Assert.notNull(targetComponent);
 
-        final ActionCommand configuredCommand = //
-        CommandUtils.configureCommand(command, formModel, Boolean.FALSE);
+        final ActionCommand configuredCommand = CommandUtils.configureCommand(command, formModel, Boolean.FALSE);
 
         // Añade al comando un interceptor indicador de ocupación
-        configuredCommand.addCommandInterceptor(//
-                BusyIndicatorActionCommandInterceptor.getInstance(//
-                        targetComponent));
+        configuredCommand.addCommandInterceptor(BusyIndicatorActionCommandInterceptor.getInstance(targetComponent));
 
         return configuredCommand;
     }
@@ -169,10 +164,7 @@ public final class CommandUtils extends ApplicationServicesAccessor {
         final String formModelId = formModel.getId();
 
         if (ids[0] != null) {
-            id = (formModelId != null) ? //
-            formModelId + CommandUtils.DOT + ids[0]
-                    : //
-                    ids[0];
+            id = (formModelId != null) ? formModelId + CommandUtils.DOT + ids[0] : ids[0];
         }
 
         return id;
@@ -197,8 +189,7 @@ public final class CommandUtils extends ApplicationServicesAccessor {
 
         final String capitalizedInnerString = StringUtils.capitalize(innerString);
         final String specializedCommandName = StringUtils.replace(defaultCommandFaceDescriptorId,
-                CommandUtils.COMMAND_SUFIX, //
-                capitalizedInnerString + CommandUtils.COMMAND_SUFIX);
+                CommandUtils.COMMAND_SUFIX, capitalizedInnerString + CommandUtils.COMMAND_SUFIX);
 
         return specializedCommandName + CommandUtils.COMMA + defaultCommandFaceDescriptorId;
     }

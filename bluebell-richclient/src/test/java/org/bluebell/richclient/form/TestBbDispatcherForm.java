@@ -183,7 +183,7 @@ public class TestBbDispatcherForm extends AbstractBbSamplesTests {
         final BbDispatcherForm<Person> dispatcherForm = masterForm.getDispatcherForm();
         final CountersListener countersListener = new CountersListener(masterForm, dispatcherForm);
 
-        final Map<CountersListener.CounterName, Integer> expectedCounters = new HashMap<CountersListener.CounterName, Integer>();
+        final Map<CounterName, Integer> expectedCounters = new HashMap<CounterName, Integer>();
         final List<Person> entities = TestBbDispatcherForm.PERSONS_1;
 
         /*
@@ -233,7 +233,7 @@ public class TestBbDispatcherForm extends AbstractBbSamplesTests {
         final BbDispatcherForm<Person> dispatcherForm = masterForm.getDispatcherForm();
         final CountersListener countersListener = new CountersListener(masterForm, dispatcherForm);
 
-        final Map<CountersListener.CounterName, Integer> expectedCounters = new HashMap<CountersListener.CounterName, Integer>();
+        final Map<CounterName, Integer> expectedCounters = new HashMap<CounterName, Integer>();
         final List<Person> entities = TestBbDispatcherForm.PERSONS_1;
         List<Person> selection;
 
@@ -360,9 +360,10 @@ public class TestBbDispatcherForm extends AbstractBbSamplesTests {
     @SuppressWarnings("unchecked")
     protected void doTestDispatching(PersonMasterForm masterForm, CountersListener countersListener) {
 
-        final Map<CountersListener.CounterName, Integer> expectedCounters = new HashMap<CountersListener.CounterName, Integer>();
+        final Map<CounterName, Integer> expectedCounters = new HashMap<CounterName, Integer>();
         final BbDispatcherForm<Person> dispatcherForm = masterForm.getDispatcherForm();
-
+        final int pos3 = 3;
+        
         List<Person> entities;
         List<Person> selection;
 
@@ -391,7 +392,7 @@ public class TestBbDispatcherForm extends AbstractBbSamplesTests {
          * EXPECTED: [-->1<--,2,3,4]
          */
         selection = entities.subList(0, 1);
-        countersListener.increment(expectedCounters, CounterName.TABLE,// (JAF), 20110116, note #doRefresh changes table
+        countersListener.increment(expectedCounters, CounterName.TABLE, // (JAF), 20110116,note #doRefresh changes table
                 CounterName.SELECTION, CounterName.INDEX_HOLDER, CounterName.FORM_OBJECT, CounterName.VALUE_MODEL);
         this.changeSelectionAndTestAssertions(masterForm, countersListener, selection, expectedCounters);
 
@@ -429,7 +430,7 @@ public class TestBbDispatcherForm extends AbstractBbSamplesTests {
          * EXPECTED: [1,-->2<--,3,4]
          */
         selection = entities.subList(1, 2);
-        countersListener.increment(expectedCounters, CounterName.TABLE,// (JAF), 20110116, note #doRefresh changes table
+        countersListener.increment(expectedCounters, CounterName.TABLE, // (JAF), 20110116,note #doRefresh changes table
                 CounterName.SELECTION, CounterName.INDEX_HOLDER, CounterName.FORM_OBJECT, CounterName.VALUE_MODEL);
         this.changeSelectionAndTestAssertions(masterForm, countersListener, selection, expectedCounters);
 
@@ -463,7 +464,7 @@ public class TestBbDispatcherForm extends AbstractBbSamplesTests {
         selection = TestBbDispatcherForm.PERSONS_2.subList(0, 1);
         countersListener.increment(expectedCounters, //
                 CounterName.TABLE, CounterName.TABLE, // addition and refresh
-                CounterName.SELECTION, CounterName.SELECTION,// 2 selects: empty due to table structure change and ->5<-
+                CounterName.SELECTION, CounterName.SELECTION, // 2selects: empty due to table structure change and ->5<-
                 CounterName.INDEX_HOLDER, CounterName.FORM_OBJECT, CounterName.VALUE_MODEL);
         this.changeSelectionAndTestAssertions(masterForm, countersListener, selection, expectedCounters);
 
@@ -475,8 +476,8 @@ public class TestBbDispatcherForm extends AbstractBbSamplesTests {
          * 
          * EXPECTED: [1,2,3,4,5,-->6<--,-->7<--]
          */
-        selection = TestBbDispatcherForm.PERSONS_2.subList(1, 3);
-        countersListener.increment(expectedCounters, CounterName.TABLE, CounterName.SELECTION,// 2 selects are expected
+        selection = TestBbDispatcherForm.PERSONS_2.subList(1, pos3);
+        countersListener.increment(expectedCounters, CounterName.TABLE, CounterName.SELECTION, // 2selects are expected
                 CounterName.SELECTION, CounterName.INDEX_HOLDER, CounterName.FORM_OBJECT, CounterName.VALUE_MODEL);
         this.changeSelectionAndTestAssertions(masterForm, countersListener, selection, expectedCounters);
     }
@@ -504,7 +505,7 @@ public class TestBbDispatcherForm extends AbstractBbSamplesTests {
 
         final String name = "JAF";
         final String age = "28";
-        final Map<CountersListener.CounterName, Integer> expectedCounters = new HashMap<CountersListener.CounterName, Integer>();
+        final Map<CounterName, Integer> expectedCounters = new HashMap<CounterName, Integer>();
         final BbDispatcherForm<Person> dispatcherForm = masterForm.getDispatcherForm();
 
         /*
@@ -526,7 +527,7 @@ public class TestBbDispatcherForm extends AbstractBbSamplesTests {
             masterForm.changeSelection(Arrays.asList(new Person(StringUtils.EMPTY)));
 
             countersListener.increment(expectedCounters, //
-                    CounterName.TABLE, CounterName.TABLE,// attaching new entity and refreshing it :(
+                    CounterName.TABLE, CounterName.TABLE, // attaching new entity and refreshing it :(
                     CounterName.SELECTION, CounterName.INDEX_HOLDER, CounterName.FORM_OBJECT, CounterName.VALUE_MODEL);
         }
 
@@ -690,13 +691,13 @@ public class TestBbDispatcherForm extends AbstractBbSamplesTests {
         /**
          * Creates the listener.
          * 
-         * @param masterFormTarget
+         * @param masterForm
          *            the master form.
          * @param listened
          *            a form to be listened for object and value changes.
          * @param propertyName
          *            the property to be listened.
-         * @param ignoredCounters
+         * @param counterNamesToIgnore
          *            the counters to be ignored (i.e.: user actions are not tracked by dispatcher form).
          */
         public CountersListener(AbstractBbTableMasterForm<?> masterForm, AbstractForm listened, String propertyName,
@@ -797,9 +798,8 @@ public class TestBbDispatcherForm extends AbstractBbSamplesTests {
          * 
          * @param counters
          *            the map.
-         * @param counterName
+         * @param counterNames
          *            the counter name.
-         * @return the new counter value.
          */
         public final void increment(Map<CounterName, Integer> counters, CounterName... counterNames) {
 
@@ -818,7 +818,6 @@ public class TestBbDispatcherForm extends AbstractBbSamplesTests {
          * 
          * @param counterName
          *            the counter name.
-         * @return the new counter value.
          */
         private void increment(CounterName counterName) {
 

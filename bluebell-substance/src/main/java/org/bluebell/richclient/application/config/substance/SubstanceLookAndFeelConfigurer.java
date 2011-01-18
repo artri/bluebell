@@ -192,37 +192,6 @@ public class SubstanceLookAndFeelConfigurer extends VLDockingLookAndFeelConfigur
     }
 
     /**
-     * Pointcut that intercepts getting progress monitor from monitoring splash screen.
-     * <p>
-     * This method does nothing.
-     */
-    @Pointcut("execution(* org.springframework.richclient.application.splash.MonitoringSplashScreen."
-            + "getProgressMonitor(..))")
-    protected void monitoringSplashScreenGetProgressMonitorOperation() {
-
-    }
-
-    /**
-     * Pointcut that intercepts progress monitor <code>taskStarted</code> events.
-     * <p>
-     * This method does nothing.
-     */
-    @Pointcut("execution(* org.springframework.richclient.progress.ProgressMonitor.*(..))")
-    protected void progressMonitorOperation() {
-
-    }
-
-    /**
-     * Pointcut that intercepts splash screen <code>splash</code> invocations.
-     * <p>
-     * This method does nothing.
-     */
-    @Pointcut("execution(* org.springframework.richclient.application.splash.SplashScreen.*(..))")
-    protected void splashScreenOperation() {
-
-    }
-
-    /**
      * This advice ensures the intercepted method is executed in the EDT.
      * 
      * @param pjp
@@ -291,6 +260,37 @@ public class SubstanceLookAndFeelConfigurer extends VLDockingLookAndFeelConfigur
         JFrame.setDefaultLookAndFeelDecorated(Boolean.FALSE);
         pjp.proceed();
         JFrame.setDefaultLookAndFeelDecorated(defaultLookAndFeelDecorated);
+    }
+
+    /**
+     * Pointcut that intercepts getting progress monitor from monitoring splash screen.
+     * <p>
+     * This method does nothing.
+     */
+    @Pointcut("execution(* org.springframework.richclient.application.splash.MonitoringSplashScreen."
+            + "getProgressMonitor(..))")
+    protected void monitoringSplashScreenGetProgressMonitorOperation() {
+    
+    }
+
+    /**
+     * Pointcut that intercepts progress monitor <code>taskStarted</code> events.
+     * <p>
+     * This method does nothing.
+     */
+    @Pointcut("execution(* org.springframework.richclient.progress.ProgressMonitor.*(..))")
+    protected void progressMonitorOperation() {
+    
+    }
+
+    /**
+     * Pointcut that intercepts splash screen <code>splash</code> invocations.
+     * <p>
+     * This method does nothing.
+     */
+    @Pointcut("execution(* org.springframework.richclient.application.splash.SplashScreen.*(..))")
+    protected void splashScreenOperation() {
+    
     }
 
     /**

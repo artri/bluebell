@@ -96,7 +96,7 @@ import ca.odell.glazedlists.event.ListEventListener;
  * 
  * @author <a href = "mailto:julio.arguello@gmail.com" >Julio Argüello (JAF)</a>
  */
-public class BbDispatcherForm<T> extends AbstractDetailForm {
+public final class BbDispatcherForm<T> extends AbstractDetailForm {
 
     /**
      * The form id.

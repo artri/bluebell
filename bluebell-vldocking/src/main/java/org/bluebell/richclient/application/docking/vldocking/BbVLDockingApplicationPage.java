@@ -60,6 +60,8 @@ import org.springframework.ui.velocity.VelocityEngineUtils;
 import org.springframework.util.Assert;
 import org.xml.sax.SAXException;
 
+import com.vlsolutions.swing.docking.Dockable;
+import com.vlsolutions.swing.docking.DockableState;
 import com.vlsolutions.swing.docking.DockingContext;
 import com.vlsolutions.swing.docking.DockingDesktop;
 
@@ -323,8 +325,14 @@ public class BbVLDockingApplicationPage<T> extends VLDockingApplicationPage {
         final DockingDesktop dockingDesktop = (DockingDesktop) this.getControl();
 
         // 1.Save current layout
-        if (this.getUserLayout() != null) {
-            this.saveLayout(dockingDesktop, this.getUserLayout());
+        // if (this.getUserLayout() != null) {
+        // this.saveLayout(dockingDesktop, this.getUserLayout());
+        // }
+
+        this.close();
+        final List<String> pageComponentDescriptors = ApplicationUtils.getDeclaredPageComponentDescriptors(this);
+        for (String pageComponentDescriptor : pageComponentDescriptors) {
+            this.showView(pageComponentDescriptor);
         }
 
         // 2.Restore layout
@@ -451,8 +459,8 @@ public class BbVLDockingApplicationPage<T> extends VLDockingApplicationPage {
         if (dockingDesktop != null) {
 
             // 2.Build page layouts
-            final List<Resource> layouts = Arrays.asList(//
-                    new Resource[] { this.getUserLayout(), this.getInitialLayout(), this.getAutoLayout(), null });
+            final List<Resource> layouts = Arrays.asList(new Resource[] {//
+                    this.getUserLayout(), this.getInitialLayout(), this.getAutoLayout(), null });
 
             final Boolean layoutSuccess = this.buildLayout(dockingDesktop, layouts, exceptions);
             if (!layoutSuccess && !exceptions.isEmpty()) {
@@ -513,7 +521,7 @@ public class BbVLDockingApplicationPage<T> extends VLDockingApplicationPage {
     /**
      * Gets the auto layout.
      * <p>
-     * Never returns <code>null</code> but note returned resource may be useless.
+     * Never returns <code>null</code> but note returned resource may be useless (i.e.: velocity engine fails).
      * 
      * @return the auto layout.
      */
@@ -523,12 +531,11 @@ public class BbVLDockingApplicationPage<T> extends VLDockingApplicationPage {
 
         // No me gusta esta forma de obtener el contexto
         final VelocityEngine vm = this.getApplicationContext().getBean("velocityEngine", VelocityEngine.class);
-        final ApplicationPageConfigurer<?> applicationPageConfigurer = (ApplicationPageConfigurer<?>) //
-        this.getService(ApplicationPageConfigurer.class);
 
         // TODO, (JAF), 20100408, applicationPageConfigurer is not compulsory
-        final Map<String, List<? extends PageComponent>> classification = applicationPageConfigurer
-                .classifyApplicationPage(this);
+        final ApplicationPageConfigurer<?> pageConfigurer = (ApplicationPageConfigurer<?>) this.getService(//
+                ApplicationPageConfigurer.class);
+        final Map<String, List<? extends PageComponent>> classification = pageConfigurer.classifyApplicationPage(this);
 
         /*
          * Trait unknown views as master views: *This code should be moved to the template*
@@ -673,10 +680,32 @@ public class BbVLDockingApplicationPage<T> extends VLDockingApplicationPage {
         final Resource theUserLayout = this.getUserLayout();
         Boolean success = null;
         try {
+
+            final DockingDesktop dockingDesktop = (DockingDesktop) this.getControl();
+
             if (theUserLayout != null) {
-                this.saveLayout((DockingDesktop) this.getControl(), theUserLayout);
+                this.saveLayout(dockingDesktop, theUserLayout);
             }
+
             success = super.close();
+
+            /*
+             * (JAF), 20110118, dockables must be unregistered. Otherwise closing individual dockables or resetting a
+             * perspective may not work as expected.
+             * 
+             * @see http://jirabluebell.b2b2000.com/browse/BLUE-63
+             */
+            if (success) {
+                for (DockableState dockableState : dockingDesktop.getDockables()) {
+                    final Dockable dockable = dockableState.getDockable();
+
+                    // (JAF), 20110118, this line avoids a NPE when dockable state is null at invoked close method
+                    dockingDesktop.getContext().setDockableState(dockable, dockableState);
+
+                    // Unregister dockable to and allow GC free references
+                    dockingDesktop.unregisterDockable(dockableState.getDockable());
+                }
+            }
         } catch (Exception e) {
             final String description = (theUserLayout != null) ? theUserLayout.getDescription() : StringUtils.EMPTY;
             final String message = BbVLDockingApplicationPage.PAGE_CLOSING_FAILED_FMT.format(//

@@ -172,6 +172,18 @@ public class DefaultApplicationPageConfigurer<T> implements ApplicationPageConfi
 
     /**
      * Classify page components according to Bluebell criteria.
+     * <p>
+     * <b>Note</b> only current page components will be processed. To classify closed undeclared page components also
+     * then write the following code before:
+     * 
+     * <pre>
+     * final List&lt;String&gt; pageComponentIds = ApplicationUtils.getDeclaredPageComponentDescriptors(applicationPage);
+     * for (String pageComponentId : pageComponentIds) {
+     *     applicationPage.showView(pageComponentId);
+     * }
+     * </pre>
+     * 
+     * </p>
      * 
      * @param applicationPage
      *            the page to be classified.
@@ -189,7 +201,6 @@ public class DefaultApplicationPageConfigurer<T> implements ApplicationPageConfi
         // Configuration is repeatable, idempotent and fast.
         final State<T> state = this.doConfigureApplicationPage(applicationPage);
 
-        //
         List<? extends PageComponent> masterViews = new ArrayList<PageComponent>();
         List<? extends PageComponent> validationViews = new ArrayList<PageComponent>();
         if (state.masterView != null) {

@@ -73,7 +73,7 @@ public final class ApplicationUtils {
      * 
      * @param applicationPage
      *            the application page.
-     * @return a list of page descriptors. Never empty.
+     * @return a list of page component descriptor ids. Never empty.
      */
     @SuppressWarnings("unchecked")
     public static List<String> getDeclaredPageComponentDescriptors(ApplicationPage applicationPage) {
@@ -88,9 +88,13 @@ public final class ApplicationUtils {
 
         final PageDescriptor pageDescriptor = pageDescriptorRegistry.getPageDescriptor(applicationPage.getId());
         if (pageDescriptor instanceof MultiViewPageDescriptor) {
+
+            // MultiViewPageDescriptor
             final MultiViewPageDescriptor multiViewPageDescriptor = (MultiViewPageDescriptor) pageDescriptor;
             pageDescriptors.addAll(multiViewPageDescriptor.getViewDescriptors());
         } else if (pageDescriptor instanceof SingleViewPageDescriptor) {
+
+            // SingleViewPageDescriptor
             final SingleViewPageDescriptor singleViewPageDescriptor = (SingleViewPageDescriptor) pageDescriptor;
             pageDescriptors.add(singleViewPageDescriptor.getId());
         }

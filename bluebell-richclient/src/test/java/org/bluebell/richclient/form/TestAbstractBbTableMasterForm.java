@@ -709,7 +709,8 @@ public class TestAbstractBbTableMasterForm extends AbstractBbSamplesTests {
 
         TestCase.assertEquals(expectedCount, masterForm.getCount());
         TestCase.assertTrue("ListUtils.isEqualList(expectedSelection, masterForm.getSelection())\n" + expectedSelection
-                + "\n" + masterForm.getSelection(), ListUtils.isEqualList(expectedSelection, masterForm.getSelection()));
+                + "\n" + masterForm.getSelection(), //
+                ListUtils.isEqualList(expectedSelection, masterForm.getSelection()));
     }
 
     /**

@@ -92,6 +92,8 @@ public class DefaultPersonService implements PersonService {
      * 
      * @param person
      *            the target person.
+     * @param operation
+     *            the operation to perform.
      * @return a shallow copy.
      */
     private Person mockOperation(Person person, String operation) {

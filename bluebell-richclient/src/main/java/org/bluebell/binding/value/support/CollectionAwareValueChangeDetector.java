@@ -18,10 +18,6 @@
 
 package org.bluebell.binding.value.support;
 
-/**
- * 
- */
-
 import java.util.Collection;
 import java.util.List;
 
@@ -121,7 +117,8 @@ public class CollectionAwareValueChangeDetector extends DefaultValueChangeDetect
             return Boolean.TRUE;
         }
         if ((oldValue instanceof List) && (newValue instanceof List)) {
-            // (JAF), 20100424, for performance reasons check this before proceed.
+            // (JAF), 20100424, for performance reasons check this before
+            // proceed.
             final Boolean wrapped = GlazedListsUtils.isWrapped(((List) oldValue), (List) newValue);
 
             return (wrapped) ? Boolean.FALSE : !ObjectUtils.isEqualList((List) oldValue, (List) newValue);

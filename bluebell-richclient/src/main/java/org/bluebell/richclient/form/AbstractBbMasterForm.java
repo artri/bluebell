@@ -173,6 +173,8 @@ public abstract class AbstractBbMasterForm<T extends Object> extends AbstractMas
      * 
      * @param entities
      *            the entities to be shown.
+     * 
+     * @return <code>true</code> if success and <code>false</code> in other case.
      */
     public abstract Boolean showEntities(List<T> entities);
 
@@ -185,6 +187,8 @@ public abstract class AbstractBbMasterForm<T extends Object> extends AbstractMas
      *            the entities to be shown.
      * @param attach
      *            whether to attach the entities to those currently being shown.
+     * 
+     * @return <code>true</code> if success and <code>false</code> in other case.
      */
     public abstract Boolean showEntities(List<T> entities, Boolean attach);
 
@@ -198,7 +202,7 @@ public abstract class AbstractBbMasterForm<T extends Object> extends AbstractMas
      * @param force
      *            whether to force showing entities without requesting user confirmation.
      * 
-     * @return <code>true</code> if success and <code>false</code> in other case (i.e.:user declined selection change).
+     * @return <code>true</code> if success and <code>false</code> in other case.
      */
     public abstract Boolean showEntities(List<T> entities, Boolean attach, Boolean force);
 
@@ -448,7 +452,7 @@ public abstract class AbstractBbMasterForm<T extends Object> extends AbstractMas
     /**
      * Lets user implement insertion on its own.
      * <p>
-     * This is the <b>C</c> of CRUD.
+     * This is the <b>C</b> of CRUD.
      * </p>
      * 
      * @param object
@@ -500,43 +504,6 @@ public abstract class AbstractBbMasterForm<T extends Object> extends AbstractMas
     protected abstract T doDelete(T object);
 
     /**
-     * Creates the buttons command group.
-     * 
-     * @return the buttons command group.
-     */
-    protected CommandGroup createButtonsCommandGroup() {
-
-        final CommandGroup group = CommandGroup.createCommandGroup(new Object[] {
-                // this.getFilterCommand(), //
-                // CommandGroupFactoryBean.SEPARATOR_MEMBER_CODE, //
-                // CommandGroupFactoryBean.SEPARATOR_MEMBER_CODE, //
-                GlobalCommandIds.PROPERTIES, //
-                GlobalCommandIds.SAVE, //
-                GlobalCommandsAccessor.CANCEL, //
-                GlobalCommandIds.DELETE //
-                });
-
-        group.setCommandRegistry(this.getApplicationWindow().getCommandManager());
-
-        return group;
-    }
-
-    /**
-     * Publica un evento de aplicación indicando que se ha creado, modificado, refrescado o eliminado un objeto.
-     * <p>
-     * 
-     * @param eventType
-     *            el tipo del evento.
-     * @param source
-     *            el objeto desencadenante del evento.
-     */
-    protected final void publishApplicationEvent(EventType eventType, T source) {
-
-        final ApplicationEvent applicationEvent = new LifecycleApplicationEvent(eventType.toString(), source);
-        this.getApplicationContext().publishEvent(applicationEvent);
-    }
-
-    /**
      * Crea el formulario detalle utilizando un {@link BbDispatcherForm}.
      * 
      * @param parentFormModel
@@ -550,8 +517,23 @@ public abstract class AbstractBbMasterForm<T extends Object> extends AbstractMas
     @Override
     protected final BbDispatcherForm<T> createDetailForm(HierarchicalFormModel parentFormModel, ValueModel valueHolder,
             ObservableList masterList) {
-
+    
         return new BbDispatcherForm<T>(this, valueHolder);
+    }
+
+    /**
+     * Publica un evento de aplicación indicando que se ha creado, modificado, refrescado o eliminado un objeto.
+     * <p>
+     * 
+     * @param eventType
+     *            el tipo del evento.
+     * @param source
+     *            el objeto desencadenante del evento.
+     */
+    protected final void publishApplicationEvent(EventType eventType, T source) {
+    
+        final ApplicationEvent applicationEvent = new LifecycleApplicationEvent(eventType.toString(), source);
+        this.getApplicationContext().publishEvent(applicationEvent);
     }
 
     /**
@@ -575,6 +557,28 @@ public abstract class AbstractBbMasterForm<T extends Object> extends AbstractMas
         }
 
         return this.buttonsCommandGroup;
+    }
+
+    /**
+     * Creates the buttons command group.
+     * 
+     * @return the buttons command group.
+     */
+    protected CommandGroup createButtonsCommandGroup() {
+    
+        final CommandGroup group = CommandGroup.createCommandGroup(new Object[] {
+                // this.getFilterCommand(), //
+                // CommandGroupFactoryBean.SEPARATOR_MEMBER_CODE, //
+                // CommandGroupFactoryBean.SEPARATOR_MEMBER_CODE, //
+                GlobalCommandIds.PROPERTIES, //
+                GlobalCommandIds.SAVE, //
+                GlobalCommandsAccessor.CANCEL, //
+                GlobalCommandIds.DELETE //
+                });
+    
+        group.setCommandRegistry(this.getApplicationWindow().getCommandManager());
+    
+        return group;
     }
 
     /**

@@ -34,7 +34,7 @@ import org.springframework.richclient.util.Assert;
  * 
  * @author <a href = "mailto:julio.arguello@gmail.com" >Julio Argüello (JAF)</a>
  */
-public class FormUtils {
+public final class FormUtils {
 
     /**
      * The field with name {@value #EDITING_FORM_OBJECT_INDEX_HOLDER} from {@link AbstractForm}.
@@ -50,6 +50,13 @@ public class FormUtils {
      * The field with name {@value #NEW_FORM_OBJECT_COMMAND} from {@link AbstractForm}.
      */
     private static final String NEW_FORM_OBJECT_COMMAND = "newFormObjectCommand";
+
+    /**
+     * Utility classes should not have a public or default constructor.
+     */
+    private FormUtils() {
+
+    }
 
     /**
      * Gets the list of editable form objects of a given form.

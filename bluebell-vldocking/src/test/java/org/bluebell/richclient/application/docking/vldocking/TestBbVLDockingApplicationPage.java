@@ -381,15 +381,15 @@ public class TestBbVLDockingApplicationPage extends AbstractBbSamplesTests {
         super.initializeVariables(pageDescriptor);
     }
 
-    /** 
+    /**
      * {@inheritDoc}
      */
     @Override
     protected Class<? extends RegisterableExceptionHandler> getRegisterableExceptionHandlerClass() {
-         
+
         return RememberExceptionHandler.class;
     }
-    
+
     /**
      * Form implementation equals to {@link PersonChildForm} except on identifier.
      * 

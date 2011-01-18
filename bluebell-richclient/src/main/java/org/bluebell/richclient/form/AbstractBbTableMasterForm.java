@@ -24,7 +24,6 @@ import java.beans.PropertyChangeListener;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
 
 import javax.swing.JComponent;
@@ -176,8 +175,9 @@ public abstract class AbstractBbTableMasterForm<T extends Object> extends Abstra
      * 
      * @param entities
      *            the entities to be shown.
+     * @return <code>true</code> if success and <code>false</code> in other case (i.e.:user declined selection change).
      * 
-     * @see #showEntities(Collection, Boolean, Boolean)
+     * @see #showEntities(java.util.Collection;, Boolean, Boolean)
      */
     @Override
     public final Boolean showEntities(List<T> entities) {
@@ -195,7 +195,9 @@ public abstract class AbstractBbTableMasterForm<T extends Object> extends Abstra
      * @param attach
      *            whether to attach the entities to those currently being shown.
      * 
-     * @see #showEntities(Collection, Boolean, Boolean)
+     * @return <code>true</code> if success and <code>false</code> in other case (i.e.:user declined selection change).
+     * 
+     * @see #showEntities(java.util.Collection;, Boolean, Boolean)
      */
     @Override
     public final Boolean showEntities(List<T> entities, Boolean attach) {
@@ -568,79 +570,6 @@ public abstract class AbstractBbTableMasterForm<T extends Object> extends Abstra
     }
 
     /**
-     * Gets the popup menu for the master table.
-     * <p>
-     * This is built from the command group returned from {@link #getPopupMenuCommandGroup()}.
-     * 
-     * @return the popup menu.
-     */
-    @Override
-    protected final JPopupMenu getPopupMenu() {
-
-        return this.getPopupMenuCommandGroup().createPopupMenu();
-    }
-
-    /**
-     * Gets the popup menu command group and if doesn't exist then creates it.
-     * 
-     * @return the popup menu command group.
-     */
-    protected final CommandGroup getPopupMenuCommandGroup() {
-
-        if (this.popupMenuCommandGroup == null) {
-            this.popupMenuCommandGroup = this.createButtonsCommandGroup();
-        }
-
-        return this.popupMenuCommandGroup;
-    }
-
-    /**
-     * Creates the popup menu command group.
-     * 
-     * @return the popup menu command group.
-     */
-    protected CommandGroup createPopupMenuCommandGroup() {
-
-        final CommandGroup group = CommandGroup.createCommandGroup(new Object[] { GlobalCommandIds.PROPERTIES, //
-                GlobalCommandIds.SAVE, //
-                GlobalCommandsAccessor.CANCEL, //
-                GlobalCommandIds.DELETE, //
-                CommandGroupFactoryBean.SEPARATOR_MEMBER_CODE, //
-                GlobalCommandsAccessor.REVERT, //
-                GlobalCommandsAccessor.REVERT_ALL //
-                });
-
-        group.setCommandRegistry(this.getApplicationWindow().getCommandManager());
-
-        return group;
-    }
-
-    /**
-     * Creates the selection handler to be installed in the master event list.
-     * 
-     * @return the selection handler.
-     */
-    protected ListSelectionListener createSelectionHandler() {
-
-        return new MasterFormListSelectionHandler();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @SuppressWarnings("unchecked")
-    protected TableModel createTableModel() {
-
-        final EventList<T> eventList = this.getMasterEventList();
-
-        // Change backing form object in order to force table binding to use the event list as value model
-        final ConfigurableFormModel parentFormModel = (ConfigurableFormModel) this.getFormModel().getParent();
-        parentFormModel.setFormObject(new ParentFormBackingBean(eventList));
-
-        return BbFormModelHelper.createTableModel(eventList, this.getColumnPropertyNames(), this.getId());
-    }
-
-    /**
      * Sobrescribe el método de la clase base que elimina de la tabla maestra el departamento seleccionado para su
      * eliminación también de forma persistente.
      */
@@ -701,6 +630,21 @@ public abstract class AbstractBbTableMasterForm<T extends Object> extends Abstra
     /**
      * {@inheritDoc}
      */
+    @SuppressWarnings("unchecked")
+    protected TableModel createTableModel() {
+
+        final EventList<T> eventList = this.getMasterEventList();
+
+        // Change backing form object in order to force table binding to use the event list as value model
+        final ConfigurableFormModel parentFormModel = (ConfigurableFormModel) this.getFormModel().getParent();
+        parentFormModel.setFormObject(new ParentFormBackingBean(eventList));
+
+        return BbFormModelHelper.createTableModel(eventList, this.getColumnPropertyNames(), this.getId());
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected final ListSelectionListener getSelectionHandler() {
 
@@ -708,6 +652,16 @@ public abstract class AbstractBbTableMasterForm<T extends Object> extends Abstra
             this.listSelectionHandler = this.createSelectionHandler();
         }
         return this.listSelectionHandler;
+    }
+
+    /**
+     * Creates the selection handler to be installed in the master event list.
+     * 
+     * @return the selection handler.
+     */
+    protected ListSelectionListener createSelectionHandler() {
+
+        return new MasterFormListSelectionHandler();
     }
 
     /**
@@ -719,6 +673,54 @@ public abstract class AbstractBbTableMasterForm<T extends Object> extends Abstra
     protected ListSelectionModel getSelectionModel() {
 
         return this.getMasterTable().getSelectionModel();
+    }
+
+    /**
+     * Gets the popup menu for the master table.
+     * <p>
+     * This is built from the command group returned from {@link #getPopupMenuCommandGroup()}.
+     * 
+     * @return the popup menu.
+     */
+    @Override
+    protected final JPopupMenu getPopupMenu() {
+
+        return this.getPopupMenuCommandGroup().createPopupMenu();
+    }
+
+    /**
+     * Gets the popup menu command group and if doesn't exist then creates it.
+     * 
+     * @return the popup menu command group.
+     */
+    protected final CommandGroup getPopupMenuCommandGroup() {
+
+        if (this.popupMenuCommandGroup == null) {
+            this.popupMenuCommandGroup = this.createButtonsCommandGroup();
+        }
+
+        return this.popupMenuCommandGroup;
+    }
+
+    /**
+     * Creates the popup menu command group.
+     * 
+     * @return the popup menu command group.
+     */
+    protected CommandGroup createPopupMenuCommandGroup() {
+
+        final CommandGroup group = CommandGroup.createCommandGroup(new Object[] { GlobalCommandIds.PROPERTIES, //
+                GlobalCommandIds.SAVE, //
+                GlobalCommandsAccessor.CANCEL, //
+                GlobalCommandIds.DELETE, //
+                CommandGroupFactoryBean.SEPARATOR_MEMBER_CODE, //
+                GlobalCommandsAccessor.REVERT, //
+                GlobalCommandsAccessor.REVERT_ALL //
+                });
+
+        group.setCommandRegistry(this.getApplicationWindow().getCommandManager());
+
+        return group;
     }
 
     /**
@@ -960,7 +962,7 @@ public abstract class AbstractBbTableMasterForm<T extends Object> extends Abstra
      * @see #doSelectionChange(int[], int[], List)
      * @see AbstractBbTableMasterForm#afterSelectionChange(List, List)
      */
-    private final void handleSelectionChange(List<Integer> newModelIndexes, List<Integer> newViewIndexes,
+    private void handleSelectionChange(List<Integer> newModelIndexes, List<Integer> newViewIndexes, //
             List<T> newSelection) {
 
         // (JAF), 20110110, at this point old indexes become newer, so employing TableUtils is not a valid way
@@ -1179,7 +1181,7 @@ public abstract class AbstractBbTableMasterForm<T extends Object> extends Abstra
          * @see #onSingleSelection(int, int, Object)
          * @see #onMultiSelection(List, List, List)
          */
-        private final void delegateSelectionChange(List<Integer> viewIndexes) {
+        private void delegateSelectionChange(List<Integer> viewIndexes) {
 
             // Constants
             final AbstractBbTableMasterForm<T> masterForm = AbstractBbTableMasterForm.this;
