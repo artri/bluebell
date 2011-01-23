@@ -69,10 +69,7 @@ public class JideRepaintManager extends RepaintManager {
     private static JideRepaintManager instance;
 
     /**
-     * Creates the repaint manager given its delegate.
-     * 
-     * @param delegate
-     *            the delegate.
+     * Creates the repaint manager.
      */
     public JideRepaintManager() {
 

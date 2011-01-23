@@ -75,7 +75,7 @@ public class TestDirtyTrackingUtils extends AbstractBbRichClientTests {
 
         TestCase.assertNotNull(this.testDirtyTrackingUtilsProperties);
     }
-    
+
     /**
      * Tests the correct behaviour of
      * {@link DirtyTrackingUtils#getI18nDirtyProperties(org.springframework.binding.form.FormModel)} .
@@ -175,7 +175,7 @@ public class TestDirtyTrackingUtils extends AbstractBbRichClientTests {
                 childFormModelMsg));
         TestCase.assertEquals(1, StringUtils.countMatches(i18nDirtyPropertiesHtmlString, //
                 simplePropertyParentFormModelMsg));
-        TestCase.assertEquals(1, StringUtils.countMatches(i18nDirtyPropertiesHtmlString, // 
+        TestCase.assertEquals(1, StringUtils.countMatches(i18nDirtyPropertiesHtmlString, //
                 compoundPropertyParentFormModelMsg));
         TestCase.assertEquals(1, StringUtils.countMatches(i18nDirtyPropertiesHtmlString, //
                 simplePropertyChildFormModelMsg));

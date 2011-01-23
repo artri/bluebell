@@ -41,7 +41,7 @@ import org.springframework.richclient.text.TextComponentPopup;
  * 
  * @see org.springframework.richclient.text.TextComponentPopupInterceptorFactory
  * 
- *@author <a href = "mailto:julio.arguello@gmail.com" >Julio Argüello (JAF)</a>
+ * @author <a href = "mailto:julio.arguello@gmail.com" >Julio Argüello (JAF)</a>
  */
 public class TextComponentPopupInterceptorFactory implements FormComponentInterceptorFactory {
 
@@ -69,7 +69,7 @@ public class TextComponentPopupInterceptorFactory implements FormComponentInterc
      * Extensión de {@link TextComponentPopup} que no rompe la suscripcion de sus comandos globales al perder el foco,
      * ya que de este modo no es posible ejecutarlos desde una <em>toolbar</em> por ejemplo.
      * 
-     *@author <a href = "mailto:julio.arguello@gmail.com" >Julio Argüello (JAF)</a>
+     * @author <a href = "mailto:julio.arguello@gmail.com" >Julio Argüello (JAF)</a>
      */
     private static final class ExtendedTextComponentPopup extends TextComponentPopup {
 
@@ -86,7 +86,7 @@ public class TextComponentPopupInterceptorFactory implements FormComponentInterc
             super(textComponent, resetUndoHistoryTrigger);
         }
 
-        /**
+/**
          * Invocado cada vez que el componente de texto pierde el foco.
          * <p>
          * A diferencia de {@link TextComponentPopup no hace nada.
@@ -168,11 +168,11 @@ public class TextComponentPopupInterceptorFactory implements FormComponentInterc
 
             final JComponent innerComp = this.getInnerComponent(component);
             if (innerComp instanceof JTextComponent) {
-                TextComponentPopupInterceptorFactory.ExtendedTextComponentPopup.attachPopup((JTextComponent) innerComp,
-                        this.getResetTrigger());
+                TextComponentPopupInterceptorFactory.ExtendedTextComponentPopup.attachPopup(//
+                        (JTextComponent) innerComp, this.getResetTrigger());
             } else if (innerComp instanceof TextComponentContainer) {
-                TextComponentPopupInterceptorFactory.ExtendedTextComponentPopup.attachPopup(((TextComponentContainer) //
-                        innerComp).getComponent(), this.getResetTrigger());
+                TextComponentPopupInterceptorFactory.ExtendedTextComponentPopup.attachPopup(//
+                        ((TextComponentContainer) innerComp).getComponent(), this.getResetTrigger());
             }
         }
 
@@ -206,6 +206,7 @@ public class TextComponentPopupInterceptorFactory implements FormComponentInterc
             final FormModel formModel = this.getFormModel();
             formModel.addCommitListener(this);
             formModel.getFormObjectHolder().addValueChangeListener(this);
+            // SwingUtils.weakPropertyChangeListener(this));
         }
     }
 }

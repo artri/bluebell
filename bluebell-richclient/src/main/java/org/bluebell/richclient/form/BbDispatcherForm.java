@@ -194,7 +194,7 @@ public final class BbDispatcherForm<T> extends AbstractDetailForm {
      *            el formulario hijo.
      */
     @Override
-    public final void addChildForm(Form form) {
+    public void addChildForm(Form form) {
 
         Assert.notNull(form);
         Assert.isInstanceOf(AbstractBbChildForm.class, form);
@@ -227,18 +227,18 @@ public final class BbDispatcherForm<T> extends AbstractDetailForm {
      *            el formulario hijo.
      */
     @Override
-    public final void removeChildForm(Form form) {
-    
+    public void removeChildForm(Form form) {
+
         Assert.isTrue(this.getChildForms().contains(form), "The form to remove must be a children of this form");
         Assert.isInstanceOf(AbstractBbChildForm.class, form);
-    
+
         // [1] Call super
         super.removeChildForm(form);
-    
+
         // [2] Bidirection unlinking
         @SuppressWarnings("unchecked")
         final AbstractBbChildForm<T> childForm = (AbstractBbChildForm<T>) form;
-    
+
         this.childForms.remove(childForm.getId());
         childForm.setDispatcherForm(null);
     }
@@ -248,12 +248,12 @@ public final class BbDispatcherForm<T> extends AbstractDetailForm {
      * 
      * @return una colección <em>unmodifiable</em> con los formularios hijos de este formulario.
      */
-    public final List<AbstractBbChildForm<T>> getChildForms() {
-    
+    public List<AbstractBbChildForm<T>> getChildForms() {
+
         if (this.childForms == null) {
             this.childForms = new ArrayList<AbstractBbChildForm<T>>();
         }
-    
+
         return Collections.unmodifiableList(this.childForms);
     }
 
@@ -266,14 +266,14 @@ public final class BbDispatcherForm<T> extends AbstractDetailForm {
      * @return el formulario hijo.
      */
     @Override
-    public final AbstractBbChildForm<T> getChildForm(String formId) {
-    
+    public AbstractBbChildForm<T> getChildForm(String formId) {
+
         for (final AbstractBbChildForm<T> childForm : this.getChildForms()) {
             if (formId.equals(childForm.getId())) {
                 return childForm;
             }
         }
-    
+
         return null;
     }
 
@@ -281,7 +281,7 @@ public final class BbDispatcherForm<T> extends AbstractDetailForm {
      * {@inheritDoc}
      */
     @Override
-    public final void commit() {
+    public void commit() {
 
         try {
             this.setCommitting(Boolean.TRUE);
@@ -305,10 +305,10 @@ public final class BbDispatcherForm<T> extends AbstractDetailForm {
      * @see #preCommit(FormModel)
      */
     @Override
-    public final void postCommit(FormModel formModel) {
-    
+    public void postCommit(FormModel formModel) {
+
         this.doPostCommit(formModel);
-    
+
         // (JAF), 20110105, call #setEditingNewFormObject since AbstractForm uses direct field access instead of setter
         this.setEditingNewFormObject(Boolean.FALSE);
     }
@@ -318,8 +318,8 @@ public final class BbDispatcherForm<T> extends AbstractDetailForm {
      * 
      * @return <code>true</code> en caso afirmativo.
      */
-    public final Boolean isCommitting() {
-    
+    public Boolean isCommitting() {
+
         return this.committing;
     }
 
@@ -327,14 +327,14 @@ public final class BbDispatcherForm<T> extends AbstractDetailForm {
      * {@inheritDoc}
      */
     @Override
-    public final boolean isDirty() {
-    
+    public boolean isDirty() {
+
         for (final AbstractForm childForm : this.getChildForms()) {
             if (childForm.isDirty()) {
                 return Boolean.TRUE;
             }
         }
-    
+
         return Boolean.FALSE;
     }
 
@@ -344,13 +344,13 @@ public final class BbDispatcherForm<T> extends AbstractDetailForm {
      * @see DispatcherFormModel#doInternalReset()
      */
     @Override
-    public final void reset() {
-    
+    public void reset() {
+
         this.getDispatcherFormModel().doInternalReset();
-    
+
         // (JAF), 20080914, AbstractFormModel#reset internally executes #setFormObject(null) over this form and its
         // children. To avoid redundant calls its better to make a single invocation
-    
+
         // for (Form childForm : this.formsById.values()) { childForm.reset(); }
     }
 
@@ -360,10 +360,10 @@ public final class BbDispatcherForm<T> extends AbstractDetailForm {
      * @see DispatcherFormModel#doInternalRevert()
      */
     @Override
-    public final void revert() {
-    
+    public void revert() {
+
         this.getDispatcherFormModel().doInternalRevert();
-    
+
         for (final Form childForm : this.getChildForms()) {
             childForm.revert();
         }
@@ -375,7 +375,7 @@ public final class BbDispatcherForm<T> extends AbstractDetailForm {
      * @see DispatcherFormModel#doInternalSetEnabled(boolean)
      */
     @Override
-    public final void setEnabled(boolean enabled) {
+    public void setEnabled(boolean enabled) {
 
         this.getDispatcherFormModel().doInternalSetEnabled(enabled);
 
@@ -390,7 +390,7 @@ public final class BbDispatcherForm<T> extends AbstractDetailForm {
      * @see DispatcherFormModel#doInternalSetFormObject(Object)
      */
     @Override
-    public final void setFormObject(Object formObject) {
+    public void setFormObject(Object formObject) {
 
         this.getDispatcherFormModel().doInternalSetFormObject(formObject);
 
@@ -424,7 +424,7 @@ public final class BbDispatcherForm<T> extends AbstractDetailForm {
      * @since 20110105
      */
     @Override
-    public final void setSelectedIndex(int index) {
+    public void setSelectedIndex(int index) {
 
         // (JAF), 20110105, hack to avoid changing select index three times on commit!
         if (this.isCommitting() && (index == -1)) {
@@ -441,8 +441,8 @@ public final class BbDispatcherForm<T> extends AbstractDetailForm {
      * 
      * @return el formulario maestro.
      */
-    public final AbstractBbMasterForm<T> getMasterForm() {
-    
+    public AbstractBbMasterForm<T> getMasterForm() {
+
         return this.masterForm;
     }
 
@@ -485,37 +485,37 @@ public final class BbDispatcherForm<T> extends AbstractDetailForm {
      * @see <a href="http://jirabluebell.b2b2000.com/browse/BLUE-22">BLUE-22</a>
      */
     @Override
-    public final ActionCommand getNewFormObjectCommand() {
-    
+    public ActionCommand getNewFormObjectCommand() {
+
         ActionCommand newFormObjectCommand = FormUtils.getNewFormObjectCommand(this);
-    
+
         if (newFormObjectCommand == null) {
-    
+
             newFormObjectCommand = super.getNewFormObjectCommand();
             newFormObjectCommand.addCommandInterceptor(new ActionCommandInterceptor() {
-    
+
                 /**
                  * {@inheritDoc}
                  */
                 @Override
                 public void postExecution(ActionCommand command) {
-    
+
                     // Nothing to do
                 }
-    
+
                 /**
                  * {@inheritDoc}
                  */
                 @Override
                 public boolean preExecution(ActionCommand command) {
-    
+
                     BbDispatcherForm.this.setEditingNewFormObject(Boolean.TRUE);
-    
+
                     return Boolean.TRUE;
                 }
             });
         }
-    
+
         return newFormObjectCommand;
     }
 
@@ -523,7 +523,7 @@ public final class BbDispatcherForm<T> extends AbstractDetailForm {
      * {@inheritDoc}
      */
     @Override
-    public final String toString() {
+    public String toString() {
 
         return new ToStringBuilder(this, ToStringStyle.SIMPLE_STYLE).append("id", this.getId()).toString();
     }
@@ -538,7 +538,7 @@ public final class BbDispatcherForm<T> extends AbstractDetailForm {
      * @return el control del formulario.
      */
     @Override
-    protected final JComponent createFormControl() {
+    protected JComponent createFormControl() {
 
         return this.createButtonBar();
     }
@@ -554,7 +554,7 @@ public final class BbDispatcherForm<T> extends AbstractDetailForm {
      * @see AbstractBbChildForm#setEditableFormObjectFromDispatcherForm(ObservableList)
      */
     @Override
-    protected final void setEditableFormObjects(ObservableList editableFormObjects) {
+    protected void setEditableFormObjects(ObservableList editableFormObjects) {
 
         super.setEditableFormObjects(editableFormObjects);
 
@@ -569,7 +569,7 @@ public final class BbDispatcherForm<T> extends AbstractDetailForm {
      * {@inheritDoc}
      */
     @Override
-    protected final void setEditingNewFormObject(boolean editingNewFormOject) {
+    protected void setEditingNewFormObject(boolean editingNewFormOject) {
 
         super.setEditingNewFormObject(editingNewFormOject);
 
@@ -682,7 +682,7 @@ public final class BbDispatcherForm<T> extends AbstractDetailForm {
      *            el formulario maestro.
      */
     private void setMasterForm(AbstractBbMasterForm<T> masterForm) {
-    
+
         this.masterForm = masterForm;
     }
 
@@ -694,12 +694,12 @@ public final class BbDispatcherForm<T> extends AbstractDetailForm {
      * @see #getFormModel()
      */
     private DispatcherFormModel getDispatcherFormModel() {
-    
+
         Assert.isInstanceOf(DispatcherFormModel.class, this.getFormModel());
-    
+
         @SuppressWarnings("unchecked")
         final DispatcherFormModel dispatcherFormModel = (DispatcherFormModel) this.getFormModel();
-    
+
         return dispatcherFormModel;
     }
 

@@ -138,19 +138,15 @@
 		p:binder-selection-strategy-id="${richclient.binderSelectionStrategy}" p:binding-factory-provider-id="${richclient.bindingFactoryProvider}"
 		p:component-factory-id="${richclient.componentFactory}" p:conversion-service-id="${richclient.conversionService}"
 		p:form-component-interceptor-factory-id="${richclient.formComponentInterceptorFactory}" p:image-source-id="${richclient.imageSource}"
-		p:message-source-id="${richclient.messageSource}" p:rules-source-id="${richclient.rulesSource}"
-		p:value-change-detector-id="${richclient.valueChangeDetector}">
+		p:message-source-id="${richclient.messageSource}" p:page-component-pane-factory-id="${richclient.pageComponentPaneFactory}"
+		p:rules-source-id="${richclient.rulesSource}" p:value-change-detector-id="${richclient.valueChangeDetector}">
 
 		<property name="registryEntries">
 			<map>
 				<entry key="org.bluebell.richclient.components.OverlayService" value-ref="${richclient.overlayService}" />
-
 				<entry key="org.springframework.richclient.command.CommandServices" value-ref="${richclient.commandServices}" />
-
 				<entry key="org.springframework.richclient.factory.MenuFactory" value-ref="${richclient.menuFactory}" />
-
 				<entry key="org.springframework.richclient.application.ApplicationWindowFactory" value-ref="${richclient.applicationWindowFactory}" />
-
 				<entry key="org.bluebell.richclient.application.ApplicationPageConfigurer" value-ref="${richclient.applicationPageConfigurer}" />
 			</map>
 		</property>
@@ -288,6 +284,8 @@
 	-->
 	<bean id="messageSource" class="org.springframework.context.support.ResourceBundleMessageSource"
 		p:parentMessageSource-ref="${richclient.messageSource}" />
+
+	<bean id="defaultPageComponentPaneFactory" class="org.bluebell.richclient.application.support.BbPageComponentPaneFactory" />
 
 	<!--
 		Bean: defaultRulesSource

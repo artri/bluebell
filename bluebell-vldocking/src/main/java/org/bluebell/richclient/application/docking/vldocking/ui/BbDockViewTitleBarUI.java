@@ -34,6 +34,7 @@ import org.springframework.util.Assert;
 import com.vlsolutions.swing.docking.DockViewTitleBar;
 import com.vlsolutions.swing.docking.Dockable;
 import com.vlsolutions.swing.docking.DockableContainer;
+import com.vlsolutions.swing.docking.DockingDesktop;
 import com.vlsolutions.swing.docking.DockingUtilities;
 import com.vlsolutions.swing.docking.ui.DockViewTitleBarUI;
 
@@ -120,16 +121,42 @@ public class BbDockViewTitleBarUI extends DockViewTitleBarUI implements Activati
      * Activates or deactivates the given dockable and repaints it.
      * 
      * @param dockViewTitleBar
-     *            the dockViewTitleBar to be repainted.
+     *            the dockViewTitleBar to be repainted. If <code>null</code> then this method does nothing.
      * @param active
      *            <code>true</code> for activating.
+     * 
+     * @see #repaintDockable(DockViewTitleBar, Boolean)
      */
     static void nullSafeRepaintDockable(DockViewTitleBar dockViewTitleBar, Boolean active) {
 
         Assert.notNull(active, "active");
 
         if (dockViewTitleBar != null) {
-            final Dockable dockable = dockViewTitleBar.getDockable();
+
+            BbDockViewTitleBarUI.repaintDockable(dockViewTitleBar, active);
+        }
+    }
+
+    /**
+     * Activates or deactivates the given dockable and repaints it.
+     * 
+     * @param dockViewTitleBar
+     *            the dockViewTitleBar to be repainted.
+     * @param active
+     *            <code>true</code> for activating.
+     */
+    static void repaintDockable(DockViewTitleBar dockViewTitleBar, Boolean active) {
+
+        Assert.notNull(active, "active");
+        Assert.notNull(dockViewTitleBar, "dockViewTitleBar");
+
+        final DockingDesktop dockingDesktop = dockViewTitleBar.getDesktop();
+        final Dockable dockable = dockViewTitleBar.getDockable();
+
+        // (JAF), 20110121, associated dockable could have been unregistered
+        final Boolean procceed = (dockingDesktop != null);
+        if (procceed) {
+
             final DockableContainer dockableContainer = DockingUtilities.findSingleDockableContainer(dockable);
 
             // Title bar

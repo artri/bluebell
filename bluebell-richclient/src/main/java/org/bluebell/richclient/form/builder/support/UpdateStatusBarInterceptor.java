@@ -68,20 +68,20 @@ public class UpdateStatusBarInterceptor extends AbstractFormComponentInterceptor
         final ValueModel valueModel = this.getFormModel().getValueModel(propertyName);
 
         // Actualizar la status bar cuando cambie un valor
-        valueModel.addValueChangeListener(new PropertyChangeListener() {
-            public void propertyChange(PropertyChangeEvent evt) {
+        valueModel.addValueChangeListener(
+        // SwingUtils.weakPropertyChangeListener(//
+                new PropertyChangeListener() {
+                    public void propertyChange(PropertyChangeEvent evt) {
 
-                UpdateStatusBarInterceptor.//
-                this.updateStatusBar(propertyName);
-            }
-        });
+                        UpdateStatusBarInterceptor.this.updateStatusBar(propertyName);
+                    }
+                });
 
         // Actualizar la status bar cuando cambie el componente seleccionado
         component.addFocusListener(new FocusListener() {
             public void focusGained(FocusEvent e) {
 
-                UpdateStatusBarInterceptor.//
-                this.updateStatusBar(propertyName);
+                UpdateStatusBarInterceptor.this.updateStatusBar(propertyName);
             }
 
             public void focusLost(FocusEvent e) {

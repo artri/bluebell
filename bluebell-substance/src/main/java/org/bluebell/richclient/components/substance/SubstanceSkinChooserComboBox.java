@@ -76,6 +76,7 @@ public class SubstanceSkinChooserComboBox extends AbstractForm {
         final SwingBindingFactory bindingFactory = (SwingBindingFactory) this.getBindingFactory();
         final Binding binding = bindingFactory.createBoundComboBox("skinBean", skins, "displayName");
         this.getFormModel().getValueModel(binding.getProperty()).addValueChangeListener(skin);
+        // SwingUtils.weakPropertyChangeListener(skin));
 
         return binding.getControl();
     }

@@ -33,9 +33,9 @@ import org.springframework.binding.value.support.DefaultValueChangeDetector;
  * <b>How does Bluebell works with it?</b>
  * </p>
  * <dl>
- * <dt>Application context</dt>
- * <dd>Main application context</dd>
- * <dt>Bean declaration</dt>
+ * <dt>Application context
+ * <dd>Main application context
+ * <dt>Bean declaration
  * <dd>Find below provided bean declaration:
  * 
  * <pre>

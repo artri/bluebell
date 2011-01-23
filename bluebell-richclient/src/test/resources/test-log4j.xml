@@ -30,50 +30,6 @@
 		</layout>
 	</appender>
 
-	<appender name="root" class="org.apache.log4j.RollingFileAppender">
-		<param name="file" value="${user.home}/.bluebell/root.log" />
-		<param name="MaxFileSize" value="100KB" />
-		<layout class="org.apache.log4j.PatternLayout">
-			<param name="ConversionPattern" value="%p %t %c - %m%n" />
-		</layout>
-	</appender>
-
-	<appender name="icons" class="org.apache.log4j.RollingFileAppender">
-		<param name="file" value="${user.home}/.bluebell/icons.log" />
-		<param name="MaxFileSize" value="100KB" />
-		<layout class="org.apache.log4j.PatternLayout">
-			<param name="ConversionPattern" value="%p %t %c - %m%n" />
-		</layout>
-	</appender>
-
-	<appender name="objects" class="org.apache.log4j.RollingFileAppender">
-		<param name="file" value="${user.home}/.bluebell/objects.log" />
-		<param name="MaxFileSize" value="100KB" />
-		<layout class="org.apache.log4j.PatternLayout">
-			<param name="ConversionPattern" value="%p %t %c - %m%n" />
-		</layout>
-	</appender>
-
-	<logger name="org.bluebell.richclient.application.BbApplicationObjectConfigurer" additivity="false">
-		<level value="ERROR" />
-		<appender-ref ref="objects" />
-	</logger>
-
-	<logger name="org.springframework.richclient.image.DefaultIconSource" additivity="false">
-		<level value="ERROR" />
-		<appender-ref ref="icons" />
-	</logger>
-
-	<logger name="org.springframework.richclient.form.AbstractMasterForm$DirtyTrackingDCBCVM" additivity="false">
-		<!-- Since consumes a lot of time just debugging -->
-		<level value="ERROR" />
-	</logger>
-
-	<logger name="org.bluebell.richclient.table.support.TableUtils" additivity="false">
-		<!-- Since consumes a lot of time just debugging -->
-		<level value="ERROR" />
-	</logger>
-
 	<root>
 		<priority value="ERROR" />
 		<!-- <appender-ref ref="root" /> -->

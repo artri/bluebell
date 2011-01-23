@@ -177,7 +177,9 @@ public class FormBackedView<T extends Form> extends AbstractView {
      */
     public final void setGlobalCommandsAccessor(GlobalCommandsAccessor globalCommandsAccessor) {
 
-        Assert.notNull(globalCommandsAccessor, "globalCommandsAccessor");
+        // (JAF), 20110123, global command accessor may be reset
+        // Assert.notNull(globalCommandsAccessor, "globalCommandsAccessor");
+        
         Assert.notNull(this.getContext(), "this.getContext()");
 
         this.globalCommandsAccessor = globalCommandsAccessor;

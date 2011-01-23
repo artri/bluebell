@@ -26,7 +26,6 @@ import java.util.List;
 import javax.swing.JComponent;
 
 import org.bluebell.richclient.form.AbstractBbSearchForm;
-import org.bluebell.richclient.form.util.BbFormModelHelper;
 import org.bluebell.richclient.samples.simple.bean.Person;
 import org.bluebell.richclient.samples.simple.service.PersonService;
 import org.springframework.richclient.form.binding.BindingFactory;
@@ -54,7 +53,24 @@ public class PersonSearchForm extends AbstractBbSearchForm<Person, Person> {
     public PersonSearchForm() {
 
         super(PersonSearchForm.FORM_ID);
-        this.setFormModel(BbFormModelHelper.createValidatingFormModel(new Person(), this.getId()));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Class<Person> getSearchParamsType() {
+
+        return Person.class;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Class<Person> getSearchResultsType() {
+
+        return Person.class;
     }
 
     /**

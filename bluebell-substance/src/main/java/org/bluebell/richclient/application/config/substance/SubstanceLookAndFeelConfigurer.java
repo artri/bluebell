@@ -270,7 +270,7 @@ public class SubstanceLookAndFeelConfigurer extends VLDockingLookAndFeelConfigur
     @Pointcut("execution(* org.springframework.richclient.application.splash.MonitoringSplashScreen."
             + "getProgressMonitor(..))")
     protected void monitoringSplashScreenGetProgressMonitorOperation() {
-    
+
     }
 
     /**
@@ -280,7 +280,7 @@ public class SubstanceLookAndFeelConfigurer extends VLDockingLookAndFeelConfigur
      */
     @Pointcut("execution(* org.springframework.richclient.progress.ProgressMonitor.*(..))")
     protected void progressMonitorOperation() {
-    
+
     }
 
     /**
@@ -290,7 +290,7 @@ public class SubstanceLookAndFeelConfigurer extends VLDockingLookAndFeelConfigur
      */
     @Pointcut("execution(* org.springframework.richclient.application.splash.SplashScreen.*(..))")
     protected void splashScreenOperation() {
-    
+
     }
 
     /**

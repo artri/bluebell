@@ -72,7 +72,6 @@ public class SwingxComponentFactory extends ComponentFactoryDecorator {
 
         table.setFillsViewportHeight(Boolean.TRUE);
         table.setColumnControlVisible(Boolean.TRUE);
-        
 
         // Sizes the scrollpane to be the same size as the table.
         // jTable.setPreferredScrollableViewportSize(jTable.getPreferredSize());

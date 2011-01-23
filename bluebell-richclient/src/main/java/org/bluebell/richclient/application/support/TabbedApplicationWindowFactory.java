@@ -214,7 +214,7 @@ public class TabbedApplicationWindowFactory implements ApplicationWindowFactory 
         /**
          * Removes a page.
          * <p>
-         * This method ensures the page already belongs to the tabbed pane, in other case raise an exception.
+         * This method ensures the page yet belongs to the tabbed pane, in other case raise an exception.
          * 
          * @param page
          *            the page.

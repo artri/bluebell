@@ -124,8 +124,8 @@ public class SilentShuttleListBinding extends ShuttleListBinding {
 
         final ValueModel currentSelectedItemsHolder = this.selectedItemsHolder;
 
-        // Invocar a super asegurándose de que no establece el value model
-        // mediador, ya que será este método quien lo haga
+        // Invocar a super asegurándose de que no establece el value model mediador, ya que será este método quien lo
+        // haga
         this.setSelectedItemsHolder(null);
 
         this.setShuttleList((ShuttleList) super.doBindControl());
@@ -146,8 +146,7 @@ public class SilentShuttleListBinding extends ShuttleListBinding {
     @Override
     protected void setSelectedValue(final PropertyChangeListener silentValueChangeHandler) {
 
-        final int[] indices = this.indicesOf(//
-                this.getSelectedItemsHolder().getValue());
+        final int[] indices = this.indicesOf(this.getSelectedItemsHolder().getValue());
 
         if (indices.length < 1) {
             this.getShuttleList().clearSelection();
@@ -158,9 +157,8 @@ public class SilentShuttleListBinding extends ShuttleListBinding {
             this.getShuttleList().setSelectedIndices(indices);
             this.getShuttleList().addListSelectionListener(listener);
 
-            // The selection may now be different than what is reflected in
-            // collection property if this is SINGLE_INTERVAL_SELECTION, so
-            // modify if needed...
+            // The selection may now be different than what is reflected in collection property if this is
+            // SINGLE_INTERVAL_SELECTION, so modify if needed...
             this.updateSelectionHolderFromList(silentValueChangeHandler);
         }
     }
@@ -410,6 +408,5 @@ public class SilentShuttleListBinding extends ShuttleListBinding {
 
             SilentShuttleListBinding.this.setSelectedValue(SilentShuttleListBinding.this.getValueChangeHandler());
         }
-
     }
 }

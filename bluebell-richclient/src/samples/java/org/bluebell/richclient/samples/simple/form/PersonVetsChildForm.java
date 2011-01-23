@@ -24,7 +24,6 @@ package org.bluebell.richclient.samples.simple.form;
 import javax.swing.JComponent;
 
 import org.bluebell.richclient.form.AbstractBbChildForm;
-import org.bluebell.richclient.form.util.BbFormModelHelper;
 import org.bluebell.richclient.samples.simple.bean.Person;
 import org.springframework.binding.form.ValidatingFormModel;
 import org.springframework.richclient.form.binding.BindingFactory;
@@ -56,11 +55,15 @@ public class PersonVetsChildForm extends AbstractBbChildForm<Person> {
     public PersonVetsChildForm(String formId) {
 
         super(formId);
-
-        final ValidatingFormModel formModel = BbFormModelHelper.createValidatingFormModel(new Person());
-        formModel.setId(formId);
-
-        this.setFormModel(formModel);
+    }
+    
+    /** 
+     * {@inheritDoc}
+     */
+    @Override
+    public Class<Person> getManagedType() {
+         
+        return Person.class;
     }
 
     /**
@@ -70,15 +73,6 @@ public class PersonVetsChildForm extends AbstractBbChildForm<Person> {
     public void setFormModel(ValidatingFormModel formModel) {
 
         super.setFormModel(formModel);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected ValidatingFormModel createFormModel(ValidatingFormModel parentFormModel) {
-
-        return BbFormModelHelper.createValidatingFormModel(parentFormModel.getFormObject(), this.getId());
     }
 
     /**

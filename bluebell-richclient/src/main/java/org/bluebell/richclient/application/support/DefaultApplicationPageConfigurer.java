@@ -50,6 +50,7 @@ import org.springframework.richclient.application.View;
 import org.springframework.richclient.application.config.ApplicationWindowAware;
 import org.springframework.richclient.application.support.DefaultViewDescriptor;
 import org.springframework.richclient.form.Form;
+import org.springframework.richclient.form.ValidationResultsReporter;
 import org.springframework.util.Assert;
 
 /**
@@ -87,50 +88,6 @@ import org.springframework.util.Assert;
  */
 // @Aspect
 public class DefaultApplicationPageConfigurer<T> implements ApplicationPageConfigurer<T> {
-
-    /*
-     * 20101002: Declaring this class as an aspect raises the following compile time exception:
-     * 
-     * The generic aspect 'org.bluebell.richclient.application.support.DefaultApplicationPageConfigurer' must be
-     * declared abstract
-     * 
-     * However it works at runtime!! Anyway, this class has been refactored, splitting it into an aspect and the
-     * application page configurer itself.
-     * 
-     * See org.bluebell.richclient.application.support.ApplicationPageConfigurerAspect
-     */
-
-    /**
-     * The view types acording to the figure above.
-     * 
-     * @author <a href = "mailto:julio.arguello@gmail.com" >Julio Argüello (JAF)</a>
-     */
-    public static enum BbViewType {
-        /**
-         * Tree view.
-         */
-        TREE_TYPE,
-        /**
-         * Master view.
-         */
-        MASTER_TYPE,
-        /**
-         * Child view.
-         */
-        CHILD_TYPE,
-        /**
-         * Search view.
-         */
-        SEARCH_TYPE,
-        /**
-         * Validation view.
-         */
-        VALIDATION_TYPE,
-        /**
-         * Unknown view.
-         */
-        UNKNOWN_TYPE
-    }
 
     /**
      * The logger for this class.
@@ -177,7 +134,8 @@ public class DefaultApplicationPageConfigurer<T> implements ApplicationPageConfi
      * then write the following code before:
      * 
      * <pre>
-     * final List&lt;String&gt; pageComponentIds = ApplicationUtils.getDeclaredPageComponentDescriptors(applicationPage);
+     * final List&lt;String&gt; pageComponentIds = ApplicationUtils.getDeclaredPageComponentDescriptors(//
+     *         applicationPage);
      * for (String pageComponentId : pageComponentIds) {
      *     applicationPage.showView(pageComponentId);
      * }
@@ -299,13 +257,19 @@ public class DefaultApplicationPageConfigurer<T> implements ApplicationPageConfi
      *            el componente de página a configurar.
      * @param state
      *            the processing state.
+     * @param processingMode
+     *            the processing mode.
      */
-    protected void processPageComponent(PageComponent pageComponent, State<T> state) {
+    protected void processPageComponent(PageComponent pageComponent, State<T> state, ProcessingMode processingMode) {
+
+        Assert.notNull(pageComponent, "pageComponent");
+        Assert.notNull(state, "state");
+        Assert.notNull(processingMode, "processingMode");
 
         if (pageComponent instanceof FormBackedView<?>) {
-            this.processFormBackedView((FormBackedView<?>) pageComponent, state);
+            this.processFormBackedView((FormBackedView<?>) pageComponent, state, processingMode);
         } else {
-            this.processUnknownPageComponent(pageComponent, state);
+            this.processUnknownPageComponent(pageComponent, state, processingMode);
         }
     }
 
@@ -316,9 +280,15 @@ public class DefaultApplicationPageConfigurer<T> implements ApplicationPageConfi
      *            la vista a configurar.
      * @param state
      *            the processing state.
+     * @param processingMode
+     *            the processing mode.
      */
     @SuppressWarnings("unchecked")
-    protected void processFormBackedView(FormBackedView<?> view, State<T> state) {
+    protected void processFormBackedView(FormBackedView<?> view, State<T> state, ProcessingMode processingMode) {
+
+        Assert.notNull(view, "view");
+        Assert.notNull(state, "state");
+        Assert.notNull(processingMode, "processingMode");
 
         /*
          * Form processing by type
@@ -326,16 +296,16 @@ public class DefaultApplicationPageConfigurer<T> implements ApplicationPageConfi
         final BbViewType viewType = this.getViewType(view);
         switch (viewType) {
             case MASTER_TYPE:
-                this.processMasterView((FormBackedView<AbstractBbMasterForm<T>>) view, state);
+                this.processMasterView((FormBackedView<AbstractBbMasterForm<T>>) view, state, processingMode);
                 break;
             case CHILD_TYPE:
-                this.processChildView((FormBackedView<AbstractBbChildForm<T>>) view, state);
+                this.processChildView((FormBackedView<AbstractBbChildForm<T>>) view, state, processingMode);
                 break;
             case SEARCH_TYPE:
-                this.processSearchView((FormBackedView<AbstractBbSearchForm<T, ?>>) view, state);
+                this.processSearchView((FormBackedView<AbstractBbSearchForm<T, ?>>) view, state, processingMode);
                 break;
             case VALIDATION_TYPE:
-                this.processValidatingView((FormBackedView<BbValidationForm<T>>) view, state);
+                this.processValidatingView((FormBackedView<BbValidationForm<T>>) view, state, processingMode);
                 break;
             default:
                 if (DefaultApplicationPageConfigurer.LOGGER.isDebugEnabled()) {
@@ -350,19 +320,32 @@ public class DefaultApplicationPageConfigurer<T> implements ApplicationPageConfi
          * Global commands accessor processing
          */
         if (form instanceof GlobalCommandsAccessor) {
-            this.processGlobalCommandsAccessor((GlobalCommandsAccessor) form, state);
-        }
-        if (state.globalCommandsAccessor != null) {
-            view.setGlobalCommandsAccessor(state.globalCommandsAccessor);
+            this.processGlobalCommandsAccessor((GlobalCommandsAccessor) form, state, processingMode);
         }
 
-        /*
-         * Application window aware processing
-         */
-        if (form instanceof ApplicationWindowAware) {
-            // During window creation, ApplicationServicesAccessor#getActiveWindow() may return last opened window
-            // instead of target window. So forms need to know the window they belong to.
-            ((ApplicationWindowAware) form).setApplicationWindow(view.getContext().getWindow());
+        switch (processingMode) {
+            case RECOGNIZE:
+                break;
+            case ASSOCIATE:
+                if (state.globalCommandsAccessor != null) {
+                    view.setGlobalCommandsAccessor(state.globalCommandsAccessor);
+                }
+                /*
+                 * Application window aware processing
+                 */
+                if (form instanceof ApplicationWindowAware) {
+                    // During window creation, ApplicationServicesAccessor#getActiveWindow() may return last opened
+                    // window instead of target window. So forms need to know the window they belong to.
+                    final ApplicationWindowAware applicationWindowAware = (ApplicationWindowAware) form;
+                    applicationWindowAware.setApplicationWindow(view.getContext().getWindow());
+                }
+                break;
+            case DISASSOCIATE:
+                view.setGlobalCommandsAccessor(null);
+                // A form belongs to a window and just one window
+                break;
+            default:
+                throw new IllegalStateException("Unknown processing mode");
         }
     }
 
@@ -383,24 +366,47 @@ public class DefaultApplicationPageConfigurer<T> implements ApplicationPageConfi
      *            la vista a configurar.
      * @param state
      *            the processing state.
+     * @param processingMode
+     *            the processing mode.
      */
-    protected void processMasterView(FormBackedView<AbstractBbMasterForm<T>> masterView, State<T> state) {
+    protected void processMasterView(FormBackedView<AbstractBbMasterForm<T>> masterView, State<T> state,
+            ProcessingMode processingMode) {
 
-        // Validation checks
         Assert.notNull(masterView, "masterView");
+        Assert.notNull(state, "state");
+        Assert.notNull(processingMode, "processingMode");
 
         final AbstractBbMasterForm<T> targetMasterForm = DefaultApplicationPageConfigurer.backingForm(masterView);
 
         this.assertNotAlreadySet(state.masterView, masterView);
 
-        // Attach a "change active component" command interceptor and set the master view
-        if (state.masterView == null) {
-            // final ActionCommand newFormObjectCommand =targetMasterForm.getNewFormObjectCommand();
-            // final ApplicationPage applicationPage = masterView.getContext().getPage();
-            // newFormObjectCommand.addCommandInterceptor(new ChangeActiveComponentCommandInterceptor(applicationPage));
+        switch (processingMode) {
+            case RECOGNIZE:
+                if (state.masterView == null) {
+                    state.masterView = masterView;
+                    state.dispatcherForm = targetMasterForm.getDispatcherForm();
+                }
+                break;
+            case ASSOCIATE:
+                break;
+            case DISASSOCIATE:
+                // Child forms
+                final List<AbstractBbChildForm<T>> childForms = new ArrayList<AbstractBbChildForm<T>>(//
+                        targetMasterForm.getChildForms());
+                for (AbstractBbChildForm<T> childForm : childForms) {
+                    targetMasterForm.removeChildForm(childForm);
+                }
 
-            state.masterView = masterView;
-            state.dispatcherForm = targetMasterForm.getDispatcherForm();
+                // Search forms
+                final List<AbstractBbSearchForm<T, ?>> searchForms = new ArrayList<AbstractBbSearchForm<T, ?>>(//
+                        targetMasterForm.getSearchForms());
+                for (AbstractBbSearchForm<T, ?> searchForm : searchForms) {
+                    targetMasterForm.removeSearchForm(searchForm);
+                }
+
+                break;
+            default:
+                throw new IllegalStateException("Unknown processing mode");
         }
     }
 
@@ -414,11 +420,15 @@ public class DefaultApplicationPageConfigurer<T> implements ApplicationPageConfi
      *            la vista a configurar.
      * @param state
      *            the processing state.
+     * @param processingMode
+     *            the processing mode.
      */
-    protected void processChildView(final FormBackedView<AbstractBbChildForm<T>> childView, State<T> state) {
+    protected void processChildView(final FormBackedView<AbstractBbChildForm<T>> childView, State<T> state,
+            ProcessingMode processingMode) {
 
-        // Validation checks
         Assert.notNull(childView, "childView");
+        Assert.notNull(state, "state");
+        Assert.notNull(processingMode, "processingMode");
 
         final AbstractBbChildForm<T> targetChildForm = DefaultApplicationPageConfigurer.backingForm(childView);
         final AbstractBbMasterForm<T> masterForm = DefaultApplicationPageConfigurer.backingForm(state.masterView);
@@ -426,14 +436,28 @@ public class DefaultApplicationPageConfigurer<T> implements ApplicationPageConfi
 
         this.assertNotAlreadySet(targetMasterForm, masterForm);
 
-        // Link master form and new child form
-        if ((masterForm != null) && (targetMasterForm == null)) {
-            masterForm.addChildForm(targetChildForm);
-        }
-
-        // Add a new child view
-        if (!state.childViews.contains(childView)) {
-            state.childViews.add(childView);
+        switch (processingMode) {
+            case RECOGNIZE:
+                // Add a new child view
+                if (!state.childViews.contains(childView)) {
+                    state.childViews.add(childView);
+                }
+                break;
+            case ASSOCIATE:
+                // Associate master form and new child form
+                if ((masterForm != null) && (targetMasterForm == null)
+                        && this.isCompatible(masterForm, targetChildForm)) {
+                    masterForm.addChildForm(targetChildForm);
+                }
+                break;
+            case DISASSOCIATE:
+                // Disassociate master form and child form
+                if (targetMasterForm != null) {
+                    targetMasterForm.removeChildForm(targetChildForm);
+                }
+                break;
+            default:
+                throw new IllegalStateException("Unknown processing mode");
         }
     }
 
@@ -447,11 +471,15 @@ public class DefaultApplicationPageConfigurer<T> implements ApplicationPageConfi
      *            la vista a configurar.
      * @param state
      *            the processing state.
+     * @param processingMode
+     *            the processing mode.
      */
-    protected void processSearchView(final FormBackedView<AbstractBbSearchForm<T, ?>> searchView, State<T> state) {
+    protected void processSearchView(final FormBackedView<AbstractBbSearchForm<T, ?>> searchView, State<T> state,
+            ProcessingMode processingMode) {
 
-        // Validation checks
         Assert.notNull(searchView, "searchView");
+        Assert.notNull(state, "state");
+        Assert.notNull(processingMode, "processingMode");
 
         final AbstractBbMasterForm<T> masterForm = DefaultApplicationPageConfigurer.backingForm(state.masterView);
         final AbstractBbSearchForm<T, ?> targetSearchForm = DefaultApplicationPageConfigurer.backingForm(searchView);
@@ -459,13 +487,27 @@ public class DefaultApplicationPageConfigurer<T> implements ApplicationPageConfi
 
         this.assertNotAlreadySet(targetMasterForm, masterForm);
 
-        // Link master form and new search form
-        if ((masterForm != null) && (targetMasterForm == null)) {
-            ((AbstractBbMasterForm<T>) masterForm).addSearchForm(targetSearchForm);
-        }
-
-        if (!state.searchViews.contains(searchView)) {
-            state.searchViews.add(searchView);
+        switch (processingMode) {
+            case RECOGNIZE:
+                if (!state.searchViews.contains(searchView)) {
+                    state.searchViews.add(searchView);
+                }
+                break;
+            case ASSOCIATE:
+                // Associate master form and new search form
+                if ((masterForm != null) && (targetMasterForm == null)
+                        && this.isCompatible(masterForm, targetSearchForm)) {
+                    masterForm.addSearchForm(targetSearchForm);
+                }
+                break;
+            case DISASSOCIATE:
+                // Disassociate master form and search form
+                if (targetMasterForm != null) {
+                    targetMasterForm.removeSearchForm(targetSearchForm);
+                }
+                break;
+            default:
+                throw new IllegalStateException("Unknown processing mode");
         }
     }
 
@@ -479,11 +521,15 @@ public class DefaultApplicationPageConfigurer<T> implements ApplicationPageConfi
      *            la vista a configurar.
      * @param state
      *            the processing state.
+     * @param processingMode
+     *            the processing mode.
      */
-    protected void processValidatingView(final FormBackedView<BbValidationForm<T>> validationView, State<T> state) {
+    protected void processValidatingView(final FormBackedView<BbValidationForm<T>> validationView, State<T> state,
+            ProcessingMode processingMode) {
 
-        // Validation checks
         Assert.notNull(validationView, "validationView");
+        Assert.notNull(state, "state");
+        Assert.notNull(processingMode, "processingMode");
 
         final AbstractBbMasterForm<T> masterForm = DefaultApplicationPageConfigurer.backingForm(state.masterView);
         final BbDispatcherForm<T> theDispatcherForm = state.dispatcherForm;
@@ -492,19 +538,31 @@ public class DefaultApplicationPageConfigurer<T> implements ApplicationPageConfi
 
         this.assertNotAlreadySet(targetMasterForm, masterForm);
 
-        // Link master form and validation form
-        if ((theDispatcherForm != null) && (targetMasterForm == null) && (masterForm != null)) {
+        switch (processingMode) {
+            case RECOGNIZE:
+                // Subscribe for validation events and set the validation view
+                if (state.validationView == null) {
+                    state.validationView = validationView;
+                }
+                break;
+            case ASSOCIATE:
+                // Link master form and validation form
+                if ((theDispatcherForm != null) && (targetMasterForm == null) && (masterForm != null)) {
 
-            // TODO vincular el maestro y el validation form
-            theDispatcherForm.addValidationResultsReporter(new MultipleValidationResultsReporter(theDispatcherForm
-                    .getFormModel(), targetValidationForm.getMessagable()));
+                    final ValidationResultsReporter validationResultsReporter = new MultipleValidationResultsReporter(
+                            theDispatcherForm.getFormModel(), targetValidationForm.getMessagable());
 
-            targetValidationForm.setMasterForm((AbstractBbMasterForm<T>) masterForm);
-        }
+                    // TODO vincular el maestro y el validation form
+                    theDispatcherForm.addValidationResultsReporter(validationResultsReporter);
 
-        // Subscribe for validation events and set the validation view
-        if (state.validationView == null) {
-            state.validationView = validationView;
+                    targetValidationForm.setMasterForm((AbstractBbMasterForm<T>) masterForm);
+                }
+                break;
+            case DISASSOCIATE:
+                // TODO 
+                break;
+            default:
+                throw new IllegalStateException("Unknown processing mode");
         }
     }
 
@@ -515,14 +573,29 @@ public class DefaultApplicationPageConfigurer<T> implements ApplicationPageConfi
      *            el componente de página a configurar.
      * @param state
      *            the processing state.
+     * @param processingMode
+     *            the processing mode.
      */
-    protected void processUnknownPageComponent(PageComponent pageComponent, State<T> state) {
+    protected void processUnknownPageComponent(PageComponent pageComponent, State<T> state,
+            ProcessingMode processingMode) {
 
         // Validation checks
         Assert.notNull(pageComponent, "pageComponent");
+        Assert.notNull(state, "state");
+        Assert.notNull(processingMode, "state");
 
-        if (!state.unknownPageComponents.contains(pageComponent)) {
-            state.unknownPageComponents.add(pageComponent);
+        switch (processingMode) {
+            case RECOGNIZE:
+                if (!state.unknownPageComponents.contains(pageComponent)) {
+                    state.unknownPageComponents.add(pageComponent);
+                }
+                break;
+            case ASSOCIATE:
+                break;
+            case DISASSOCIATE:
+                break;
+            default:
+                throw new IllegalStateException("Unknown processing mode");
         }
     }
 
@@ -536,17 +609,31 @@ public class DefaultApplicationPageConfigurer<T> implements ApplicationPageConfi
      *            la vista a configurar.
      * @param state
      *            the processing state.
+     * @param processingMode
+     *            the processing mode.
      */
-    protected void processGlobalCommandsAccessor(GlobalCommandsAccessor globalCommandsAccessor, State<T> state) {
+    protected void processGlobalCommandsAccessor(GlobalCommandsAccessor globalCommandsAccessor, State<T> state,
+            ProcessingMode processingMode) {
 
-        // Validation checks
         Assert.notNull(globalCommandsAccessor, "globalCommandsAccesor");
+        Assert.notNull(state, "state");
+        Assert.notNull(processingMode, "processingMode");
 
         this.assertNotAlreadySet(state.globalCommandsAccessor, globalCommandsAccessor);
 
-        // Sets the globalCommandAccessor
-        if (state.globalCommandsAccessor == null) {
-            state.globalCommandsAccessor = globalCommandsAccessor;
+        switch (processingMode) {
+            case RECOGNIZE:
+                // Sets the globalCommandAccessor
+                if (state.globalCommandsAccessor == null) {
+                    state.globalCommandsAccessor = globalCommandsAccessor;
+                }
+                break;
+            case ASSOCIATE:
+                break;
+            case DISASSOCIATE:
+                break;
+            default:
+                throw new IllegalStateException("Unknown processing mode");
         }
     }
 
@@ -562,16 +649,18 @@ public class DefaultApplicationPageConfigurer<T> implements ApplicationPageConfi
      */
     private State<T> doConfigureApplicationPage(ApplicationPage applicationPage) {
 
+        Assert.notNull(applicationPage, "applicationPage");
+
         final State<T> state = new State<T>();
 
         // 1st pass: recognition
         for (final PageComponent pageComponent : applicationPage.getPageComponents()) {
-            this.processPageComponent(pageComponent, state);
+            this.processPageComponent(pageComponent, state, ProcessingMode.RECOGNIZE);
         }
 
         // 2nd pass: association
         for (final PageComponent pageComponent : applicationPage.getPageComponents()) {
-            this.processPageComponent(pageComponent, state);
+            this.processPageComponent(pageComponent, state, ProcessingMode.ASSOCIATE);
         }
 
         return state;
@@ -591,6 +680,38 @@ public class DefaultApplicationPageConfigurer<T> implements ApplicationPageConfi
             // candidate may be null after multiple processings depending on view descriptors order
             throw new IllegalStateException(); // TODO crear una excepción para esto.
         }
+    }
+
+    /**
+     * Returns whether to forms are compatible.
+     * 
+     * @param masterForm
+     *            the master form to associate.
+     * @param form
+     *            the target form, may be a child form or a search form.
+     * @return <code>true</code> if compatible and <code>false</code> in other case.
+     */
+    private Boolean isCompatible(AbstractBbMasterForm<T> masterForm, Form form) {
+
+        Assert.notNull(masterForm, "masterForm");
+        Assert.notNull(form, "form");
+
+        final Class<?> masterFormType = masterForm.getManagedType();
+        final Class<?> targetFormType;
+        if (form instanceof AbstractBbChildForm<?>) {
+            targetFormType = ((AbstractBbChildForm<?>) form).getManagedType();
+        } else if (form instanceof AbstractBbSearchForm<?, ?>) {
+            targetFormType = ((AbstractBbSearchForm<?, ?>) form).getSearchResultsType();
+        } else {
+            targetFormType = form.getFormObject().getClass();
+        }
+
+        Assert.notNull(masterFormType, "masterFormType");
+        Assert.notNull(targetFormType, "targetFormType");
+
+        final Boolean compatible = ClassUtils.isAssignable(masterFormType, targetFormType);
+
+        return compatible;
     }
 
     /**
@@ -663,6 +784,18 @@ public class DefaultApplicationPageConfigurer<T> implements ApplicationPageConfi
         return (view != null) ? DefaultApplicationPageConfigurer.backingForm(view).getFormModel() : null;
     }
 
+    /*
+     * 20101002: Declaring this class as an aspect raises the following compile time exception:
+     * 
+     * The generic aspect 'org.bluebell.richclient.application.support.DefaultApplicationPageConfigurer' must be
+     * declared abstract
+     * 
+     * However it works at runtime!! Anyway, this class has been refactored, splitting it into an aspect and the
+     * application page configurer itself.
+     * 
+     * See org.bluebell.richclient.application.support.ApplicationPageConfigurerAspect
+     */
+
     /**
      * VO that stores internal processing state.
      * 
@@ -719,5 +852,57 @@ public class DefaultApplicationPageConfigurer<T> implements ApplicationPageConfi
             this.searchViews = new ArrayList<FormBackedView<AbstractBbSearchForm<Q, ?>>>();
             this.unknownPageComponents = new ArrayList<PageComponent>();
         }
+    }
+
+    /**
+     * The view types acording to the figure above.
+     * 
+     * @author <a href = "mailto:julio.arguello@gmail.com" >Julio Argüello (JAF)</a>
+     */
+    public static enum BbViewType {
+        /**
+         * Tree view.
+         */
+        TREE_TYPE,
+        /**
+         * Master view.
+         */
+        MASTER_TYPE,
+        /**
+         * Child view.
+         */
+        CHILD_TYPE,
+        /**
+         * Search view.
+         */
+        SEARCH_TYPE,
+        /**
+         * Validation view.
+         */
+        VALIDATION_TYPE,
+        /**
+         * Unknown view.
+         */
+        UNKNOWN_TYPE
+    }
+
+    /**
+     * The process mode.
+     * 
+     * @author <a href = "mailto:julio.arguello@gmail.com" >Julio Argüello (JAF)</a>
+     */
+    private static enum ProcessingMode {
+        /**
+         * Proceessing just recognizes page components.
+         */
+        RECOGNIZE,
+        /**
+         * Processing associates page components.
+         */
+        ASSOCIATE,
+        /**
+         * Processing disassociates page components.
+         */
+        DISASSOCIATE
     }
 }

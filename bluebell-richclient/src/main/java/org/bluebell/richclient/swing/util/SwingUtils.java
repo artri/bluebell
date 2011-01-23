@@ -25,6 +25,7 @@ import java.awt.Component;
 import java.awt.Container;
 import java.awt.EventQueue;
 import java.awt.Image;
+import java.beans.PropertyChangeListener;
 import java.lang.reflect.InvocationTargetException;
 
 import javax.swing.Icon;
@@ -50,6 +51,20 @@ public final class SwingUtils {
     private SwingUtils() {
 
         super();
+    }
+
+    /**
+     * Wraps a listener with a {@link WeakPropertyChangeListener} in order to reduce the risk of memory leak.
+     * 
+     * @param propertyChangeListener
+     *            the target property change listener.
+     * @return the wrapper.
+     */
+    public static PropertyChangeListener weakPropertyChangeListener(PropertyChangeListener propertyChangeListener) {
+
+        Assert.notNull(propertyChangeListener, "propertyChangeListener");
+
+        return new WeakPropertyChangeListener(propertyChangeListener);
     }
 
     /**

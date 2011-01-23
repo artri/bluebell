@@ -38,7 +38,7 @@ import com.vlsolutions.swing.docking.DockablePanel;
 /**
  * Class that test the correct behaviour of {@link BbDockTabbedPane}.
  * 
- *@author <a href = "mailto:julio.arguello@gmail.com" >Julio Argüello (JAF)</a>
+ * @author <a href = "mailto:julio.arguello@gmail.com" >Julio Argüello (JAF)</a>
  */
 public class TestBbDockTabbedPane extends TestCase {
 

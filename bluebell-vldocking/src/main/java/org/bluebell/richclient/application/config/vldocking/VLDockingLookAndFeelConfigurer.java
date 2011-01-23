@@ -90,7 +90,7 @@ public class VLDockingLookAndFeelConfigurer extends BbLookAndFeelConfigurer {
     public void afterPropertiesSet() throws Exception {
 
         super.afterPropertiesSet();
-        
+
         this.installColors();
         this.installWidgetDesktopStyle();
     }
@@ -102,7 +102,7 @@ public class VLDockingLookAndFeelConfigurer extends BbLookAndFeelConfigurer {
     protected void doInstallCustomDefaults() throws Exception {
 
         super.doInstallCustomDefaults();
-        
+
         this.installColors();
     }
 

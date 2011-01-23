@@ -99,6 +99,7 @@ public final class ObjectUtils {
 
         Assert.notNull(bean, "bean");
         Assert.notNull(propertyName, "propertyName");
+        Assert.notNull(propertyType, "propertyType");
 
         final PropertyAccessor propertyAccessor = PropertyAccessorFactory.forDirectFieldAccess(bean);
 
@@ -109,6 +110,41 @@ public final class ObjectUtils {
         }
 
         return (T) propertyAccessor.getPropertyValue(propertyName);
+    }
+
+    /**
+     * Sets the value of a given property into a given bean.
+     * 
+     * @param <T>
+     *            the property type.
+     * @param <Q>
+     *            the bean type.
+     * @param bean
+     *            the bean itself.
+     * @param propertyName
+     *            the property name.
+     * @param propertyValue
+     *            the property value.
+     * 
+     * @see PropertyAccessorFactory
+     */
+    public static <T, Q> void setPropertyValue(Q bean, String propertyName, T propertyValue) {
+
+        Assert.notNull(bean, "bean");
+        Assert.notNull(propertyName, "propertyName");
+
+        final PropertyAccessor propertyAccessor = PropertyAccessorFactory.forDirectFieldAccess(bean);
+
+        try {
+            final Class<?> type = propertyAccessor.getPropertyType(propertyName);
+
+            Assert.isTrue(org.springframework.util.ClassUtils.isAssignableValue(type, propertyValue),
+                    "org.springframework.util.ClassUtils.isAssignableValue(type, propertyValue)");
+        } catch (InvalidPropertyException e) {
+            throw new IllegalStateException("Invalid property \"" + propertyName + "\"", e);
+        }
+
+        propertyAccessor.setPropertyValue(propertyName, propertyValue);
     }
 
     /**

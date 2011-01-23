@@ -21,11 +21,17 @@
  */
 package org.bluebell.richclient.application.support;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.annotation.Resource;
+import javax.swing.JComponent;
+import javax.swing.JLabel;
 
 import junit.framework.TestCase;
 
 import org.bluebell.richclient.form.AbstractBbChildForm;
+import org.bluebell.richclient.form.AbstractBbMasterForm;
 import org.bluebell.richclient.form.AbstractBbSearchForm;
 import org.bluebell.richclient.form.AbstractBbTableMasterForm;
 import org.bluebell.richclient.form.BbValidationForm;
@@ -104,13 +110,24 @@ public class TestDefaultApplicationPageConfigurer extends AbstractBbSamplesTests
     private PageDescriptor rFullPageDescriptor;
 
     /**
-     * 
+     * A page descriptor containing a master and a incompatible child view descriptors.
+     */
+    @Resource
+    private PageDescriptor masterAndIncompatibleChildViewsPageDescriptor;
+
+    /**
+     * A page descriptor containing a master and a incompatible search view descriptors.
+     */
+    @Resource
+    private PageDescriptor masterAndIncompatibleSearchViewsPageDescriptor;
+
+    /**
+     * Creates the test.
      */
     public TestDefaultApplicationPageConfigurer() {
 
-        // TODO Auto-generated constructor stub
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -129,6 +146,8 @@ public class TestDefaultApplicationPageConfigurer extends AbstractBbSamplesTests
         TestCase.assertNotNull("rMasterAndSearchViewsPageDescriptor", this.rMasterAndSearchViewsPageDescriptor);
         TestCase.assertNotNull("fullPageDescriptor", this.fullPageDescriptor);
         TestCase.assertNotNull("rFullPageDescriptor", this.rFullPageDescriptor);
+        TestCase.assertNotNull("masterAndIncompatibleChildViewsPageDescriptor",
+                this.masterAndIncompatibleChildViewsPageDescriptor);
     }
 
     /**
@@ -242,6 +261,32 @@ public class TestDefaultApplicationPageConfigurer extends AbstractBbSamplesTests
     }
 
     /**
+     * Case that tests pages with a incompatible child view descriptor.
+     */
+    @Test
+    public void testIncompatibleChildView() {
+
+        this.initializeVariables(this.masterAndIncompatibleChildViewsPageDescriptor);
+
+        final AbstractBbMasterForm<Person> masterForm = this.getBackingForm(this.getMasterView());
+
+        TestCase.assertTrue("masterForm.getChildForms().isEmpty()", masterForm.getChildForms().isEmpty());
+    }
+
+    /**
+     * Case that tests pages with a inccompatible search view descriptor.
+     */
+    @Test
+    public void testIncompatibleSearchView() {
+
+        this.initializeVariables(this.masterAndIncompatibleSearchViewsPageDescriptor);
+
+        final AbstractBbMasterForm<Person> masterForm = this.getBackingForm(this.getMasterView());
+
+        TestCase.assertTrue("masterForm.getSearchForms().isEmpty()", masterForm.getSearchForms().isEmpty());
+    }
+
+    /**
      * Tests multiple invocations.
      */
     @Test
@@ -315,6 +360,145 @@ public class TestDefaultApplicationPageConfigurer extends AbstractBbSamplesTests
         }
         if (validationForm != null) {
             TestCase.assertEquals(masterForm, validationForm.getMasterForm());
+        }
+    }
+
+    /**
+     * A incompatible child form.
+     * 
+     * @author <a href = "mailto:julio.arguello@gmail.com" >Julio Argüello (JAF)</a>
+     */
+    public static class IncompatibleChildForm extends AbstractBbChildForm<MyPerson> {
+
+        /**
+         * The default form id.
+         */
+        private static final String FORM_ID = "incompatibleChildForm";
+
+        /**
+         * Creates the form with the default form id.
+         */
+        public IncompatibleChildForm() {
+
+            this(IncompatibleChildForm.FORM_ID);
+        }
+
+        /**
+         * Creates the form.
+         * 
+         * @param formId
+         *            the form id.
+         */
+        public IncompatibleChildForm(String formId) {
+
+            super(IncompatibleChildForm.FORM_ID);
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public Class<MyPerson> getManagedType() {
+
+            return MyPerson.class;
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        protected JComponent createFormControl() {
+
+            return new JLabel();
+        }
+    }
+
+    /**
+     * A incompatible child form.
+     * 
+     * @author <a href = "mailto:julio.arguello@gmail.com" >Julio Argüello (JAF)</a>
+     */
+    public static class IncompatibleSearchForm extends AbstractBbSearchForm<MyPerson, Person> {
+
+        /**
+         * The default form id.
+         */
+        private static final String FORM_ID = "incompatibleSearchForm";
+
+        /**
+         * Creates the form with the default form id.
+         */
+        public IncompatibleSearchForm() {
+
+            this(IncompatibleSearchForm.FORM_ID);
+        }
+
+        /**
+         * Creates the form.
+         * 
+         * @param formId
+         *            the form id.
+         */
+        public IncompatibleSearchForm(String formId) {
+
+            super(formId);
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public Class<Person> getSearchParamsType() {
+
+            return Person.class;
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public Class<MyPerson> getSearchResultsType() {
+
+            return MyPerson.class;
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        protected JComponent createSearchParamsControl() {
+
+            return new JLabel();
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        protected List<MyPerson> doSearch(Person searchParams) {
+
+            return new ArrayList<MyPerson>();
+        }
+    }
+
+    /**
+     * A bean that extends <code>Person</code>.
+     * 
+     * @author <a href = "mailto:julio.arguello@gmail.com" >Julio Argüello (JAF)</a>
+     */
+    public static class MyPerson extends Person {
+
+        /**
+         * This is a <code>Serializable</code> class.
+         */
+        private static final long serialVersionUID = -1391516792411506792L;
+
+        /**
+         * Creates a bean.
+         */
+        public MyPerson() {
+
+            super();
         }
     }
 }

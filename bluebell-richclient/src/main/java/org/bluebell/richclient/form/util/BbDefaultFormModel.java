@@ -146,6 +146,7 @@ public class BbDefaultFormModel extends DefaultFormModel {
         // con esta comprobación se evita añadir dos listeners
         if (!(valueModel instanceof FormModelMediatingValueModel)) {
             metadata.addPropertyChangeListener(FieldMetadata.DIRTY_PROPERTY, this.childStateChangeHandler);
+            // SwingUtils.weakPropertyChangeListener(this.childStateChangeHandler));
         }
 
         return super.add(propertyName, valueModel, metadata);

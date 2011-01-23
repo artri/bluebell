@@ -28,6 +28,7 @@ import org.bluebell.richclient.application.docking.vldocking.substance.ui.Substa
 
 /**
  * Substance specialization of <code>WidgetDesktopStyle</code>.
+ * 
  * <p>
  * This implementation is based on <a href="http://forum.springsource.org/showthread.php?t=73183">Spring Forum
  * comments</a>.

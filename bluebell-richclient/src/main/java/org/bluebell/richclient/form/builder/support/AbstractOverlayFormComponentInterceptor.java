@@ -124,8 +124,9 @@ public abstract class AbstractOverlayFormComponentInterceptor extends AbstractFo
             }
         };
 
-        component.addPropertyChangeListener(//
-                AbstractOverlayFormComponentInterceptor.ANCESTOR_PROPERTY, wait4ParentListener);
+        component.addPropertyChangeListener(AbstractOverlayFormComponentInterceptor.ANCESTOR_PROPERTY,
+                wait4ParentListener);
+        // SwingUtils.weakPropertyChangeListener(wait4ParentListener));
     }
 
     /**

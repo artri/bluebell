@@ -29,6 +29,7 @@ import javax.swing.JComponent;
 
 import junit.framework.TestCase;
 
+import org.apache.commons.lang.exception.ExceptionUtils;
 import org.bluebell.richclient.application.ApplicationPageException;
 import org.bluebell.richclient.application.support.DefaultApplicationPageConfigurer;
 import org.bluebell.richclient.application.support.DefaultApplicationPageConfigurer.BbViewType;
@@ -43,7 +44,7 @@ import org.springframework.richclient.application.Application;
 import org.springframework.richclient.application.PageComponent;
 import org.springframework.richclient.application.PageDescriptor;
 import org.springframework.richclient.application.support.MultiViewPageDescriptor;
-import org.springframework.richclient.exceptionhandling.AbstractLoggingExceptionHandler;
+import org.springframework.richclient.exceptionhandling.AbstractRegisterableExceptionHandler;
 import org.springframework.richclient.exceptionhandling.RegisterableExceptionHandler;
 import org.springframework.richclient.form.AbstractForm;
 import org.springframework.test.context.ContextConfiguration;
@@ -446,7 +447,7 @@ public class TestBbVLDockingApplicationPage extends AbstractBbSamplesTests {
      * 
      * @author <a href = "mailto:julio.arguello@gmail.com" >Julio Argüello (JAF)</a>
      */
-    public static class RememberExceptionHandler extends AbstractLoggingExceptionHandler {
+    public static class RememberExceptionHandler extends AbstractRegisterableExceptionHandler {
 
         /**
          * The last throwable thrown.
@@ -457,9 +458,9 @@ public class TestBbVLDockingApplicationPage extends AbstractBbSamplesTests {
          * {@inheritDoc}
          */
         @Override
-        public void notifyUserAboutException(Thread thread, Throwable throwable) {
+        public void uncaughtException(Thread t, Throwable e) {
 
-            RememberExceptionHandler.lastThrowable = throwable;
+            RememberExceptionHandler.lastThrowable = ExceptionUtils.getCause(e);
         }
 
         /**

@@ -75,6 +75,7 @@ public class BbFocusHighlighter implements PropertyChangeListener {
      * The singleton instance.
      */
     private static final PropertyChangeListener INSTANCE = new BbFocusHighlighter();
+    // SwingUtils.weakPropertyChangeListener(new BbFocusHighlighter()); // (JAF), 20110123, this does not work
 
     /**
      * Since original <em>focus highlighter</em> is private, class name is useful to do the trick.

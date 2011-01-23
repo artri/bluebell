@@ -53,6 +53,15 @@ public class PersonMasterForm extends AbstractBbTableMasterForm<Person> {
         super(PersonMasterForm.FORM_ID, Person.class);
     }
 
+    /** 
+     * {@inheritDoc}
+     */
+    @Override
+    public Class<Person> getManagedType() {
+         
+        return Person.class;
+    }
+    
     /**
      * Gets the person service.
      * 

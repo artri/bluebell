@@ -167,6 +167,13 @@ public abstract class AbstractBbMasterForm<T extends Object> extends AbstractMas
     }
 
     /**
+     * Gets the type managed by this form.
+     * 
+     * @return the type.
+     */
+    public abstract Class<T> getManagedType();
+
+    /**
      * Shows the given entities.
      * <p>
      * If would there be some entities currently being shown then would replace them.
@@ -307,6 +314,28 @@ public abstract class AbstractBbMasterForm<T extends Object> extends AbstractMas
 
         searchForm.setMasterForm(this);
         this.searchForms.add(searchForm);
+    }
+
+    /**
+     * Removes a search form from the page.
+     * 
+     * @param searchForm
+     *            the search form.
+     */
+    public final void removeSearchForm(AbstractBbSearchForm<T, ?> searchForm) {
+
+        // Comprobar los parámetros
+        Assert.notNull(searchForm);
+
+        if (!this.getSearchForms().contains(searchForm)) {
+            throw new IllegalStateException(); // TODO cambiar la excepción
+        } else if (searchForm.getMasterForm() != this) {
+            throw new IllegalStateException(); // TODO cambiar la excepción
+        }
+
+        // Eliminar el formulario hijo
+        this.searchForms.remove(searchForm);
+        searchForm.setMasterForm(null);
     }
 
     /**
@@ -517,7 +546,7 @@ public abstract class AbstractBbMasterForm<T extends Object> extends AbstractMas
     @Override
     protected final BbDispatcherForm<T> createDetailForm(HierarchicalFormModel parentFormModel, ValueModel valueHolder,
             ObservableList masterList) {
-    
+
         return new BbDispatcherForm<T>(this, valueHolder);
     }
 
@@ -531,7 +560,7 @@ public abstract class AbstractBbMasterForm<T extends Object> extends AbstractMas
      *            el objeto desencadenante del evento.
      */
     protected final void publishApplicationEvent(EventType eventType, T source) {
-    
+
         final ApplicationEvent applicationEvent = new LifecycleApplicationEvent(eventType.toString(), source);
         this.getApplicationContext().publishEvent(applicationEvent);
     }
@@ -565,7 +594,7 @@ public abstract class AbstractBbMasterForm<T extends Object> extends AbstractMas
      * @return the buttons command group.
      */
     protected CommandGroup createButtonsCommandGroup() {
-    
+
         final CommandGroup group = CommandGroup.createCommandGroup(new Object[] {
                 // this.getFilterCommand(), //
                 // CommandGroupFactoryBean.SEPARATOR_MEMBER_CODE, //
@@ -575,9 +604,9 @@ public abstract class AbstractBbMasterForm<T extends Object> extends AbstractMas
                 GlobalCommandsAccessor.CANCEL, //
                 GlobalCommandIds.DELETE //
                 });
-    
+
         group.setCommandRegistry(this.getApplicationWindow().getCommandManager());
-    
+
         return group;
     }
 

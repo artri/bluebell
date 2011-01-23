@@ -37,8 +37,8 @@
 		An exception handler that remembers last exception thrown.
 	-->
 	<bean id="rememberExceptionHandler"
-		class="org.bluebell.richclient.application.docking.vldocking.TestBbVLDockingApplicationPage$RememberExceptionHandler"
-		p:exceptionPurger-ref="${richclient.exceptionPurger}" />
+		class="org.bluebell.richclient.application.docking.vldocking.TestBbVLDockingApplicationPage$RememberExceptionHandler" />
+<!--		p:exceptionPurger-ref="${richclient.exceptionPurger}" />-->
 
 	<!--
 		A page descriptor containing a failed view descriptor.

@@ -741,12 +741,13 @@ public abstract class AbstractBbTableMasterForm<T extends Object> extends Abstra
 
         // enable/disable command dependending on new form object command
         command.setEnabled(Boolean.FALSE);
-        this.getNewFormObjectCommand().addEnabledListener(new PropertyChangeListener() {
-            public void propertyChange(PropertyChangeEvent evt) {
+        this.getNewFormObjectCommand().addEnabledListener(// SwingUtils.weakPropertyChangeListener(
+                new PropertyChangeListener() {
+                    public void propertyChange(PropertyChangeEvent evt) {
 
-                command.setEnabled(!(Boolean) evt.getNewValue());
-            }
-        });
+                        command.setEnabled(!(Boolean) evt.getNewValue());
+                    }
+                });
 
         // Configurar el comando
         return this.configureCommand(command, Boolean.FALSE);
@@ -901,6 +902,7 @@ public abstract class AbstractBbTableMasterForm<T extends Object> extends Abstra
         };
 
         // (JAF), 20110113, enable/disable command dependending on table state
+        command.setEnabled(Boolean.FALSE);
         this.getMasterTableModel().addTableModelListener(new TableModelListener() {
 
             @Override

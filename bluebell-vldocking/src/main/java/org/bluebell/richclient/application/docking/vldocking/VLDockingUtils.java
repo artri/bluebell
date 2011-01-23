@@ -34,8 +34,13 @@ import org.apache.commons.lang.builder.ToStringStyle;
 import org.springframework.richclient.util.Assert;
 
 import com.vlsolutions.swing.docking.AutoHideExpandPanel;
+import com.vlsolutions.swing.docking.DockKey;
 import com.vlsolutions.swing.docking.DockView;
 import com.vlsolutions.swing.docking.DockViewTitleBar;
+import com.vlsolutions.swing.docking.Dockable;
+import com.vlsolutions.swing.docking.DockableState;
+import com.vlsolutions.swing.docking.DockingContext;
+import com.vlsolutions.swing.docking.DockingDesktop;
 import com.vlsolutions.swing.docking.DockingUtilities;
 import com.vlsolutions.swing.docking.SingleDockableContainer;
 
@@ -68,6 +73,35 @@ public final class VLDockingUtils {
      */
     private VLDockingUtils() {
 
+    }
+
+    /**
+     * Fixes an VLDocking bug consisting on dockables that belong to a docking desktop have no state on it.
+     * 
+     * @param dockable
+     *            the dockable candidate.
+     * @return its dockable state. If none then registers the dockable again and ensures dockable state is not null.
+     */
+    public static DockableState fixVLDockingBug(DockingDesktop dockingDesktop, Dockable dockable) {
+
+        Assert.notNull(dockingDesktop, "dockingDesktop");
+        Assert.notNull(dockable, "dockable");
+
+        final DockingContext dockingContext = dockingDesktop.getContext();
+        final DockKey dockKey = dockable.getDockKey();
+
+        DockableState dockableState = dockingDesktop.getDockableState(dockable);
+
+        final Boolean thisFixApplies = (dockingContext.getDockableByKey(dockKey.getKey()) != null);
+        if ((thisFixApplies) && (dockableState == null)) {
+            dockingDesktop.registerDockable(dockable);
+            dockableState = dockingDesktop.getDockableState(dockable);
+            dockKey.setLocation(dockableState.getLocation());
+
+            Assert.notNull(dockableState, "dockableState");
+        }
+
+        return dockableState;
     }
 
     /**
@@ -360,9 +394,9 @@ public final class VLDockingUtils {
                 prefix = '-';
                 text = null;
             }
-            
+
             sb.append(prefix).append(text);
-            
+
             return sb.toString();
         }
     }

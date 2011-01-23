@@ -1,14 +1,14 @@
 /*
  * Copyright (C) 2009 Julio Arg\u00fcello <julio.arguello@gmail.com>
- *
+ * 
  * This file is part of Bluebell VLDocking.
- *
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *         http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -45,6 +45,7 @@ import org.bluebell.richclient.application.ApplicationPageException;
 import org.bluebell.richclient.application.support.ApplicationUtils;
 import org.bluebell.richclient.application.support.DefaultApplicationPageConfigurer;
 import org.bluebell.richclient.application.support.DefaultApplicationPageConfigurer.BbViewType;
+import org.bluebell.richclient.util.ObjectUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.ByteArrayResource;
@@ -54,8 +55,11 @@ import org.springframework.core.io.Resource;
 import org.springframework.richclient.application.ApplicationWindow;
 import org.springframework.richclient.application.PageComponent;
 import org.springframework.richclient.application.PageDescriptor;
+import org.springframework.richclient.application.View;
 import org.springframework.richclient.application.docking.vldocking.VLDockingApplicationPage;
+import org.springframework.richclient.application.docking.vldocking.VLDockingLayoutManager;
 import org.springframework.richclient.application.docking.vldocking.VLDockingPageDescriptor;
+import org.springframework.richclient.application.docking.vldocking.ViewDescriptorDockable;
 import org.springframework.ui.velocity.VelocityEngineUtils;
 import org.springframework.util.Assert;
 import org.xml.sax.SAXException;
@@ -75,15 +79,27 @@ import com.vlsolutions.swing.docking.DockingDesktop;
  * <li><b>Implicit initial layout</b>: a layout in a conventioned location.
  * <li><b>Auto layout</b>: an automatically build layout using Velocity engine.
  * </ol>
+ * </p>
+ * <p>
+ * This implementation is able to reuse dockable after have been closed although their page components have changed in
+ * time.
+ * </p>
  * 
  * @param <T>
  *            the type of entities managed by this page.
  * 
  * @see VLDockingApplicationPage
+ * @see <a href="http://forum.springsource.org/showpost.php?p=300597&postcount=7">VLDocking behaviour and memory leak
+ *      forum post</a>
  * 
  * @author <a href = "mailto:julio.arguello@gmail.com" >Julio Argüello (JAF)</a>
  */
 public class BbVLDockingApplicationPage<T> extends VLDockingApplicationPage {
+
+    /**
+     * The logger.
+     */
+    private static final Logger LOGGER = LoggerFactory.getLogger(BbVLDockingApplicationPage.class);
 
     /**
      * Message for page creation exceptions.
@@ -107,11 +123,6 @@ public class BbVLDockingApplicationPage<T> extends VLDockingApplicationPage {
      * The identifier of the page to be used when page descriptor identifier is null.
      */
     private static final String PAGE_ID_IF_NULL = "emptyPage";
-
-    /**
-     * The logger.
-     */
-    private static final Logger LOGGER = LoggerFactory.getLogger(BbVLDockingApplicationPage.class);
 
     /**
      * The successfully build layout resource.
@@ -159,16 +170,18 @@ public class BbVLDockingApplicationPage<T> extends VLDockingApplicationPage {
     public BbVLDockingApplicationPage(ApplicationWindow window, PageDescriptor pageDescriptor) {
 
         super(window, pageDescriptor);
-    }
 
-    /**
-     * Gets the layout.
-     * 
-     * @return the layout.
-     */
-    public final Resource getLayout() {
+        VLDockingLayoutManager layoutManager = null;
+        if (pageDescriptor instanceof VLDockingPageDescriptor) {
+            final VLDockingPageDescriptor vlDockingPageDescriptor = (VLDockingPageDescriptor) pageDescriptor;
+            layoutManager = vlDockingPageDescriptor.getLayoutManager();
+        }
 
-        return this.layout;
+        if (layoutManager == null) {
+            layoutManager = BbVLDockingLayoutManager.getInstance();
+        }
+
+        this.setLayoutManager(layoutManager);
     }
 
     /**
@@ -231,9 +244,8 @@ public class BbVLDockingApplicationPage<T> extends VLDockingApplicationPage {
         if (layout == null) {
 
             this.getPageDescriptor().buildInitialLayout(this);
-
             this.setLayout(null);
-
+            
             return Boolean.TRUE;
         }
 
@@ -254,19 +266,16 @@ public class BbVLDockingApplicationPage<T> extends VLDockingApplicationPage {
             exceptions.add(new ApplicationPageException(msg, e, this.getId()));
 
             return Boolean.FALSE;
-
         } catch (SAXException e) {
             final String msg = BbVLDockingApplicationPage.LAYOUT_BUILDING_FAILED_FMT.format(new Object[] { layout });
             exceptions.add(new ApplicationPageException(msg, e, this.getId()));
 
             return Boolean.FALSE;
-
         } catch (ParserConfigurationException e) {
             final String msg = BbVLDockingApplicationPage.LAYOUT_BUILDING_FAILED_FMT.format(new Object[] { layout });
             exceptions.add(new ApplicationPageException(msg, e, this.getId()));
 
             return Boolean.FALSE;
-
         } finally {
             if (ArrayUtils.isEmpty(dockingDesktop.getDockables())) {
                 this.getPageDescriptor().buildInitialLayout(this);
@@ -310,8 +319,8 @@ public class BbVLDockingApplicationPage<T> extends VLDockingApplicationPage {
     /**
      * Resets the page layout saving actual state and restoring the initial one.
      * <p>
-     * <b>Note</b> when there is no initial layout then auto layout must be remembered from the beginning (since
-     * re-calculating it may don't take into account all the page components).
+     * <b>Note</b> when there is no initial layout then the auto layout will take into account existing page components
+     * plus those declared page components not present currently.
      * 
      * @see #saveLayout(DockingDesktop, Resource)
      * @see #buildLayout(DockingDesktop, List, List)
@@ -324,18 +333,27 @@ public class BbVLDockingApplicationPage<T> extends VLDockingApplicationPage {
 
         final DockingDesktop dockingDesktop = (DockingDesktop) this.getControl();
 
-        // 1.Save current layout
+        // 1 (v1).Save current layout
         // if (this.getUserLayout() != null) {
         // this.saveLayout(dockingDesktop, this.getUserLayout());
         // }
 
-        this.close();
+        // 1.(v2).Closing page will save current layout
+        // this.close();
+        // dockingDesktop.clear();
+
+        // 1. (JAF), 20110119, why should current state being closed? And saved?
+
+        /*
+         * 2.Restore layout... ...(20110119) ensuring all declared page component descriptors are added (as required by
+         * ApplicationPageConfigurer)
+         */
         final List<String> pageComponentDescriptors = ApplicationUtils.getDeclaredPageComponentDescriptors(this);
         for (String pageComponentDescriptor : pageComponentDescriptors) {
-            this.showView(pageComponentDescriptor);
+            if (this.getView(pageComponentDescriptor) == null) {
+                this.addView(pageComponentDescriptor);
+            }
         }
-
-        // 2.Restore layout
         final List<Resource> layouts = Arrays.asList(//
                 new Resource[] { this.getInitialLayout(), this.getAutoLayout(), null });
 
@@ -354,11 +372,70 @@ public class BbVLDockingApplicationPage<T> extends VLDockingApplicationPage {
      * {@inheritDoc}
      */
     @Override
+    public View showView(String id) {
+
+        this.beforeShowView(id);
+
+        return super.showView(id);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public View showView(String id, Object input) {
+
+        this.beforeShowView(id);
+
+        return super.showView(id, input);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean close(PageComponent pageComponent) {
+
+        final Dockable dockable = this.getDockable(pageComponent);
+
+        final Boolean success = super.close(pageComponent);
+        if (success) {
+            this.afterClosePageComponent(dockable, pageComponent);
+        }
+
+        return success;
+    }
+
+    /**
+     * {@inheritDoc}
+     * 
+     * @see #doClose()
+     */
+    @Override
+    public boolean close() {
+
+        return this.doClose();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public String getId() {
 
         final String id = super.getId();
 
         return (id != null) ? id : BbVLDockingApplicationPage.PAGE_ID_IF_NULL;
+    }
+
+    /**
+     * Gets the layout.
+     * 
+     * @return the layout.
+     */
+    public final Resource getLayout() {
+
+        return this.layout;
     }
 
     /**
@@ -417,22 +494,49 @@ public class BbVLDockingApplicationPage<T> extends VLDockingApplicationPage {
 
     /**
      * {@inheritDoc}
-     * 
-     * @see #doClose()
-     */
-    @Override
-    public boolean close() {
-
-        return this.doClose();
-    }
-
-    /**
-     * {@inheritDoc}
      */
     @Override
     public String toString() {
 
         return new ToStringBuilder(this, ToStringStyle.SIMPLE_STYLE).append("id", this.getId()).toString();
+    }
+
+    /**
+     * Adds a page component to the page.
+     * <p>
+     * This method takes into account that closed dockable may be opened later.
+     * </p>
+     * 
+     * @param pageComponent
+     *            the page component.
+     * 
+     * @see #getDockable(PageComponent)
+     * 
+     * @since 20110120
+     */
+    // @Override
+    protected void doAddPageComponenst(PageComponent pageComponent) {
+
+        // super ignores existing dockables although their state be "closed"
+        super.doAddPageComponent(pageComponent);
+
+        // (JAF), 2011019, desktop is not accessible and control may not be created yet!
+        final DockingDesktop dockingDesktop = this.getDockingDesktop();
+        final Dockable dockable = this.getDockable(pageComponent);
+        final DockableState dockableState = dockingDesktop.getDockableState(dockable);
+        final VLDockingLayoutManager layoutManager = ObjectUtils.getPropertyValue(//
+                this, "layoutManager", VLDockingLayoutManager.class);
+
+        // INVARIANT
+        Assert.notNull(dockingDesktop, "dockingDesktop");
+        Assert.notNull(dockable, "dockable"); // super has already been called so dockable must exist!!
+        Assert.notNull(dockableState, "dockableState");
+        Assert.notNull(layoutManager, "layoutManager");
+
+        // POSTCONDITION: dockable gets shown
+        if (dockableState.isClosed()) {
+            layoutManager.addDockable(dockingDesktop, dockable);
+        }
     }
 
     /**
@@ -470,6 +574,25 @@ public class BbVLDockingApplicationPage<T> extends VLDockingApplicationPage {
         } else if (!exceptions.isEmpty()) {
             throw new ApplicationPageException(exceptions.get(0), this.getId());
         }
+
+        return dockingDesktop;
+    }
+
+    /**
+     * Gets the docking desktop using reflection.
+     * 
+     * <p>
+     * Cast from {@link #getControl()} to <code>DockingDesktop</code> is not a valid approach because control creation
+     * may be in process or not triggered yet.
+     * </p>
+     * 
+     * @return the docking desktop, may be <code>null</code>.
+     * 
+     * @since 20110119
+     */
+    protected final DockingDesktop getDockingDesktop() {
+
+        final DockingDesktop dockingDesktop = ObjectUtils.getPropertyValue(this, "desktop", DockingDesktop.class);
 
         return dockingDesktop;
     }
@@ -600,6 +723,69 @@ public class BbVLDockingApplicationPage<T> extends VLDockingApplicationPage {
     }
 
     /**
+     * Parent implementation is not aware of existing dockables in closed state that may be opened again.
+     * 
+     * @param pageComponentId
+     *            the page component it.
+     */
+    private void beforeShowView(String pageComponentId) {
+
+        final PageComponent pageComponent = this.findPageComponent(pageComponentId);
+        final Dockable dockable = this.getDockable(pageComponent);
+        if ((pageComponent != null) && (dockable != null)) {
+
+            final DockingDesktop dockingDesktop = this.getDockingDesktop();
+            final VLDockingLayoutManager layoutManager = ObjectUtils.getPropertyValue(//
+                    this, "layoutManager", VLDockingLayoutManager.class);
+
+            // INVARIANT
+            Assert.notNull(dockingDesktop, "dockingDesktop");
+            Assert.notNull(dockable, "dockable");
+            Assert.notNull(layoutManager, "layoutManager");
+
+            // POSTCONDITION: dockable gets shown
+            final DockableState dockableState = VLDockingUtils.fixVLDockingBug(dockingDesktop, dockable);
+            if (dockableState.isClosed()) {
+                layoutManager.addDockable(dockingDesktop, dockable);
+                if (BbVLDockingApplicationPage.LOGGER.isDebugEnabled()) {
+                    BbVLDockingApplicationPage.LOGGER.debug(//
+                            "Showing a previously closed dockable: \"" + pageComponentId + "\"");
+                }
+            }
+        }
+    }
+
+    /**
+     * There is a memory leak after closing a page component.
+     * <p/>
+     * The associated dockable mantains a reference to the recently closed page component that should be reset.
+     * 
+     * @param dockable
+     *            the target dockable.
+     * @param pageComponent
+     *            the target page component.
+     */
+    private void afterClosePageComponent(Dockable dockable, PageComponent pageComponent) {
+
+        Assert.notNull(dockable, "dockable");
+        Assert.notNull(pageComponent, "pageComponent");
+        Assert.state(!this.getPageComponents().contains(pageComponent),
+                "this.getPageComponents().contains(pageComponent)");
+
+        if (dockable instanceof ViewDescriptorDockable) {
+            ObjectUtils.setPropertyValue(dockable, "pageComponent", null);
+
+            if (BbVLDockingApplicationPage.LOGGER.isDebugEnabled()) {
+                BbVLDockingApplicationPage.LOGGER.debug(//
+                        "Dockable \"" + dockable.getDockKey().getKey(), "\" component reset after closing");
+            }
+        } else {
+            BbVLDockingApplicationPage.LOGGER.warn(//
+                    "Unable to reset dockable \"" + dockable.getDockKey().getKey(), "\" component after closing");
+        }
+    }
+
+    /**
      * Close existing page components non declared on page descriptor registry.
      */
     private void closeUndeclaredPageComponents() {
@@ -649,7 +835,7 @@ public class BbVLDockingApplicationPage<T> extends VLDockingApplicationPage {
             final String pageId = this.getPageDescriptor().getId();
             final String message = BbVLDockingApplicationPage.PAGE_CREATION_FAILED_FMT.format(new String[] { pageId });
 
-            BbVLDockingApplicationPage.LOGGER.error(message, e);
+            BbVLDockingApplicationPage.LOGGER.warn(message, e);
 
             // (JAF), 20090720, remember exception to be handled later
             exceptions.add(e);
@@ -688,24 +874,6 @@ public class BbVLDockingApplicationPage<T> extends VLDockingApplicationPage {
             }
 
             success = super.close();
-
-            /*
-             * (JAF), 20110118, dockables must be unregistered. Otherwise closing individual dockables or resetting a
-             * perspective may not work as expected.
-             * 
-             * @see http://jirabluebell.b2b2000.com/browse/BLUE-63
-             */
-            if (success) {
-                for (DockableState dockableState : dockingDesktop.getDockables()) {
-                    final Dockable dockable = dockableState.getDockable();
-
-                    // (JAF), 20110118, this line avoids a NPE when dockable state is null at invoked close method
-                    dockingDesktop.getContext().setDockableState(dockable, dockableState);
-
-                    // Unregister dockable to and allow GC free references
-                    dockingDesktop.unregisterDockable(dockableState.getDockable());
-                }
-            }
         } catch (Exception e) {
             final String description = (theUserLayout != null) ? theUserLayout.getDescription() : StringUtils.EMPTY;
             final String message = BbVLDockingApplicationPage.PAGE_CLOSING_FAILED_FMT.format(//
@@ -733,65 +901,3 @@ public class BbVLDockingApplicationPage<T> extends VLDockingApplicationPage {
         this.layout = layout;
     }
 }
-
-// /**
-// * Modifica el comportamiento de
-// * {@link
-// org.springframework.richclient.application.support.AbstractApplicationPage#createPageComponent
-// * con el objetivo de cachear los componentes de página creados en función del
-// descriptor.
-// *
-// * @param descriptor
-// * el descriptor.
-// * @return el componente de página.
-// *
-// * @see
-// org.springframework.richclient.application.support.AbstractApplicationPage#createPageComponent
-// */
-// @Override
-// protected PageComponent createPageComponent(PageComponentDescriptor
-// descriptor) {
-//
-// // Obtener el componente de la caché
-// PageComponent pageComponent = this.cachedPageComponents.get(descriptor);
-//
-// // Si el componente es nulo crearlo y registrarlo
-// if (pageComponent == null) {
-// // TODO, ¿por qué es necesario esto, revisarlo, documentarlo y notificarlo?
-// pageComponent = super.createPageComponent(descriptor);
-// this.cachedPageComponents.put(descriptor, pageComponent);
-// }
-//
-// return pageComponent;
-// }
-// TODO, ¿por qué es necesario esto, revisarlo, documentarlo y notificarlo?
-
-//
-// /**
-// * Sobreescribe {@link VLDockingApplicationPage#doAddPageComponent} para que:
-// * <ol>
-// * <li>Sincronice los componentes de la página.
-// * <li>No añada el <em>dockable</em> al <em>desktop</em> si el dockable ya
-// está creado. Este comportamiento es
-// * erróneo ya que pudiera ser que la página esté cerrada.
-// * </ol>
-// *
-// * @param pageComponent
-// * el componente de la página.
-// *
-// * @see #configurePageComponent(FormBackedView)
-// */
-// @Override
-// protected void doAddPageComponent(PageComponent pageComponent) {
-//
-// super.doAddPageComponent(pageComponent);
-//
-// // HACK, (JAF), 20080417, continue just only if dockable is different from
-// null. In such a case super does not
-// // call layout builder
-// final Dockable dockable = this.getDockable(pageComponent);
-// if (dockable != null) {
-// this.getLayoutManager().addDockable(((DockingDesktop) this.getControl()),
-// dockable);
-// }
-// }

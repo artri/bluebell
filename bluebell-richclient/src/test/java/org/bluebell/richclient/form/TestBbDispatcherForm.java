@@ -363,7 +363,7 @@ public class TestBbDispatcherForm extends AbstractBbSamplesTests {
         final Map<CounterName, Integer> expectedCounters = new HashMap<CounterName, Integer>();
         final BbDispatcherForm<Person> dispatcherForm = masterForm.getDispatcherForm();
         final int pos3 = 3;
-        
+
         List<Person> entities;
         List<Person> selection;
 
@@ -714,6 +714,7 @@ public class TestBbDispatcherForm extends AbstractBbSamplesTests {
             masterForm.getMasterTableModel().addTableModelListener(this);
             masterForm.getMasterTable().getSelectionModel().addListSelectionListener(this);
             dispatcherForm.getEditingIndexHolder().addPropertyChangeListener("value", this);
+            // SwingUtils.weakPropertyChangeListener(this));
             listened.addFormObjectChangeListener(this);
             if (!StringUtils.isEmpty(propertyName)) {
                 listened.getValueModel(propertyName).addValueChangeListener(this);

@@ -63,6 +63,7 @@ public class BbLookAndFeelConfigurer extends UIManagerConfigurer implements Init
         super(Boolean.FALSE);
 
         UIManager.addPropertyChangeListener(this);
+        // SwingUtils.weakPropertyChangeListener(this));
     }
 
     /**
@@ -111,7 +112,7 @@ public class BbLookAndFeelConfigurer extends UIManagerConfigurer implements Init
      * {@inheritDoc}
      */
     public void afterPropertiesSet() throws Exception {
-        
+
         for (Map.Entry<String, Resource> entry : this.getImageLocations().entrySet()) {
             final String imageKey = entry.getKey();
 

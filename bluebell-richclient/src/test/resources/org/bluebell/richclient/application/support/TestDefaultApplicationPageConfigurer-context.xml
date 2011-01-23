@@ -45,7 +45,7 @@
 			</list>
 		</property>
 	</bean>
-	
+
 	<!--
 		A page descriptor containing a search view descriptor.
 	-->
@@ -56,7 +56,7 @@
 			</list>
 		</property>
 	</bean>
-	
+
 	<!--
 		A page descriptor containing a validation view descriptor.
 	-->
@@ -67,7 +67,7 @@
 			</list>
 		</property>
 	</bean>
-	
+
 	<!--
 		A page descriptor containing a master and a child view descriptors.
 	-->
@@ -79,7 +79,7 @@
 			</list>
 		</property>
 	</bean>
-	
+
 	<!--
 		A page descriptor containing a master and a child view descriptors (reverse order).
 	-->
@@ -91,7 +91,7 @@
 			</list>
 		</property>
 	</bean>
-	
+
 	<!--
 		A page descriptor containing a master and a search view descriptors.
 	-->
@@ -103,7 +103,7 @@
 			</list>
 		</property>
 	</bean>
-	
+
 	<!--
 		A page descriptor containing a master and a search view descriptors (reverse order).
 	-->
@@ -115,7 +115,7 @@
 			</list>
 		</property>
 	</bean>
-	
+
 	<!--
 		A page descriptor containing all kind of views.
 	-->
@@ -129,7 +129,7 @@
 			</list>
 		</property>
 	</bean>
-	
+
 	<!--
 		A page descriptor containing all kind of views (reverse order).
 	-->
@@ -139,8 +139,56 @@
 				<value>validationViewDescriptor</value>
 				<value>personSearchViewDescriptor</value>
 				<value>personChildViewDescriptor</value>
-				<value>personMasterViewDescriptor</value>				
+				<value>personMasterViewDescriptor</value>
 			</list>
+		</property>
+	</bean>
+
+	<!--
+		A page descriptor containing a master and a incompatible child view descriptors.
+	-->
+	<bean id="masterAndIncompatibleChildViewsPageDescriptor" parent="abstractPageDescriptor">
+		<property name="viewDescriptors">
+			<list>
+				<value>personMasterViewDescriptor</value>
+				<value>incompatibleChildViewDescriptor</value>
+			</list>
+		</property>
+	</bean>
+
+	<!--
+		A page descriptor containing a master and a incompatible search view descriptors.
+	-->
+	<bean id="masterAndIncompatibleSearchViewsPageDescriptor" parent="abstractPageDescriptor">
+		<property name="viewDescriptors">
+			<list>
+				<value>personMasterViewDescriptor</value>
+				<value>incompatibleSearchViewDescriptor</value>
+			</list>
+		</property>
+	</bean>
+
+	<!--
+		A non compatible child view descriptor.
+	-->
+	<bean id="incompatibleChildViewDescriptor" parent="abstractViewDescriptor">
+		<property name="viewProperties">
+			<util:map>
+				<entry key="formClass"
+					value="org.bluebell.richclient.application.support.TestDefaultApplicationPageConfigurer.IncompatibleChildForm" />
+			</util:map>
+		</property>
+	</bean>
+
+<!--
+		A incompatible search view descriptor.
+	-->
+	<bean id="incompatibleSearchViewDescriptor" parent="abstractViewDescriptor">
+		<property name="viewProperties">
+			<util:map>
+				<entry key="formClass"
+					value="org.bluebell.richclient.application.support.TestDefaultApplicationPageConfigurer.IncompatibleSearchForm" />
+			</util:map>
 		</property>
 	</bean>
 

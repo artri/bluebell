@@ -26,6 +26,7 @@ import java.util.List;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
 import org.bluebell.richclient.form.util.BbFormModelHelper;
+import org.springframework.beans.BeanUtils;
 import org.springframework.binding.form.ValidatingFormModel;
 import org.springframework.binding.value.support.ObservableList;
 import org.springframework.binding.value.support.ValueHolder;
@@ -73,7 +74,16 @@ public abstract class AbstractBbChildForm<T extends Object> extends ApplicationW
         // Set editing form object index holder
         final ValueHolder editingFormObjectIndexHolder = new ValueHolder(-1);
         this.setEditingFormObjectIndexHolder(editingFormObjectIndexHolder);
+
+        this.setFormModel(this.createFormModel());
     }
+
+    /**
+     * Gets the type managed by this form.
+     * 
+     * @return the type.
+     */
+    public abstract Class<T> getManagedType();
 
     /**
      * Obtiene el formulario maestro.
@@ -108,24 +118,19 @@ public abstract class AbstractBbChildForm<T extends Object> extends ApplicationW
     }
 
     /**
-     * Crea el modelo del formulario hijo a partir del modelo de su padre.
-     * <p>
-     * Este método es invocado durante la construcción del formulario con el fin de obtener y establecer un nuevo
-     * <em>form model</em> para el mismo.
+     * Creates the form model.
      * 
-     * @param parentFormModel
-     *            el modelo del formulario padre.
-     * 
-     * @return el modelo del formulario.
-     * 
-     * @see org.springframework.richclient.form.AbstractForm#setFormModel(ValidatingFormModel)
-     * @see org.springframework.richclient.form.AbstractMasterForm#configure()
+     * @return the created form model.
      */
-    protected ValidatingFormModel createFormModel(ValidatingFormModel parentFormModel) {
+    protected ValidatingFormModel createFormModel() {
 
-        // (JAF), 20110105, FIX ME!!! This method is not invoked!! http://jirabluebell.b2b2000.com/browse/BLUE-53
-        final ValidatingFormModel formModel = BbFormModelHelper.createValidatingFormModel(//
-                parentFormModel, this.getId());
+        Assert.notNull(this.getManagedType(), "this.getManagedType()");
+
+        // (JAF), 20110105, This method is not invoked!! http://jirabluebell.b2b2000.com/browse/BLUE-53
+        // (JAF), 20110123, Fixed!!!
+        final T formObject = BeanUtils.instantiate(this.getManagedType());
+
+        final ValidatingFormModel formModel = BbFormModelHelper.createValidatingFormModel(formObject, this.getId());
 
         return formModel;
     }
@@ -202,7 +207,7 @@ public abstract class AbstractBbChildForm<T extends Object> extends ApplicationW
 
         this.dispatcherForm = dispatcherForm;
     }
-    
+
     /**
      * Let (<em>exclusively</em>) dispatcher form set the list of editable form objects.
      * 

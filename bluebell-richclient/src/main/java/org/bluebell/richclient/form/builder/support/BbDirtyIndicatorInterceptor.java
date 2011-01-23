@@ -182,6 +182,7 @@ public class BbDirtyIndicatorInterceptor extends AbstractOverlayFormComponentInt
 
             // Listen field metadata dirty property change events
             formModel.getFieldMetadata(this.getPropertyName()).addPropertyChangeListener(FormModel.DIRTY_PROPERTY, //
+                    // SwingUtils.weakPropertyChangeListener(
                     new PropertyChangeListener() {
                         public void propertyChange(PropertyChangeEvent evt) {
 
@@ -191,6 +192,7 @@ public class BbDirtyIndicatorInterceptor extends AbstractOverlayFormComponentInt
 
             // Listen value model changes
             formModel.getValueModel(this.getPropertyName()).addValueChangeListener(//
+                    // SwingUtils.weakPropertyChangeListener(
                     new PropertyChangeListener() {
                         public void propertyChange(PropertyChangeEvent evt) {
 
@@ -200,6 +202,7 @@ public class BbDirtyIndicatorInterceptor extends AbstractOverlayFormComponentInt
 
             // Listen form objet changes
             formModel.getFormObjectHolder().addValueChangeListener(//
+                    // SwingUtils.weakPropertyChangeListener(
                     new PropertyChangeListener() {
                         public void propertyChange(PropertyChangeEvent evt) {
 

@@ -31,6 +31,8 @@ import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
 import org.bluebell.richclient.command.support.CommandUtils;
+import org.bluebell.richclient.form.util.BbFormModelHelper;
+import org.springframework.beans.BeanUtils;
 import org.springframework.binding.form.FormModel;
 import org.springframework.binding.form.ValidatingFormModel;
 import org.springframework.richclient.command.ActionCommand;
@@ -44,6 +46,7 @@ import org.springframework.richclient.form.FormGuard;
 import org.springframework.richclient.form.SimpleValidationResultsReporter;
 import org.springframework.richclient.form.builder.support.ConfigurableFormComponentInterceptorFactory;
 import org.springframework.richclient.util.GuiStandardUtils;
+import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
 /**
@@ -164,7 +167,23 @@ public abstract class AbstractBbSearchForm<T extends Object, U extends Object> e
         // TODO (JAF), 20080713, quizás sea mejor recuperar el interceptor de otro modo...
         this.dirtyIndicatorInterceptorFactory = (ConfigurableFormComponentInterceptorFactory) //
         this.getApplicationContext().getBean("dirtyIndicatorInterceptorFactory");
+
+        this.setFormModel(this.createFormModel());
     }
+
+    /**
+     * Gets the search params type.
+     * 
+     * @return the type.
+     */
+    public abstract Class<U> getSearchParamsType();
+
+    /**
+     * Gets the search results type.
+     * 
+     * @return the type.
+     */
+    public abstract Class<T> getSearchResultsType();
 
     /**
      * Obtiene el comando para añadir o no resultados.
@@ -189,6 +208,17 @@ public abstract class AbstractBbSearchForm<T extends Object, U extends Object> e
     public final AbstractBbMasterForm<T> getMasterForm() {
 
         return this.masterForm;
+    }
+
+    /**
+     * Establece el formulario maestro en el que volcar los resultados de la búsqueda.
+     * 
+     * @param masterForm
+     *            el formulario maestro.
+     */
+    public final void setMasterForm(AbstractBbMasterForm<T> masterForm) {
+
+        this.masterForm = masterForm;
     }
 
     /**
@@ -265,17 +295,6 @@ public abstract class AbstractBbSearchForm<T extends Object, U extends Object> e
     }
 
     /**
-     * Establece el formulario maestro en el que volcar los resultados de la búsqueda.
-     * 
-     * @param masterForm
-     *            el formulario maestro.
-     */
-    public void setMasterForm(AbstractBbMasterForm<T> masterForm) {
-
-        this.masterForm = masterForm;
-    }
-
-    /**
      * {@inheritDoc}
      */
     @Override
@@ -285,19 +304,25 @@ public abstract class AbstractBbSearchForm<T extends Object, U extends Object> e
     }
 
     /**
-     * Retorna una barra de botones con el grupo de comandos {@link #commandGroup}, justificada a la derecha y todos del
-     * mismo tamaño.
+     * Obtiene los resultados de la búsqueda.
      * 
-     * @return la barra de botones.
-     * 
-     * @see #getCommandGroup()
+     * @param searchParams
+     *            un objeto con los parámetros de la búsqueda obtenido al <em>commitear</em> el formulario.
+     * @return los resultados de la búsqueda.
      */
-    protected JComponent createButtonBar() {
+    protected abstract List<T> doSearch(U searchParams);
 
-        final JComponent buttonBar = this.getCommandGroup().createButtonBar();
-        GuiStandardUtils.attachDialogBorder(buttonBar);
-        return buttonBar;
-    }
+    /**
+     * Crea el control donde introducir los parámetros de búsqueda.
+     * <p>
+     * Las subclases pueden implementar este método si quieren conservar la distribución propuesta por
+     * {@link #createFormControl()}.
+     * <p>
+     * Esta implementación devuelve un <code>JPanel</code> vacío.
+     * 
+     * @return el control donde introducir los parámetros de búsqueda.
+     */
+    protected abstract JComponent createSearchParamsControl();
 
     /**
      * Método plantilla que crea el control de este formulario.
@@ -310,11 +335,11 @@ public abstract class AbstractBbSearchForm<T extends Object, U extends Object> e
      *  |(Errores de validación y nº de resultados) |
      *  |+=========================================+|
      *  ||                                         ||
-     *  ||           SEARCH_TYPE PARAMS CONTROL         ||
+     *  ||           SEARCH_TYPE PARAMS CONTROL    ||
      *  ||         (Parámetros de búsqueda)        ||            
      *  ||                                         ||
      *  |+=========================================+|
-     *  |         RETAIN | SEARCH_TYPE | REFRESH | RESET |
+     *  |    RETAIN | SEARCH_TYPE | REFRESH | RESET |
      *  +-------------------------------------------+
      * </pre>
      * 
@@ -354,28 +379,36 @@ public abstract class AbstractBbSearchForm<T extends Object, U extends Object> e
     }
 
     /**
-     * Crea el control donde introducir los parámetros de búsqueda.
-     * <p>
-     * Las subclases pueden implementar este método si quieren conservar la distribución propuesta por
-     * {@link #createFormControl()}.
-     * <p>
-     * Esta implementación devuelve un <code>JPanel</code> vacío.
+     * Creates the form model.
      * 
-     * @return el control donde introducir los parámetros de búsqueda.
+     * @return the created form model.
      */
-    protected JComponent createSearchParamsControl() {
+    protected ValidatingFormModel createFormModel() {
 
-        return new JPanel();
+        Assert.notNull(this.getSearchParamsType(), "this.getSearchParamsType()");
+
+        final U formObject = BeanUtils.instantiate(this.getSearchParamsType());
+
+        final ValidatingFormModel formModel = BbFormModelHelper.createValidatingFormModel(formObject, this.getId());
+
+        return formModel;
     }
 
     /**
-     * Obtiene los resultados de la búsqueda.
+     * Retorna una barra de botones con el grupo de comandos {@link #commandGroup}, justificada a la derecha y todos del
+     * mismo tamaño.
      * 
-     * @param searchParams
-     *            un objeto con los parámetros de la búsqueda obtenido al <em>commitear</em> el formulario.
-     * @return los resultados de la búsqueda.
+     * @return la barra de botones.
+     * 
+     * @see #getCommandGroup()
      */
-    protected abstract List<T> doSearch(U searchParams);
+    protected JComponent createButtonBar() {
+
+        final JComponent buttonBar = this.getCommandGroup().createButtonBar();
+        GuiStandardUtils.attachDialogBorder(buttonBar);
+
+        return buttonBar;
+    }
 
     /**
      * Obtiene el identificador del comando para añadir o no resultados.
