@@ -24,6 +24,7 @@
 		KO (16)- (JAF), 20101223, eclipse plugin should include checkstyle validationenabled
 		OK (17)- (JAF), 20101224, include http://code.google.com/p/maven-overview-plugin/
 		KO (18)- (JAF), 20110111, configure checkstyle and codestyle http://maven.apache.org/plugins/maven-eclipse-plugin/examples/configure-checkstyle.html
+		(19)- (JAF), 20110209, deploy artifacts to Sonatype OSS _ https://docs.sonatype.org/display/Repository/Sonatype+OSS+Maven+Repository+Usage+Guide
 	-->
 
 	<modelVersion>4.0.0</modelVersion>
