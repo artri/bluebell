@@ -62,11 +62,4 @@
 			<scope>runtime</scope>
 		</dependency>
 	</dependencies>
-
-
-  <scm>
-    <connection>scm:svn:http://bluebell.googlecode.com/svn/tags/bluebell-parent-0.1/bluebell-samples</connection>
-    <developerConnection>scm:svn:https://bluebell.googlecode.com/svn/tags/bluebell-parent-0.1/bluebell-samples</developerConnection>
-    <url>http://code.google.com/p/bluebell/source/browse/#svn/tags/bluebell-parent-0.1/bluebell-samples</url>
-  </scm>
 </project>

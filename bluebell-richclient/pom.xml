@@ -227,11 +227,4 @@
 			<artifactId>com.springsource.org.easymock</artifactId>
 		</dependency>
 	</dependencies>
-
-
-  <scm>
-    <connection>scm:svn:http://bluebell.googlecode.com/svn/tags/bluebell-parent-0.1/bluebell-richclient</connection>
-    <developerConnection>scm:svn:https://bluebell.googlecode.com/svn/tags/bluebell-parent-0.1/bluebell-richclient</developerConnection>
-    <url>http://code.google.com/p/bluebell/source/browse/#svn/tags/bluebell-parent-0.1/bluebell-richclient</url>
-  </scm>
 </project>

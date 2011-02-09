@@ -71,10 +71,4 @@
 			<artifactId>com.springsource.slf4j.api</artifactId>
 		</dependency>
 	</dependencies>
-
-  <scm>
-    <connection>scm:svn:http://bluebell.googlecode.com/svn/tags/bluebell-parent-0.1/bluebell-jide-oss</connection>
-    <developerConnection>scm:svn:https://bluebell.googlecode.com/svn/tags/bluebell-parent-0.1/bluebell-jide-oss</developerConnection>
-    <url>http://code.google.com/p/bluebell/source/browse/#svn/tags/bluebell-parent-0.1/bluebell-jide-oss</url>
-  </scm>
 </project>

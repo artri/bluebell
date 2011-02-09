@@ -1,5 +1,4 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
 	<!--
 		TODO's:
@@ -64,10 +63,9 @@
 		(JAF) 20101206, according to http://maven.apache.org/pom.html#SCM
 	-->
 	<scm>
-		<connection>scm:svn:${bb.project.url}/svn/tags/bluebell-parent-0.1</connection>
-		<developerConnection>scm:svn:https://bluebell.googlecode.com/svn/tags/bluebell-parent-0.1</developerConnection>
-		<tag>HEAD</tag>
-		<url>http://code.google.com/p/bluebell/source/browse/#svn/tags/bluebell-parent-0.1</url>
+		<connection>scm:svn:http://bluebell.googlecode.com/svn/trunk/</connection>
+		<developerConnection>scm:svn:https://bluebell.googlecode.com/svn/trunk/</developerConnection>
+		<url>http://code.google.com/p/bluebell/source/browse/#svn/trunk</url>
 	</scm>
 
 	<prerequisites>
