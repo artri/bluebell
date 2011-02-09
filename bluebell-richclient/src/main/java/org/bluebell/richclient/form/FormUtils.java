@@ -21,12 +21,16 @@
  */
 package org.bluebell.richclient.form;
 
+import org.bluebell.richclient.application.support.FormBackedView;
 import org.springframework.beans.PropertyAccessor;
 import org.springframework.beans.PropertyAccessorFactory;
+import org.springframework.binding.form.ValidatingFormModel;
 import org.springframework.binding.value.ValueModel;
 import org.springframework.binding.value.support.ObservableList;
+import org.springframework.richclient.application.PageComponent;
 import org.springframework.richclient.command.ActionCommand;
 import org.springframework.richclient.form.AbstractForm;
+import org.springframework.richclient.form.Form;
 import org.springframework.richclient.util.Assert;
 
 /**
@@ -56,6 +60,61 @@ public final class FormUtils {
      */
     private FormUtils() {
 
+    }
+
+    /**
+     * Returns the view backing form.
+     * 
+     * @param <T>
+     *            the form class.
+     * @param pageComponent
+     *            the page component.
+     * @return the backing form.
+     * 
+     * @see #getBackingForm(FormBackedView)
+     */
+    @SuppressWarnings("unchecked")
+    public static <T extends Form> T getBackingForm(PageComponent pageComponent) {
+
+        T form = null;
+
+        if (pageComponent instanceof FormBackedView) {
+            form = FormUtils.getBackingForm((FormBackedView<T>) pageComponent);
+        }
+
+        return form;
+    }
+
+    /**
+     * Returns the view backing form.
+     * 
+     * @param <T>
+     *            the form class.
+     * @param view
+     *            the view.
+     * @return the backing form.
+     */
+    public static <T extends Form> T getBackingForm(FormBackedView<T> view) {
+
+        final T form = (view != null) ? view.getBackingForm() : null;
+
+        Assert.state((view == null) || (form != null), "Backing form is null");
+
+        return form;
+    }
+
+    /**
+     * Returns the view backing form model.
+     * 
+     * @param <T>
+     *            the form class.
+     * @param view
+     *            the view.
+     * @return the backing form.
+     */
+    public static <T extends Form> ValidatingFormModel getBackingFormModel(FormBackedView<T> view) {
+
+        return (view != null) ? FormUtils.getBackingForm(view).getFormModel() : null;
     }
 
     /**

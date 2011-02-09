@@ -1,12 +1,12 @@
 /*
  * Copyright 2002-2008 the original author or authors.
- *
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -16,6 +16,7 @@
 
 package org.springframework.core;
 
+import java.io.Serializable;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.LinkedList;
@@ -55,6 +56,7 @@ import org.springframework.util.ReflectionUtils;
  * @since 1.2.2
  * @deprecated as of Spring 2.5, to be removed in Spring 3.0
  */
+@Deprecated
 public class ReflectiveVisitorHelper {
 
     /**
@@ -75,18 +77,7 @@ public class ReflectiveVisitorHelper {
     /**
      * A cache of visited methods.
      */
-    private final CachingMapDecorator<Class<?>, ClassVisitMethods> visitorClassVisitMethods = //
-    new CachingMapDecorator<Class<?>, ClassVisitMethods>() {
-        /**
-         * It's a <code>Serializable</code> class.
-         */
-        private static final long serialVersionUID = -1422147070362246795L;
-
-        public ClassVisitMethods create(Class<?> key) {
-
-            return new ClassVisitMethods(key);
-        }
-    };
+    private final CachingMapDecorator<Class<?>, ClassVisitMethods> visitMethods = new BbCachingMapDecorator();
 
     /**
      * Use reflection to call the appropriate <code>visit</code> method on the provided visitor, passing in the
@@ -102,11 +93,12 @@ public class ReflectiveVisitorHelper {
 
         Assert.notNull(visitor, "The visitor to visit is required");
         // Perform call back on the visitor through reflection.
-        Method method = getMethod(visitor.getClass(), argument);
+        Method method = this.getMethod(visitor.getClass(), argument);
         if (method == null) {
-            if (LOGGER.isWarnEnabled()) {
-                LOGGER.warn("No method found by reflection for visitor class [" + visitor.getClass().getName()
-                        + "] and argument of type [" + (argument != null ? argument.getClass().getName() : "") + "]");
+            if (ReflectiveVisitorHelper.LOGGER.isWarnEnabled()) {
+                ReflectiveVisitorHelper.LOGGER.warn("No method found by reflection for visitor class ["
+                        + visitor.getClass().getName() + "] and argument of type ["
+                        + (argument != null ? argument.getClass().getName() : "") + "]");
             }
             return null;
         }
@@ -137,14 +129,37 @@ public class ReflectiveVisitorHelper {
      */
     private Method getMethod(Class<?> visitorClass, Object argument) {
 
-        ClassVisitMethods visitMethods = (ClassVisitMethods) this.visitorClassVisitMethods.get(visitorClass);
-        return visitMethods.getVisitMethod(argument != null ? argument.getClass() : null);
+        ClassVisitMethods classVisitMethods = this.visitMethods.get(visitorClass);
+        return classVisitMethods.getVisitMethod(argument != null ? argument.getClass() : null);
+    }
+
+    /**
+     * Converted from anonymous to inner class.
+     * 
+     * <a href = "mailto:julio.arguello@gmail.com" >Julio Argüello (JAF)</a>
+     */
+    private static final class BbCachingMapDecorator extends CachingMapDecorator<Class<?>, ClassVisitMethods> {
+        /**
+         * It's a <code>Serializable</code> class.
+         */
+        private static final long serialVersionUID = -1422147070362246795L;
+
+        @Override
+        public ClassVisitMethods create(Class<?> key) {
+
+            return new ClassVisitMethods(key);
+        }
     }
 
     /**
      * Internal class caching visitor methods by argument class.
      */
-    private static final class ClassVisitMethods {
+    private static final class ClassVisitMethods implements Serializable {
+
+        /**
+         *  It's a <code>Serializable</code> class.
+         */
+        private static final long serialVersionUID = -5820091475402486972L;
 
         /**
          * The visitor class.
@@ -164,14 +179,15 @@ public class ReflectiveVisitorHelper {
             /**
              * {@inheritDoc}
              */
+            @Override
             public Method create(Class<?> argumentClazz) {
 
                 if (argumentClazz == null) {
-                    return findNullVisitorMethod();
+                    return ClassVisitMethods.this.findNullVisitorMethod();
                 }
-                Method method = findVisitMethod(argumentClazz);
+                Method method = ClassVisitMethods.this.findVisitMethod(argumentClazz);
                 if (method == null) {
-                    method = findDefaultVisitMethod();
+                    method = ClassVisitMethods.this.findDefaultVisitMethod();
                 }
                 return method;
             }
@@ -197,12 +213,12 @@ public class ReflectiveVisitorHelper {
 
             for (Class<?> clazz = this.visitorClass; clazz != null; clazz = clazz.getSuperclass()) {
                 try {
-                    return clazz.getDeclaredMethod(VISIT_NULL, (Class[]) null);
+                    return clazz.getDeclaredMethod(ReflectiveVisitorHelper.VISIT_NULL, (Class[]) null);
                 } catch (NoSuchMethodException ex) {
-                    new String("Avoid CS warnings");
+                    ex.getMessage(); // "Avoid CS warnings"
                 }
             }
-            return findDefaultVisitMethod();
+            return this.findDefaultVisitMethod();
         }
 
         /**
@@ -215,13 +231,14 @@ public class ReflectiveVisitorHelper {
             final Class<?>[] args = { Object.class };
             for (Class<?> clazz = this.visitorClass; clazz != null; clazz = clazz.getSuperclass()) {
                 try {
-                    return clazz.getDeclaredMethod(VISIT_METHOD, args);
+                    return clazz.getDeclaredMethod(ReflectiveVisitorHelper.VISIT_METHOD, args);
                 } catch (NoSuchMethodException ex) {
-                    new String("Avoid CS warnings");
+                    ex.getMessage(); // "Avoid CS warnings"
                 }
             }
-            if (LOGGER.isWarnEnabled()) {
-                LOGGER.warn("No default '" + VISIT_METHOD + "' method found. Returning <null>.");
+            if (ReflectiveVisitorHelper.LOGGER.isWarnEnabled()) {
+                ReflectiveVisitorHelper.LOGGER.warn("No default '" + ReflectiveVisitorHelper.VISIT_METHOD
+                        + "' method found. Returning <null>.");
             }
             return null;
         }
@@ -235,7 +252,7 @@ public class ReflectiveVisitorHelper {
          */
         private Method getVisitMethod(Class<?> argumentClass) {
 
-            return (Method) this.visitMethodCache.get(argumentClass);
+            return this.visitMethodCache.get(argumentClass);
         }
 
         /**
@@ -251,18 +268,19 @@ public class ReflectiveVisitorHelper {
             if (rootArgumentType == Object.class) {
                 return null;
             }
-            LinkedList<Class<?>> classQueue = new LinkedList<Class<?>>();
+            final LinkedList<Class<?>> classQueue = new LinkedList<Class<?>>();
             classQueue.addFirst(rootArgumentType);
 
             while (!classQueue.isEmpty()) {
-                Class<?> argumentType = (Class<?>) classQueue.removeLast();
+                final Class<?> argumentType = classQueue.removeLast();
                 // Check for a visit method on the visitor class matching this
                 // argument type.
                 try {
-                    if (LOGGER.isTraceEnabled()) {
-                        LOGGER.trace("Looking for method " + VISIT_METHOD + "(" + argumentType + ")");
+                    if (ReflectiveVisitorHelper.LOGGER.isTraceEnabled()) {
+                        ReflectiveVisitorHelper.LOGGER.trace("Looking for method "
+                                + ReflectiveVisitorHelper.VISIT_METHOD + "(" + argumentType + ")");
                     }
-                    return findVisitMethod(this.visitorClass, argumentType);
+                    return this.findVisitMethod(this.visitorClass, argumentType);
                 } catch (NoSuchMethodException e) {
                     // Queue up the argument super class if it's not of type
                     // Object.
@@ -270,14 +288,14 @@ public class ReflectiveVisitorHelper {
                         classQueue.addFirst(argumentType.getSuperclass());
                     }
                     // Queue up argument's implemented interfaces.
-                    Class<?>[] interfaces = argumentType.getInterfaces();
+                    final Class<?>[] interfaces = argumentType.getInterfaces();
                     for (int i = 0; i < interfaces.length; i++) {
                         classQueue.addFirst(interfaces[i]);
                     }
                 }
             }
             // No specific method found -> return the default.
-            return findDefaultVisitMethod();
+            return this.findDefaultVisitMethod();
         }
 
         /**
@@ -294,11 +312,12 @@ public class ReflectiveVisitorHelper {
         private Method findVisitMethod(Class<?> visitorClass, Class<?> argumentType) throws NoSuchMethodException {
 
             try {
-                return visitorClass.getDeclaredMethod(VISIT_METHOD, new Class<?>[] { argumentType });
+                return visitorClass.getDeclaredMethod(ReflectiveVisitorHelper.VISIT_METHOD,
+                        new Class<?>[] { argumentType });
             } catch (NoSuchMethodException ex) {
                 // Try visitorClass superclasses.
                 if (visitorClass.getSuperclass() != Object.class) {
-                    return findVisitMethod(visitorClass.getSuperclass(), argumentType);
+                    return this.findVisitMethod(visitorClass.getSuperclass(), argumentType);
                 } else {
                     throw ex;
                 }

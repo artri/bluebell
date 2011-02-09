@@ -251,8 +251,7 @@ public abstract class AbstractBbMasterForm<T extends Object> extends AbstractMas
      *            el formulario hijo.
      * 
      * @see BbDispatcherForm#addChildForm(org.springframework.richclient.form.Form)
-     */
-    @SuppressWarnings("unchecked")
+     */    
     @Override
     public final void addChildForm(Form childForm) {
 
@@ -260,8 +259,7 @@ public abstract class AbstractBbMasterForm<T extends Object> extends AbstractMas
         Assert.notNull(this.getDispatcherForm());
         Assert.isInstanceOf(AbstractBbChildForm.class, childForm);
 
-        // Añadir el formulario hijo e indicarle cual es su maestro
-        ((AbstractBbChildForm<T>) childForm).setMasterForm(this);
+        // Añadir el formulario hijo
         this.getDispatcherForm().addChildForm(childForm);
     }
 

@@ -24,11 +24,15 @@ package org.bluebell.richclient.application.support;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.ListUtils;
+import org.apache.commons.collections.functors.InstanceofPredicate;
+import org.apache.commons.collections.functors.NotNullPredicate;
 import org.apache.commons.lang.ClassUtils;
 import org.bluebell.richclient.application.ApplicationPageConfigurer;
 import org.bluebell.richclient.form.AbstractBbChildForm;
@@ -36,8 +40,10 @@ import org.bluebell.richclient.form.AbstractBbMasterForm;
 import org.bluebell.richclient.form.AbstractBbSearchForm;
 import org.bluebell.richclient.form.BbDispatcherForm;
 import org.bluebell.richclient.form.BbValidationForm;
+import org.bluebell.richclient.form.FormUtils;
 import org.bluebell.richclient.form.GlobalCommandsAccessor;
 import org.bluebell.richclient.form.MultipleValidationResultsReporter;
+import org.bluebell.richclient.swing.util.SwingUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.DirectFieldAccessor;
@@ -47,7 +53,9 @@ import org.springframework.richclient.application.ApplicationPage;
 import org.springframework.richclient.application.PageComponent;
 import org.springframework.richclient.application.PageComponentDescriptor;
 import org.springframework.richclient.application.View;
+import org.springframework.richclient.application.ViewDescriptorRegistry;
 import org.springframework.richclient.application.config.ApplicationWindowAware;
+import org.springframework.richclient.application.support.ApplicationServicesAccessor;
 import org.springframework.richclient.application.support.DefaultViewDescriptor;
 import org.springframework.richclient.form.Form;
 import org.springframework.richclient.form.ValidationResultsReporter;
@@ -87,7 +95,8 @@ import org.springframework.util.Assert;
  * @author <a href = "mailto:julio.arguello@gmail.com" >Julio Argüello (JAF)</a>
  */
 // @Aspect
-public class DefaultApplicationPageConfigurer<T> implements ApplicationPageConfigurer<T> {
+public class DefaultApplicationPageConfigurer<T> extends ApplicationServicesAccessor implements
+        ApplicationPageConfigurer<T> {
 
     /**
      * The logger for this class.
@@ -122,9 +131,40 @@ public class DefaultApplicationPageConfigurer<T> implements ApplicationPageConfi
     /**
      * {@inheritDoc}
      */
-    public void configureApplicationPage(ApplicationPage applicationPage) {
+    public void configureApplicationPage(final ApplicationPage applicationPage) {
 
-        this.doConfigureApplicationPage(applicationPage);
+        Assert.notNull(applicationPage);
+
+        // Page components creation must be done in the event dispatcher thread
+        SwingUtils.runInEventDispatcherThread(new Runnable() {
+
+            public void run() {
+
+                // 1) Trigger page control creation, this will attach page components to application page
+                applicationPage.getControl();
+
+                // 2) Add all view descriptors to the page
+                // final List<String> viewDescriptorIds = pageDescriptor.getViewDescriptors();
+                // for (final String viewDescriptorId : viewDescriptorIds) {
+                // // We just need to add the page componente but API force us to call showView
+                // if (applicationPage.getView(viewDescriptorId) != null) {
+                // applicationPage.showView(viewDescriptorId);
+                // }}
+
+                /*
+                 * 3) Process page,
+                 * 1st pass: disassociation
+                 * 2nd pass: recognition
+                 * 3rd pass: association
+                 * 4th pass: validation
+                 */
+                DefaultApplicationPageConfigurer.this.doConfigureApplicationPage(applicationPage,
+                        ProcessingMode.DISASSOCIATE, // 1st
+                        ProcessingMode.RECOGNIZE, // 2nd
+                        ProcessingMode.ASSOCIATE, // 3rd
+                        ProcessingMode.VALIDATE); // 4th
+            }
+        });
     }
 
     /**
@@ -157,7 +197,7 @@ public class DefaultApplicationPageConfigurer<T> implements ApplicationPageConfi
         Assert.notNull(applicationPage, "applicationPage");
 
         // Configuration is repeatable, idempotent and fast.
-        final State<T> state = this.doConfigureApplicationPage(applicationPage);
+        final State<T> state = this.doConfigureApplicationPage(applicationPage, ProcessingMode.RECOGNIZE);
 
         List<? extends PageComponent> masterViews = new ArrayList<PageComponent>();
         List<? extends PageComponent> validationViews = new ArrayList<PageComponent>();
@@ -184,14 +224,18 @@ public class DefaultApplicationPageConfigurer<T> implements ApplicationPageConfi
      * @see #getViewType(Class)
      */
     @Override
-    public String getPageComponentType(PageComponentDescriptor pageComponentDescriptor) {
+    public String getPageComponentType(String pageComponentDescriptorId) {
 
-        Assert.notNull(pageComponentDescriptor, "pageComponentDescriptor");
+        Assert.notNull(pageComponentDescriptorId, "pageComponentDescriptorId");
+
+        final ViewDescriptorRegistry viewDescriptorRegistry = (ViewDescriptorRegistry) this
+                .getService(ViewDescriptorRegistry.class);
+        final PageComponentDescriptor descriptor = viewDescriptorRegistry.getViewDescriptor(pageComponentDescriptorId);
 
         // If argument is a DefaultViewDescriptor for a FormBackedView then obtain the form class
-        if (pageComponentDescriptor instanceof DefaultViewDescriptor) {
+        if (descriptor instanceof DefaultViewDescriptor) {
 
-            final DefaultViewDescriptor defaultViewDescriptor = (DefaultViewDescriptor) pageComponentDescriptor;
+            final DefaultViewDescriptor defaultViewDescriptor = (DefaultViewDescriptor) descriptor;
             final Class<?> viewClass = defaultViewDescriptor.getViewClass();
 
             if (FormBackedView.class.isAssignableFrom(viewClass)) {
@@ -218,7 +262,7 @@ public class DefaultApplicationPageConfigurer<T> implements ApplicationPageConfi
         if (view instanceof FormBackedView<?>) {
 
             final FormBackedView<?> formBackedView = (FormBackedView<?>) view;
-            final Form form = DefaultApplicationPageConfigurer.backingForm(formBackedView);
+            final Form form = FormUtils.getBackingForm(formBackedView);
 
             return this.getViewType(form.getClass());
         }
@@ -344,6 +388,8 @@ public class DefaultApplicationPageConfigurer<T> implements ApplicationPageConfi
                 view.setGlobalCommandsAccessor(null);
                 // A form belongs to a window and just one window
                 break;
+            case VALIDATE:
+                break;
             default:
                 throw new IllegalStateException("Unknown processing mode");
         }
@@ -376,7 +422,7 @@ public class DefaultApplicationPageConfigurer<T> implements ApplicationPageConfi
         Assert.notNull(state, "state");
         Assert.notNull(processingMode, "processingMode");
 
-        final AbstractBbMasterForm<T> targetMasterForm = DefaultApplicationPageConfigurer.backingForm(masterView);
+        final AbstractBbMasterForm<T> targetMasterForm = FormUtils.getBackingForm(masterView);
 
         this.assertNotAlreadySet(state.masterView, masterView);
 
@@ -405,6 +451,10 @@ public class DefaultApplicationPageConfigurer<T> implements ApplicationPageConfi
                 }
 
                 break;
+            case VALIDATE:
+                this.assertSamePage(masterView, state.searchViews);
+                this.assertSamePage(masterView, state.childViews);
+                break;
             default:
                 throw new IllegalStateException("Unknown processing mode");
         }
@@ -423,6 +473,7 @@ public class DefaultApplicationPageConfigurer<T> implements ApplicationPageConfi
      * @param processingMode
      *            the processing mode.
      */
+    @SuppressWarnings("unchecked")
     protected void processChildView(final FormBackedView<AbstractBbChildForm<T>> childView, State<T> state,
             ProcessingMode processingMode) {
 
@@ -430,8 +481,8 @@ public class DefaultApplicationPageConfigurer<T> implements ApplicationPageConfi
         Assert.notNull(state, "state");
         Assert.notNull(processingMode, "processingMode");
 
-        final AbstractBbChildForm<T> targetChildForm = DefaultApplicationPageConfigurer.backingForm(childView);
-        final AbstractBbMasterForm<T> masterForm = DefaultApplicationPageConfigurer.backingForm(state.masterView);
+        final AbstractBbChildForm<T> targetChildForm = FormUtils.getBackingForm(childView);
+        final AbstractBbMasterForm<T> masterForm = FormUtils.getBackingForm(state.masterView);
         final AbstractBbMasterForm<T> targetMasterForm = targetChildForm.getMasterForm();
 
         this.assertNotAlreadySet(targetMasterForm, masterForm);
@@ -456,6 +507,9 @@ public class DefaultApplicationPageConfigurer<T> implements ApplicationPageConfi
                     targetMasterForm.removeChildForm(targetChildForm);
                 }
                 break;
+            case VALIDATE:
+                this.assertSamePage(childView, Arrays.asList(state.masterView));
+                break;
             default:
                 throw new IllegalStateException("Unknown processing mode");
         }
@@ -474,6 +528,7 @@ public class DefaultApplicationPageConfigurer<T> implements ApplicationPageConfi
      * @param processingMode
      *            the processing mode.
      */
+    @SuppressWarnings("unchecked")
     protected void processSearchView(final FormBackedView<AbstractBbSearchForm<T, ?>> searchView, State<T> state,
             ProcessingMode processingMode) {
 
@@ -481,8 +536,8 @@ public class DefaultApplicationPageConfigurer<T> implements ApplicationPageConfi
         Assert.notNull(state, "state");
         Assert.notNull(processingMode, "processingMode");
 
-        final AbstractBbMasterForm<T> masterForm = DefaultApplicationPageConfigurer.backingForm(state.masterView);
-        final AbstractBbSearchForm<T, ?> targetSearchForm = DefaultApplicationPageConfigurer.backingForm(searchView);
+        final AbstractBbMasterForm<T> masterForm = FormUtils.getBackingForm(state.masterView);
+        final AbstractBbSearchForm<T, ?> targetSearchForm = FormUtils.getBackingForm(searchView);
         final AbstractBbMasterForm<T> targetMasterForm = targetSearchForm.getMasterForm();
 
         this.assertNotAlreadySet(targetMasterForm, masterForm);
@@ -506,6 +561,9 @@ public class DefaultApplicationPageConfigurer<T> implements ApplicationPageConfi
                     targetMasterForm.removeSearchForm(targetSearchForm);
                 }
                 break;
+            case VALIDATE:
+                this.assertSamePage(searchView, Arrays.asList(state.masterView));
+                break;
             default:
                 throw new IllegalStateException("Unknown processing mode");
         }
@@ -523,7 +581,10 @@ public class DefaultApplicationPageConfigurer<T> implements ApplicationPageConfi
      *            the processing state.
      * @param processingMode
      *            the processing mode.
+     * 
+     * @see #nullSafeGetMVRR(Form)
      */
+    @SuppressWarnings("unchecked")
     protected void processValidatingView(final FormBackedView<BbValidationForm<T>> validationView, State<T> state,
             ProcessingMode processingMode) {
 
@@ -531,9 +592,9 @@ public class DefaultApplicationPageConfigurer<T> implements ApplicationPageConfi
         Assert.notNull(state, "state");
         Assert.notNull(processingMode, "processingMode");
 
-        final AbstractBbMasterForm<T> masterForm = DefaultApplicationPageConfigurer.backingForm(state.masterView);
+        final AbstractBbMasterForm<T> masterForm = FormUtils.getBackingForm(state.masterView);
         final BbDispatcherForm<T> theDispatcherForm = state.dispatcherForm;
-        final BbValidationForm<T> targetValidationForm = DefaultApplicationPageConfigurer.backingForm(validationView);
+        final BbValidationForm<T> targetValidationForm = FormUtils.getBackingForm(validationView);
         final AbstractBbMasterForm<T> targetMasterForm = targetValidationForm.getMasterForm();
 
         this.assertNotAlreadySet(targetMasterForm, masterForm);
@@ -549,17 +610,28 @@ public class DefaultApplicationPageConfigurer<T> implements ApplicationPageConfi
                 // Link master form and validation form
                 if ((theDispatcherForm != null) && (targetMasterForm == null) && (masterForm != null)) {
 
-                    final ValidationResultsReporter validationResultsReporter = new MultipleValidationResultsReporter(
-                            theDispatcherForm.getFormModel(), targetValidationForm.getMessagable());
+                    final List<MultipleValidationResultsReporter> reporters = this.nullSafeGetMVRR(theDispatcherForm);
+                    if (reporters.isEmpty()) {
+                        final ValidationResultsReporter reporter = new MultipleValidationResultsReporter(
+                                theDispatcherForm.getFormModel(), targetValidationForm.getMessagable());
 
-                    // TODO vincular el maestro y el validation form
-                    theDispatcherForm.addValidationResultsReporter(validationResultsReporter);
+                        theDispatcherForm.addValidationResultsReporter(reporter);
+                    }
 
                     targetValidationForm.setMasterForm((AbstractBbMasterForm<T>) masterForm);
                 }
                 break;
             case DISASSOCIATE:
-                // TODO 
+
+                final List<MultipleValidationResultsReporter> reporters = this.nullSafeGetMVRR(theDispatcherForm);
+                for (ValidationResultsReporter reporter : reporters) {
+                    theDispatcherForm.removeValidationResultsReporter(reporter);
+                }
+
+                targetValidationForm.setMasterForm((AbstractBbMasterForm<T>) masterForm);
+                break;
+            case VALIDATE:
+                this.assertSamePage(validationView, Arrays.asList(state.masterView));
                 break;
             default:
                 throw new IllegalStateException("Unknown processing mode");
@@ -593,6 +665,8 @@ public class DefaultApplicationPageConfigurer<T> implements ApplicationPageConfi
             case ASSOCIATE:
                 break;
             case DISASSOCIATE:
+                break;
+            case VALIDATE:
                 break;
             default:
                 throw new IllegalStateException("Unknown processing mode");
@@ -632,6 +706,8 @@ public class DefaultApplicationPageConfigurer<T> implements ApplicationPageConfi
                 break;
             case DISASSOCIATE:
                 break;
+            case VALIDATE:
+                break;
             default:
                 throw new IllegalStateException("Unknown processing mode");
         }
@@ -644,26 +720,56 @@ public class DefaultApplicationPageConfigurer<T> implements ApplicationPageConfi
      * 
      * @param applicationPage
      *            the page to be configured.
+     * @param processingModes
+     *            the ordered relation of processing modes to apply.
      * 
      * @return the page state.
      */
-    private State<T> doConfigureApplicationPage(ApplicationPage applicationPage) {
+    private State<T> doConfigureApplicationPage(ApplicationPage applicationPage, ProcessingMode... processingModes) {
 
         Assert.notNull(applicationPage, "applicationPage");
 
         final State<T> state = new State<T>();
 
-        // 1st pass: recognition
-        for (final PageComponent pageComponent : applicationPage.getPageComponents()) {
-            this.processPageComponent(pageComponent, state, ProcessingMode.RECOGNIZE);
-        }
-
-        // 2nd pass: association
-        for (final PageComponent pageComponent : applicationPage.getPageComponents()) {
-            this.processPageComponent(pageComponent, state, ProcessingMode.ASSOCIATE);
+        for (ProcessingMode processingMode : processingModes) {
+            for (final PageComponent pageComponent : applicationPage.getPageComponents()) {
+                this.processPageComponent(pageComponent, state, processingMode);
+            }
         }
 
         return state;
+    }
+
+    /**
+     * Validates a page component in order to ensure its associations are in fact contained in the same page.
+     * 
+     * @param targetPageComponent
+     *            the page component.
+     * @param associations
+     *            its associations.
+     */
+    private void assertSamePage(PageComponent targetPageComponent, Collection<? extends PageComponent> associations) {
+    
+        Assert.notNull(targetPageComponent, "targetPageComponent");
+        Assert.notNull(associations, "associtations");
+    
+        final ApplicationPage applicationPage = targetPageComponent.getContext().getPage();
+        final List<Form> pageForms = new ArrayList<Form>();
+        final List<Form> associationsForms = new ArrayList<Form>();
+    
+        Assert.notNull(applicationPage, "applicationPage");
+    
+        for (PageComponent pageComponent : applicationPage.getPageComponents()) {
+            pageForms.add(FormUtils.getBackingForm(pageComponent));
+        }
+        for (PageComponent pageComponent : associations) {
+            associationsForms.add(FormUtils.getBackingForm(pageComponent));
+        }
+        
+        CollectionUtils.filter(associationsForms, NotNullPredicate.getInstance());
+    
+        Assert.isTrue(CollectionUtils.isSubCollection(associationsForms, pageForms),
+                "CollectionUtils.isSubCollection(associationsForms, pageForms)");
     }
 
     /**
@@ -715,6 +821,32 @@ public class DefaultApplicationPageConfigurer<T> implements ApplicationPageConfi
     }
 
     /**
+     * Gets the reports of type <code>MultipleValidationResultsReporter</code> (aka MVRR) installed on a form. Never
+     * minds if form
+     * is <code>null</code>.
+     * <p/>
+     * Usefull to:
+     * <ul>
+     * <li>Avoid adding more than once instance of <code>MVRR</code> to the same form.
+     * <li>Remove installed instances.
+     * </ul>
+     * 
+     * @param form
+     *            the target form.
+     * @return the reporters.
+     */
+    private List<MultipleValidationResultsReporter> nullSafeGetMVRR(Form form) {
+
+        final List<MultipleValidationResultsReporter> reporters = new ArrayList<MultipleValidationResultsReporter>();
+        if (form != null) {
+            CollectionUtils.select(form.getValidationResultsReporters(),
+                    InstanceofPredicate.getInstance(MultipleValidationResultsReporter.class), reporters);
+        }
+
+        return reporters;
+    }
+
+    /**
      * Gets the form class for a given view descriptor.
      * 
      * @param viewDescriptor
@@ -748,27 +880,6 @@ public class DefaultApplicationPageConfigurer<T> implements ApplicationPageConfi
     }
 
     /**
-     * Returns the backing form of the target view.
-     * <p>
-     * This method ensures the backing form is not <code>null</code> when the target view neither is.
-     * 
-     * @param <Q>
-     *            the form class.
-     * @param view
-     *            the view.
-     * @return the backing form.
-     */
-    public static final <Q extends Form> Q backingForm(FormBackedView<Q> view) {
-
-        final Q form = (view != null) ? view.getBackingForm() : null;
-
-        // TODO crear una excepción y lanzarla
-        Assert.state((view == null) || (form != null), "Backing form is null");
-
-        return form;
-    }
-
-    /**
      * Returns the backing form model of the target view.
      * 
      * @param <Q>
@@ -781,7 +892,7 @@ public class DefaultApplicationPageConfigurer<T> implements ApplicationPageConfi
      */
     public static final <Q extends Form> FormModel backingFormModel(FormBackedView<Q> view) {
 
-        return (view != null) ? DefaultApplicationPageConfigurer.backingForm(view).getFormModel() : null;
+        return (view != null) ? FormUtils.getBackingForm(view).getFormModel() : null;
     }
 
     /*
@@ -903,6 +1014,10 @@ public class DefaultApplicationPageConfigurer<T> implements ApplicationPageConfi
         /**
          * Processing disassociates page components.
          */
-        DISASSOCIATE
+        DISASSOCIATE,
+        /**
+         * Processing validates everything is OK.
+         */
+        VALIDATE
     }
 }

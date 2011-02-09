@@ -46,9 +46,9 @@
 		Bean: applicationPageConfigurerAspect
 		Usage: magic
 		Description: This bean is an aspect capable of intercepting every page creation to configure pages, linking well knows
-		page
-		components.
+		page components.
 	-->
-	<bean id="applicationPageConfigurerAspect" class="org.bluebell.richclient.application.support.ApplicationPageConfigurerAspect" />
+	<bean id="applicationPageConfigurerAspect" class="org.bluebell.richclient.application.support.ApplicationPageConfigurerAspect"
+		p:applicationPageConfigurer-ref="${richclient.applicationPageConfigurer}" />
 </beans>
 

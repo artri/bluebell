@@ -207,6 +207,8 @@ public abstract class Main {
         }
 
         // Ejecutar la carga de las autoridades
-        main.launch(main, args, configLocations, baseDirs);
+        if (main != null) {
+            main.launch(main, args, configLocations, baseDirs);
+        }
     }
 }

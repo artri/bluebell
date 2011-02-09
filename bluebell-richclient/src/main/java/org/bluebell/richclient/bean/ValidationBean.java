@@ -18,8 +18,6 @@
 
 package org.bluebell.richclient.bean;
 
-import javax.swing.ImageIcon;
-
 import org.springframework.richclient.application.support.ApplicationServicesAccessor;
 import org.springframework.richclient.core.Severity;
 
@@ -44,7 +42,7 @@ public class ValidationBean extends ApplicationServicesAccessor {
     /**
      * Icono asociado al problema.
      */
-    private ImageIcon tipeProblemIcon;
+    // private ImageIcon tipeProblemIcon;
 
     /**
      * Crea el <em>bean</em> instanciando un nuevo {@link Problem}.
@@ -72,7 +70,7 @@ public class ValidationBean extends ApplicationServicesAccessor {
 
         // Se recupera el icono en función del tipo de error.
         if (Severity.ERROR.equals(this.problem.getSeverity())) {
-            new String("Avoid CS warnings");
+            this.getClass(); // "Avoid CS warnings"
             // problemsFormErrorIcon =
             // this.resources.getString("problemsForm.error.icon");
             // description = "Error";
@@ -80,7 +78,7 @@ public class ValidationBean extends ApplicationServicesAccessor {
             // problemsFormErrorIcon =
             // this.resources.getString("problemsForm.warning.icon");
             // description = "Advertencia";
-            new String("Avoid CS warnings");
+            this.getClass(); // Avoids CS warning
         }
 
         // this.tipeProblemIcon = this.createImageIcon(problemsFormErrorIcon,
@@ -112,15 +110,15 @@ public class ValidationBean extends ApplicationServicesAccessor {
         return this.problem.getDescription();
     }
 
-    /**
-     * Produce el icono asociado al tipo error.
-     * 
-     * @return icono asociado al tipo de error.
-     */
-    public ImageIcon getTipeProblemIcon() {
-
-        return this.tipeProblemIcon;
-    }
+    // /**
+    // * Produce el icono asociado al tipo error.
+    // *
+    // * @return icono asociado al tipo de error.
+    // */
+    // public ImageIcon getTipeProblemIcon() {
+    //
+    // return this.tipeProblemIcon;
+    // }
 
     // /**
     // * Retorna un icono, o null si el path es inválido.

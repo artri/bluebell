@@ -137,7 +137,7 @@ public class TestAbstractBbTableMasterForm extends AbstractBbSamplesTests {
     @Test
     public void testShowEntities() {
 
-        final AbstractBbTableMasterForm<Person> masterForm = this.getBackingForm(this.getMasterView());
+        final AbstractBbTableMasterForm<Person> masterForm = FormUtils.getBackingForm(this.getMasterView());
         final int size04 = 4;
         final int size08 = 8;
         final int size10 = 10;
@@ -180,7 +180,7 @@ public class TestAbstractBbTableMasterForm extends AbstractBbSamplesTests {
     public void testChangeSelection() {
 
         final int pos03 = 3;
-        final AbstractBbTableMasterForm<Person> masterForm = this.getBackingForm(this.getMasterView());
+        final AbstractBbTableMasterForm<Person> masterForm = FormUtils.getBackingForm(this.getMasterView());
         List<Person> expectedView = ListUtils.EMPTY_LIST;
         List<Person> expectedSelection = ListUtils.EMPTY_LIST;
 
@@ -235,7 +235,7 @@ public class TestAbstractBbTableMasterForm extends AbstractBbSamplesTests {
     @Test
     public void testGetSelection() {
 
-        final AbstractBbTableMasterForm<Person> masterForm = this.getBackingForm(this.getMasterView());
+        final AbstractBbTableMasterForm<Person> masterForm = FormUtils.getBackingForm(this.getMasterView());
         final JTable masterTable = (JTable) masterForm.getMasterTable();
         final ListSelectionModel selectionModel = masterTable.getSelectionModel();
         final int column = 0;
@@ -290,8 +290,8 @@ public class TestAbstractBbTableMasterForm extends AbstractBbSamplesTests {
     public void testRequestUserConfirmationOnChangeSelection() {
 
         final int pos03 = 3;
-        final MockPersonMasterForm masterForm = (MockPersonMasterForm) this.getBackingForm(this.getMasterView());
-        final PersonChildForm childForm = (PersonChildForm) this.getBackingForm(this.getChildView());
+        final MockPersonMasterForm masterForm = (MockPersonMasterForm) FormUtils.getBackingForm(this.getMasterView());
+        final PersonChildForm childForm = (PersonChildForm) FormUtils.getBackingForm(this.getChildView());
 
         List<Person> oldSelection = ListUtils.EMPTY_LIST;
         List<Person> newSelection = Arrays.asList(TestAbstractBbTableMasterForm.PERSONS_1.get(1));
@@ -363,9 +363,9 @@ public class TestAbstractBbTableMasterForm extends AbstractBbSamplesTests {
     @Test
     public void testRequestUserConfirmationOnSearch() {
 
-        final MockPersonMasterForm masterForm = (MockPersonMasterForm) this.getBackingForm(this.getMasterView());
-        final PersonChildForm childForm = (PersonChildForm) this.getBackingForm(this.getChildView());
-        final PersonSearchForm searchForm = (PersonSearchForm) this.getBackingForm(this.getSearchView());
+        final MockPersonMasterForm masterForm = (MockPersonMasterForm) FormUtils.getBackingForm(this.getMasterView());
+        final PersonChildForm childForm = (PersonChildForm) FormUtils.getBackingForm(this.getChildView());
+        final PersonSearchForm searchForm = (PersonSearchForm) FormUtils.getBackingForm(this.getSearchView());
 
         List<Person> newSelection = ListUtils.EMPTY_LIST;
         ActionCommand actionCommand = null;
@@ -432,9 +432,9 @@ public class TestAbstractBbTableMasterForm extends AbstractBbSamplesTests {
     @Test
     public void testRequestUserConfirmationOnNewFormObject() {
 
-        final MockPersonMasterForm masterForm = (MockPersonMasterForm) this.getBackingForm(this.getMasterView());
-        final PersonChildForm childForm = (PersonChildForm) this.getBackingForm(this.getChildView());
-        final PersonSearchForm searchForm = (PersonSearchForm) this.getBackingForm(this.getSearchView());
+        final MockPersonMasterForm masterForm = (MockPersonMasterForm) FormUtils.getBackingForm(this.getMasterView());
+        final PersonChildForm childForm = (PersonChildForm) FormUtils.getBackingForm(this.getChildView());
+        final PersonSearchForm searchForm = (PersonSearchForm) FormUtils.getBackingForm(this.getSearchView());
         final String name = "JAF";
 
         List<Person> newSelection = ListUtils.EMPTY_LIST;
@@ -493,8 +493,8 @@ public class TestAbstractBbTableMasterForm extends AbstractBbSamplesTests {
     @Test
     public void testRequestUserConfirmationOnSelectAllEntities() {
 
-        final MockPersonMasterForm masterForm = (MockPersonMasterForm) this.getBackingForm(this.getMasterView());
-        final PersonChildForm childForm = (PersonChildForm) this.getBackingForm(this.getChildView());
+        final MockPersonMasterForm masterForm = (MockPersonMasterForm) FormUtils.getBackingForm(this.getMasterView());
+        final PersonChildForm childForm = (PersonChildForm) FormUtils.getBackingForm(this.getChildView());
 
         List<Person> newSelection = ListUtils.EMPTY_LIST;
         ActionCommand actionCommand = null;
@@ -538,8 +538,8 @@ public class TestAbstractBbTableMasterForm extends AbstractBbSamplesTests {
     @Test
     public void testRequestUserConfirmationOnRefresh() {
 
-        final MockPersonMasterForm masterForm = (MockPersonMasterForm) this.getBackingForm(this.getMasterView());
-        final PersonChildForm childForm = (PersonChildForm) this.getBackingForm(this.getChildView());
+        final MockPersonMasterForm masterForm = (MockPersonMasterForm) FormUtils.getBackingForm(this.getMasterView());
+        final PersonChildForm childForm = (PersonChildForm) FormUtils.getBackingForm(this.getChildView());
 
         List<Person> newSelection = ListUtils.EMPTY_LIST;
         ActionCommand actionCommand = null;
@@ -592,7 +592,7 @@ public class TestAbstractBbTableMasterForm extends AbstractBbSamplesTests {
     @After
     public void cleanMasterEventList() {
 
-        final AbstractBbTableMasterForm<Person> masterForm = this.getBackingForm(this.getMasterView());
+        final AbstractBbTableMasterForm<Person> masterForm = FormUtils.getBackingForm(this.getMasterView());
         masterForm.showEntities(ListUtils.EMPTY_LIST);
     }
 

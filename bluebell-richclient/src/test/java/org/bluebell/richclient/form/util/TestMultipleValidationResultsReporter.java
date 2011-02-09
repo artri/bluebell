@@ -26,6 +26,7 @@ import java.util.List;
 import javax.swing.JTextField;
 
 import org.bluebell.binding.validation.support.BbValidationMessage;
+import org.bluebell.richclient.form.FormUtils;
 import org.bluebell.richclient.samples.simple.form.PersonChildForm;
 import org.bluebell.richclient.test.AbstractBbSamplesTests;
 import org.junit.After;
@@ -109,16 +110,16 @@ public class TestMultipleValidationResultsReporter extends AbstractBbSamplesTest
         this.initializeVariables(this.getPersonPageDescriptor());
 
         // After executing new form object command validation messages are empty
-        this.getBackingForm(this.getMasterView()).getNewFormObjectCommand().execute();
+        FormUtils.getBackingForm(this.getMasterView()).getNewFormObjectCommand().execute();
         Assert.assertEquals(0, this.childFormModel.getValidationResults().getMessageCount());
 
         // Set a illegal age and a validation error is raised
-        this.userAction(this.getBackingForm(this.getChildView()), "age", "IllegalValue");
+        this.userAction(FormUtils.getBackingForm(this.getChildView()), "age", "IllegalValue");
         Assert.assertEquals(1, this.getValidationMessages().size());
         Assert.assertEquals("age", this.getValidationMessages().get(0).getProperty());
 
         // Execute the cancel command and the count backs to 0
-        this.getBackingForm(this.getMasterView()).getCancelCommand().execute();
+        FormUtils.getBackingForm(this.getMasterView()).getCancelCommand().execute();
         Assert.assertEquals(0, this.getValidationMessages().size());
     }
 
@@ -136,14 +137,14 @@ public class TestMultipleValidationResultsReporter extends AbstractBbSamplesTest
         Assert.assertFalse(this.childFormModel.isValidating());
 
         // After executing new form object command
-        this.getBackingForm(this.getMasterView()).getNewFormObjectCommand().execute();
+        FormUtils.getBackingForm(this.getMasterView()).getNewFormObjectCommand().execute();
 
         Assert.assertFalse(this.masterFormModel.isValidating());
         Assert.assertTrue(this.dispatcherFormModel.isValidating());
         Assert.assertTrue(this.childFormModel.isValidating());
 
         // After executing cancel command
-        this.getBackingForm(this.getMasterView()).getCancelCommand().execute();
+        FormUtils.getBackingForm(this.getMasterView()).getCancelCommand().execute();
 
         Assert.assertFalse(this.masterFormModel.isValidating());
         Assert.assertFalse(this.dispatcherFormModel.isValidating());
@@ -160,15 +161,15 @@ public class TestMultipleValidationResultsReporter extends AbstractBbSamplesTest
 
         // Atach a new child form
         final PersonChildForm siblingForm = new PersonChildForm("siblingForm");
-        this.getBackingForm(this.getMasterView()).addChildForm(siblingForm);
+        FormUtils.getBackingForm(this.getMasterView()).addChildForm(siblingForm);
 
         // After executing new form object command validation messages are empty
-        this.getBackingFormModel(this.getChildView()).getValidationResults().getMessages();
-        this.getBackingForm(this.getMasterView()).getNewFormObjectCommand().execute();
+        FormUtils.getBackingFormModel(this.getChildView()).getValidationResults().getMessages();
+        FormUtils.getBackingForm(this.getMasterView()).getNewFormObjectCommand().execute();
         Assert.assertEquals(0, this.getValidationMessages().size());
 
         // Set a illegal age on child form and a validation message is raised
-        this.userAction(this.getBackingForm(this.getChildView()), "age", "IllegalValue");
+        this.userAction(FormUtils.getBackingForm(this.getChildView()), "age", "IllegalValue");
         Assert.assertEquals(1, this.getValidationMessages().size());
         Assert.assertEquals(1, this.dispatcherFormModel.getValidationResults().getMessageCount());
         Assert.assertEquals(1, this.childFormModel.getValidationResults().getMessageCount());
@@ -196,7 +197,7 @@ public class TestMultipleValidationResultsReporter extends AbstractBbSamplesTest
         Assert.assertTrue(b1 && b2 || b3 && b4);
 
         // Execute the cancel command and the count backs to 0
-        this.getBackingForm(this.getMasterView()).getCancelCommand().execute();
+        FormUtils.getBackingForm(this.getMasterView()).getCancelCommand().execute();
         Assert.assertEquals(0, this.getValidationMessages().size());
         Assert.assertEquals(0, this.dispatcherFormModel.getValidationResults().getMessageCount());
         Assert.assertEquals(0, this.childFormModel.getValidationResults().getMessageCount());
@@ -211,8 +212,8 @@ public class TestMultipleValidationResultsReporter extends AbstractBbSamplesTest
 
         super.initializeVariables(pageDescriptor);
 
-        this.masterFormModel = this.getBackingFormModel(this.getMasterView());
-        this.childFormModel = this.getBackingFormModel(this.getChildView());
+        this.masterFormModel = FormUtils.getBackingFormModel(this.getMasterView());
+        this.childFormModel = FormUtils.getBackingFormModel(this.getChildView());
         this.dispatcherFormModel = (ValidatingFormModel) this.childFormModel.getParent();
 
         // Ensure child form model is not linked with master form model
@@ -226,7 +227,7 @@ public class TestMultipleValidationResultsReporter extends AbstractBbSamplesTest
     public void cancel() throws Exception {
 
         if (this.getMasterView() != null) {
-            this.getBackingForm(this.getMasterView()).getCancelCommand().execute();
+            FormUtils.getBackingForm(this.getMasterView()).getCancelCommand().execute();
         }
     }
 
@@ -237,6 +238,6 @@ public class TestMultipleValidationResultsReporter extends AbstractBbSamplesTest
      */
     private List<ValidationMessage> getValidationMessages() {
 
-        return this.getBackingForm(this.getValidationView()).getValidationMessages();
+        return FormUtils.getBackingForm(this.getValidationView()).getValidationMessages();
     }
 }

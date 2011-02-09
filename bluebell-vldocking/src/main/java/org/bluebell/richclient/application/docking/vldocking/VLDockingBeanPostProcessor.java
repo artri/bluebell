@@ -175,7 +175,7 @@ public class VLDockingBeanPostProcessor extends ApplicationServicesAccessor impl
         final ApplicationPageConfigurer<?> applicationPageConfigurer = //
         (ApplicationPageConfigurer<?>) this.getService(ApplicationPageConfigurer.class);
 
-        final String pageComponentType = applicationPageConfigurer.getPageComponentType(viewDescriptor);
+        final String pageComponentType = applicationPageConfigurer.getPageComponentType(viewDescriptor.getId());
 
         // Obtain the template name
         final String templateName = this.getViewDescriptorsTemplates().get(pageComponentType);

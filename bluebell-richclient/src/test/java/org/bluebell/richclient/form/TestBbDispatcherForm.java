@@ -138,9 +138,9 @@ public class TestBbDispatcherForm extends AbstractBbSamplesTests {
     @Test
     public void testDispatching() {
 
-        final PersonMasterForm masterForm = (PersonMasterForm) this.getBackingForm(this.getMasterView());
+        final PersonMasterForm masterForm = (PersonMasterForm) FormUtils.getBackingForm(this.getMasterView());
         final BbDispatcherForm<Person> dispatcherForm = masterForm.getDispatcherForm();
-        final AbstractBbChildForm<Person> childForm = this.getBackingForm(this.getChildView());
+        final AbstractBbChildForm<Person> childForm = FormUtils.getBackingForm(this.getChildView());
 
         this.doTestDispatching(masterForm, new CountersListener(masterForm, dispatcherForm, "name"));
         this.cleanMasterEventList();
@@ -154,9 +154,9 @@ public class TestBbDispatcherForm extends AbstractBbSamplesTests {
     @Test
     public void testCommit() {
 
-        final PersonMasterForm masterForm = (PersonMasterForm) this.getBackingForm(this.getMasterView());
+        final PersonMasterForm masterForm = (PersonMasterForm) FormUtils.getBackingForm(this.getMasterView());
         final BbDispatcherForm<Person> dispatcherForm = masterForm.getDispatcherForm();
-        final AbstractBbChildForm<Person> childForm = this.getBackingForm(this.getChildView());
+        final AbstractBbChildForm<Person> childForm = FormUtils.getBackingForm(this.getChildView());
 
         // Test insert operations listening to dispatcher form and child form respectively
         this.doTestCommit(masterForm, childForm, new CountersListener(masterForm, dispatcherForm), Boolean.TRUE);
@@ -179,7 +179,7 @@ public class TestBbDispatcherForm extends AbstractBbSamplesTests {
     @Test
     public void testSelectAllEntitiesCommand() {
 
-        final PersonMasterForm masterForm = (PersonMasterForm) this.getBackingForm(this.getMasterView());
+        final PersonMasterForm masterForm = (PersonMasterForm) FormUtils.getBackingForm(this.getMasterView());
         final BbDispatcherForm<Person> dispatcherForm = masterForm.getDispatcherForm();
         final CountersListener countersListener = new CountersListener(masterForm, dispatcherForm);
 
@@ -229,7 +229,7 @@ public class TestBbDispatcherForm extends AbstractBbSamplesTests {
     @Test
     public void testRefreshCommand() {
 
-        final PersonMasterForm masterForm = (PersonMasterForm) this.getBackingForm(this.getMasterView());
+        final PersonMasterForm masterForm = (PersonMasterForm) FormUtils.getBackingForm(this.getMasterView());
         final BbDispatcherForm<Person> dispatcherForm = masterForm.getDispatcherForm();
         final CountersListener countersListener = new CountersListener(masterForm, dispatcherForm);
 
@@ -342,7 +342,7 @@ public class TestBbDispatcherForm extends AbstractBbSamplesTests {
     @After
     public void cleanMasterEventList() {
 
-        final AbstractBbTableMasterForm<Person> masterForm = this.getBackingForm(this.getMasterView());
+        final AbstractBbTableMasterForm<Person> masterForm = FormUtils.getBackingForm(this.getMasterView());
         final BbDispatcherForm<Person> dispatcherForm = masterForm.getDispatcherForm();
 
         DirtyTrackingUtils.clearDirty(dispatcherForm.getFormModel());

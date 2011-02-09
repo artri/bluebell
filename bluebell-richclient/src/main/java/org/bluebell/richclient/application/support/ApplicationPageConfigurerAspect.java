@@ -28,10 +28,9 @@ import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.annotation.Pointcut;
 import org.bluebell.richclient.application.ApplicationPageConfigurer;
-import org.bluebell.richclient.swing.util.SwingUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.richclient.application.Application;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.richclient.application.ApplicationPage;
 import org.springframework.richclient.application.ApplicationWindow;
 import org.springframework.richclient.application.PageComponent;
@@ -48,16 +47,14 @@ import org.springframework.util.Assert;
  * <li>Call {@link ApplicationPageConfigurer#configureApplicationPage(ApplicationPage)}.
  * </ol>
  * 
+ * <pre>
  * {@code
- * <!--
- *         Bean: applicationPageConfigurerAspect
- *         Usage: magic
- *         Description: This bean is an aspect capable of intercepting every page creation to configure pages, 
- *         linking well knows page components.
- * -->
- * <bean id="applicationPageConfigurerAspect" 
- *      class="org.bluebell.richclient.application.support.ApplicationPageConfigurerAspect" />
+ * 
+ *  <bean id="applicationPageConfigurerAspect" 
+ *     class="org.bluebell.richclient.application.support.ApplicationPageConfigurerAspect"
+ *     p:applicationPageConfigurer-ref="$ richclient.applicationPageConfigurer}" />
  * }
+ * </pre>
  * 
  * @see ApplicationPageConfigurer
  * @see #afterReturningPageCreationOperation(ApplicationWindow, MultiViewPageDescriptor, ApplicationPage)
@@ -65,7 +62,8 @@ import org.springframework.util.Assert;
  * @author <a href = "mailto:julio.arguello@gmail.com" >Julio Argüello (JAF)</a>
  */
 @Aspect
-public class ApplicationPageConfigurerAspect extends ApplicationServicesAccessor implements PageComponentListener {
+public class ApplicationPageConfigurerAspect extends ApplicationServicesAccessor implements PageComponentListener,
+        InitializingBean {
 
     /**
      * The logger.
@@ -77,6 +75,17 @@ public class ApplicationPageConfigurerAspect extends ApplicationServicesAccessor
      */
     private static final MessageFormat PAGE_CREATION_FMT = new MessageFormat(
             "{0, choice, 0#Before|0<After} creating page \"{1}\" in window \"{2}\"");
+
+    /**
+     * Message format required for debug information during page opened / closed event.
+     */
+    private static final MessageFormat PAGE_COMPONENT_EVENT_FMT = new MessageFormat(
+            "Page {0} configured after {1, choice, 0#opening|0<closing} page component \"{2}\" in window \"{3}\"");
+
+    /**
+     * The application page configurer.
+     */
+    private ApplicationPageConfigurer<?> applicationPageConfigurer;
 
     /**
      * Pointcut that intercepts page creation operations.
@@ -133,11 +142,11 @@ public class ApplicationPageConfigurerAspect extends ApplicationServicesAccessor
      * @param applicationPage
      *            the created page.
      * 
-     * @see #pageComponentEvent(ApplicationPage)
+     * @see #configureApplicationPage(ApplicationPage)
      */
     @AfterReturning(pointcut = "pageCreationOperation() && args(window,pageDescriptor)", returning = "applicationPage")
     public final void afterReturningPageCreationOperation(ApplicationWindow window,
-            final MultiViewPageDescriptor pageDescriptor, final ApplicationPage applicationPage) {
+            final MultiViewPageDescriptor pageDescriptor, ApplicationPage applicationPage) {
 
         Assert.notNull(window, "window");
         Assert.notNull(pageDescriptor, "pageDescriptor");
@@ -149,32 +158,10 @@ public class ApplicationPageConfigurerAspect extends ApplicationServicesAccessor
                             Integer.valueOf(1), pageDescriptor.getId(), Integer.valueOf(window.getNumber()) }));
         }
 
-        final ApplicationPageConfigurer<?> applicationPageConfigurer = (ApplicationPageConfigurer<?>) //
-        Application.services().getService(ApplicationPageConfigurer.class);
+        this.configureApplicationPage(applicationPage);
 
-        // Page components creation must be done in the event dispatcher thread
-        SwingUtils.runInEventDispatcherThread(new Runnable() {
-
-            public void run() {
-
-                // 1) Trigger page control creation, this will attach page components to application page
-                applicationPage.getControl();
-
-                // 2) (JAF), 20101124, at this point (after 1), page components should have already been added
-                ApplicationPageConfigurerAspect.this.invariant(applicationPage);
-
-                // 2) Add all view descriptors to the page
-                // final List<String> viewDescriptorIds = pageDescriptor.getViewDescriptors();
-                // for (final String viewDescriptorId : viewDescriptorIds) {
-                // // We just need to add the page componente but API force us to call showView
-                // if (applicationPage.getView(viewDescriptorId) != null) {
-                // applicationPage.showView(viewDescriptorId);
-                // }}
-
-                // 3) Process page
-                applicationPageConfigurer.configureApplicationPage(applicationPage);
-            }
-        });
+        // (JAF), 20110128, listen to page component opening or closing
+        applicationPage.addPageComponentListener(this);
     }
 
     /**
@@ -183,7 +170,7 @@ public class ApplicationPageConfigurerAspect extends ApplicationServicesAccessor
     @Override
     public final void componentOpened(PageComponent pageComponent) {
 
-        this.pageComponentEvent(pageComponent);
+        this.configureApplicationPage(pageComponent, Boolean.TRUE);
     }
 
     /**
@@ -192,7 +179,7 @@ public class ApplicationPageConfigurerAspect extends ApplicationServicesAccessor
     @Override
     public final void componentClosed(PageComponent pageComponent) {
 
-        this.pageComponentEvent(pageComponent);
+        this.configureApplicationPage(pageComponent, Boolean.FALSE);
     }
 
     /**
@@ -212,61 +199,72 @@ public class ApplicationPageConfigurerAspect extends ApplicationServicesAccessor
     }
 
     /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void afterPropertiesSet() throws Exception {
+
+        Assert.notNull(this.getApplicationPageConfigurer(), "this.getApplicationPageConfigurer()");
+    }
+
+    /**
+     * Sets the application page configurer.
+     * 
+     * @param applicationPageConfigurer
+     *            the application page configurer to set.
+     */
+    public final void setApplicationPageConfigurer(ApplicationPageConfigurer<?> applicationPageConfigurer) {
+
+        Assert.notNull(applicationPageConfigurer, "applicationPageConfigurer");
+
+        this.applicationPageConfigurer = applicationPageConfigurer;
+    }
+
+    /**
+     * Gets the application page configurer.
+     * 
+     * @return the application page configurer.
+     */
+    protected final ApplicationPageConfigurer<?> getApplicationPageConfigurer() {
+
+        return this.applicationPageConfigurer;
+    }
+
+    /**
      * Reconfigures page every time a meaningful event is raised.
      * 
      * @param pageComponent
      *            the page component.
+     * @param opened
+     *            <code>true</code> if page component has been opened and <code>false</code> in other case.
      */
-    private void pageComponentEvent(PageComponent pageComponent) {
+    private void configureApplicationPage(PageComponent pageComponent, Boolean opened) {
 
         Assert.notNull(pageComponent, "pageComponent");
 
         final ApplicationPage applicationPage = pageComponent.getContext().getPage();
-        final ApplicationPageConfigurer<?> applicationPageConfigurer = (ApplicationPageConfigurer<?>) //
-        Application.services().getService(ApplicationPageConfigurer.class);
 
-        // Page components creation must be done in the event dispatcher thread
-        SwingUtils.runInEventDispatcherThread(new Runnable() {
+        this.configureApplicationPage(applicationPage);
 
-            public void run() {
+        if (ApplicationPageConfigurerAspect.LOGGER.isDebugEnabled()) {
+            final Integer windowNumber = applicationPage.getWindow().getNumber();
 
-                // 1) Trigger page control creation, this will attach page components to application page
-                applicationPage.getControl();
-
-                // 2) (JAF), 20101124, at this point (after 1), page components should have already been added
-                ApplicationPageConfigurerAspect.this.invariant(applicationPage);
-
-                // 2) Add all view descriptors to the page
-                // final List<String> viewDescriptorIds = pageDescriptor.getViewDescriptors();
-                // for (final String viewDescriptorId : viewDescriptorIds) {
-                // // We just need to add the page componente but API force us to call showView
-                // if (applicationPage.getView(viewDescriptorId) != null) {
-                // applicationPage.showView(viewDescriptorId);
-                // }}
-
-                // 3) Process page
-                applicationPageConfigurer.configureApplicationPage(applicationPage);
-            }
-        });
+            ApplicationPageConfigurerAspect.LOGGER.debug(//
+                    ApplicationPageConfigurerAspect.PAGE_COMPONENT_EVENT_FMT.format(new Object[] { //
+                            applicationPage.getId(), opened ? 0x0 : 0x1, pageComponent.getId(), windowNumber }));
+        }
     }
 
     /**
-     * Ensures the number of page components of a given page is greater than or equal to the number of page component
-     * descriptors of its associated page descriptor.
+     * Reconfigures page every time a meaningful event is raised.
      * 
      * @param applicationPage
-     *            the application page to be tested.
+     *            the application page.
      */
-    private void invariant(ApplicationPage applicationPage) {
+    private void configureApplicationPage(ApplicationPage applicationPage) {
 
-        /*
-         * (JAF), 20110123: NOT REALLY!!
-         * Application page may be configured when the number of page components is less than declared page descriptors.
-         * 
-         * final int noPageComponents = applicationPage.getPageComponents().size();
-         * final int noViewDescriptors = ApplicationUtils.getDeclaredPageComponentDescriptors(applicationPage).size();
-         * 
-         * Assert.isTrue(noPageComponents >= noViewDescriptors);
-         */
+        Assert.notNull(applicationPage, "applicationPage");
+
+        this.getApplicationPageConfigurer().configureApplicationPage(applicationPage);
     }
 }

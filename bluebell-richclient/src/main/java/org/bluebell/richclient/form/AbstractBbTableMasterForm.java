@@ -587,7 +587,7 @@ public abstract class AbstractBbTableMasterForm<T extends Object> extends Abstra
             final boolean success = (AbstractBbTableMasterForm.this.doDelete(entity) != null);
             if (!success) {
 
-                new String("Avoid CS warning");
+                this.getClass(); //"Avoid CS warning"
                 // TODO, do something
             }
 

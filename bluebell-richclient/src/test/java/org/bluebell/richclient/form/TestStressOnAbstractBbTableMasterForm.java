@@ -84,7 +84,7 @@ public class TestStressOnAbstractBbTableMasterForm extends AbstractBbSamplesTest
         final int numberOfPersons = 10000;
 
         final List<Person> persons = Person.createPersons(numberOfPersons);
-        final AbstractBbTableMasterForm<Person> masterForm = this.getBackingForm(this.getMasterView());
+        final AbstractBbTableMasterForm<Person> masterForm = FormUtils.getBackingForm(this.getMasterView());
 
         if (TestStressOnAbstractBbTableMasterForm.LOGGER.isDebugEnabled()) {
             TestStressOnAbstractBbTableMasterForm.LOGGER.debug("Before showing entities");
@@ -112,7 +112,7 @@ public class TestStressOnAbstractBbTableMasterForm extends AbstractBbSamplesTest
         final int numberOfPersons = 1;
 
         final List<Person> persons = Person.createPersons(numberOfPersons);
-        final AbstractBbTableMasterForm<Person> masterForm = this.getBackingForm(this.getMasterView());
+        final AbstractBbTableMasterForm<Person> masterForm = FormUtils.getBackingForm(this.getMasterView());
 
         masterForm.showEntities(persons);
 
@@ -155,7 +155,7 @@ public class TestStressOnAbstractBbTableMasterForm extends AbstractBbSamplesTest
             TestStressOnAbstractBbTableMasterForm.LOGGER.debug("BEFORE cleaning master event list");
         }
 
-        final AbstractBbTableMasterForm<Person> masterForm = this.getBackingForm(this.getMasterView());
+        final AbstractBbTableMasterForm<Person> masterForm = FormUtils.getBackingForm(this.getMasterView());
         masterForm.showEntities(ListUtils.EMPTY_LIST);
 
         if (TestStressOnAbstractBbTableMasterForm.LOGGER.isDebugEnabled()) {

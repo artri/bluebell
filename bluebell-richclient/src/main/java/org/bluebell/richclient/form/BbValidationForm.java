@@ -24,6 +24,7 @@ import java.util.List;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
 
+import org.apache.commons.lang.StringUtils;
 import org.bluebell.richclient.form.util.BbFormModelHelper;
 import org.springframework.binding.validation.ValidationMessage;
 import org.springframework.richclient.core.Message;
@@ -79,7 +80,8 @@ public class BbValidationForm<T> extends ApplicationWindowAwareForm {
      */
     public void setMasterForm(AbstractBbMasterForm<T> masterForm) {
 
-        Assert.notNull(masterForm, "masterForm");
+        // (JAF), 20110128, may be null (i.e.: after removing master view)
+        // Assert.notNull(masterForm, "masterForm");
 
         this.masterForm = masterForm;
     }
@@ -113,7 +115,7 @@ public class BbValidationForm<T> extends ApplicationWindowAwareForm {
     public BbValidationForm() {
 
         super(BbValidationForm.FORM_NAME);
-        this.setFormModel(BbFormModelHelper.createFormModel(new String())); // TODO
+        this.setFormModel(BbFormModelHelper.createFormModel(StringUtils.EMPTY)); // TODO
         this.setMessagable(new DefaultMessageAreaModel() {
 
             /**

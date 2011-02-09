@@ -53,8 +53,10 @@ public class BbDockableContainerFactory extends DefaultDockableContainerFactory 
 
         if (owner instanceof Dialog) {
             return new BbFloatingDialog((Dialog) owner);
-        } else {
+        } else if (owner instanceof Frame) {
             return new BbFloatingDialog((Frame) owner);
+        } else {
+            throw new IllegalStateException("Window is neither a Dialog nor a Frame");
         }
     }
 }

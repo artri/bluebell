@@ -22,14 +22,16 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import javax.swing.JComponent;
 
+import org.apache.commons.collections.ListUtils;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
 import org.bluebell.richclient.form.util.BbDefaultFormModel;
+import org.bluebell.richclient.util.ObjectUtils;
 import org.springframework.binding.form.FormModel;
 import org.springframework.binding.form.ValidatingFormModel;
 import org.springframework.binding.value.ValueModel;
@@ -108,10 +110,10 @@ public final class BbDispatcherForm<T> extends AbstractDetailForm {
      */
     private AbstractBbMasterForm<T> masterForm;
 
-    /**
-     * Importante que sea ordenada.
-     */
-    private List<AbstractBbChildForm<T>> childForms;
+    // /**
+    // * Importante que sea ordenada.
+    // */
+    // private List<AbstractBbChildForm<T>> childForms;
 
     /**
      * <em>Flag</em> indicando si hay una operación de salvado en curso.
@@ -203,8 +205,9 @@ public final class BbDispatcherForm<T> extends AbstractDetailForm {
         @SuppressWarnings("unchecked")
         final AbstractBbChildForm<T> childForm = (AbstractBbChildForm<T>) form;
 
-        // [0] Call super
+        // [0] Bidirectional linking (calling super and setting dispatcher form
         super.addChildForm(form);
+        childForm.setDispatcherForm(this);
 
         // [1] Treat child form
         childForm.setFormObject(this.getFormObject());
@@ -212,10 +215,6 @@ public final class BbDispatcherForm<T> extends AbstractDetailForm {
         childForm.getFormModel().setValidating(Boolean.FALSE);
         childForm.getFormModel().setParent(this.getFormModel());
         this.setEditableFormObjectsOnChildForm(childForm);
-
-        // [2] Bidirectional linking
-        childForm.setDispatcherForm(this);
-        this.childForms.add(childForm);
     }
 
     /**
@@ -232,14 +231,10 @@ public final class BbDispatcherForm<T> extends AbstractDetailForm {
         Assert.isTrue(this.getChildForms().contains(form), "The form to remove must be a children of this form");
         Assert.isInstanceOf(AbstractBbChildForm.class, form);
 
-        // [1] Call super
-        super.removeChildForm(form);
-
-        // [2] Bidirection unlinking
+        // [1] Bidirection unlinking
         @SuppressWarnings("unchecked")
         final AbstractBbChildForm<T> childForm = (AbstractBbChildForm<T>) form;
-
-        this.childForms.remove(childForm.getId());
+        super.removeChildForm(childForm);
         childForm.setDispatcherForm(null);
     }
 
@@ -248,13 +243,13 @@ public final class BbDispatcherForm<T> extends AbstractDetailForm {
      * 
      * @return una colección <em>unmodifiable</em> con los formularios hijos de este formulario.
      */
+    @SuppressWarnings("unchecked")
     public List<AbstractBbChildForm<T>> getChildForms() {
 
-        if (this.childForms == null) {
-            this.childForms = new ArrayList<AbstractBbChildForm<T>>();
-        }
+        final Map<String, ?> childForms = ObjectUtils.getPropertyValue(this, "childForms", Map.class);
+        final List<?> values = new ArrayList<Object>(childForms.values());
 
-        return Collections.unmodifiableList(this.childForms);
+        return ListUtils.unmodifiableList(values);
     }
 
     /**

@@ -1,14 +1,14 @@
 /*
  * Copyright (C) 2009 Julio Arg\u00fcello <julio.arguello@gmail.com>
- *
+ * 
  * This file is part of Bluebell Substance.
- *
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *         http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -56,18 +56,22 @@ import org.springframework.util.Assert;
  * </p>
  * 
  * <pre>
+ * @{code
  *      <bean id="substanceLookAndFeelConfigurer" parent="vldockingLookAndFeelConfigurer" 
  *      class="org.bluebell.richclient.application.config.substance.SubstanceLookAndFeelConfigurer"  lazy-init="true">
  *                 <constructor-arg index="0" value="${richclient.substanceSkinName}"/>
  *      </bean>
+ * }
  * </pre>
  * 
  * <pre>
+ * {@code
  *      &lt;bean id=&quot;substanceLookAndFeelConfigurer&quot; 
  *              class=&quot;org.bluebell.richclient.application.config.SubstanceLookAndFeelConfigurer&quot; &gt;
  *              &lt;constructor-arg index=&quot;0&quot; 
  *              value=&quot;org.jvnet.substance.skin.SubstanceCremeCoffeeLookAndFeel&quot;/&gt;
  *      &lt;/bean&gt;
+ * }
  * </pre>
  * 
  * However is better to define the following beans in the startup application context:

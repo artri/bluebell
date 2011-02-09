@@ -21,6 +21,7 @@ package org.bluebell.richclient.form;
 import javax.swing.JComponent;
 import javax.swing.JTextArea;
 
+import org.apache.commons.lang.StringUtils;
 import org.bluebell.richclient.application.config.BbApplicationConfig;
 import org.bluebell.richclient.form.util.BbFormModelHelper;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -79,7 +80,7 @@ public class BbConsoleForm extends ApplicationWindowAwareForm {
     public BbConsoleForm() {
 
         super(BbConsoleForm.FORM_NAME);
-        this.setFormModel(BbFormModelHelper.createFormModel(new String())); // TODO
+        this.setFormModel(BbFormModelHelper.createFormModel(StringUtils.EMPTY)); // TODO
     }
 
     /**

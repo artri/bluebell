@@ -45,7 +45,7 @@ public class BbValidationMessage extends DefaultValidationMessage {
     /**
      * The validating form model.
      */
-    private ValidatingFormModel formModel;
+    private transient ValidatingFormModel formModel;
 
     /**
      * Creates a validation message.
@@ -99,6 +99,27 @@ public class BbValidationMessage extends DefaultValidationMessage {
         Assert.notNull(formModel, "formModel");
 
         this.formModel = formModel;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean equals(Object o) {
+
+        // This class will ignore the identity of the subclass and the added fields.
+        return super.equals(o);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public int hashCode() {
+
+        // Since this class overrides equals(Object), also override hashCode() to avoid violating
+        // the invariant that equal objects must have equal hashcodes.
+        return super.hashCode();
     }
 
     /**

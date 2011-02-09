@@ -58,7 +58,7 @@ public class RoundedBorder extends AbstractBorder {
     /**
      * The stroke.
      */
-    private Stroke stroke;
+    private transient Stroke stroke;
 
     /**
      * The stroke color.

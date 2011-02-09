@@ -117,8 +117,8 @@ public class TestMockAbstractBbTableMasterForm extends AbstractBbSamplesTests {
 
         final PersonService personService = this.iMocksControl.createMock(PersonService.class);
 
-        final PersonMasterForm masterForm = (PersonMasterForm) this.getBackingForm(this.getMasterView());
-        final PersonSearchForm searchForm = (PersonSearchForm) this.getBackingForm(this.getSearchView());
+        final PersonMasterForm masterForm = (PersonMasterForm) FormUtils.getBackingForm(this.getMasterView());
+        final PersonSearchForm searchForm = (PersonSearchForm) FormUtils.getBackingForm(this.getSearchView());
 
         masterForm.setPersonService(personService);
         searchForm.setPersonService(personService);
@@ -150,8 +150,8 @@ public class TestMockAbstractBbTableMasterForm extends AbstractBbSamplesTests {
     @Test
     public void testSaveCommand() {
 
-        final PersonMasterForm masterForm = (PersonMasterForm) this.getBackingForm(this.getMasterView());
-        final PersonChildForm childForm = (PersonChildForm) this.getBackingForm(this.getChildView());
+        final PersonMasterForm masterForm = (PersonMasterForm) FormUtils.getBackingForm(this.getMasterView());
+        final PersonChildForm childForm = (PersonChildForm) FormUtils.getBackingForm(this.getChildView());
         final PersonService mockPersonService = masterForm.getPersonService();
 
         final ActionCommand newFormObjectCommand = masterForm.getNewFormObjectCommand();
@@ -203,9 +203,9 @@ public class TestMockAbstractBbTableMasterForm extends AbstractBbSamplesTests {
     @Test
     public void testRefreshCommandAfterSelectionChange() {
 
-        final PersonMasterForm masterForm = (PersonMasterForm) this.getBackingForm(this.getMasterView());
-        final PersonSearchForm searchForm = (PersonSearchForm) this.getBackingForm(this.getSearchView());
-        final PersonChildForm childForm = (PersonChildForm) this.getBackingForm(this.getChildView());
+        final PersonMasterForm masterForm = (PersonMasterForm) FormUtils.getBackingForm(this.getMasterView());
+        final PersonSearchForm searchForm = (PersonSearchForm) FormUtils.getBackingForm(this.getSearchView());
+        final PersonChildForm childForm = (PersonChildForm) FormUtils.getBackingForm(this.getChildView());
         final PersonService mockPersonService = masterForm.getPersonService();
 
         final ActionCommand searchCommand = searchForm.getSearchCommand();
@@ -236,16 +236,16 @@ public class TestMockAbstractBbTableMasterForm extends AbstractBbSamplesTests {
         TestCase.assertEquals(nameAfterRefresh, valueModel.getValue());
         TestCase.assertEquals(nameAfterRefresh, nameComponent.getText());
     }
-    
+
     /**
      * Tests the correct behaviour of refresh command.
      */
     @Test
     public void testRefreshCommand() {
 
-        final PersonMasterForm masterForm = (PersonMasterForm) this.getBackingForm(this.getMasterView());
-        final PersonSearchForm searchForm = (PersonSearchForm) this.getBackingForm(this.getSearchView());
-        final PersonChildForm childForm = (PersonChildForm) this.getBackingForm(this.getChildView());
+        final PersonMasterForm masterForm = (PersonMasterForm) FormUtils.getBackingForm(this.getMasterView());
+        final PersonSearchForm searchForm = (PersonSearchForm) FormUtils.getBackingForm(this.getSearchView());
+        final PersonChildForm childForm = (PersonChildForm) FormUtils.getBackingForm(this.getChildView());
         final PersonService mockPersonService = masterForm.getPersonService();
 
         final ActionCommand searchCommand = searchForm.getSearchCommand();
@@ -279,7 +279,7 @@ public class TestMockAbstractBbTableMasterForm extends AbstractBbSamplesTests {
         TestCase.assertEquals(personAfter1stRefresh, childForm.getFormObject());
         TestCase.assertEquals(nameAfter1stRefresh, valueModel.getValue());
         TestCase.assertEquals(nameAfter1stRefresh, nameComponent.getText());
-        
+
         // (3). Call refresh and make assertions
         SwingUtils.runInEventDispatcherThread(refreshCommand);
 

@@ -27,16 +27,15 @@ import java.lang.reflect.InvocationTargetException;
 import junit.framework.TestCase;
 
 import org.bluebell.richclient.application.RcpMain;
-import org.bluebell.richclient.application.support.DefaultApplicationPageConfigurer;
 import org.bluebell.richclient.application.support.FormBackedView;
 import org.bluebell.richclient.form.AbstractBbChildForm;
 import org.bluebell.richclient.form.AbstractBbSearchForm;
 import org.bluebell.richclient.form.AbstractBbTableMasterForm;
 import org.bluebell.richclient.form.BbDispatcherForm;
 import org.bluebell.richclient.form.BbValidationForm;
+import org.bluebell.richclient.form.FormUtils;
 import org.bluebell.richclient.samples.simple.bean.Person;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.binding.form.ValidatingFormModel;
 import org.springframework.richclient.application.Application;
 import org.springframework.richclient.application.ApplicationPage;
 import org.springframework.richclient.application.ApplicationPageFactory;
@@ -46,7 +45,6 @@ import org.springframework.richclient.application.PageDescriptor;
 import org.springframework.richclient.application.ViewDescriptor;
 import org.springframework.richclient.application.support.AbstractView;
 import org.springframework.richclient.application.support.MultiViewPageDescriptor;
-import org.springframework.richclient.form.Form;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.util.Assert;
 
@@ -256,7 +254,7 @@ public abstract class AbstractBbSamplesTests extends AbstractBbRichClientTests {
                 AbstractBbSamplesTests.VALIDATION_VIEW_DESCRIPTOR_BEAN_NAME));
 
         if (this.getMasterView() != null) {
-            this.setDispatcherForm(this.getBackingForm(this.getMasterView()).getDispatcherForm());
+            this.setDispatcherForm(FormUtils.getBackingForm(this.getMasterView()).getDispatcherForm());
         }
     }
 
@@ -278,7 +276,7 @@ public abstract class AbstractBbSamplesTests extends AbstractBbRichClientTests {
                 public void run() {
 
                     // Nothing to do, just waiting for page creation to be completed
-                    new String("Avoid Checkstyle warning");
+                    this.getClass(); //"Avoid Checkstyle warning"
                 }
             });
         } catch (InterruptedException e) {
@@ -314,34 +312,6 @@ public abstract class AbstractBbSamplesTests extends AbstractBbRichClientTests {
     protected final <T> T getService(Class<T> serviceClass) {
 
         return (T) ApplicationServicesLocator.services().getService(serviceClass);
-    }
-
-    /**
-     * Returns the view backing form.
-     * 
-     * @param <T>
-     *            the form class.
-     * @param view
-     *            the view.
-     * @return the backing form.
-     */
-    protected final <T extends Form> T getBackingForm(FormBackedView<T> view) {
-
-        return (view != null) ? view.getBackingForm() : null;
-    }
-
-    /**
-     * Returns the view backing form model.
-     * 
-     * @param <T>
-     *            the form class.
-     * @param view
-     *            the view.
-     * @return the backing form.
-     */
-    protected final <T extends Form> ValidatingFormModel getBackingFormModel(FormBackedView<T> view) {
-
-        return (view != null) ? DefaultApplicationPageConfigurer.backingForm(view).getFormModel() : null;
     }
 
     /**

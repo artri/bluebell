@@ -120,7 +120,7 @@ public class BbLookAndFeelConfigurer extends UIManagerConfigurer implements Init
                 final ImageIcon icon = new ImageIcon(entry.getValue().getURL());
                 UIManager.put(imageKey, icon);
             } catch (Exception e) {
-                new String("Avoid CS warnings");
+                e.getCause(); //"Avoid CS warnings";
                 // Nothing to do
             }
         }

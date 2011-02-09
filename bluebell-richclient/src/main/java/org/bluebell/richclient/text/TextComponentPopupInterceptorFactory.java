@@ -119,7 +119,7 @@ public class TextComponentPopupInterceptorFactory implements FormComponentInterc
      * 
      * @author <a href = "mailto:julio.arguello@gmail.com" >Julio Argüello (JAF)</a>
      */
-    private class TextComponentPopupInterceptor extends AbstractFormComponentInterceptor implements
+    private static class TextComponentPopupInterceptor extends AbstractFormComponentInterceptor implements
             PropertyChangeListener, CommitListener {
 
         /**

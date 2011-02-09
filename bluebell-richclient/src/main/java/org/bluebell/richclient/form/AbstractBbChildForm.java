@@ -57,11 +57,6 @@ public abstract class AbstractBbChildForm<T extends Object> extends ApplicationW
     private BbDispatcherForm<T> dispatcherForm;
 
     /**
-     * El formulario maestro.
-     */
-    private AbstractBbMasterForm<T> masterForm;
-
-    /**
      * Construye el formulario hijo a partir de su padre y un identificador.
      * 
      * @param formId
@@ -92,7 +87,9 @@ public abstract class AbstractBbChildForm<T extends Object> extends ApplicationW
      */
     public final AbstractBbMasterForm<T> getMasterForm() {
 
-        return this.masterForm;
+        final BbDispatcherForm<T> theDispatcherForm = this.getDispatcherForm();
+
+        return (theDispatcherForm != null) ? theDispatcherForm.getMasterForm() : null;
     }
 
     /**
@@ -180,21 +177,6 @@ public abstract class AbstractBbChildForm<T extends Object> extends ApplicationW
     protected String getRevertCommandFaceDescriptorId() {
 
         return AbstractBbChildForm.REVERT_COMMAND_ID;
-    }
-
-    /**
-     * Establece el formulario maestro.
-     * <p>
-     * Produce una excepción en caso de que ya estuviera establecido.
-     * 
-     * @param masterForm
-     *            el formulario maestro.
-     */
-    final void setMasterForm(AbstractBbMasterForm<T> masterForm) {
-
-        Assert.isNull(this.masterForm);
-
-        this.masterForm = masterForm;
     }
 
     /**

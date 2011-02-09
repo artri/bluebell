@@ -1,14 +1,14 @@
 /*
  * Copyright (C) 2009 Julio Arg\u00fcello <julio.arguello@gmail.com>
- *
+ * 
  * This file is part of Bluebell VLDocking.
- *
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *         http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -37,7 +37,7 @@ import com.vlsolutions.swing.docking.DockingDesktop;
  * 
  * @since 20110119
  */
-public class BbVLDockingLayoutManager implements VLDockingLayoutManager {
+public final class BbVLDockingLayoutManager implements VLDockingLayoutManager {
 
     /**
      * The singleton instance.
@@ -84,7 +84,7 @@ public class BbVLDockingLayoutManager implements VLDockingLayoutManager {
      * 
      * @return the singleton instance.
      */
-    public static final BbVLDockingLayoutManager getInstance() {
+    public static BbVLDockingLayoutManager getInstance() {
 
         return BbVLDockingLayoutManager.INSTANCE;
     }

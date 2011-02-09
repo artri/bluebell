@@ -30,16 +30,25 @@ import javax.swing.JLabel;
 
 import junit.framework.TestCase;
 
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.Predicate;
+import org.apache.commons.collections.functors.IdentityPredicate;
+import org.bluebell.richclient.application.support.DefaultApplicationPageConfigurer.BbViewType;
 import org.bluebell.richclient.form.AbstractBbChildForm;
 import org.bluebell.richclient.form.AbstractBbMasterForm;
 import org.bluebell.richclient.form.AbstractBbSearchForm;
 import org.bluebell.richclient.form.AbstractBbTableMasterForm;
 import org.bluebell.richclient.form.BbValidationForm;
+import org.bluebell.richclient.form.FormUtils;
 import org.bluebell.richclient.samples.simple.bean.Person;
+import org.bluebell.richclient.swing.util.SwingUtils;
 import org.bluebell.richclient.test.AbstractBbSamplesTests;
 import org.junit.Test;
+import org.springframework.richclient.application.ApplicationPage;
+import org.springframework.richclient.application.PageComponent;
 import org.springframework.richclient.application.PageDescriptor;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.util.Assert;
 
 /**
  * Tests the correct behaviour of {@link DefaultApplicationPageConfigurer}.
@@ -122,6 +131,12 @@ public class TestDefaultApplicationPageConfigurer extends AbstractBbSamplesTests
     private PageDescriptor masterAndIncompatibleSearchViewsPageDescriptor;
 
     /**
+     * The page configurer.
+     */
+    @Resource
+    private DefaultApplicationPageConfigurer<?> defaultApplicationPageConfigurer;
+
+    /**
      * Creates the test.
      */
     public TestDefaultApplicationPageConfigurer() {
@@ -148,6 +163,7 @@ public class TestDefaultApplicationPageConfigurer extends AbstractBbSamplesTests
         TestCase.assertNotNull("rFullPageDescriptor", this.rFullPageDescriptor);
         TestCase.assertNotNull("masterAndIncompatibleChildViewsPageDescriptor",
                 this.masterAndIncompatibleChildViewsPageDescriptor);
+        TestCase.assertNotNull("this.defaultApplicationPageConfigurer", this.defaultApplicationPageConfigurer);
     }
 
     /**
@@ -268,7 +284,7 @@ public class TestDefaultApplicationPageConfigurer extends AbstractBbSamplesTests
 
         this.initializeVariables(this.masterAndIncompatibleChildViewsPageDescriptor);
 
-        final AbstractBbMasterForm<Person> masterForm = this.getBackingForm(this.getMasterView());
+        final AbstractBbMasterForm<Person> masterForm = FormUtils.getBackingForm(this.getMasterView());
 
         TestCase.assertTrue("masterForm.getChildForms().isEmpty()", masterForm.getChildForms().isEmpty());
     }
@@ -281,7 +297,7 @@ public class TestDefaultApplicationPageConfigurer extends AbstractBbSamplesTests
 
         this.initializeVariables(this.masterAndIncompatibleSearchViewsPageDescriptor);
 
-        final AbstractBbMasterForm<Person> masterForm = this.getBackingForm(this.getMasterView());
+        final AbstractBbMasterForm<Person> masterForm = FormUtils.getBackingForm(this.getMasterView());
 
         TestCase.assertTrue("masterForm.getSearchForms().isEmpty()", masterForm.getSearchForms().isEmpty());
     }
@@ -300,6 +316,92 @@ public class TestDefaultApplicationPageConfigurer extends AbstractBbSamplesTests
 
         new DefaultApplicationPageConfigurer<Object>().configureApplicationPage(this.getInitializedPage());
         this.assertViewDescriptors(Boolean.FALSE, Boolean.FALSE, Boolean.FALSE, Boolean.FALSE);
+    }
+
+    /**
+     * Tests the correct behaviour of {@link DefaultApplicationPageConfigurer#getPageComponentType(String)}.
+     */
+    @Test
+    public void testGetPageComponentType() {
+
+        try {
+            this.defaultApplicationPageConfigurer.getPageComponentType(null);
+            TestCase.fail("this.defaultApplicationPageConfigurer.getPageComponentType(null);");
+        } catch (IllegalArgumentException e) {
+            TestCase.assertTrue(e.getMessage(), Boolean.TRUE);
+        }
+
+        TestCase.assertEquals(BbViewType.UNKNOWN_TYPE.name(),
+                this.defaultApplicationPageConfigurer.getPageComponentType("unknown_page"));
+    }
+
+    /**
+     * Tests how does page behave after closing and re-opening a view.
+     * 
+     * @see #doTestOpenAfterClose(ApplicationPage, PageComponent)
+     */
+    @Test
+    public void testOpenAfterClose() {
+
+        this.testFullPageReverse();
+        this.assertViewDescriptors(Boolean.FALSE, Boolean.FALSE, Boolean.FALSE, Boolean.FALSE);
+
+        this.doTestOpenAfterClose(this.getActivePage(), this.getMasterView());
+        this.doTestOpenAfterClose(this.getActivePage(), this.getChildView());
+        this.doTestOpenAfterClose(this.getActivePage(), this.getSearchView());
+        this.doTestOpenAfterClose(this.getActivePage(), this.getValidationView());
+    }
+
+    /**
+     * Tests the correct behaviour of opening after closing a pae component.
+     * 
+     * @param applicationPage
+     *            the application page.
+     * @param pageComponent
+     *            the page component.
+     */
+    private void doTestOpenAfterClose(final ApplicationPage applicationPage, final PageComponent pageComponent) {
+
+        Assert.notNull(applicationPage, "applicationPage");
+        Assert.notNull(pageComponent, "pageComponent");
+
+        final Predicate predicate = IdentityPredicate.getInstance(pageComponent);
+
+        /*
+         * 1. Page component is present at the page.
+         */
+        TestCase.assertFalse("CollectionUtils.select(applicationPage.getPageComponents(), predicate).isEmpty()",
+                CollectionUtils.select(applicationPage.getPageComponents(), predicate).isEmpty());
+        
+        /*
+         * 2. Close the page component and will be removed from the page
+         */
+        SwingUtils.runInEventDispatcherThread(new Runnable() {
+
+            @Override
+            public void run() {
+
+                applicationPage.close(pageComponent);
+            }
+        });
+
+        TestCase.assertTrue("CollectionUtils.select(applicationPage.getPageComponents(), predicate).isEmpty()",
+                CollectionUtils.select(applicationPage.getPageComponents(), predicate).isEmpty());
+
+        /*
+         * 3. Close the page component and it is no longer referenced
+         */
+        SwingUtils.runInEventDispatcherThread(new Runnable() {
+
+            @Override
+            public void run() {
+
+                applicationPage.showView(pageComponent.getId());
+            }
+        });
+
+        TestCase.assertTrue("CollectionUtils.select(applicationPage.getPageComponents(), predicate).isEmpty()",
+                CollectionUtils.select(applicationPage.getPageComponents(), predicate).isEmpty());
     }
 
     /**
@@ -324,10 +426,10 @@ public class TestDefaultApplicationPageConfigurer extends AbstractBbSamplesTests
         TestCase.assertTrue(validationViewIsNull == (this.getValidationView() == null));
 
         // Master form related assertions
-        final AbstractBbTableMasterForm<Person> masterForm = this.getBackingForm(this.getMasterView());
-        final AbstractBbChildForm<Person> childForm = this.getBackingForm(this.getChildView());
-        final AbstractBbSearchForm<Person, ?> searchForm = this.getBackingForm(this.getSearchView());
-        final BbValidationForm<Person> validationForm = this.getBackingForm(this.getValidationView());
+        final AbstractBbTableMasterForm<Person> masterForm = FormUtils.getBackingForm(this.getMasterView());
+        final AbstractBbChildForm<Person> childForm = FormUtils.getBackingForm(this.getChildView());
+        final AbstractBbSearchForm<Person, ?> searchForm = FormUtils.getBackingForm(this.getSearchView());
+        final BbValidationForm<Person> validationForm = FormUtils.getBackingForm(this.getValidationView());
 
         if (masterForm != null) {
             if (childForm != null) {
@@ -347,7 +449,7 @@ public class TestDefaultApplicationPageConfigurer extends AbstractBbSamplesTests
                 // TestCase.assertTrue(masterForm.getSearchForms().contains(searchForm));
                 TestCase.assertNotNull(this.getValidationView().getGlobalCommandsAccessor());
             } else {
-                new String("Avoid CS warnings");
+                this.getClass(); // "Avoid CS warnings"
                 // TODO
                 // TestCase.assertTrue(masterForm.getSearchForms().isEmpty());
             }

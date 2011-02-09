@@ -26,7 +26,6 @@ import java.util.Map;
 
 import org.springframework.richclient.application.ApplicationPage;
 import org.springframework.richclient.application.PageComponent;
-import org.springframework.richclient.application.PageComponentDescriptor;
 
 /**
  * Service responsible for configuring an application page.
@@ -63,11 +62,11 @@ public interface ApplicationPageConfigurer<T> {
     /**
      * Gets the page component type.
      * 
-     * @param pageComponentDescriptor
-     *            the page component descriptor.
+     * @param pageComponentDescriptorId
+     *            the identifier of the page component descriptor.
      * @return the type (never returns <code>null</code>).
      * 
      * @see #classifyApplicationPage(ApplicationPage)
      */
-    String getPageComponentType(PageComponentDescriptor pageComponentDescriptor);
+    String getPageComponentType(String pageComponentDescriptorId);
 }

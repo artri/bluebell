@@ -31,7 +31,7 @@
 
 	<groupId>org.bluebell</groupId>
 	<artifactId>bluebell-parent</artifactId>
-	<version>0.1</version>
+	<version>0.1-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<name>Bluebell Parent</name>
 	<description>Bluebell parent pom module</description>
@@ -338,6 +338,22 @@
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-jar-plugin</artifactId>
 					<version>2.3.1</version>
+					<configuration>
+						<archive>
+							<!--
+								(JAF), 20110208: I need more control over generated JAR file metadata
+								@see buildnumber-maven-plugin
+							-->
+							<manifest>
+								<addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+							</manifest>
+							<manifestEntries>
+								<Implementation-Build>${buildNumber}</Implementation-Build>
+								<url>${project.url}</url>
+								<Built-By>${user.name}</Built-By>
+							</manifestEntries>
+						</archive>
+					</configuration>
 					<executions>
 						<execution>
 							<!--
@@ -352,6 +368,11 @@
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-release-plugin</artifactId>
+					<version>2.1</version>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-site-plugin</artifactId>
 					<version>3.0-beta-3</version>
 					<configuration>
@@ -361,7 +382,7 @@
 						<outputDirectory>${bb.site.outputDirectory}</outputDirectory>
 
 						<!--
-							(JAF), 20101221, according to Maven. The Definitive Guide_Sonatype
+							(JAF), 20101221: according to Maven. The Definitive Guide_Sonatype
 						-->
 						<templateDirectory>${bb.site.templateDirectory}</templateDirectory>
 						<template>site.vm</template>
@@ -665,6 +686,31 @@
 					</configuration>
 				</plugin>
 				<plugin>
+					<!--
+						(JAF),20110208, generates version number. Useful to distinguish different SNAPSHOT versions.
+						@see http://code.google.com/p/maven-spring-seminar/wiki/multimoduleProject#Configuración_de_plugins_comunes
+					-->
+					<groupId>org.codehaus.mojo</groupId>
+					<artifactId>buildnumber-maven-plugin</artifactId>
+					<version>1.0-beta-4</version>
+					<executions>
+						<execution>
+							<phase>validate</phase>
+							<goals>
+								<goal>create</goal>
+							</goals>
+						</execution>
+					</executions>
+					<configuration>
+						<format>{0,date,yyyy-MM-dd hh:mm:ss}</format>
+						<items>
+							<item>timestamp</item>
+						</items>
+						<doCheck>true</doCheck>
+						<doUpdate>true</doUpdate>
+					</configuration>
+				</plugin>
+				<plugin>
 					<groupId>org.codehaus.mojo</groupId>
 					<artifactId>build-helper-maven-plugin</artifactId>
 					<version>1.5</version>
@@ -764,6 +810,10 @@
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-release-plugin</artifactId>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-site-plugin</artifactId>
 			</plugin>
 			<plugin>
@@ -773,6 +823,10 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
+			</plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>buildnumber-maven-plugin</artifactId>
 			</plugin>
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
