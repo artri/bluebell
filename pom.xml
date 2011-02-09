@@ -31,7 +31,7 @@
 
 	<groupId>org.bluebell</groupId>
 	<artifactId>bluebell-parent</artifactId>
-	<version>0.1-SNAPSHOT</version>
+	<version>0.1</version>
 	<packaging>pom</packaging>
 	<name>Bluebell Parent</name>
 	<description>Bluebell parent pom module</description>
@@ -64,10 +64,10 @@
 		(JAF) 20101206, according to http://maven.apache.org/pom.html#SCM
 	-->
 	<scm>
-		<connection>scm:svn:${bb.project.url}/svn/trunk/</connection>
-		<developerConnection>scm:svn:https://bluebell.googlecode.com/svn/trunk/</developerConnection>
+		<connection>scm:svn:${bb.project.url}/svn/tags/bluebell-parent-0.1</connection>
+		<developerConnection>scm:svn:https://bluebell.googlecode.com/svn/tags/bluebell-parent-0.1</developerConnection>
 		<tag>HEAD</tag>
-		<url>http://code.google.com/p/bluebell/source/browse/#svn/trunk</url>
+		<url>http://code.google.com/p/bluebell/source/browse/#svn/tags/bluebell-parent-0.1</url>
 	</scm>
 
 	<prerequisites>
@@ -265,7 +265,12 @@
 					<executions>
 						<execution>
 							<id>format-headers</id>
-							<phase>verify</phase>
+							<!--
+								(JAF), 20110209, release plugin performs verify phase and due to an unknown reason
+								in such a case fails to install licenses. As workaround change to install phase.
+							-->
+							<!-- <phase>verify</phase> -->
+							<phase>install</phase>
 							<goals>
 								<goal>format</goal>
 							</goals>
@@ -370,6 +375,10 @@
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-release-plugin</artifactId>
 					<version>2.1</version>
+					<configuration>
+						<allowTimestampedSnapshots>true</allowTimestampedSnapshots>
+						<autoVersionSubmodules>true</autoVersionSubmodules>
+					</configuration>
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
@@ -452,7 +461,7 @@
 
 										See http://jira.codehaus.org/browse/MJAVADOC-251
 									-->
-									<destDir></destDir>
+									<destDir />
 									<reportOutputDirectory>${project.reporting.outputDirectory}</reportOutputDirectory>
 
 									<!--
@@ -612,7 +621,7 @@
 							<!-- <configuration> -->
 							<!-- <spaceKey>BLUE</spaceKey> -->
 							<!-- <endPoint>http://saber.b2b2000.com/rpc/xmlrpc</endPoint> -->
-							<!---->
+
 							<!-- <username>j.arguello</username> -->
 							<!-- <password>arguello</password> -->
 							<!-- <parentPageTitle>Maven</parentPageTitle> -->
@@ -1204,7 +1213,6 @@
 		<profile>
 			<id>parentPom</id>
 			<activation>
-
 				<!--
 					(JAF), 20101210, source folder existance determines heuristically
 					whether a pom is parent or not
